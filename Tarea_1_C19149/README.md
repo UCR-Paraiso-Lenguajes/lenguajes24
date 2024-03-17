@@ -1,7 +1,7 @@
 # **MOVIMIENTO #METOO Y Y EL EFECTO PENCE**
 
 
-## _MOVIMENTO METOO_
+## _MOVIMIENTO METOO_
 Este movimiento se populariza en 2017 gracias a la actriz Alyssa Milano quien denunica las agresiones dadas a las actrices de Hollywood
 Este movimiento es fundado por Tarana Burke quien es una activista y declara que esto es un movimento y no solo un momento.
 
@@ -12,7 +12,7 @@ Es un movimento que integra:
 * Poder y privilegio
 
 **Motivaciones emocionales del #METOO**
-1. Solidaridas 
+1. Solidaridad
     - Expresado como amor o unidad
 2. Rabia
     - Expresada como furia
