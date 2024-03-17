@@ -1,81 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style> 
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
         }
-
-        .container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-gap: 10px;
-            margin: 10px;
-        }
-        
-        .search_Products {
-            display: grid;
-            grid-template-columns: 1fr auto; /* Una columna para el input y otra para el botón */
-            grid-gap: 5px;
-            margin-bottom: 15px;
-        }
-
-        .search_Products input[type="search"] {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .search_Products button {
-            padding: 8px 15px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .product {
-            border: 1px solid #ccc ;
-            padding: 10px;
+        footer{
             text-align: center;
+            background-color: gray;
+            padding: 10px;
         }
-
-        .product img {
-            max-width: 100%;
-            height: auto;
+        header{
+            background-color: #ded4d4;
         }
     </style>    
 </head>
 <body>
-    <div class="search_Products">
-        <input id="search" type="search" class="form" placeholder="Search...">
-        <button>Search</button>
-    </div>
-
+    <header>
+        <div class="row row-cols-4">
+            <h1>Amazon</h1>
+            <input id="search" type="search" class="form">
+            <div>
+                <button type="button">Search</button>
+                <button type="button">Amazon Cart</button>
+                <button type="button">Sign in</button>
+            </div>
+    
+        </div>
+    </header>
     <div class="container">
-        <div class="product">
-            <h3>Xbox</h3>
-            <p>$349</p>
-            <img src="xbox.jpg" alt="xbox">
-        </div>
-        <div class="product">
-            <h3>PlayStation 4</h3>
-            <p>$212</p>
-            <img src="Playstation4.jpg" alt="ps4">
-        </div>
-        <div class="product">
-            <h3>Hogwarts Legacy</h3>
-            <p>$47</p>
-            <img src="game.jpg" alt="game">
-        </div>
-        <div class="product">
-            <h3>Keyboard Corsair</h3>  
-            <p>$79</p>
-            <img src="corsair.jpg" alt="Keyboard">
+        <div class = "row">
+            <div class="col">
+                <h3>Xbox</h3>
+                <p>$349</p>
+                <img src="https://m.media-amazon.com/images/I/71ImGywfeQL._AC_UY218_.jpg" alt="xbox">
+                <input id="btnBuy" type="button" class="BTNBuy" value="Buy now">
+                <input id="btnAddCart" type="button" class="BTNBuy" value="Add to Cart ">
+            </div>
+            <div class="col">
+                <h3>PlayStation 4</h3>
+                <p>$212</p>
+                <img src="https://m.media-amazon.com/images/I/51ROi4d4puL._AC_UY218_.jpg" alt="ps4">
+                <input id="btnBuy" type="button" class="BTNBuy" value="Buy now">
+                <input id="btnAddCart" type="button" class="BTNBuy" value="Add to Cart ">
+            </div>
+            <div class="col">
+                <h3>Hogwarts Legacy</h3>
+                <p>$47</p>
+                <img src="https://m.media-amazon.com/images/I/81cou8GvIfL._AC_UY218_.jpg" alt="game">
+                <input id="btnBuy" type="button" class="BTNBuy" value="Buy now">
+                <input id="btnAddCart" type="button" class="BTNBuy" value="Add to Cart ">
+            </div>
+            <div class="col">
+                <h3>Keyboard Corsair</h3>  
+                <p>$79</p>
+                <img src="https://m.media-amazon.com/images/I/61P-smPq+cL._AC_UY218_.jpg" alt="Keyboard">
+                <input id="btnBuy" type="button" class="BTNBuy" value="Buy now">
+                <input id="btnAddCart" type="button" class="BTNBuy" value="Add to Cart ">
+            </div>
+        </div>    
+        <div class = "row">
+            <div class="col">
+                <h3>Xbox</h3>
+                <p>$349</p>
+                <img src="https://m.media-amazon.com/images/I/71ImGywfeQL._AC_UY218_.jpg" alt="xbox">
+                <input id="btnBuy" type="button" class="BTNBuy" value="Buy now">
+                <input id="btnAddCart" type="button" class="BTNBuy" value="Add to Cart ">
+            </div>
+            <div class="col">
+                <h3>Xbox</h3>
+                <p>$349</p>
+                <img src="https://m.media-amazon.com/images/I/71ImGywfeQL._AC_UY218_.jpg" alt="xbox">
+                <input id="btnBuy" type="button" class="BTNBuy" value="Buy now">
+                <input id="btnAddCart" type="button" class="BTNBuy" value="Add to Cart ">
+            </div>
+                <div class="col">
+                <h3>Xbox</h3>
+                <p>$349</p>
+                <img src="https://m.media-amazon.com/images/I/71ImGywfeQL._AC_UY218_.jpg" alt="xbox">
+                <input id="btnBuy" type="button" class="BTNBuy" value="Buy now">
+                <input id="btnAddCart" type="button" class="BTNBuy" value="Add to Cart ">
+            </div>
+            <div class="col">
+                <h3>Xbox</h3>
+                <p>$349</p>
+                <img src="https://m.media-amazon.com/images/I/71ImGywfeQL._AC_UY218_.jpg" alt="xbox">
+                <input id="btnBuy" type="button" class="BTNBuy" value="Buy now">
+                <input id="btnAddCart" type="button" class="BTNBuy" value="Add to Cart ">
+            </div>
         </div>
     </div>
+    <footer>
+        <div class="row row-cols-4">
+        Derechos reservados para <b>Kendall Sánchez C27227 2024</b>.
+        </div>
+    </footer>
 </body>
 </html>

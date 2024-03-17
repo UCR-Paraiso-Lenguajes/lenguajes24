@@ -4,25 +4,75 @@
 <head>
     <meta charset="utf-8" />
     <title></title>
+    <link rel="stylesheet" href="HTMLPageDemo.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </head>
+
 <body>
-    <div class="flex-container">
-        <div class="product"> 
+
+  <header class="header-container row">
+    <div class="search-container col-sm-4">
+      <input type="search" placeholder="Buscar" value=""> 
+      <img src="img/Lupa.png" style="width: 20px;" class="col-sm-4">
+      <img src="img/carrito.png" style="width: 20px;" class="col-sm-4">
+    </div>
+  </header>
+
+    <div class="container row">
+       
+        <div class="product col-sm-4"> 
           <img src="img/Iphone.jpg" />
+          <p>Iphone</p>
+          <button class="button">Comprar</button>
         </div>
     
-        <div class="product">
-           <img src="img/Iphone.jpg" />
+        <div class="product col-sm-4">
+          <img src="img/audifonos.jpg" />
+          <p>Audifonos</p>
+          <button class="button">Comprar</button>
         </div>
     
-        <div class="product"> 
-          <img src="img/Iphone.jpg" />
+        <div class="product col-sm-4"> 
+          <img src="img/mouse.jpg" />
+          <p>Mouse</p>
+          <button class="button">Comprar</button>
         </div>
     
-        <div class="product">
-            <img src="img/Iphone.jpg" />
+        <div class="product col-sm-4">
+          <img src="img/Pantalla.jpg" />
+          <p>Pantalla</p>
+          <button class="button">Comprar</button>
+        </div>
+
+        <div class="product col-sm-4"> 
+          <img src="img/Headphone.jpg" />
+          <p>Headphone</p>
+          <button class="button">Comprar</button>
+        </div>
+    
+        <div class="product col-sm-4">
+          <img src="img/audifonos.jpg" />
+          <p>Audifonos</p>
+          <button class="button">Comprar</button>
+        </div>
+    
+        <div class="product col-sm-4"> 
+          <img src="img/mouse.jpg" />
+          <p>Mouse</p>
+          <button class="button">Comprar</button>
+        </div>
+    
+        <div class="product col-sm-4">
+          <img src="img/Pantalla.jpg" />
+          <p>Pantalla</p>
+          <button class="button">Comprar</button>
         </div>
     </div>
-    
+
+    <footer class="footer-container">
+      <p>Derechos reservados, 2024</p>
+    </footer>
 </body>
+
 </html>

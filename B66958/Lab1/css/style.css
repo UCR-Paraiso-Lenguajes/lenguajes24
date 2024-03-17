@@ -1,3 +1,20 @@
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%; /* Ensure body fills the height of the viewport */
+  display: flex;
+  flex-direction: column; /* Set flex container to column direction */
+}
+
+footer {
+  margin-top: auto; /* Push the footer to the bottom */
+}
+
+
 ul {
     list-style-type: none;
     margin: 0;
@@ -21,7 +38,6 @@ ul {
     background-color: black;
   }
   
-  /* Style the links inside the navigation bar */
   .topnav a {
     float: left;
     display: block;
@@ -32,13 +48,11 @@ ul {
     font-size: 17px;
   }
   
-  /* Style the "active" element to highlight the current page */
   .topnav a.active {
     background-color: #2196F3;
     color: white;
   }
   
-  /* Style the search box inside the navigation bar */
   .topnav input[type=text] {
     float: center;
     padding: 6px;
@@ -49,7 +63,6 @@ ul {
     width: 500px;
   }
   
-  /* When the screen is less than 600px wide, stack the links and the search field vertically instead of horizontally */
   @media screen and (max-width: 600px) {
     .topnav a, .topnav input[type=text] {
       float: none;
@@ -64,13 +77,14 @@ ul {
     }
   }
 
-  .container {
+  /*.container {
     width: 200px;
     display: grid;
     grid-template-areas: "a a a a";
     gap: 30px;
     grid-auto-rows: 250px;
   }
+  */
 
   .product {
     background-color: lightblue;
@@ -81,4 +95,20 @@ ul {
 
   .top {
     background-color: lightblue;
+  }
+
+  .header {
+    background-color: lightgray;
+    height: 30px;
+  }
+
+  .footer {
+    background-color: darkgray;
+    height: 30px;
+    margin-top: 1rem;
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: max-content 200px 1fr;
   }

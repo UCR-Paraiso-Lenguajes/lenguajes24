@@ -1,17 +1,60 @@
-
-
- .flex-container {
-        display: flex;
-        flex-direction: row;
-        margin: 50px;
-        padding: 100px;
- }
-
-.product{
-   width= 100;
-    
+.header-container {
+   background-color: #9b9b9b  ; 
+   padding: 20px; 
+   width: 100%;
 }
 
-.img {
-    width = 100;
+ .container {
+    width: 100%;
+   /* display: flex;*/
+    /*flex-wrap: wrap;*/
+    margin: 50px;
+    /*row-gap: 50px;
+    column-gap: 10px;
+    align-items: center;
+    */
+
+    /* Lo comentado era lo qe pertenecia a flex*/
+ }
+
+ .search-container {
+   text-align: right; 
+   margin-right: 60px; 
+}
+
+.product{
+   width: 100%;
+   text-align: center;
+   border: 1px solid black;
+}
+
+.product img{
+   width: 100%;
+   text-align: center;
+   height: 200px;
+   object-fit: contain; /*Para que el objeto se adapte al contenedor y no se deforme tanto*/
+}
+
+img {
+   width : 100%;
+}
+
+.footer-container {
+   background-color: #8a9597  ; 
+   padding: 20px; 
+   width: 100%;
+   text-align: center;
+   font-family: Arial;
+   font-style: italic;
+   font-size: 12px;
+}
+
+.button{
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  background-color: #4c66af;
+  color: white;
+  border: #4c66af;
+  border-radius: 10px;
+  cursor: pointer;
 }
