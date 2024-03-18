@@ -1,0 +1,99 @@
+.SearchStyle {
+    background-color: gray;
+    display: grid;
+    align-items: center;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 5px;
+    padding: 5px;
+    width: auto;
+    max-width: auto;
+    height: auto;
+
+}
+
+.footer {
+    background-color: rgb(66, 63, 63);
+    display: grid;
+    align-items: center;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 5px;
+    padding: 5px;
+    width: auto;
+    max-width: auto;
+    height: 100px;
+}
+
+#boton_carrito {
+    align-items: flex-end;
+    border: none;
+}
+
+
+.secciones {
+    background-color: #232F3E;
+    display: flex;
+    
+    width: 100%;
+    max-width: auto;
+    height: auto;
+}
+
+.headerStyle {
+    background-color: gray;
+
+}
+
+.product {
+    border: 1px solid #ccc;
+    padding: 15px;
+    width: 80px;
+}
+
+.product img {
+    height: auto;
+    width: 50px;
+}
+
+.SearchStyle img {
+    height: auto;
+    width: 80px;
+}
+
+.SearchStyle button {
+    background-color: #ff7b00;
+    margin: auto;
+    padding: 5px;
+    border: none;
+}
+
+.secciones button {
+    background-color: transparent;
+    color: white;
+   
+    margin: 1px;
+    padding: 5px 10px;
+    border: none;
+    font-weight: bold;
+}
+
+.carousel {
+    display: flex;
+    padding: 100px;
+    background-color: #ccc;
+}
+
+.carousel-item {
+    
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: auto; 
+}
+
+.carousel-item img {
+    
+
+    align-items: center;
+    justify-content: center;
+    width: auto; 
+}
