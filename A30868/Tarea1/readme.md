@@ -1,6 +1,7 @@
 ##Metoo 
 
 ###Movimiento #Metoo
+
 **¿Qué es el movimiento #Metoo?**
 
 <p>
@@ -9,6 +10,7 @@ Movimiento social y de denuncia que surge en 2017 para dar visibilidad y tratar 
 
 ###Efecto Pence
 **¿De que trata el efecto Pence?**
+
 <p>
 Surge a raíz del movimiento #metoo, consiste en evitar cualquier contacto en lugares públicos con mujeres que no sean las prometidas, esposas o parejas. Se ideó para evitar el abuso de género sin embargo está provocando discriminaciones, principalmente en el ámbito laboral, ya que los altos cargos generalmente ocupados por hombres, al respetar esta regla están excluyendo y/o quitando cualquier posibilidad de crecimeinto profesional al género femenino.
 </p>
