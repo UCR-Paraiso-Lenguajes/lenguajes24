@@ -24,3 +24,5 @@ El movimiento #Metoo ha venido a dar visibilidad a la gran cantidad de personas,
 https://livolet.com/actualidad-feminismo/movimiento-metoo/#:~:text=El%20movimiento%20%23MeToo%20es%20un,convirti%C3%B3%20en%20un%20movimiento%20global.
 https://www.revistagq.com/noticias/politica/articulos/efecto-pence-hombres-poderosos-evitan-mujeres/32690#:~:text=El%20Efecto%20Pence%20es%2C%20en,las%20interacciones%20entre%20seres%20humanos.
 https://www.dw.com/es/5-a%C3%B1os-de-metoo-una-etiqueta-que-sacudi%C3%B3-al-mundo/a-63345836
+
+##WBV2024
