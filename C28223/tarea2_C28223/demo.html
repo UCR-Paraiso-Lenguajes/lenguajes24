@@ -2,7 +2,13 @@
 <html>
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+   
+      <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <!-- Agregar Babel para compilar JSX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
 
+  
     <style>
         
         .barra {
@@ -56,7 +62,10 @@
 </header>
 
 <body>
-   
+
+      
+
+      
     <div class="carousel-container">
 
     <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
@@ -110,6 +119,152 @@
       </div>
    
 </div>
+
+<div id="root"></div>
+
+<script type="text/babel"> 
+    const Productos =[
+
+    {
+        id:1,
+        name: 'Producto',
+        description: 'Esta computadora es muy rapida',
+        price: 20000, 
+        imageURL: 'https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg'
+    }, 
+    {
+        id:2,
+        name: 'Producto',
+        description: 'Esta computadora es muy rapida',
+        price: 20000, 
+        imageURL: 'https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg'
+
+
+    },
+    {
+        id:3,
+        name: 'Producto',
+        description: 'Esta computadora es muy rapida',
+        price: 20000, 
+        imageURL: 'https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg'
+
+
+    },
+    {
+        id:4,
+        name: 'Producto',
+        description: 'Esta computadora es muy rapida',
+        price: 20000, 
+        imageURL: 'https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg'
+
+
+    },
+
+    {
+        id:5,
+        name: 'Producto',
+        description: 'Esta computadora es muy rapida',
+        price: 2000000, 
+        imageURL: 'https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg'
+
+
+    },
+    {
+        id:6,
+        name: 'Producto',
+        description: 'Esta computadora es muy rapida',
+        price: 200000, 
+        imageURL: 'https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg'
+
+
+    },
+    {
+        id:7,
+        name: 'Producto',
+        description: 'Esta computadora es muy rapida',
+        price: 20000, 
+        imageURL: 'https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg'
+
+
+    },
+    {
+        id:8,
+        name: 'Producto',
+        description: 'Esta computadora es muy rapida',
+        price: 20000, 
+        imageURL: 'https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg'
+
+
+    },
+    {
+        id:9,
+        name: 'Producto',
+        description: 'Esta computadora es muy rapida',
+        price: 20000, 
+        imageURL: 'https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg'
+    },
+    {
+        id:10,
+        name: 'Producto',
+        description: 'Esta computadora es muy rapida',
+        price: 20000, 
+        imageURL: 'https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg'
+    },
+    {
+        id:11,
+        name: 'Producto',
+        description: 'Esta computadora es muy rapida',
+        price: 20000, 
+        imageURL: 'https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg'
+    },
+    {
+        id:12,
+        name: 'Producto',
+        description: 'Esta computadora es muy rapida',
+        price: 20000, 
+        imageURL: 'https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg'
+    }
+    ];
+
+
+
+  const Product =({product}) => {
+    const { name,description,price,imageURL} = product;
+    return (
+        <div class= "row">
+            <div class="border p-3">
+            <h3>{name}</h3>
+            <div class="text-center">
+                <img src={imageURL}/>
+                <h5>{description}</h5>
+                <h5>{price}</h5>
+                <input id="btncomprar" type="button" class="BTNComprar" value="Comprar"/>
+            </div>
+            </div>
+        
+        </div>
+    );
+  };
+
+  const App = () =>{
+    return (
+        <div>
+            <h1> Lista de productos</h1>
+            <div style= {{display: 'flex', flexWrap:'wrap'}}>
+            {Productos.map( product =>(
+                <Product key={product.id} product= {product}/>
+            ))}
+            </div>
+        </div>
+    );
+  };
+
+  ReactDOM.render(<App />, document.getElementById('root'));
+
+</script>
+
+
+
     
     <div class="container">
 
@@ -173,6 +328,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    
+
 </body>
 </html>
