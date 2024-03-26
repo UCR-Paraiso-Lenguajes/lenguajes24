@@ -1,0 +1,28 @@
+.header {
+    background-color: lightgrey;
+    padding: 20px;
+}
+
+.footer {
+    background-color: darkgrey;
+    padding: 20px;
+}
+
+.body {
+    background-color: orange;
+}
+
+.my-button {
+    padding: 10px 20px;
+    background-color: gray;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .my-button:hover {
+    background-color: gray;
+  }
+  .my-button:active {
+    background-color: gray;
+  }
