@@ -29,7 +29,7 @@ export default function CartPage() {
     localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
   };
 
-  const renderCartItems = () => {
+  const CartItems = () => {
     return Object.values(cartItems).map((item) => (
       <div key={item.id} className="cart-item">
         <img src={item.imageURL} alt={item.name} />
@@ -46,15 +46,14 @@ export default function CartPage() {
   return (
     <div>
       <header className="header">
-        <h1>Cart</h1>
         <Link href="/">
-          <button className="Button">Home page</button>
+          <h1>Amazon</h1>
         </Link>
       </header>
 
       <div className="body">
         <h2>Products</h2>
-        {renderCartItems()}
+        {CartItems()}
       </div>
 
       <div className="totals">
