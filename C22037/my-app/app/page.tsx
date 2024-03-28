@@ -1,8 +1,7 @@
 "use client"; //Sin esto da el siguiente error: You're importing a component that needs useState. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default
-import Image from "next/image";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@/public/styles.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from 'next/link';
 
 const products = [
@@ -121,7 +120,7 @@ const products = [
 ];
 
 const Product = ({ product, handleAddToCart }) => {
-  const { name, description, imageURL, price } = product;
+  const { id, name, description, imageURL, price } = product;
 
   return (
     <div className="col-sm-3">
@@ -129,7 +128,7 @@ const Product = ({ product, handleAddToCart }) => {
       <h3>{name}</h3>
       <p>{description}</p>
       <p>Precio: ${price}</p>
-      <button type="button" onClick={handleAddToCart} className="my-button">Add to Cart</button>
+      <button type="button" onClick={() => handleAddToCart(id)} className="Button">Add to Cart</button>
     </div>
   );
 };
@@ -164,13 +163,25 @@ function rows(array, size) {
   return row;
 }
 
-
 export default function Home() {
   const [count, setCount] = useState(0);
 
-  const handleAddToCart = () => (
-    setCount(count + 1)
-  )
+  useEffect(() => {
+    const storedCartItems = JSON.parse(localStorage.getItem('cartItems'));
+    if (storedCartItems) {
+      setCount(Object.keys(storedCartItems).length);
+    }
+  }, []);
+
+  const handleAddToCart = (productId) => {
+    const storedCartItems = JSON.parse(localStorage.getItem('cartItems')) || {};
+    const productToAdd = products.find(product => product.id === productId);
+    if (productToAdd) {
+      const updatedCartItems = { ...storedCartItems, [productId]: productToAdd };
+      localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+      setCount(Object.keys(updatedCartItems).length);
+    }
+  }
 
   return (
     <div>
@@ -207,18 +218,19 @@ export default function Home() {
           </div>
         </div>
       </header>
-      <h1>Lista de Productos</h1>
-      {rows(products, 4).map((row, index) => (
-        <div className="body">
-          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {row.map(product => (
-              <Product key={product.id} product={product} handleAddToCart={handleAddToCart} />
-            ))}
+      <div className="body">
+        <h1>Lista de Productos</h1>
+        {rows(products, 4).map((row, index) => (
+          <div className="body">
+            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+              {row.map(product => (
+                <Product key={product.id} product={product} handleAddToCart={handleAddToCart} />
+              ))}
+            </div>
+            {/* {index < rows(products, 4).length && <Carousel id={`carousel${index + 1}`} />} */}
           </div>
-          {/* {index < rows(products, 4).length && <Carousel id={`carousel${index + 1}`} />} */}
-        </div>
-      ))}
-
+        ))}
+      </div>
       <footer className="footer">
         <div className="row">
           <div className="col-sm-12">

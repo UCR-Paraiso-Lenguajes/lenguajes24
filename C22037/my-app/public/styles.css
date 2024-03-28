@@ -1,28 +1,31 @@
 .header {
-    background-color: lightgrey;
-    padding: 20px;
+  background-color: lightgrey;
+  padding: 20px;
 }
 
 .footer {
-    background-color: darkgrey;
-    padding: 20px;
+  background-color: darkgrey;
+  padding: 20px;
 }
 
 .body {
-    background-color: orange;
+  background-color: orange;
 }
 
-.my-button {
-    padding: 10px 20px;
-    background-color: gray;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  .my-button:hover {
-    background-color: gray;
-  }
-  .my-button:active {
-    background-color: gray;
-  }
+.Button {
+  padding: 10px 20px;
+  background-color: gray;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.totals {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
