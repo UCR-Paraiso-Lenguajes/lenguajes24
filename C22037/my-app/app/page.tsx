@@ -185,7 +185,7 @@ export default function Home() {
 
   return (
     <div>
-      <header className="header">
+      <div className="header">
         <div className="row">
           <div className="col-sm-2">
             <h1>Amazon</h1>
@@ -217,9 +217,10 @@ export default function Home() {
             </svg>
           </div>
         </div>
-      </header>
+      </div>
+
       <div className="body">
-        <h1>Lista de Productos</h1>
+        <h2>Lista de Productos</h2>
         {rows(products, 4).map((row, index) => (
           <div className="body">
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -231,13 +232,14 @@ export default function Home() {
           </div>
         ))}
       </div>
-      <footer className="footer">
+
+      <div className="footer">
         <div className="row">
           <div className="col-sm-12">
             <h3>Amazon.com</h3>
           </div>
         </div>
-      </footer>
+      </div>
 
     </div>
   );

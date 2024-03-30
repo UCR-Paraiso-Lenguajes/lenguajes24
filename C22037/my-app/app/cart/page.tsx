@@ -37,19 +37,21 @@ export default function CartPage() {
           <h3>{item.name}</h3>
           <p>{item.description}</p>
           <p>Precio: ${item.price}</p>
-          <button className="Button" onClick={() => handleRemoveFromCart(item.id)}>Eliminar del carrito</button>
+          <button className="Button" onClick={() => handleRemoveFromCart(item.id)}>Remove</button>
         </div>
       </div>
     ));
   };
 
+  const isCartEmpty = Object.keys(cartItems).length === 0;
+
   return (
     <div>
-      <header className="header">
+      <div className="header">
         <Link href="/">
           <h1>Amazon</h1>
         </Link>
-      </header>
+      </div>
 
       <div className="body">
         <h2>Products</h2>
@@ -60,16 +62,19 @@ export default function CartPage() {
         <p>Subtotal: ${subtotal.toFixed(2)}</p>
         <p>Taxes (13%): ${(subtotal * 0.13).toFixed(2)}</p>
         <p>Total: ${(subtotal + (subtotal * 0.13)).toFixed(2)}</p>
-        <button className="Button">Proceed to checkout</button>
+        <Link href={isCartEmpty ? "#" : "/checkout"}>
+          <button className="Button" disabled={isCartEmpty}>Proceed to checkout</button>
+        </Link>
         <div></div>
         <Link href="/">
           <button className="Button">Home page</button>
         </Link>
       </div>
 
-      <footer className="footer">
+      <div className="footer">
         <h2>Amazon.com</h2>
-      </footer>
+      </div>
+
     </div>
   );
 }

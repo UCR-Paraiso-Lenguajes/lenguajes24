@@ -15,8 +15,8 @@
 .Button {
   padding: 10px 20px;
   background-color: gray;
-  color: white;
-  border: none;
+  color: black;
+  border: 1px solid black;
   border-radius: 5px;
   cursor: pointer;
 }
