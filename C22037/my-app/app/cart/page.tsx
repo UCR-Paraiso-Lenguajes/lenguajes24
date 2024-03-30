@@ -1,4 +1,4 @@
-"use client";
+"use client"; //Para utilizar el cliente en lugar del servidor
 import { useEffect, useState } from 'react';
 import "@/public/styles.css";
 import Link from 'next/link';

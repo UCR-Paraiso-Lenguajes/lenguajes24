@@ -1,4 +1,4 @@
-"use client";
+"use client"; //Para utilizar el cliente en lugar del servidor
 import { useEffect, useState } from 'react';
 import "@/public/styles.css";
 import Link from 'next/link';
@@ -11,7 +11,9 @@ export default function Address() {
     };
 
     const handleSaveAddress = () => {
-        localStorage.setItem('address', address);
+        if (address.trim() !== '') {
+            localStorage.setItem('address', address);
+        }
     };
 
     useEffect(() => {
@@ -20,6 +22,8 @@ export default function Address() {
             setAddress(storedAddress);
         }
     }, []);
+
+    const isAddressEmpty = address.trim() === '';
 
     return (
         <div>
@@ -40,7 +44,7 @@ export default function Address() {
                         onChange={handleAddressChange}/>
                 </form>
                 <Link href="/payment">
-                    <button className="Button" onClick={handleSaveAddress}>Save Address</button>
+                    <button className="Button" onClick={handleSaveAddress} disabled={isAddressEmpty}>Save Address and Proceed</button>
                 </Link>
                     
             </div>
