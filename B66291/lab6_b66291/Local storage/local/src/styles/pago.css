@@ -1,0 +1,22 @@
+/* pago.css */
+
+/* Estilos para el formulario de pago */
+.form_pago {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; /* Ajusta la altura mínima según sea necesario */
+}
+
+/* Estilos para los radio buttons */
+.form-check-label {
+  margin-left: 10px; /* Ajusta el margen izquierdo según sea necesario */
+}
+
+/* Estilos para el botón "Continuar con la compra" */
+.cart_box {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px; /* Ajusta el margen superior según sea necesario */
+}

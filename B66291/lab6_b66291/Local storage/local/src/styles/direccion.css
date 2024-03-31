@@ -1,0 +1,42 @@
+/* Estilos para el formulario de dirección */
+.form_direccion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px; /* Ancho del formulario */
+  padding: 20px; /* Espaciado interno */
+  background-color: #fff; /* Color de fondo blanco */
+  border-radius: 10px; /* Bordes redondeados */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra suave */
+}
+
+.form_direccion label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form_direccion input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.form_direccion button {
+  padding: 8px 20px;
+  background-color: #007bff; /* Color de fondo azul */
+  color: #fff; /* Color de texto blanco */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.form_direccion button:hover {
+  background-color: #0056b3; /* Cambiar color de fondo al pasar el cursor */
+}
