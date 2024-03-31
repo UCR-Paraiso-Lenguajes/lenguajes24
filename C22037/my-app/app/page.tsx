@@ -133,28 +133,6 @@ const Product = ({ product, handleAddToCart }) => {
   );
 };
 
-// const Carousel = ({ id }) => {
-//   return (
-//       <div id={id} className="carousel slide" data-bs-ride="carousel">
-//           <div className="carousel-inner">
-//               {products.map(product => (
-//                   <div key={product.id} className={product.id === 1 ? "carousel-item active" : "carousel-item"}>
-//                       <img src={product.imageURL} className="d-block w-100" alt={product.name} />
-//                   </div>
-//               ))}
-//           </div>
-//           <button className="carousel-control-prev" type="button" data-bs-target={`#${id}`} data-bs-slide="prev">
-//               <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-//               <span className="visually-hidden">Previous</span>
-//           </button>
-//           <button className="carousel-control-next" type="button" data-bs-target={`#${id}`} data-bs-slide="next">
-//               <span className="carousel-control-next-icon" aria-hidden="true"></span>
-//               <span className="visually-hidden">Next</span>
-//           </button>
-//       </div>
-//   );
-// }
-
 function rows(array, size) {
   const row = [];
   for (let i = 0; i < array.length; i += size) {
