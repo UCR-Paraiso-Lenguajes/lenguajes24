@@ -3,21 +3,22 @@ import { useEffect, useState } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Link from 'next/link';
 
-export default function Payment() {
-    const [selectedMethod, setSelectedMethod] = useState('');
-    const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+
+export default function Pago() {
+    const [metodoSeleccionado, setMetodoSeleccionado] = useState('');
+    const [pagoConfirmado, setPagoConfirmado] = useState(false);
 
     useEffect(() => {
-        localStorage.setItem('selectedMethod', selectedMethod);
-    }, [selectedMethod]);
+        localStorage.setItem('metodoSeleccionado', metodoSeleccionado);
+    }, [metodoSeleccionado]);
 
-    const seleccionMetodoPago = (method) => {
-        setSelectedMethod(method);
-        setPaymentConfirmed(false);
+    const seleccionMetodoPago = (metodo) => {
+        setMetodoSeleccionado(metodo);
+        setPagoConfirmado(false);
     };
 
-    const handleSinpePaymentConfirmation = () => {
-        setPaymentConfirmed(true);
+    const manejarConfirmacionPagoSinpe = () => {
+        setPagoConfirmado(true);
     };
 
     return (
@@ -31,27 +32,26 @@ export default function Payment() {
                         <button className="btn btn-primary me-3 btn-lg" onClick={() => seleccionMetodoPago('Efectivo')}>Efectivo</button>
                         <button className="btn btn-primary btn-lg" onClick={() => seleccionMetodoPago('Sinpe')}>Sinpe</button>
                     </div>
-                    {selectedMethod === 'Efectivo' && (
+                    {metodoSeleccionado === 'Efectivo' && (
                         <div>
                             <p>Número de compra: 00000.</p>
                             <p>Por favor espere, hasta que el administrador confirme su pago...</p>
                         </div>
                     )}
-                    {selectedMethod === 'Sinpe' && (
+                    {metodoSeleccionado === 'Sinpe' && (
                         <div>
                             <p>Número de compra: 00000.</p>
                             <p>Realice el pago por medio de SinpeMovil al número 8655-8255.</p>
                             <input type="text" className="form-control mb-3" placeholder="Ingrese el código de recibo aquí" />
-                            <button className="btn btn-primary me-3 btn-lg" onClick={handleSinpePaymentConfirmation}>Confirmar compra</button>
-                            {paymentConfirmed && <p>Por favor espere, hasta que el administrador confirme su pago...</p>}
+                            <button className="btn btn-primary me-3 btn-lg" onClick={manejarConfirmacionPagoSinpe}>Confirmar compra</button>
+                            {pagoConfirmado && <p>Por favor espere, hasta que el administrador confirme su pago...</p>}
                         </div>
                     )}
                 </div>
             </div>
             <Link href="/">
-            <button className="btn btn-light" style={{ backgroundColor: 'pink', color: 'black', marginRight: '10px' }}>Inicio</button>
-          </Link>
-
+                <button className="btn btn-light" style={{ backgroundColor: 'pink', color: 'black', marginRight: '10px' }}>Inicio</button>
+            </Link>
         </div>
     );
 }

@@ -4,47 +4,47 @@ import React, { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css"; 
 
 
-export default function CartPage() {
+export default function PaginaCarrito() {
 
-  const [cartItems, setCartItems] = useState({});
+  const [productosCarrito, setProductosCarrito] = useState({});
   const [subtotal, setSubtotal] = useState(0);
-  const taxRate = 0.13;
+  const tasaImpuesto = 0.13;
 
   useEffect(() => {
-    const storedCartItems = JSON.parse(localStorage.getItem('cartItems'));
-    if (storedCartItems) {
-      setCartItems(storedCartItems);
+    const productosCarritoAlmacenados = JSON.parse(localStorage.getItem('productosCarrito'));
+    if (productosCarritoAlmacenados) {
+      setProductosCarrito(productosCarritoAlmacenados);
     }
   }, []);
 
   useEffect(() => {
-    let subTotal = 0;
-    Object.values(cartItems).forEach(item => {
-      subTotal += item.precio;
+    let subtotalCalculado = 0;
+    Object.values(productosCarrito).forEach(item => {
+      subtotalCalculado += item.precio;
     });
-    setSubtotal(subTotal);
-  }, [cartItems]);
+    setSubtotal(subtotalCalculado);
+  }, [productosCarrito]);
 
   useEffect(() => {
-    localStorage.setItem('taxRate', taxRate.toString());
-  }, [taxRate]);
+    localStorage.setItem('tasaImpuesto', tasaImpuesto.toString());
+  }, [tasaImpuesto]);
 
-  const handleDeleteFromCart = (productId) => {
-    const updatedCartItems = { ...cartItems };
-    delete updatedCartItems[productId];
-    setCartItems(updatedCartItems);
-    localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+  const manejarEliminarDelCarrito = (idProducto) => {
+    const productosCarritoActualizados = { ...productosCarrito };
+    delete productosCarritoActualizados[idProducto];
+    setProductosCarrito(productosCarritoActualizados);
+    localStorage.setItem('productosCarrito', JSON.stringify(productosCarritoActualizados));
   };
 
-  const CartItems = () => {
-    return Object.values(cartItems).map((item) => (
-      <div key={item.id} className="col-sm-12 col-md-3 col-lg-3 col-xl-3"> {}
+  const ProductosEnCarrito = () => {
+    return Object.values(productosCarrito).map((item) => (
+      <div key={item.id} className="col-sm-12 col-md-3 col-lg-3 col-xl-3">
         <div className="cart-item">
-          <img src={item.Imagen} alt={item.name} style={{ height: '220px', width: '100%' }} />
+          <img src={item.imagen} alt={item.name} style={{ height: '220px', width: '100%' }} />
           <div>
             <h3>{item.name}</h3>
             <p>Precio: ${item.precio}</p>
-            <button className="Button" onClick={() => handleDeleteFromCart(item.id)} style={{ backgroundColor: 'pink' }}>Eliminar</button>
+            <button className="Boton" onClick={() => manejarEliminarDelCarrito(item.id)} style={{ backgroundColor: 'pink' }}>Eliminar</button>
           </div>
         </div>
       </div>
@@ -52,7 +52,7 @@ export default function CartPage() {
   };
 
 
-  const isCartEmpty = Object.keys(cartItems).length === 0;
+  const carritoVacio = Object.keys(productosCarrito).length === 0;
   return (
 
     <div className="container" style={{ backgroundColor: 'lightBlue' }}>
@@ -64,7 +64,7 @@ export default function CartPage() {
       </div>
       <div className="container overflow-hidden text-center">
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 gy-5">
-          {CartItems()}
+          {ProductosEnCarrito()}
         </div>
       </div>
 
@@ -77,10 +77,10 @@ export default function CartPage() {
           <p style={{ fontWeight: 'bold' }}>Subtotal: ${subtotal.toFixed(2)}</p>
         </div>
         <div className="p-2">
-          <p style={{ fontWeight: 'bold' }}>Taxes ({(taxRate * 100)}%): ${(subtotal * taxRate)}</p>
+          <p style={{ fontWeight: 'bold' }}>Impuestos ({(tasaImpuesto * 100)}%): ${(subtotal * tasaImpuesto)}</p>
         </div>
         <div className="p-2">
-          <p style={{ fontWeight: 'bold' }}>Total: ${(subtotal + (subtotal * taxRate)).toFixed(2)}</p>
+          <p style={{ fontWeight: 'bold' }}>Total: ${(subtotal + (subtotal * tasaImpuesto)).toFixed(2)}</p>
         </div>
           <Link href="/address">
           <button className='btn btn-primary' style={{ backgroundColor: 'pink', color: 'black', marginRight: '10px' }}>Continuar con checkout</button>

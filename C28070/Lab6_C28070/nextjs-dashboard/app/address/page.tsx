@@ -5,27 +5,27 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Payment from '../payment/page';
 
 
-export default function Address() {
-    const [address, setAddress] = useState('');
+export default function Direccion() {
+    const [direccion, setDireccion] = useState('');
 
-    const handleAddressChange = (e) => {
-        setAddress(e.target.value);
+    const manejarCambioDireccion = (e) => {
+        setDireccion(e.target.value);
     };
 
-    const handleSaveAddress = () => {
-        if (address.trim() !== '') {
-            localStorage.setItem('address', address);
+    const manejarGuardarDireccion = () => {
+        if (direccion.trim() !== '') {
+            localStorage.setItem('direccion', direccion);
         }
     };
 
     useEffect(() => {
-        const storedAddress = localStorage.getItem('address');
-        if (storedAddress) {
-            setAddress(storedAddress);
+        const direccionAlmacenada = localStorage.getItem('direccion');
+        if (direccionAlmacenada) {
+            setDireccion(direccionAlmacenada);
         }
     }, []);
 
-    const isAddressEmpty = address.trim() === '';
+    const direccionVacia = direccion.trim() === '';
 
     return (
         <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '100vh', backgroundColor: 'pink' }}>
@@ -36,22 +36,22 @@ export default function Address() {
                     </div>
                     <form>
                         <div className="mb-3">
-                            <label htmlFor="address" className="form-label"></label>
+                            <label htmlFor="direccion" className="form-label"></label>
                             <input
                                 type="text"
                                 className="form-control"
-                                id="address"
-                                name="address"
-                                value={address}
-                                onChange={handleAddressChange} />
+                                id="direccion"
+                                name="direccion"
+                                value={direccion}
+                                onChange={manejarCambioDireccion} />
                         </div>
                         <div className="text-center">
                             <Link href="/payment">
-                                <button className="btn btn-primary" onClick={handleSaveAddress} disabled={isAddressEmpty}>Confirmar dirección</button>
+                                <button className="btn btn-primary" onClick={manejarGuardarDireccion} disabled={direccionVacia}>Confirmar dirección</button>
                             </Link>
 
                             <Link href="/">
-                                <button className="Button">Inicio</button>
+                                <button className="Boton">Inicio</button>
                             </Link>
                         </div>
                     </form>
