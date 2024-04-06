@@ -1,0 +1,6 @@
+@storeVetApi_HostAddress = http://localhost:5117
+
+GET {{storeVetApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
