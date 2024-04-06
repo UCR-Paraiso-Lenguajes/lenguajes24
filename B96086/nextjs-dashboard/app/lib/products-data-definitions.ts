@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 
 export type Product = {
-    id: UUID;
+    uuid: UUID;
     name: string;
     description: string;
     imageUrl: string;

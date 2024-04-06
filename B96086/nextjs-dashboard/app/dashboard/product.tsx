@@ -1,7 +1,7 @@
 
 export default function Product({ product, onAdd }: { product: Product, onAdd: any }) {
 
-    const { name, description, imageUrl, price } = product;
+    const { uuid, name, description, imageUrl, price } = product;
     return (
       <div className="col-sm-3">
         <div className="card">

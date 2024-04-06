@@ -1,7 +1,6 @@
 'use client';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect, useState } from 'react';
-import { FaShoppingCart } from 'react-icons/fa'; // Importa un ícono de carrito
 import React from 'react';
 import { Product } from '../lib/products-data-definitions';
 import ProductItem from '../dashboard/product';
@@ -121,7 +120,7 @@ const ProductsRow = ({products,onAdd,}: { products: Product[], onAdd: any;}) => 
     <div className="row">
       {products.map((product) => (
         <ProductItem
-          key={`product-${product.id}`}
+          key={`product-${product.uuid}`}
           product={product}
           onAdd={onAdd}
         />
@@ -143,15 +142,24 @@ export default function Page() {
   }, [initialStore.products]);
 
   const handleAddToCart = ({ product }: { product: Product }) => {
+    const cartProducts = initialStore.cart.products;
+    console.log('primer prodcu ' + product.uuid);
+    console.log('ID DEL PRODUCTO ' + product.uuid);
+    console.log('cart tama; ' + cartProducts.length);
+    
+    cartProducts.forEach(product => {
+      console.log("Producto cart:", product);
+    });
+
     const isInCart = initialStore.cart.products.some(
-      (item) => item.id === product.id,
+      (item) => item.uuid === product.uuid
     );
   
     if (!isInCart) {
       setCount(count + 1);
       initialStore.cart.products.push(product);
-      console.log('ID DEL PRODUCTO ' + product.id);
-      
+      console.log('ID DEL PRODUCTO ' + product.uuid);
+      console.log('cart tama DETRO; ' + cartProducts.length);
       initialStore.cart.subtotal = initialStore.cart.subtotal + product.price;
 
       initialStore.cart.total =

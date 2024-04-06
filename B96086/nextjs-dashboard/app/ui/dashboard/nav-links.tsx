@@ -23,7 +23,7 @@ export default function NavLinks({ countCart }: { countCart: number }) {
   return (
     <>
       {links.map((link, index) => {
-        const LinkIcon = link.icon;
+        const LinkIcon = link.icon
         const className = index === 0 ? "nav-item active" : "nav-item";
         
         const count = index === links.length - 1 ? countCart : "";

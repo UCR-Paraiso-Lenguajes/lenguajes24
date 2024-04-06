@@ -39,11 +39,8 @@ export default function Navbar({ countCart = 0 }: { countCart: number }) {
           </div>
         </div>
         <div className="navbar-right w-25">
-          {/* Navbar right content */}
           <div className="navbar-right d-flex align-items-center">
             <NavLinks countCart={countCart} />
-            
-
           </div>
         </div>
       </div>
