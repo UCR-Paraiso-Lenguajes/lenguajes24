@@ -15,14 +15,36 @@ export default function Home() {
         throw new Error('Failed to fetch data');
       }
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       setStoreProducts(data);
       setCarrusel(data);
     } catch (error) {
-       throw new Error('Failed to fetch data');
-    } 
-  };
+      throw new Error('Failed to fetch data');
+    }
+
+   
+      try {
+          const response = await fetch('http://localhost:5207/api/Cart', {
+              method: 'POST',
+              headers:{
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(dataSend)   //
+          });
+         // console.log(dataSend);
+
+          if(response.ok){
+         //     console.log('Data Sended');
+          }else{
+              const errorResponseData = await response.json();
+              throw new Error(errorResponseData.message);
+          }
+      } catch (error){
+       //   console.error(error);
+      }
   
+  };
+
   loadData();
 
   const [cart, setCart] = useState({
@@ -38,16 +60,16 @@ export default function Home() {
   });
 
   const handleAddToCart = (product) => {
-    let productsNotInCart  = !cart.product.some(item => item.id === storeProducts.id);
+    let productsNotInCart = !cart.products.some(item => item.id === product.id);
     if (productsNotInCart) {
-      let updatedProductos = [...cart.product, storeProducts];
+      let updatedProductos = [...cart.products, product];
       let updatedCount = cart.count + 1;
       setCart({
         ...cart,
         product: updatedProductos,
         count: updatedCount
       });
-      localStorage.setItem('cartItem', JSON.stringify({ productos: updatedProductos, count: updatedCount }));
+      localStorage.setItem('cartItem', JSON.stringify({ products: updatedProductos, count: updatedCount }));
     }
   };
   useEffect(() => {
@@ -100,7 +122,7 @@ export default function Home() {
       <div className='container'>
         <h2 className='text-left mt-5 mb-5'>List of Books</h2>
         <div className="container" style={{ display: 'flex', flexWrap: 'wrap' }}>
-          {storeProducts && storeProducts.products &&  storeProducts.products.map(item => (
+          {storeProducts && storeProducts.products && storeProducts.products.map(item => (
             <Products key={item.id} product={item} handleAddToCart={handleAddToCart} />
           ))}
           <CarruselComponent carrusel={carrusel} />
@@ -174,7 +196,7 @@ const CarruselComponent = ({ carrusel }) => {
             ></button>
           ))}
         </ol>
-        
+
         <div className="carousel-inner">
           {carrusel && carrusel.productsCarrusel && carrusel.productsCarrusel.map((carruselItem, index) => (
             <div

@@ -6,6 +6,11 @@ import Link from 'next/link';
 
 export default function PaymentPage() {
 
+    const [selectMethod, setSelectMethod] = useState('');
+    const [PaymenthConfirmed, setPaymenthConfirmed] = useState(false);
+    const [cartProducts, setCartProducts] = useState([]);
+    const [address, setAdress] = useState('');
+
     const [cart, setCart] = useState({
         products: [],
         subtotal: 0,
@@ -20,11 +25,12 @@ export default function PaymentPage() {
         isCartEmpty: true
     });
 
-    
 
     useEffect(() => {
-        let cartItemString = localStorage.getItem('cartItem');
-        if (cartItemString !== null) {
+        let cartItemStored = JSON.parse(localStorage.getItem('cartItem')) || {products : {}};
+        const productIds =  cartItemStored && cartItemStored.products ? Object.keys(cartItemStored.products) : [];
+        setCartProducts(productIds);
+        if (cartItemStored !== null) {
                 setCart(prevCart => ({ ...prevCart, isCartEmpty: false }));
             }else {
             setCart(prevCart => ({ ...prevCart, isCartEmpty: true }));
@@ -47,12 +53,15 @@ export default function PaymentPage() {
         const value = e.target.value;
         setCart(prevCart => ({ ...prevCart, paymentMethod: value }));
         updateLocalStorage({ ...cart, paymentMethod: value });
+        setSelectMethod(value );
+        setPaymenthConfirmed(false);
     };
     
     const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setCart(prevCart => ({ ...prevCart, receipt: value }));
         updateLocalStorage({ ...cart, receipt: value });
+        setPaymenthConfirmed(true);
     };
     
     const updateLocalStorage = (updatedValues: any) => {
@@ -82,6 +91,39 @@ export default function PaymentPage() {
             setCart(prevCart => ({ ...prevCart, confirmation: 'Please complete all required fields or add items to the cart.' }));
         }
     };
+
+    const dataSend = {
+        ProductsIds: cartProducts,
+        Addres: address,
+        PaymentMethod: selectMethod
+
+    };
+
+    useEffect(() => {
+    const send = async () => {
+        try {
+            const response = await fetch('http://localhost:5207/api/Cart', {
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataSend)
+            });
+           // console.log(dataSend);
+
+            if(response.ok){
+           //     console.log('Data Sended');
+            }else{
+                const errorResponseData = await response.json();
+                throw new Error(errorResponseData.message);
+            }
+        } catch (error){
+         //   console.error(error);
+        }
+    }
+
+    send(); }, []);
+
 
     return (
         <div>
