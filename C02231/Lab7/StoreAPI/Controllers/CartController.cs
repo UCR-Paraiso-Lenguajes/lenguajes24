@@ -16,10 +16,11 @@ namespace TodoApi.Controllers
         {
             // Add the cart to the list
             Carts.Add(cart);
-
+            //to do: insertar datos, generar # compra
             // Return the newly created cart
             return Ok(cart);
         }
     }
 
 }
+//Sale sale = new(1234AB);
