@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using StoreAPI;
+using StoreAPI.models;
 using System;
 using System.Collections.Generic;
 

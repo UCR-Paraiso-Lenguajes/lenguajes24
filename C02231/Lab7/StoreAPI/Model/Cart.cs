@@ -1,5 +1,5 @@
 
-namespace StoreAPI;
+namespace StoreAPI.models;
 public sealed class Cart
 {
     public List<string> ProductIds { get; set; }

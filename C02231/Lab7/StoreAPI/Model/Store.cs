@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using MySqlConnector;
-namespace StoreAPI;
+namespace StoreAPI.models;
 
 
 public sealed class Store
@@ -149,71 +145,16 @@ public sealed class Store
             Store.Instance = new Store(products,productsCarrusel, 13);
 
 
-            //tabla venta/sale
-
-            string connectionString = "Server=your_server;Database=your_database;Uid=your_username;Pwd=your_password;";
-            using (var connection = new MySqlConnection(connectionString))
-        {
-            connection.Open();
-
-            // Create the products table if it does not exist
-            string createTableQuery = @"
-                CREATE TABLE IF NOT EXISTS sale (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    numberOrder VARCHAR(100),
-                    total DECIMAL(10, 2)
-                );";
-
-            using (var command = new MySqlCommand(createTableQuery, connection))
-            {
-                command.ExecuteNonQuery();
-            }
-
-            // Begin a transaction
-            using (var transaction = connection.BeginTransaction())
-            {
-                try
-                {
-                    // Insert 30 products into the table
-                    int i =0;
-                    foreach(Product prodduct in products)
-                    {
-                        i++;
-                        string productName = $"Product {i}";
-                        decimal productPrice = i * 10.0m;
-
-                        string insertProductQuery = @"
-                            INSERT INTO products (name, price)
-                            VALUES (@name, @price);";
-
-                        using (var insertCommand = new MySqlCommand(insertProductQuery, connection, transaction))
-                        {
-                            insertCommand.Parameters.AddWithValue("@name", productName);
-                            insertCommand.Parameters.AddWithValue("@price", productPrice);
-                            insertCommand.ExecuteNonQuery();
-                        }
-                    }
-
-                    // Commit the transaction if all inserts are successful
-                    transaction.Commit();
-                    Console.WriteLine("Products inserted successfully.");
-                }
-                catch (Exception ex)
-                {
-                    // Rollback the transaction if an error occurs
-                    transaction.Rollback();
-                    Console.WriteLine($"Error: {ex.Message}");
-                }
-            }
-        }
-    }  //select *  2 ventas insertadas para que ya hayan datos, compra se muestran el número y ahora se tienen que ver 3 ventas, para el sábado
-//en respuesta de post viene el número de compras?
+    }
     
 
-    public Sale Purchase (Cart cart)
+     public Sale Purchase (Cart cart)
     {
         if (cart.ProductIds.Count == 0)  throw new ArgumentException("Cart must contain at least one product.");
         if (string.IsNullOrWhiteSpace(cart.Address))throw new ArgumentException("Address must be provided.");
+
+        var products = Store.Instance.Products;
+        var taxPercentage = Store.Instance.TaxPercentage;
 
          // Find matching products based on the product IDs in the cart
         IEnumerable<Product> matchingProducts = Products.Where(p => cart.ProductIds.Contains(p.Id.ToString())).ToList();
@@ -225,14 +166,17 @@ public sealed class Store
         decimal purchaseAmount = 0;
         foreach (var product in shadowCopyProducts)
         {
-            product.Price *= (1 + (decimal)TaxPercentage / 100);
+            product.Price *= (1 + (decimal)taxPercentage / 100);
             purchaseAmount += product.Price;
         }
 
         PaymentMethods paymentMethod = PaymentMethods.Find(cart.PaymentMethods);
-         PaymentMethods.Type paymentMethodType = paymentMethod.PaymentType;
+        PaymentMethods.Type paymentMethodType = paymentMethod.PaymentType;
+
         // Create a sale object
-        var sale = new Sale(shadowCopyProducts, cart.Address, purchaseAmount);
+        var sale = new Sale(shadowCopyProducts, cart.Address, purchaseAmount, paymentMethodType, Sale.GenerateNextPurchaseNumber());
+
+
 
         return sale;
 

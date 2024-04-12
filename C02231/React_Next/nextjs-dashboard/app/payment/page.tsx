@@ -126,15 +126,13 @@ export default function PaymentPage() {
                     },
                     body: JSON.stringify(dataSend)
                 });
-
-                if (response.ok) {
-                    //console.log('Data Sended');
-                } else {
+                
+                if (!response.ok) {
                     const errorResponseData = await response.json();
                     throw new Error(errorResponseData.message);
                 }
             } catch (error) {
-                //   console.error(error);
+                throw error;
             }
         }
 

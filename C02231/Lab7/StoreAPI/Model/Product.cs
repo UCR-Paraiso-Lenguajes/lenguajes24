@@ -1,4 +1,4 @@
-namespace StoreAPI;
+namespace StoreAPI.models;
 public class Product : ICloneable
 {
     public string Name { get; set; }

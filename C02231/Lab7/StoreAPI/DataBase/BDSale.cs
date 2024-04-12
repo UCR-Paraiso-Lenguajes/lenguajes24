@@ -2,7 +2,7 @@ using System;
 using System.Data.Common;
 using System.IO.Compression;
 using MySqlConnector;
-using StoreAPI.Model;
+using StoreAPI;
 
 namespace StoreAPI.Database;
 
@@ -13,9 +13,12 @@ public sealed class BDSale
     {
         using (MySqlConnection connection = new MySqlConnection("Server=localhost;Database=mysql;Uid=root;Pwd=123456;"))
         {
+
             connection.Open();
 
             // Crear tabla Compras con FK de UserId y MetodoPagoId permitiendo nulos
+
+//aquí va solo el insert de las compras
             string createTableQuery = @"
                 CREATE TABLE IF NOT EXISTS Compras (
                     Id INT AUTO_INCREMENT PRIMARY KEY,
@@ -45,6 +48,9 @@ public sealed class BDSale
                 ('2024-04-11 10:00:00', 50.00, NULL, '12345', 1),
                 ('2024-04-11 11:30:00', 75.20, 2, '54321', NULL),
                 ('2024-04-11 13:45:00', 100.50, 1, '98765', 3);";
+                   
+
+        
 
             using (MySqlCommand command = new MySqlCommand(insertQuery, connection))
             {
@@ -54,3 +60,19 @@ public sealed class BDSale
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ //INSERT INTO Compras(total, date, purchaseNumber, Paymethod)
+                    //VALUES(@total, @date, @purchaseNumber, @Paymethod); ";

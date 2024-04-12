@@ -1,4 +1,4 @@
-namespace StoreAPI;
+namespace StoreAPI.models;
 
 public abstract class PaymentMethods{
     public enum Type 
