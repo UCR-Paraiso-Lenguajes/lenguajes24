@@ -23,7 +23,7 @@ export default function Home() {
     }
 
    
-      try {
+     /* try {
           const response = await fetch('http://localhost:5207/api/Cart', {
               method: 'POST',
               headers:{
@@ -41,7 +41,7 @@ export default function Home() {
           }
       } catch (error){
        //   console.error(error);
-      }
+      }*/
   
   };
 

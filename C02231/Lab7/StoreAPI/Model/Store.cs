@@ -1,6 +1,9 @@
-namespace StoreAPI;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MySqlConnector;
+namespace StoreAPI;
+
 
 public sealed class Store
 {
@@ -10,8 +13,8 @@ public sealed class Store
 
     private Store( List<Product> products, List<Product> productsCarrusel, int TaxPercentage )
     {
-        this.Products = products;
-        this.ProductsCarrusel = productsCarrusel;
+        Products = products;
+        ProductsCarrusel = productsCarrusel;
         this.TaxPercentage = TaxPercentage;
     }
 
@@ -226,6 +229,8 @@ public sealed class Store
             purchaseAmount += product.Price;
         }
 
+        PaymentMethods paymentMethod = PaymentMethods.Find(cart.PaymentMethods);
+         PaymentMethods.Type paymentMethodType = paymentMethod.PaymentType;
         // Create a sale object
         var sale = new Sale(shadowCopyProducts, cart.Address, purchaseAmount);
 

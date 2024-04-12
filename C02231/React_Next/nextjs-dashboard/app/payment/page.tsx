@@ -14,9 +14,6 @@ export default function PaymentPage() {
     const [cart, setCart] = useState({
         products: [],
         subtotal: 0,
-        taxes: 0.13,
-        total: 0,
-        count: 0,
         deliveryAddress: '',
         paymentMethod: '',
         receipt: '',
@@ -27,23 +24,38 @@ export default function PaymentPage() {
 
 
     useEffect(() => {
-        let cartItemStored = JSON.parse(localStorage.getItem('cartItem')) || {products : {}};
-        const productIds =  cartItemStored && cartItemStored.products ? Object.keys(cartItemStored.products) : [];
+        let cartItemStored = JSON.parse(localStorage.getItem('cartItem')) || { products: {} };
+        const productIds = cartItemStored && cartItemStored.products ? Object.keys(cartItemStored.products) : [];
         setCartProducts(productIds);
-        if (cartItemStored !== null) {
-                setCart(prevCart => ({ ...prevCart, isCartEmpty: false }));
-            }else {
-            setCart(prevCart => ({ ...prevCart, isCartEmpty: true }));
-        }
+
         setCart(prevCart => ({
             ...prevCart,
-            orderNumber: Math.floor((Math.random() * 15000)+1)
+            orderNumber: Math.floor((Math.random() * 15000) + 1)
         }));
     }, []);
 
+    useEffect(() => {
+        localStorage.setItem('selectedMethod', selectMethod);
+    }, [selectMethod]);
+
+    /*   useEffect(() => {
+           let cartItemStored = localStorage.getItem('cartItem');
+           if (cartItemStored != null) {
+               const storedCart = JSON.parse(cartItemStored);
+               const productIds = Object.keys(storedCart || {});
+               setCartProducts(productIds);
+           } else {
+               setCartProducts([]);
+           }
+           setCart(prevCart => ({
+               ...prevCart,
+               orderNumber: Math.floor((Math.random() * 15000) + 1)
+           }));
+       }, []); */
 
 
-    const handleDeliveryAddress =(e: React.ChangeEvent<HTMLInputElement>) => {
+
+    const handleDeliveryAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setCart(prevCart => ({ ...prevCart, deliveryAddress: value }));
         updateLocalStorage({ ...cart, deliveryAddress: value });
@@ -53,27 +65,27 @@ export default function PaymentPage() {
         const value = e.target.value;
         setCart(prevCart => ({ ...prevCart, paymentMethod: value }));
         updateLocalStorage({ ...cart, paymentMethod: value });
-        setSelectMethod(value );
+        setSelectMethod(value);
         setPaymenthConfirmed(false);
     };
-    
+
     const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setCart(prevCart => ({ ...prevCart, receipt: value }));
         updateLocalStorage({ ...cart, receipt: value });
         setPaymenthConfirmed(true);
     };
-    
+
     const updateLocalStorage = (updatedValues: any) => {
         let cartItemString = localStorage.getItem('cartItem');
         let cartItem = cartItemString ? JSON.parse(cartItemString) : {};
         let updatedCartItem = { ...cartItem, ...updatedValues };
-    
+
         localStorage.setItem('cartItem', JSON.stringify(updatedCartItem));
     };
-    
+
     const handleSubmit = () => {
-        const allFieldsCompleted = (cart.deliveryAddress )&& cart.paymentMethod &&
+        const allFieldsCompleted = (cart.deliveryAddress) && cart.paymentMethod &&
             (cart.paymentMethod === 'cash' || (cart.paymentMethod === 'sinpe' && cart.receipt));
         if (allFieldsCompleted) {
             const updatedCart = {
@@ -92,37 +104,42 @@ export default function PaymentPage() {
         }
     };
 
-    const dataSend = {
-        ProductsIds: cartProducts,
-        Addres: address,
-        PaymentMethod: selectMethod
+    const handleConfirmation = () => {
+        const send = async () => {
 
-    };
-
-    useEffect(() => {
-    const send = async () => {
-        try {
-            const response = await fetch('http://localhost:5207/api/Cart', {
-                method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(dataSend)
-            });
-           // console.log(dataSend);
-
-            if(response.ok){
-           //     console.log('Data Sended');
-            }else{
-                const errorResponseData = await response.json();
-                throw new Error(errorResponseData.message);
+            let paymentMethodValue = 0;
+            if (selectMethod == 'Sinpe') {
+                paymentMethodValue = 1;
             }
-        } catch (error){
-         //   console.error(error);
-        }
-    }
 
-    send(); }, []);
+            const dataSend = {
+                ProductsIds: cartProducts,
+                Addres: address,
+                PaymentMethod: paymentMethodValue
+            };
+
+            try {
+                const response = await fetch('http://localhost:5207/api/Cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataSend)
+                });
+
+                if (response.ok) {
+                    //console.log('Data Sended');
+                } else {
+                    const errorResponseData = await response.json();
+                    throw new Error(errorResponseData.message);
+                }
+            } catch (error) {
+                //   console.error(error);
+            }
+        }
+
+        send();
+    };
 
 
     return (
@@ -175,7 +192,7 @@ export default function PaymentPage() {
                     </div>
                 )}
 
-                {cart.paymentMethod === 'cash' && (
+                {selectMethod === 'cash' && (
                     <div>
                         <p>Order Num: {cart.orderNumber}</p>
                         <button className="btn btn-success" onClick={handleSubmit} >
@@ -185,7 +202,7 @@ export default function PaymentPage() {
                     </div>
                 )}
 
-                {cart.paymentMethod === 'sinpe' && (
+                {selectMethod === 'sinpe' && (
                     <div>
                         <p>Order Number: {cart.orderNumber}</p>
                         <p>Sinpe Number: +506 86920997</p>
