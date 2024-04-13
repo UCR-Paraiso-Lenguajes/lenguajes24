@@ -40,11 +40,7 @@ public sealed class BDSale
             using (MySqlConnection connection = new MySqlConnection("Server=localhost;Database=mysql;Uid=root;Pwd=123456;"))
             {
                 connection.Open();
-                string dropTableQuery = "DROP TABLE IF EXISTS Compras;";
-                using (var dropTableCommand = new MySqlCommand(dropTableQuery, connection))
-                    {
-                        dropTableCommand.ExecuteNonQuery();
-                    }
+                
                 string createTableQuery = @"
                         CREATE TABLE IF NOT EXISTS Compras (
                             id INT AUTO_INCREMENT PRIMARY KEY,
