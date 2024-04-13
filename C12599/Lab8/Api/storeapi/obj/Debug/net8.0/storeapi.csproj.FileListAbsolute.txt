@@ -34,3 +34,14 @@ C:\Users\sofic\Desktop\Api\storeapi\obj\Debug\net8.0\storeapi.pdb
 C:\Users\sofic\Desktop\Api\storeapi\obj\Debug\net8.0\storeapi.genruntimeconfig.cache
 C:\Users\sofic\Desktop\Api\storeapi\obj\Debug\net8.0\ref\storeapi.dll
 C:\Users\sofic\Desktop\Api\storeapi\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\C12599\Lab8\Api\storeapi\obj\Debug\net8.0\storeapi.csproj.AssemblyReference.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\C12599\Lab8\Api\storeapi\obj\Debug\net8.0\storeapi.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\C12599\Lab8\Api\storeapi\obj\Debug\net8.0\storeapi.AssemblyInfoInputs.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\C12599\Lab8\Api\storeapi\obj\Debug\net8.0\storeapi.AssemblyInfo.cs
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\C12599\Lab8\Api\storeapi\obj\Debug\net8.0\storeapi.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\C12599\Lab8\Api\storeapi\obj\Debug\net8.0\storeapi.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\C12599\Lab8\Api\storeapi\obj\Debug\net8.0\storeapi.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\C12599\Lab8\Api\storeapi\obj\Debug\net8.0\storeapi.sourcelink.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\C12599\Lab8\Api\storeapi\obj\Debug\net8.0\storeapi.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\C12599\Lab8\Api\storeapi\obj\Debug\net8.0\refint\storeapi.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\C12599\Lab8\Api\storeapi\obj\Debug\net8.0\storeapi.pdb

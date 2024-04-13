@@ -1338,19 +1338,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\sofic\\.nuget\\packages\\": {}
+    "C:\\Users\\Usuario\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\sofic\\Desktop\\Api\\storeapi\\storeapi.csproj",
+      "projectUniqueName": "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\C12599\\Lab8\\Api\\storeapi\\storeapi.csproj",
       "projectName": "storeapi",
-      "projectPath": "C:\\Users\\sofic\\Desktop\\Api\\storeapi\\storeapi.csproj",
-      "packagesPath": "C:\\Users\\sofic\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\sofic\\Desktop\\Api\\storeapi\\obj\\",
+      "projectPath": "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\C12599\\Lab8\\Api\\storeapi\\storeapi.csproj",
+      "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\C12599\\Lab8\\Api\\storeapi\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\sofic\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"

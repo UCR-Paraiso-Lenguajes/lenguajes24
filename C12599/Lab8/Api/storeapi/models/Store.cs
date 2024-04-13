@@ -16,7 +16,7 @@ namespace storeapi
             Products = products;
             TaxPercentage = taxPercentage;
 
-            var initializer = new DatabaseInitializer();
+            var initializer = new DatabaseLab();
             initializer.CreateDatabase();
         }
 
