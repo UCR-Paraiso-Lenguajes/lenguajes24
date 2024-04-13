@@ -65,6 +65,7 @@ export default function PaymentPage() {
         updateLocalStorage({ ...cart, receipt: value });
         setPaymenthConfirmed(true);
     };
+
     const handleSubmit = async () => {
         const { deliveryAddress, paymentMethod, products, total } = cart;
         const validOrder = deliveryAddress && paymentMethod && (paymentMethod === 'cash' || paymentMethod === 'sinpe');
@@ -74,7 +75,7 @@ export default function PaymentPage() {
             if (paymentMethod === 'sinpe') {
                 paymentMethodValue = 1;
             }
-    
+
             const dataToSend = {
                 productIds: productIds,
                 address: deliveryAddress,
@@ -89,16 +90,16 @@ export default function PaymentPage() {
                     },
                     body: JSON.stringify(dataToSend)
                 });
-    
+
                 if (response.ok) {
                     const responseData = await response.json();
                     const { orderNumber } = responseData;
-    
-                    // Corrección aquí
+
+
                     updateLocalStorage({
-                        products: [],
-                        deliveryAddress: '',
-                        paymentMethod: '',
+                        productos: [],
+                        direccionEntrega: '',
+                        metodoPago: '',
                         isCartEmpty: true,
                         numeroCompra: orderNumber 
                     });

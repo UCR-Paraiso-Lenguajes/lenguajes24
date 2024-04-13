@@ -18,7 +18,7 @@ namespace StoreAPI.Controllers
         public IActionResult CreateCart([FromBody] Cart cart)
         {
             string purchaseNumber = Sale.GenerateNextPurchaseNumber();
-            int paymentMethod = (int)cart.PaymentMethods;
+            int paymentMethod = (int)cart.PaymentMethod;
                 
             saveSale.Save(DateTime.Now, cart.Total, paymentMethod,  purchaseNumber);
 
