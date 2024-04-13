@@ -7,52 +7,39 @@ import Link from 'next/link';
 export default function PaymentPage() {
 
     const [selectMethod, setSelectMethod] = useState('');
+    const cartDataString = localStorage.getItem('cartItem');
+    const cartData = cartDataString ? JSON.parse(cartDataString) : {};
+    const orderNumber = cartData.numeroCompra || 'No disponible';
     const [PaymenthConfirmed, setPaymenthConfirmed] = useState(false);
     const [cartProducts, setCartProducts] = useState([]);
     const [address, setAdress] = useState('');
 
     const [cart, setCart] = useState({
         products: [],
-        subtotal: 0,
         deliveryAddress: '',
         paymentMethod: '',
         receipt: '',
         confirmation: '',
-        orderNumber: 0,
+        total: '',
         isCartEmpty: true
     });
 
 
     useEffect(() => {
-        let cartItemStored = JSON.parse(localStorage.getItem('cartItem')) || { products: {} };
-        const productIds = cartItemStored && cartItemStored.products ? Object.keys(cartItemStored.products) : [];
-        setCartProducts(productIds);
-
-        setCart(prevCart => ({
-            ...prevCart,
-            orderNumber: Math.floor((Math.random() * 15000) + 1)
-        }));
+        let cartItemStored = localStorage.getItem('cartItem');
+        if (cartItemStored !== null) {
+            let cartData = JSON.parse(cartItemStored);
+            const validProducts = cartItemStored && Array.isArray(cartData.products) && cartData.products.length > 0;
+            if (validProducts) {
+                setCart({ ...cartData, isCartEmpty: false });
+            } else {
+                localStorage.removeItem('cartItem');
+                setCart({ ...cart, isCartEmpty: true });
+            }
+        } else {
+            setCart({ ...cart, isCartEmpty: true });
+        }
     }, []);
-
-    useEffect(() => {
-        localStorage.setItem('selectedMethod', selectMethod);
-    }, [selectMethod]);
-
-    /*   useEffect(() => {
-           let cartItemStored = localStorage.getItem('cartItem');
-           if (cartItemStored != null) {
-               const storedCart = JSON.parse(cartItemStored);
-               const productIds = Object.keys(storedCart || {});
-               setCartProducts(productIds);
-           } else {
-               setCartProducts([]);
-           }
-           setCart(prevCart => ({
-               ...prevCart,
-               orderNumber: Math.floor((Math.random() * 15000) + 1)
-           }));
-       }, []); */
-
 
 
     const handleDeliveryAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,9 +52,12 @@ export default function PaymentPage() {
         const value = e.target.value;
         setCart(prevCart => ({ ...prevCart, paymentMethod: value }));
         updateLocalStorage({ ...cart, paymentMethod: value });
-        setSelectMethod(value);
-        setPaymenthConfirmed(false);
     };
+
+    const updateLocalStorage = (updatedCart: any) => {
+        localStorage.setItem('cartItem', JSON.stringify(updatedCart));
+    };
+
 
     const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -76,73 +66,98 @@ export default function PaymentPage() {
         setPaymenthConfirmed(true);
     };
 
-    const updateLocalStorage = (updatedValues: any) => {
-        let cartItemString = localStorage.getItem('cartItem');
-        let cartItem = cartItemString ? JSON.parse(cartItemString) : {};
-        let updatedCartItem = { ...cartItem, ...updatedValues };
-
-        localStorage.setItem('cartItem', JSON.stringify(updatedCartItem));
-    };
-
-    const handleSubmit = () => {
-        const allFieldsCompleted = (cart.deliveryAddress) && cart.paymentMethod &&
-            (cart.paymentMethod === 'cash' || (cart.paymentMethod === 'sinpe' && cart.receipt));
-        if (allFieldsCompleted) {
-            const updatedCart = {
-                ...cart,
-                confirmation: 'Waiting for administrator confirmation',
-            };
-            setCart(updatedCart);
-            localStorage.setItem('cartItem', '');
-            setCart(prevCart => ({
-                ...prevCart,
-                receipt: '',
-                deliveryAddress: '',
-            }));
-        } else {
-            setCart(prevCart => ({ ...prevCart, confirmation: 'Please complete all required fields or add items to the cart.' }));
-        }
-    };
-
-    const handleConfirmation = () => {
-        const send = async () => {
-
+    const handleSubmit = async () => {
+        const { deliveryAddress, paymentMethod, products, total } = cart;
+        const validOrder = deliveryAddress && paymentMethod && (paymentMethod === 'cash' || paymentMethod === 'sinpe');
+        if (validOrder) {
+            const productIds = products.map((producto: any) => String(producto.id));
             let paymentMethodValue = 0;
-            if (selectMethod == 'Sinpe') {
+            if (paymentMethod === 'sinpe') {
                 paymentMethodValue = 1;
             }
 
-            const dataSend = {
-                ProductsIds: cartProducts,
-                Addres: address,
-                PaymentMethod: paymentMethodValue
+            const dataToSend = {
+                productIds: productIds,
+                address: deliveryAddress,
+                paymentMethod: paymentMethodValue,
+                total: total
             };
-
             try {
                 const response = await fetch('http://localhost:5207/api/Cart', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(dataSend)
+                    body: JSON.stringify(dataToSend)
                 });
-                
-                if (!response.ok) {
+
+                if (response.ok) {
+                    const responseData = await response.json();
+                    const { orderNumber } = responseData;
+
+
+                    updateLocalStorage({
+                        productos: [],
+                        direccionEntrega: '',
+                        metodoPago: '',
+                        isCartEmpty: true,
+                        numeroCompra: orderNumber 
+                    });
+                } else {
                     const errorResponseData = await response.json();
-                    throw new Error(errorResponseData.message);
+                    throw new Error('Error to send data: ' + JSON.stringify(errorResponseData));
                 }
+                console.log(dataToSend);
             } catch (error) {
                 throw error;
             }
+        } else {
+            setCart(prevCart => ({ ...prevCart, confirmation: 'Please complete all required fields or add items to the cart.' }));
         }
-
-        send();
     };
 
+    const handleConfirmation = async () => {
+        // Eliminar los datos del carrito del localStorage
+        localStorage.removeItem('cartItem');
+    };
+
+    /* const handleConfirmation = () => {
+         const send = async () => {
+ 
+             let paymentMethodValue = 0;
+             if (selectMethod == 'Sinpe') {
+                 paymentMethodValue = 1;
+             }
+ 
+             const dataSend = {
+                 ProductsIds: cartProducts,
+                 Addres: address,
+                 PaymentMethod: paymentMethodValue
+             };
+ 
+             try {
+                 const response = await fetch('http://localhost:5207/api/Cart', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json'
+                     },
+                     body: JSON.stringify(dataSend)
+                 });
+                 if (!response.ok) {
+                     const errorResponseData = await response.json();
+                     throw new Error(errorResponseData.message);
+                 }
+                 console.log(dataSend);
+             } catch (error) {
+                 //   console.error(error);
+             }
+         }
+ 
+         send();
+     }; */
 
     return (
         <div>
-
             <header className="p-3 text-bg-dark">
                 <div className="row" style={{ color: 'gray' }}>
                     <div className="col-sm-9">
@@ -190,20 +205,28 @@ export default function PaymentPage() {
                     </div>
                 )}
 
-                {selectMethod === 'cash' && (
+                {cart.paymentMethod === 'cash' && (
                     <div>
-                        <p>Order Num: {cart.orderNumber}</p>
-                        <button className="btn btn-success" onClick={handleSubmit} >
+                        <p>Order Num: {orderNumber}</p>
+                        <div >
+                        <button className="btn btn-success" style={{margin: '1px;'}} onClick={handleSubmit} >
                             Confirm Payment
                         </button>
+                        </div>
+                        <div style={{margin: '1px;'}}>
+                        <button className="btn btn-success" style={{margin: '1px;'}} onClick={handleConfirmation} >
+                            Send Order
+                        </button>
+                        </div>
                         <p>{cart.confirmation}</p>
+                        
                     </div>
                 )}
 
-                {selectMethod === 'sinpe' && (
+                {cart.paymentMethod === 'sinpe' && (
                     <div>
-                        <p>Order Number: {cart.orderNumber}</p>
-                        <p>Sinpe Number: +506 86920997</p>
+                        <p>Order Number: {orderNumber}</p>
+                        <p>Make payment for the purchase at the following Sinpe Number: +506 86920997</p>
                         <div className="form-group">
                             <label htmlFor="comprobante">Receipt:</label>
                             <input
@@ -214,13 +237,23 @@ export default function PaymentPage() {
                                 onChange={handleReceiptChange}
                             />
                         </div>
-                        {cart && cart.receipt && cart.receipt.length > 0 ? (
-                            <button className="btn btn-success" onClick={handleSubmit} >
-                                Confirm Payment
-                            </button>
-                        ) : (
-                            <button className="btn btn-success" disabled >Confirm Payment</button>
-                        )}
+                        <div>
+                            {cart && cart.receipt && cart.receipt.length > 0 ? (
+                                <button className="btn btn-success" onClick={handleConfirmation} >
+                                    Confirm Payment
+                                </button>
+                            ) : (
+                                <button className="btn btn-success" disabled >Confirm Payment</button>
+                            )}
+                        </div>
+                        <div>
+                            {cart && cart.receipt && cart.receipt.length > 0 ? (
+                                <button className="btn btn-success" onClick={handleSubmit} > Send Order </button>
+                            ) : (
+                                <button className="btn btn-success" disabled >  Send Order </button>
+                            )}
+                        </div>
+
                         <p>{cart.confirmation}</p>
                     </div>
                 )}

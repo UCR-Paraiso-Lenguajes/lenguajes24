@@ -11,30 +11,19 @@ namespace StoreAPI.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        private static List<Cart> Carts = new List<Cart>();
+        private readonly BDSale saveSale = new();
 
-        private readonly BDSale saveCart = new BDSale();
-
-        //to do generar # compra
        
         [HttpPost]
         public IActionResult CreateCart([FromBody] Cart cart)
         {
-
-
-
-            //to do: insertar datos
-
             string purchaseNumber = Sale.GenerateNextPurchaseNumber();
             int paymentMethod = (int)cart.PaymentMethods;
-                 //sale.save(DateTime.Now, cart.Total, paymentMethod, purchaseNumber);
+                
+            saveSale.Save(DateTime.Now, cart.Total, paymentMethod,  purchaseNumber);
 
             
-
-            // Add the cart to the list
-            Carts.Add(cart);
-            // Return the newly created cart
-            return Ok(cart);
+            return Ok(purchaseNumber);
         }
     }
 

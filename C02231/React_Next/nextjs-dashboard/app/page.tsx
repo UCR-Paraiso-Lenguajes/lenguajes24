@@ -21,27 +21,6 @@ export default function Home() {
     } catch (error) {
       throw new Error('Failed to fetch data');
     }
-
-   
-     /* try {
-          const response = await fetch('http://localhost:5207/api/Cart', {
-              method: 'POST',
-              headers:{
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(dataSend)   //
-          });
-         // console.log(dataSend);
-
-          if(response.ok){
-         //     console.log('Data Sended');
-          }else{
-              const errorResponseData = await response.json();
-              throw new Error(errorResponseData.message);
-          }
-      } catch (error){
-       //   console.error(error);
-      }*/
   
   };
 
@@ -66,17 +45,19 @@ export default function Home() {
       let updatedCount = cart.count + 1;
       setCart({
         ...cart,
-        product: updatedProductos,
+        products: updatedProductos,
         count: updatedCount
       });
       localStorage.setItem('cartItem', JSON.stringify({ products: updatedProductos, count: updatedCount }));
     }
   };
+
+  
   useEffect(() => {
     const storedCartData = JSON.parse(localStorage.getItem('cartItem') || '{}');
     setCart({
       ...cart,
-      product: storedCartData.productos || [],
+      products: storedCartData.products || [],
       count: storedCartData.count || 0
     });
   }, []);
