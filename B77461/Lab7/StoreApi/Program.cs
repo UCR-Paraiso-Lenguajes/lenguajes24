@@ -21,6 +21,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    StoreApi.DB.Db.CreateDB();
+    StoreApi.DB.Db.FillProducts();
 }
 
 app.UseHttpsRedirection();

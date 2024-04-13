@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import PaymentForm from "../payment/page";
 
-const AddressForm = ({ handleAddressForm, cart, setCart }:
+const AddressForm = ({ handleAddressForm, cart, setCart, clearProducts }:
     {
         handleAddressForm: () => void, cart: any,
-        setCart: (cart: any) => void}) => {
+        setCart: (cart: any) => void, clearProducts: () => void}) => {
     const [showPaymentForm, setShowPaymentForm] = useState(false);
 
     function handleAddressChange(event: any) {
@@ -26,7 +26,7 @@ const AddressForm = ({ handleAddressForm, cart, setCart }:
     }
 
     return showPaymentForm ? (
-        <PaymentForm cart={cart} setCart={setCart} />
+        <PaymentForm cart={cart} setCart={setCart} clearProducts={clearProducts} />
     ) : (
         <div className="d-flex justify-content-center gap-2">
             <div className="card w-25">

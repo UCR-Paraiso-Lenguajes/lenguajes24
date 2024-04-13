@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Alert from 'react-bootstrap/Alert';
 import AddressForm from "../address/page";
 
-const PaymentForm = ({ cart, setCart }:
-    { cart: any, setCart: (cart: any) => void }) => {
+const PaymentForm = ({ cart, setCart, clearProducts }:
+    { cart: any, setCart: (cart: any) => void, clearProducts: () => void }) => {
 
     const [MessageShowing, setMessageShowing] = useState(false);
     const [message, setMessage] = useState('');
@@ -30,36 +30,24 @@ const PaymentForm = ({ cart, setCart }:
             ...cart,
             carrito: {
                 ...cart.carrito,
-                metodoDePago: cart.carrito.metodoPago ? cart.carrito.metodoDePago : PaymentMethod.CASH
-                
+                metodoDePago: cart.carrito.metodoDePago ? cart.carrito.metodoDePago : PaymentMethod.CASH
             }
         }));
-        setSelectedIndex((cart.carrito.metodoDePago === PaymentMethod.CASH) ? 0 : 1);
+        setSelectedIndex((cart.carrito.metodoDePago === PaymentMethod.SINPE) ? 1 : 0);
     }, []);
 
+
     function handleSelectPayment(event: any) {
+        const selectedPaymentMethod = parseInt(event.target.value, 10); // Parse the value to an integer
         setSelectedIndex(event.target.selectedIndex);
         setCart(cart => ({
             ...cart,
             carrito: {
                 ...cart.carrito,
-                metodoDePago: event.target.selectedIndex === 0 ? PaymentMethod.CASH : PaymentMethod.SINPE
+                metodoDePago: selectedPaymentMethod // Set the selected payment method directly
             },
             verificacion: true
         }));
-    }
-
-    function generateReceiptNumber() {
-        const timestamp = Date.now().toString();
-        const randomNumber = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-        setOrderNumber(timestamp + randomNumber);
-    }
-
-
-    async function finishPurchase() {
-        generateReceiptNumber();
-        setFinishedSale(true);
-        await persistPurchase();
     }
 
     async function persistPurchase() {
@@ -71,15 +59,20 @@ const PaymentForm = ({ cart, setCart }:
         }
 
         try {
-            const res = await fetch('https://localhost:7075/api/Cart ', {
+            const res = await fetch('https://localhost:7075/api/Cart', {
                 method: 'POST',
                 body: JSON.stringify(purchaseToPersist),
                 headers: {
                     'content-type': 'application/json'
                 }
             })
-            if (res.ok) { setMessage("Compra Exitosa"); setAlertType(0) }
-            else { setMessage("Error en la compra"); setAlertType(1) }
+            if (res.ok) {
+                var order = await res.json();
+                setOrderNumber(order.purchaseNumber);
+                setMessage("Se realizó la compra");
+                setAlertType(0);
+            }
+            else { setMessage("Error al realizar la compra"); setAlertType(1) }
         } catch (error) {
             setMessage(error);
             setAlertType(1)
@@ -88,7 +81,15 @@ const PaymentForm = ({ cart, setCart }:
         }
     }
 
+    async function finishPurchase() {
+        setFinishedSale(true);
+        clearProducts();
+        setSelectedIndex((cart.carrito.metodoDePago === PaymentMethod.SINPE) ? 1 : 0); // Actualizar selectedIndex
+        await persistPurchase();
+    }
+
     const Cash = () => {
+        
         return <div className="card effect-card w-75">
             <div className="card-body">
                 <div className="d-grid w-100 justify-content-center">
@@ -102,25 +103,11 @@ const PaymentForm = ({ cart, setCart }:
 
     const Sinpe = () => {
 
-        const [comprobante, setVoucher] = useState('');
-    
-        const handleVoucherChange = (event) => {
-            setVoucher(event.target.value);
-        };
-
         return  <div className="card sinpe-card w-75">
             <div className="card-body">
                 <div className="d-grid w-100 justify-content-center">
                 <strong>Número de compra: {orderNumber}</strong>
                         <strong>Número para realizar el pago: +506 6270 6880</strong>
-                        <input
-                            type="text"
-                            className="form-control mt-3"
-                            placeholder="Indique el comprobante"
-                            value={comprobante}
-                            onChange={handleVoucherChange}
-                            
-                        />
                         <p className=""></p>
                         <em>Por favor, espere la confirmación del admin</em>
                 </div>
@@ -128,56 +115,45 @@ const PaymentForm = ({ cart, setCart }:
         </div>
     }
 
-    return (
-      <div className="container">
-          {showAddressForm ? (
-              <AddressForm handleAddressForm={handleAddressForm} cart={cart} setCart={setCart} />
-          ) : (
-              <div className="d-grid justify-content-center gap-4">
-                  <div className="container">
-                      <h3>Métodos de pago</h3>
-                      <div className="form-group">
-                          <select className="form-control" onChange={handleSelectPayment} value={cart.carrito.metodoDePago} disabled={finishedSale}>
-                              {cart.metodosDePago.map((method: any, index: number) => <option key={index}>{method}</option>)}
-                          </select>
-                      </div>
-                      <div className="d-flex w-100 justify-content-center">
-                          <button className="btn btn-primary" disabled={finishedSale} onClick={finishPurchase}>
-                              Finalizar Compra
-                          </button>
-                      </div>
-                  </div>
-  
-                  <div className="d-flex w-100 justify-content-center">
-                      <button type="button" className="btn btn-primary mr-2" >
-                          Atrás
-                      </button>
-                  </div>
-  
-                  {finishedSale ? (selectedIndex === 0 ? <Cash /> : <Sinpe />) : ''}
-                  {MessageShowing ? (
-                      <div
-                          style={{
-                              position: 'fixed',
-                              bottom: 20,
-                              right: 20,
-                              zIndex: 9999,
-                          }}
-                      >
-                          <Alert variant={alertType === 0 ? 'success' : 'danger'} onClose={() => setMessageShowing(false)} dismissible>
-                              <Alert.Heading>{alertType === 0 ? 'Información' : 'Error'}</Alert.Heading>
-                              <p>{message.toString()}</p>
-                          </Alert>
-                      </div>
-                  ) : (
-                      ''
-                  )}
-              </div>
-          )}
-      </div>
-  );
-  
-      
+    return <div className="container">
+        <div className="d-grid justify-content-center gap-4">
+            <div className="container">
+                <h3>Métodos de pago</h3>
+                <div className="form-group">
+                    <select className="form-control" onChange={handleSelectPayment}
+                        value={cart.carrito.metodoDePago} disabled={finishedSale}>
+                        {cart.metodosDePago.map((method: number, index: number) => (
+                            <option key={index} value={method}>
+                                {PaymentMethod[method]}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="d-flex w-100 justify-content-center">
+                    <button className="btn btn-primary"
+                        disabled={finishedSale} onClick={finishPurchase}>
+                        Finalizar Compra</button>
+                </div>
+            </div>
+            {finishedSale ? (selectedIndex === 0 ? <Sinpe /> : <Cash />) : ''}
+            {MessageShowing ?
+                <div
+                    style={{
+                        position: 'fixed',
+                        bottom: 20,
+                        right: 20,
+                        zIndex: 9999, // Ensure it's above other content
+                    }}
+                >
+                    <Alert variant={alertType === 0 ? "success" : "danger"}
+                        onClose={() => setMessageShowing(false)} dismissible>
+                        <Alert.Heading>{alertType === 0 ? 'Información' : 'Error'}</Alert.Heading>
+                        <p>{message.toString()}</p>
+                    </Alert> </div> : ''
+            }
+        </div>
+    </div>
 }
+  
 
 export default PaymentForm;

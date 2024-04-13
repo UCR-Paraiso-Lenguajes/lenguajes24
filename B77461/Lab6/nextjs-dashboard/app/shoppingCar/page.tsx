@@ -3,8 +3,8 @@
 import { useState } from "react";
 import AddressForm from "../address/page";
 
-const Cart = ({ cart, setCart, toggleCart, removeProduct }: { cart: any, setCart: (cart: any) => void, toggleCart: (action: boolean) => void, 
-    removeProduct: (product: any) => void }) => {
+const Cart = ({ cart, setCart, toggleCart, removeProduct, clearProducts }: { cart: any, setCart: (cart: any) => void, toggleCart: (action: boolean) => void, 
+    removeProduct: (product: any) => void, clearProducts: () => void}) => {
     const [showAddressForm, setShowAddressForm] = useState(false);
 
     function handleAddressForm() {
@@ -13,7 +13,7 @@ const Cart = ({ cart, setCart, toggleCart, removeProduct }: { cart: any, setCart
 
     return (
         showAddressForm ? <AddressForm handleAddressForm={handleAddressForm}
-            cart={cart} setCart={setCart} /> :
+        cart={cart} setCart={setCart} clearProducts={clearProducts} /> :
             <div className="container">
                 <h1>Tu carrito de compras:</h1>
             <table className="table">

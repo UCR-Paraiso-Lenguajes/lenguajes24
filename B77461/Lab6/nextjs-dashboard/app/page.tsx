@@ -36,7 +36,16 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const result = await getProducts();
-        setProducts(result.products)
+        const paymentTypes = result.paymentMethods.map(payment => payment.paymentType);
+        setProducts(result.products);
+        setCart(cart => ({
+          ...cart,
+          carrito: {
+            ...cart.carrito,
+            porcentajeImpuesto: result.taxPercentage
+          },
+          metodosDePago: paymentTypes
+        }));
       } catch (error) {
         setErrorMessage(error)
         setErrorShowing(true)
@@ -79,6 +88,23 @@ export default function Home() {
     }));
 
     setCount(count - 1); // Restar 1 al contador count
+}
+
+function clearProducts() {
+  localStorage.removeItem('cart');
+  setIdList([]);
+  setCart(cart => ({
+    ...cart,
+    carrito: {
+      ...cart.carrito,
+      productos: [],
+      subtotal: 0,
+      total: 0,
+      direccionEntrega: '',
+      metodoDePago: ''
+    },
+    verificacion: false
+  }));
 }
 
   useEffect(() => {
@@ -210,7 +236,7 @@ export default function Home() {
     <div className="d-grid gap-2">
       <NavBar productCount={count} toggleCart={(action) => toggleCart({ action })} />
       {CartActive ? <Cart cart={cart} setCart={setCart}
-        toggleCart={(action) => toggleCart({ action })} removeProduct={removeProduct}/> : <><MyRow /> <CarouselBootstrap /></>}
+        toggleCart={(action) => toggleCart({ action })} removeProduct={removeProduct} clearProducts={clearProducts}/> : <><MyRow /> <CarouselBootstrap /></>}
       {ErrorShowing ?
         <div
           style={{
