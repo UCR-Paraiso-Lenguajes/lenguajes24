@@ -20,7 +20,6 @@ public class CartBusiness
 
     public Sale Purchase(Cart cart)
     {
-        //ValidateCart(cart);
 
          // Find matching products based on the product IDs in the cart
         IEnumerable<Product> matchingProducts = Store.Instance.Products.Where(p => cart.ProductIds.Contains(p.Uuid.ToString())).ToList();
@@ -42,14 +41,12 @@ public class CartBusiness
 
         var sale = new Sale(shadowCopyProducts, cart.Address, purchaseAmount, paymentMethod, receiptNumber);
 
-        //ValidateSale(sale);
-        
         cartDB.save(sale);
 
         return sale;
     }
 
-    private void ValidateCart(Cart cart)
+    public void ValidateCart(Cart cart)
     {
         if (cart.ProductIds.Count == 0)
             throw new ArgumentException("Cart must contain at least one product.");
@@ -58,7 +55,7 @@ public class CartBusiness
         if (cart.PaymentMethod == null) throw new ArgumentException("A payment method should be provided");
     }
 
-    private void ValidateSale(Sale sale)
+    public void ValidateSale(Sale sale)
     {
         if (sale.Products.Count() == 0) 
             throw new ArgumentException("Sale must contain at least one product.");

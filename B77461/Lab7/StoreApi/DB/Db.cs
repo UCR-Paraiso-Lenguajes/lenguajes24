@@ -90,7 +90,7 @@ public class Db
             INSERT INTO dbo.products (product_id, name, description, image_Url, price, quantity) 
             VALUES (@id, @name, @description, @imageUrl, @price, @quantity)";
 
-        for (int i = 1; i <= 40; i++)
+        for (int i = 1; i <= 30; i++)
         {
             var productData = productsData[(i - 1) % productsData.Length];
 
