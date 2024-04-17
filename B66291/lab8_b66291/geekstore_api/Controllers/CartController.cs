@@ -7,18 +7,18 @@ namespace geekstore_api.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-         private readonly CartDb data= new CartDb();
-         private readonly PurchaseNumber number= new PurchaseNumber();
-        //falta modificar
+         private StoreLogic store = new StoreLogic(); 
+         private CartDb data= new CartDb(); 
 
         [HttpPost]
         public IActionResult CreateCart([FromBody] Cart cart)
         {
-            int numeroCompra = number.generarNumeroCompra();
-            int paymentMethodValue = (int)cart.PaymentMethod;
-            data.almacenarDatos(cart.total, DateTime.Now, numeroCompra, paymentMethodValue);
-            return Ok(new { NumeroCompra = numeroCompra });
+            var sale = store.Purchase(cart);
+            var numeroCompra = sale.PurchaseNumber;
+            data.almacenarDatos(sale);
+            var response = new { numeroCompra = numeroCompra };
+            return Ok(response);
+            
         }
     }
-
 }

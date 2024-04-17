@@ -1,11 +1,7 @@
 namespace geekstore_api;
 
 public abstract class PaymentMethods{
-    public enum Type 
-    {
-    CASH=0,
-    SINPE=1
-    }
+    public enum Type {CASH=0,SINPE=1}
     public Type PaymentType { get; set; }
     public PaymentMethods(PaymentMethods.Type paymentType)
     {
@@ -16,19 +12,22 @@ public abstract class PaymentMethods{
     private static Sinpe pagoSinpe=new Sinpe();
     private static Cash pagoCash=new Cash();
 
-    public static PaymentMethods Find(PaymentMethods.Type type)
+    public static PaymentMethods Find(Type type)
     {
         switch (type)
         {
             case Type.CASH:
-                return pagoSinpe;
-
-            case Type.SINPE:
                 return pagoCash;
-
+            case Type.SINPE:
+                return pagoSinpe;
             default:
                 throw new ArgumentException("El tipo de pago es incorrecto");
         }
+    }
+
+    public static PaymentMethods SetPaymentType(Type type)
+    {
+        return Find(type);
     }
 }
 

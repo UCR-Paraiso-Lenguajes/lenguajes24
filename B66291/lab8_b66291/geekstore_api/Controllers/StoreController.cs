@@ -11,7 +11,7 @@ namespace geekstore_api.Controllers
         [HttpGet]
         public Store GetStore()
         {
-            return Store.Instance ;   //define lo que va a retornar el metodo get
+            return Store.Instance ;  
         }
     }
 

@@ -13,7 +13,6 @@ namespace geekstore_api
         } 
         public readonly static Store Instance; 
 
-        // Static constructor
         static Store()
         {
             var products = new List<Product>

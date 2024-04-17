@@ -1,42 +1,28 @@
 using MySqlConnector;
 using System;
 
-namespace geekstore_api.CardDb
+namespace geekstore_api.DataBase
 {
     public class CartDb
     {
         private readonly string _connectionString = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
 
-        public void almacenarDatos(decimal total, DateTime date, int purchaseNumber, int paymentMethod)
+        public void almacenarDatos(Sale sale)
         {
-                // Insertar el carrito en la base de datos
-                using (var connection = new MySqlConnection(_connectionString))
-                {
-                    connection.Open();
+            using var connection = new MySqlConnection(_connectionString);
+            connection.Open();
 
-                    string createTableQuery = @"
-                        CREATE TABLE IF NOT EXISTS Orden (
-                            id INT AUTO_INCREMENT PRIMARY KEY,
-                            total DECIMAL(10, 2) NOT NULL,
-                            date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                            purchaseNumber INT NOT NULL,
-                            Paymethod INT
-                        );";
-        
-                    string insertQuery = @"
-                        INSERT INTO Orden (total, date, purchaseNumber, Paymethod)
-                        VALUES (@total, @date, @purchaseNumber, @Paymethod);";
+            string insertQuery = @"
+                        INSERT INTO Orden (total, purchase_number, payment_method)
+                        VALUES (@total, @purchase_number, @payment_method);";
 
-                    using (var command = new MySqlCommand(insertQuery, connection))
-                    {
-                        command.Parameters.AddWithValue("@total", total);
-                        command.Parameters.AddWithValue("@date", date);
-                        command.Parameters.AddWithValue("@purchaseNumber", purchaseNumber);
-                        command.Parameters.AddWithValue("@Paymethod", paymentMethod);
-
-                        command.ExecuteNonQuery();
-                    }
-                }
+            using (var command = new MySqlCommand(insertQuery, connection))
+            {
+                command.Parameters.AddWithValue("@total", sale.Amount);
+                command.Parameters.AddWithValue("@purchase_number", sale.PurchaseNumber);
+                command.Parameters.AddWithValue("@payment_method", (int)sale.PaymentMethod);
+                command.ExecuteNonQuery();
             }
         }
+    }
 }

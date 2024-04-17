@@ -6,9 +6,7 @@ using geekstore_api;
 
 public sealed class StoreLogic
 {
-    public StoreLogic()
-    {
-    }
+    public StoreLogic(){}
 
     public Sale Purchase (Cart cart)
     {
@@ -18,14 +16,12 @@ public sealed class StoreLogic
         var products = Store.Instance.Products;
         var taxPercentage = Store.Instance.TaxPercentage;
 
-         // Find matching products based on the product IDs in the cart
         IEnumerable<Product> matchingProducts = products.Where(p => cart.ProductIds.Contains(p.id.ToString())).ToList();
 
-        // Create shadow copies of the matching products
         IEnumerable<Product> shadowCopyProducts = matchingProducts.Select(p => (Product)p.Clone()).ToList();
 
-        // Calculate purchase amount by multiplying each product's price with the store's tax percentage
         decimal purchaseAmount = 0;
+
         foreach (var product in shadowCopyProducts)
         {
             product.price *= (1 + (decimal)taxPercentage / 100);
@@ -34,9 +30,10 @@ public sealed class StoreLogic
 
         PaymentMethods paymentMethod = PaymentMethods.Find(cart.PaymentMethod);
 
-        // Create a sale object
-        var sale = new Sale( shadowCopyProducts, cart.Address, purchaseAmount, paymentMethod);
-        return sale;
+        PaymentMethods selectedPaymentMethod = PaymentMethods.SetPaymentType(cart.PaymentMethod);
 
+        var sale = new Sale(shadowCopyProducts, cart.Address, purchaseAmount, selectedPaymentMethod.PaymentType, Sale.generarNumeroCompra());
+        
+        return sale;
     }
 }
