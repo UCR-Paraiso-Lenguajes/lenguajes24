@@ -67,7 +67,9 @@ namespace storeapi
             date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             purchaseNumber INT NOT NULL,
             Paymethod INT,
-            PRIMARY KEY (purchaseNumber)
+            PRIMARY KEY (purchaseNumber),
+            FOREIGN KEY (Paymethod) REFERENCES paymentMethods(id)
+            
         );
     ";
 
