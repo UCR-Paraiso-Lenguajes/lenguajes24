@@ -1,0 +1,220 @@
+.barra {
+  border: 1px solid #808080;
+  background-color: gray;
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  padding: 20px;
+  width: auto;
+  height: auto;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-size: 5%;
+}
+
+
+.barra h1 {
+  cursor: pointer;
+}
+
+.barra .search {
+  align-content: center;
+  justify-content: center;
+  display: flex;
+  height: 45px;
+}
+
+.barra .access {
+  justify-content: space-between;
+  display: flex;
+  width: 120px;
+  align-items: center;
+}
+
+footer {
+  text-align: center;
+  margin-top: 20px;
+  border-top: 1px solid #808080;
+  padding-top: 20px;
+  background-color: gray;
+  padding: 2%;
+}
+
+.barra .access .carro span:nth-child(1) {
+  font-size: large;
+  cursor: pointer;
+}
+
+.barra .access .carro svg {
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.barra .access .carro span:nth-child(2) {
+  padding: 2px;
+  background-color: red;
+  color: white;
+  font-weight: bold;
+  border-radius: 100px;
+  font-size: 12px;
+  position: relative;
+  top: -40px;
+  left: 25px;
+}
+
+
+.Compra {
+  justify-content: center;
+  align-items: center;
+  margin-left: 120px;
+  margin-right: 120px;
+}
+
+.cart_box:hover {
+  background-color: khaki;
+  transition: background-color 0.1s;
+}
+
+.cart_box img {
+  width: 100px;
+  height: 90px;
+  border: #808080;
+  border-radius: 10px;
+}
+
+.cart_img {
+  display: flex;
+  width: 500px;
+  justify-content: space-between;
+
+}
+
+.cart_img p {
+  font-weight: normal;
+  margin-left: 50px;
+}
+
+.cart_img .data-prod {
+  display: flex;
+  align-items: center;
+
+}
+
+.cart_box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.cart_box .price-del {
+  justify-content: space-between;
+  border: 22px;
+  display: block;
+}
+
+.cart_box div:nth-child(2) button {
+  padding: 5px 10px;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.cart_box div:nth-child(3) button {
+  padding: 5px 10px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  border: none;
+  outline: none;
+  color: white;
+  background-color: skyblue;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cart_box div:nth-child(3) button:hover {
+  background-color: darkseagreen;
+}
+
+.cart_box div:nth-child(3) span {
+  background-color: lightgreen;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.total {
+  display: grid;
+  justify-content: flex-end;
+  align-items: center;
+  min-height: 100px;
+  padding: 20px;
+}
+
+.total span:nth-child(1) {
+  font-size: 2rem;
+  color: lightcoral;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+
+
+.p-pago {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  border-radius: 30px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  margin-left: 220px;
+  margin-right: 220px;
+  min-height: 250px;
+}
+
+.p-pago .data {
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  flex-wrap: 10px;
+
+}
+
+.metodoPago .centro {
+  justify-content: flex-end;
+  align-items: center;
+  border: 2px solid black;
+  border-radius: 10px;
+  margin-left: 220px;
+  padding: 50px;
+  margin-right: 220px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.metodoPago {
+  justify-content: flex-end;
+}
+
+.Compra .smsFinal {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  padding: 50px;
+}
+.carrusel-item{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  padding: 2%;
+  
+}
+.productos{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+}
