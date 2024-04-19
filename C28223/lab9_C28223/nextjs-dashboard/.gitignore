@@ -38,3 +38,8 @@ node_modules
 .eslintrc.json
 tailwind.config.ts
 tsconfig.json
+/app/ui/global.css
+next.config.js
+package.json
+postcss.config.js
+prettier.config.js

@@ -1,3 +1,9 @@
 Class1.cs
 /bin
 /obj/Debug
+/Core.csproj
+/Core/obj/Core.csproj.nuget.dgspec.json
+/Core/obj/Core.csproj.nuget.g.props
+/Core/obj/Core.csproj.nuget.g.targets
+/Core/obj/project.assets.json
+/Core/obj/project.nuget.cache
