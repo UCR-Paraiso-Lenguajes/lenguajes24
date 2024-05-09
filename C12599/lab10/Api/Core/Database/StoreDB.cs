@@ -3,56 +3,65 @@ using System.Collections.Generic;
 using MySqlConnector;
 using storeapi.Models;
 using core;
+
 namespace storeapi.Database
 {
     public sealed class StoreDB
     {
+      public static void CreateMysql()
+{
+    using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+    {
+        connection.Open();
 
+        // Verificar el número actual de productos en la tabla
+        string countProductsQuery = "SELECT COUNT(*) FROM products";
 
-        public static void CreateMysql()
+        using (var countProductsCommand = new MySqlCommand(countProductsQuery, connection))
         {
-            var storeDB = new StoreDB();
+            int currentProductCount = Convert.ToInt32(countProductsCommand.ExecuteScalar());
 
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionStringMyDb))
+         
+            if (currentProductCount >= 66)
             {
-                connection.Open();
+                throw new InvalidOperationException("No se pueden insertar más productos. Ya se han insertado 12 productos.");
+            }
+        }
 
-                string createTableQuery = @"
-                    CREATE TABLE IF NOT EXISTS products (
-                        id INT AUTO_INCREMENT PRIMARY KEY,
-                        name VARCHAR(100),
-                        price DECIMAL(10, 2),
-                        image VARCHAR(255),
-                        description VARCHAR(255)
-                    )";
+        // Continuar con la creación de la tabla y la inserción de productos
+        string createTableQuery = @"
+            CREATE TABLE IF NOT EXISTS products (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(100),
+                price DECIMAL(10, 2),
+                image VARCHAR(255),
+                description VARCHAR(255),
+                category INT
+            )";
 
-                using (var createTableCommand = new MySqlCommand(createTableQuery, connection))
+        using (var createTableCommand = new MySqlCommand(createTableQuery, connection))
+        {
+            createTableCommand.ExecuteNonQuery();
+        }
+
+        var products = new List<Product>();
+        Random random = new Random();
+
+        for (int i = 1; i <= 12; i++)
+        {
+            products.Add(new Product
+            {
+                Name = $"Product {i}",
+                ImageUrl = $"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
+                Price = 10.99m * i,
+                Description = $"Description of Product {i}",
+                CategoryID = random.Next(1, 10)
+            });
+        }
+                if (products.Count == 0)
                 {
-                    createTableCommand.ExecuteNonQuery();
+                    throw new ArgumentException("La lista de productos no puede estar vacía.", nameof(products));
                 }
-            }
-
-            var products = new List<Product>();
-
-            for (int i = 1; i <= 12; i++)
-            {
-                products.Add(new Product
-                {
-                    Name = $"Product {i}",
-                    ImageUrl = $"https://example.com/image_{i}.jpg",
-                    Price = 10.99m * i,
-                    Description = $"Description of Product {i}"
-                });
-            }
-
-            if (products.Count == 0)
-            {
-                throw new ArgumentException("La lista de productos no puede estar vacía.", nameof(products));
-            }
-
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionStringMyDb))
-            {
-                connection.Open();
 
                 using (var transaction = connection.BeginTransaction())
                 {
@@ -63,8 +72,8 @@ namespace storeapi.Database
                             ValidateProductForInsert(product);
 
                             string insertProductQuery = @"
-                                INSERT INTO products (name, price, description, image)
-                                VALUES (@name, @price, @description, @image);";
+                                INSERT INTO products (name, price, description, image, category)
+                                VALUES (@name, @price, @description, @image, @category)";
 
                             using (var insertCommand = new MySqlCommand(insertProductQuery, connection, transaction))
                             {
@@ -72,7 +81,7 @@ namespace storeapi.Database
                                 insertCommand.Parameters.AddWithValue("@price", product.Price);
                                 insertCommand.Parameters.AddWithValue("@description", product.Description);
                                 insertCommand.Parameters.AddWithValue("@image", product.ImageUrl);
-
+                                insertCommand.Parameters.AddWithValue("@category", product.CategoryID);
                                 insertCommand.ExecuteNonQuery();
                             }
                         }
@@ -87,12 +96,10 @@ namespace storeapi.Database
                 }
             }
         }
-
-        public static List<string[]> RetrieveDatabaseInfo()
+                public static List<string[]> RetrieveDatabaseInfo()
         {
-            StoreDB storeDB = new StoreDB();
             List<string[]> databaseInfo = new List<string[]>();
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionStringMyDb))
+            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
                 connection.Open();
 
@@ -119,30 +126,6 @@ namespace storeapi.Database
             return databaseInfo;
         }
 
-        private static int GetProductCount(string connectionString)
-        {
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentException("La cadena de conexión no puede ser nula o vacía.", nameof(connectionString));
-            }
-
-            int productCount = 0;
-
-            using (var connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-
-                string countQuery = "SELECT COUNT(*) FROM products";
-
-                using (var command = new MySqlCommand(countQuery, connection))
-                {
-                    productCount = Convert.ToInt32(command.ExecuteScalar());
-                }
-            }
-
-            return productCount;
-        }
-
         private static void ValidateProductForInsert(Product product)
         {
             if (product == null)
@@ -158,6 +141,11 @@ namespace storeapi.Database
             if (product.Price < 0)
             {
                 throw new ArgumentException("El precio del producto no puede ser negativo.", nameof(product.Price));
+            }
+
+            if (product.CategoryID <= 0)
+            {
+                throw new ArgumentException("El ID de categoría del producto debe ser mayor que cero.", nameof(product.CategoryID));
             }
         }
     }

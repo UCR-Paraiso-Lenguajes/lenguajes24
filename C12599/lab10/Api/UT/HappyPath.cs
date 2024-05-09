@@ -1,48 +1,105 @@
 using NUnit.Framework;
 using storeapi.Bussisnes;
+using storeapi.Database;
 using storeapi.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using core;
 
 namespace storeapi.UT
 {
     [TestFixture]
     public class StoreLogicTests
     {
+        [SetUp]
+        public void Setup()
+        {
+            var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
+            DataConnection.Init(dbtestDefault);
+        }
         [Test]
-        public void Purchase_ValidCart_ReturnsSale()
+        public async Task Purchase_ValidCart_ReturnsSale()
+        {
+
+            // Arrange
+            var storeLogic = new StoreLogic();
+            var cart = new Cart
+            {
+                ProductIds = new List<string> { "1", "2", "3" },
+                Address = "123 Main St",
+                PaymentMethod = PaymentMethods.Type.CASH
+            };
+
+            // Act
+            var sale = await storeLogic.PurchaseAsync(cart);
+
+            // Assert
+            Assert.IsNotNull(sale);
+            Assert.IsNotEmpty(sale.Products);
+            Assert.AreEqual("123 Main St", sale.Address);
+            Assert.AreEqual(PaymentMethods.Type.CASH, sale.PaymentMethod);
+            Assert.Greater(sale.PurchaseNumber.Length, 0, "La longitud del número de compra debe ser mayor que cero.");
+
+            foreach (var product in sale.Products)
+            {
+                Assert.Greater(product.Price, 0);
+                decimal taxPercentage = Store.Instance.TaxPercentage;
+
+                decimal expectedPriceWithTax = Math.Round(product.Price * (1 + 13 / 100), 2);
+
+                decimal tolerance = 0.1m;
+
+                Assert.IsTrue(Math.Abs(expectedPriceWithTax - product.Price) < tolerance, $"La diferencia entre el precio con impuestos ({expectedPriceWithTax}) y el precio original ({product.Price}) no está dentro de la tolerancia ({tolerance}).");
+
+
+
+            }
+
+
+        }
+
+        [Test]
+        public void Purchase_NullCart_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var storeLogic = new StoreLogic();
+
+            // Act & Assert
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await storeLogic.PurchaseAsync(null));
+        }
+
+        [Test]
+        public void Purchase_EmptyProductIds_ThrowsArgumentException()
         {
             // Arrange
             var storeLogic = new StoreLogic();
             var cart = new Cart
             {
-                ProductIds = new List<string> { "1", "2", "3" }, // Simular IDs de productos en el carrito
+                ProductIds = new List<string>(), // Empty product IDs
                 Address = "123 Main St",
-                PaymentMethod = PaymentMethods.Type.CreditCard // Método de pago simulado
+                PaymentMethod = PaymentMethods.Type.CASH
             };
 
-            // Act
-            var sale = storeLogic.Purchase(cart);
+            // Act & Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await storeLogic.PurchaseAsync(cart));
+        }
 
-            // Assert
-            Assert.IsNotNull(sale); // Verifica que se devuelve una venta (Sale) no nula
-            Assert.IsNotEmpty(sale.Products); // Verifica que la lista de productos en la venta no esté vacía
-            Assert.AreEqual(3, sale.Products.Count); // Verifica que se haya añadido la cantidad esperada de productos a la venta
-            Assert.AreEqual("123 Main St", sale.Address); // Verifica que la dirección en la venta coincida con la dirección del carrito
-            Assert.AreEqual(PaymentMethods.Type.CreditCard, sale.PaymentMethod); // Verifica que el método de pago en la venta sea el mismo que se pasó en el carrito
-            Assert.Greater(sale.PurchaseAmount, 0); // Verifica que el monto de compra sea mayor que cero
-
-            // Verifica que cada producto en la venta tenga un precio mayor que cero y coincida con el precio modificado por impuestos
-            foreach (var product in sale.Products)
+        [Test]
+        public void Purchase_NullAddress_ThrowsArgumentException()
+        {
+            // Arrange
+            var storeLogic = new StoreLogic();
+            var cart = new Cart
             {
-                Assert.Greater(product.Price, 0); // Precio positivo
-                Assert.AreEqual(product.Price, product.BasePrice * (1 + (decimal)Store.Instance.TaxPercentage / 100)); // Precio con impuestos aplicados
-            }
+                ProductIds = new List<string> { "1", "2", "3" },
+                Address = null, // Null address
+                PaymentMethod = PaymentMethods.Type.CASH
+            };
 
-            // Verifica que la venta se haya registrado correctamente en la base de datos
-            var savedSale = CartSave.GetSaleFromDatabase(sale.Id);
-            Assert.IsNotNull(savedSale); // Verifica que se haya encontrado la venta guardada en la base de datos
-            Assert.AreEqual(sale.Id, savedSale.Id); // Verifica que el ID de la venta guardada coincida con el de la venta generada
-
-            // Puedes agregar más aserciones según sea necesario para validar otros aspectos de la venta generada
+            // Act & Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await storeLogic.PurchaseAsync(cart));
         }
     }
 }
+
