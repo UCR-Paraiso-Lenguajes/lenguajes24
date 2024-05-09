@@ -1,5 +1,5 @@
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { Button, Container } from "react-bootstrap";
 import Link from "next/link";
 
