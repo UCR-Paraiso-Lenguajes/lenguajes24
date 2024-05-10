@@ -1,55 +1,49 @@
 using NUnit.Framework;
 using storeapi.Models;
-using System;
-using core;
 
-namespace storeapi.UT
+using System.Collections.Generic;
+
+namespace UT
 {
-    [TestFixture]
-    public class CategoryTest
+    public class CategoriesTests
     {
-        [SetUp]
-        public void Setup()
-        {
-            // Configuración inicial
-            var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
-            DataConnection.Init(dbtestDefault);
-        }
-
         [Test]
-        public void TestGetCategoryIdByName_ValidCategory_ReturnsCategoryId()
+        public void GetCategoryId_ValidCategoryId_ReturnsMatchingId()
         {
             // Arrange
-            Categories categories = new Categories();
-            string categoryName = "Tecnología";
-            string expectedId = "8";
+            var categories = new Categories();
+            var categoryId = "4"; // Category Id as string
+            var expectedId = 4;
 
             // Act
-            string categoryId = categories.GetCategoryIdByName(categoryName);
+            var result = categories.GetCategoryId(categoryId);
 
             // Assert
-            Assert.AreEqual(expectedId, categoryId, $"El ID de la categoría '{categoryName}' no coincide con el valor esperado.");
+            Assert.AreEqual(expectedId, result);
         }
 
         [Test]
-        public void TestGetCategoryIdByName_InvalidCategory_ThrowsArgumentException()
+        public void GetCategoryId_InvalidCategoryId_ThrowsException()
         {
             // Arrange
-            Categories categories = new Categories();
-            string categoryName = "Ropa"; // Categoría inexistente
+            var categories = new Categories();
+            var categoryId = "invalid";
 
-            // Act y Assert
-            Assert.Throws<ArgumentException>(() => categories.GetCategoryIdByName(categoryName), $"Se esperaba una excepción ArgumentException para la categoría '{categoryName}'.");
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() => categories.GetCategoryId(categoryId));
         }
 
+    
         [Test]
-        public void TestGetCategoryIdByName_NullCategory_ThrowsArgumentNullException()
+        public void GetCategoryId_NullOrEmptyCategoryId_ThrowsException()
         {
             // Arrange
-            Categories categories = new Categories();
+            var categories = new Categories();
+            string categoryId = null;
 
-            // Act y Assert
-            Assert.Throws<ArgumentNullException>(() => categories.GetCategoryIdByName(null), "Se esperaba una excepción ArgumentNullException para un nombre de categoría nulo.");
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() => categories.GetCategoryId(categoryId));
         }
     }
 }
+
