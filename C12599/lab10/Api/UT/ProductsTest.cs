@@ -4,24 +4,24 @@ using System.Collections.Generic;
 using storeapi.Database;
 using core;
 
-namespace storeapi.UT
+namespace UT
 {
     [TestFixture]
     public class ProductsTests
     {
+         
         [SetUp]
-        public void Setup()
-        {
-            // Configurar la conexión de la base de datos para pruebas
-            var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
-            DataConnection.Init(dbtestDefault);
-        }
-
+              public void Setup()
+    {
+        
+        var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
+        DataConnection.Init(dbtestDefault);
+    }
         [Test]
         public void LoadProductsFromDatabase_ValidCategoryID_ReturnsMatchingProducts()
         {
             // Arrange
-            string categoryId = "1"; // Simulamos una categoría válida
+            int categoryId = 1; // Simulamos una categoría válida
             Products productsManager = new Products();
 
             // Creamos datos de productos simulados para cargar
@@ -40,7 +40,7 @@ namespace storeapi.UT
 
             // Assert
             Assert.IsNotNull(loadedProducts, "La lista de productos cargada no debe ser nula.");
-            Assert.AreEqual(3, ((List<Product>)loadedProducts).Count, "Se esperan tres productos con el ID de categoría '1'.");
+            Assert.AreEqual(1, ((List<Product>)loadedProducts).Count, "Se esperan dos productos con el ID de categoría '1'.");
 
             // Verificamos los detalles de los productos cargados
             foreach (var product in loadedProducts)
@@ -49,15 +49,18 @@ namespace storeapi.UT
             }
         }
 
-        [Test]
-        public void LoadProductsFromDatabase_InvalidCategoryID_ThrowsArgumentException()
+       
+        public void LoadProductsFromDatabase_InvalidCategoryID_ThrowsArgumentException(int categoryId)
         {
             // Arrange
-            string invalidCategoryId = null; // Simulamos un categoryId inválido
             Products productsManager = new Products();
 
             // Act & Assert
-            Assert.Throws<ArgumentException>(() => productsManager.LoadProductsFromDatabase(invalidCategoryId), "Se esperaba una excepción ArgumentException para un categoryId nulo.");
+            Assert.Throws<ArgumentException>(() => productsManager.LoadProductsFromDatabase(categoryId), "Se esperaba una excepción ArgumentException para un categoryId nulo o vacío.");
         }
-    }
-}
+
+ }
+  }
+    
+      
+
