@@ -8,7 +8,6 @@ namespace UT;
 
 public class StoreLogicTest
 {
-
     [SetUp]
     public void Setup()
     {

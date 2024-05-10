@@ -30,10 +30,7 @@ namespace TodoApi
 
         public CategorySt GetType(int id)
         {
-            if (id <= 0)
-            {
-                throw new ArgumentException(nameof(id), "ID must be positive or not 0");
-            }
+            if (id <= 0)throw new ArgumentException(nameof(id), "ID must be positive or not 0");
 
             foreach (var category in categories)
             {

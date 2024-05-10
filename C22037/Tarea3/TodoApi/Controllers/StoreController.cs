@@ -21,6 +21,7 @@ namespace TodoApi.Models
         [HttpGet("products")]
         public async Task<IActionResult> GetProductsByCategoryAsync(int category)
         {
+            if (category <= 0)return BadRequest("Category ID must be greater than 0.");
             var store = await Store.Instance;
             var products = store.GetProductsByCategory(category);
             return Ok(new{products});
