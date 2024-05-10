@@ -35,17 +35,18 @@ public class StoreLogicTest
     [Test]
     public async Task HappyPath()
     {
+        Category category = new Category();
         StoreLogic storeLogic = new StoreLogic();
         var list = new List<String>();
         Product product = new Product("Olla",
          "https://images-na.ssl-images-amazon.com/images/I/71JSM9i1bQL.AC_UL160_SR160,160.jpg",
-          45.2m, "Descripción", 1, 1);
+          45.2m, "Descripción", 1, category.GetType(1));
         list.Add(product.Id.ToString());
         Cart cart = new Cart(list, "Santiago", 0, product.Price);
         var sale = await storeLogic.PurchaseAsync(cart);
         var listProducts = sale.Products;
         Assert.IsNotNull(sale.PurchaseNumber);
-        Assert.AreEqual(cart.ProductIds.Count, listProducts.Count);
+        Assert.AreEqual(cart.ProductIds.Count, listProducts.Count());
         Assert.AreEqual(cart.Total, sale.Amount);
     }
 }
