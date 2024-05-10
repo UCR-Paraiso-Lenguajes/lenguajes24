@@ -82,7 +82,7 @@ category = categories.ListCategories().ToList()[random.Next(1, 10)]
                                 insertCommand.Parameters.AddWithValue("@price", product.Price);
                                 insertCommand.Parameters.AddWithValue("@description", product.Description);
                                 insertCommand.Parameters.AddWithValue("@image", product.ImageUrl);
-                                insertCommand.Parameters.AddWithValue("@category", product.category.CategoryID);
+                                insertCommand.Parameters.AddWithValue("@category", product.category.Id);
                                 insertCommand.ExecuteNonQuery();
                             }
                         }
