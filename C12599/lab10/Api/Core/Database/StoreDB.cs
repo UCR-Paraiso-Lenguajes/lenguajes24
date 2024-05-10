@@ -33,11 +33,11 @@ Categories categories = new Categories();
         string createTableQuery = @"
             CREATE TABLE IF NOT EXISTS products (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(100),
-                price DECIMAL(10, 2),
-                image VARCHAR(255),
-                description VARCHAR(255),
-                category INT
+                name VARCHAR(100) not null,
+                price DECIMAL(10, 2) not null,
+                image VARCHAR(255) not null,
+                description VARCHAR(255) not null,
+                category INT not null
             )";
 
         using (var createTableCommand = new MySqlCommand(createTableQuery, connection))
