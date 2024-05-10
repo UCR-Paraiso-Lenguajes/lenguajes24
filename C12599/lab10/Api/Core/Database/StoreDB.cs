@@ -8,57 +8,59 @@ namespace storeapi.Database
 {
     public sealed class StoreDB
     {
-Categories categories = new Categories();
-      public static void CreateMysql()
-{
-    using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
-    {
-        connection.Open();
-
-        // Verificar el número actual de productos en la tabla
-        string countProductsQuery = "SELECT COUNT(*) FROM products";
-
-        using (var countProductsCommand = new MySqlCommand(countProductsQuery, connection))
+        public static void CreateMysql()
         {
-            int currentProductCount = Convert.ToInt32(countProductsCommand.ExecuteScalar());
+            var categories = new Categories();
+            var products = new List<Product>();
+            Random random = new Random();
 
-         
-            if (currentProductCount >= 14)
+            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
-                throw new InvalidOperationException("No se pueden insertar más productos. Ya se han insertado 12 productos.");
-            }
-        }
+                connection.Open();
 
-        // Continuar con la creación de la tabla y la inserción de productos
-        string createTableQuery = @"
-            CREATE TABLE IF NOT EXISTS products (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(100) not null,
-                price DECIMAL(10, 2) not null,
-                image VARCHAR(255) not null,
-                description VARCHAR(255) not null,
-                category INT not null
-            )";
+                // Verificar el número actual de productos en la tabla
+                string countProductsQuery = "SELECT COUNT(*) FROM products";
 
-        using (var createTableCommand = new MySqlCommand(createTableQuery, connection))
-        {
-            createTableCommand.ExecuteNonQuery();
-        }
+                using (var countProductsCommand = new MySqlCommand(countProductsQuery, connection))
+                {
+                    int currentProductCount = Convert.ToInt32(countProductsCommand.ExecuteScalar());
 
-        var products = new List<Product>();
-        Random random = new Random();
+                    if (currentProductCount >= 14)
+                    {
+                        throw new InvalidOperationException("No se pueden insertar más productos. Ya se han insertado 12 productos.");
+                    }
+                }
 
-        for (int i = 1; i <= 12; i++)
-        {
-            products.Add(new Product
-            {
-                Name = $"Product {i}",
-                ImageUrl = $"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
-                Price = 10.99m * i,
-                Description = $"Description of Product {i}",
-category = categories.ListCategories().ToList()[random.Next(1, 10)] 
-            });
-        }
+                // Continuar con la creación de la tabla y la inserción de productos
+                string createTableQuery = @"
+                    CREATE TABLE IF NOT EXISTS products (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(100) not null,
+                        price DECIMAL(10, 2) not null,
+                        image VARCHAR(255) not null,
+                        description VARCHAR(255) not null,
+                        category INT not null
+                    )";
+
+                using (var createTableCommand = new MySqlCommand(createTableQuery, connection))
+                {
+                    createTableCommand.ExecuteNonQuery();
+                }
+
+                for (int i = 1; i <= 14; i++)
+                {
+                    int randomIndex = random.Next(0, categories.ListCategories.Count); // Obtener un índice aleatorio válido
+                    int randomCategoryId = categories.ListCategories[randomIndex].Id; // Obtener el ID de la categoría en el índice aleatorio
+                    products.Add(new Product
+                    {
+                        Name = $"Product {i}",
+                        ImageUrl = $"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
+                        Price = 10.99m * i,
+                        Description = $"Description of Product {i}",
+                        CategoryID = randomCategoryId // Asignar el ID de la categoría aleatoria al producto
+                    });
+                }
+
                 if (products.Count == 0)
                 {
                     throw new ArgumentException("La lista de productos no puede estar vacía.", nameof(products));
@@ -82,7 +84,7 @@ category = categories.ListCategories().ToList()[random.Next(1, 10)]
                                 insertCommand.Parameters.AddWithValue("@price", product.Price);
                                 insertCommand.Parameters.AddWithValue("@description", product.Description);
                                 insertCommand.Parameters.AddWithValue("@image", product.ImageUrl);
-                                insertCommand.Parameters.AddWithValue("@category", product.category.Id);
+                                insertCommand.Parameters.AddWithValue("@category", product.CategoryID);
                                 insertCommand.ExecuteNonQuery();
                             }
                         }
@@ -97,7 +99,8 @@ category = categories.ListCategories().ToList()[random.Next(1, 10)]
                 }
             }
         }
-                public static List<string[]> RetrieveDatabaseInfo()
+
+        public static List<string[]> RetrieveDatabaseInfo()
         {
             List<string[]> databaseInfo = new List<string[]>();
             using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
@@ -151,4 +154,3 @@ category = categories.ListCategories().ToList()[random.Next(1, 10)]
         }
     }
 }
-
