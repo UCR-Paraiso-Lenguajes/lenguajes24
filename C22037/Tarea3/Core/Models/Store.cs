@@ -16,7 +16,9 @@ namespace TodoApi.Models
         private Store(IEnumerable<Product> products, int taxPercentage)
         {
             if (products == null)throw new ArgumentNullException(nameof(products), "Products cannot be null.");
+            if (!products.Any())throw new ArgumentException("Products list cannot be empty.", nameof(products));
             if (taxPercentage < 0 || taxPercentage > 100)throw new ArgumentOutOfRangeException(nameof(taxPercentage), "Tax percentage must be between 0 and 100.");
+
             Products = products;
             TaxPercentage = taxPercentage;
         }
@@ -34,7 +36,7 @@ namespace TodoApi.Models
 
         public async Task<Store> GetProductsByCategory(int id)
         {
-            if (id <= 0)throw new ArgumentOutOfRangeException(nameof(id), "Category ID must be greater than 0.");
+            if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id), "Category ID must be greater than 0.");
             var productsByCategory = await categoryLogic.GetCategoryByIdAsync(id);
             return new Store(productsByCategory, 13);
         }
