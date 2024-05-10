@@ -8,6 +8,7 @@ namespace storeapi.Database
 {
     public sealed class StoreDB
     {
+Categories categories = new Categories();
       public static void CreateMysql()
 {
     using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
@@ -55,6 +56,7 @@ namespace storeapi.Database
                 ImageUrl = $"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
                 Price = 10.99m * i,
                 Description = $"Description of Product {i}",
+CategoryID = categorías.ListCategories
                 CategoryID = random.Next(1, 10)
             });
         }
