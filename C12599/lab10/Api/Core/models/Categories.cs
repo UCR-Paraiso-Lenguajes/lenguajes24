@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace storeapi.Models
 {
-    public struct Category
+    public  struct Category
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -30,25 +30,29 @@ namespace storeapi.Models
             ListCategories.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase));
         }
 
-        public string GetCategoryIdByName(string categoryName)
+  public int GetCategoryId(string categoryId)
+{
+    // Validar que el categoryId no sea nulo o vacío
+    if (string.IsNullOrWhiteSpace(categoryId))
+    {
+        throw new ArgumentNullException(nameof(categoryId), "El Id de la categoría no puede ser nulo o vacío.");
+    }
+
+   
+    if (int.TryParse(categoryId, out int parsedCategoryId))
+    {
+  
+        foreach (Category category in ListCategories)
         {
-            // Validar que el nombre de la categoría no sea nulo o vacío
-            if (string.IsNullOrWhiteSpace(categoryName))
+            if (category.Id == parsedCategoryId)
             {
-                throw new ArgumentNullException(nameof(categoryName), "El nombre de la categoría no puede ser nulo o vacío.");
+                return parsedCategoryId; // Devuelve el Id de la categoría encontrada
             }
-
-            // Buscar la categoría por nombre, ignorando mayúsculas/minúsculas
-            foreach (Category category in ListCategories)
-            {
-                if (string.Equals(category.Name, categoryName, StringComparison.OrdinalIgnoreCase))
-                {
-                    return category.Id.ToString();
-                }
-            }
-
-            // Si no se encuentra la categoría, lanzar una excepción
-            throw new ArgumentException($"La categoría '{categoryName}' no fue encontrada.", nameof(categoryName));
         }
     }
+
+    // Si no se puede convertir a entero o no se encuentra la categoría, lanzar una excepción
+    throw new ArgumentException($"La categoría con Id '{categoryId}' no fue encontrada o el formato de Id no es válido.");
+}
+}
 }
