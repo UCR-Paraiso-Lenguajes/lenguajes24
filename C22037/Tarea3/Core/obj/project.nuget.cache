@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "rJtXFJ/TrA+S1btWnZoccLHwxOZu6vFF8wYoYseF53sKiIjQ3hzGvRC+TGA1kZ4zSyEQRD5Zqr568RufDneBwQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\mchac\\lenguajes24\\C22037\\Tarea3\\Core\\Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\mchac\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\7.0.1\\microsoft.extensions.logging.abstractions.7.0.1.nupkg.sha512",
+    "C:\\Users\\mchac\\.nuget\\packages\\mysqlconnector\\2.3.6\\mysqlconnector.2.3.6.nupkg.sha512"
+  ],
+  "logs": []
+}
