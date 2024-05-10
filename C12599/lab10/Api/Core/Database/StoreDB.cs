@@ -56,7 +56,7 @@ Categories categories = new Categories();
                 ImageUrl = $"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
                 Price = 10.99m * i,
                 Description = $"Description of Product {i}",
-CategoryID = categories.ListCategories().ToList()[random.Next(1, 10)] 
+category = categories.ListCategories().ToList()[random.Next(1, 10)] 
             });
         }
                 if (products.Count == 0)
@@ -82,7 +82,7 @@ CategoryID = categories.ListCategories().ToList()[random.Next(1, 10)]
                                 insertCommand.Parameters.AddWithValue("@price", product.Price);
                                 insertCommand.Parameters.AddWithValue("@description", product.Description);
                                 insertCommand.Parameters.AddWithValue("@image", product.ImageUrl);
-                                insertCommand.Parameters.AddWithValue("@category", product.CategoryID);
+                                insertCommand.Parameters.AddWithValue("@category", product.category.CategoryID);
                                 insertCommand.ExecuteNonQuery();
                             }
                         }
