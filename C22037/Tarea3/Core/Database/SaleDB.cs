@@ -113,7 +113,7 @@ namespace TodoApi.Database
                 string selectQuery = @"
                     SELECT purchase_date, purchase_number, total
                     FROM sales
-                    WHERE DATE(purchase_date) = DATE_SUB(DATE(@date), INTERVAL 1 DAY);";
+                    WHERE DATE(purchase_date) = DATE(@date);";
 
                 using (var command = new MySqlCommand(selectQuery, connection))
                 {

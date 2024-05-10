@@ -42,16 +42,16 @@ export default function Init() {
         }
     };
 
-    const handleDayChange = (selectedDay) => {
-        if (selectedDay === undefined || selectedDay === null) {
+    const handleDayChange = (date) => {
+        if (date === undefined || date === null) {
             throw new Error("The argument must be a date");
         }
 
-        if (!(selectedDay instanceof Date)) {
+        if (!(date instanceof Date)) {
             throw new Error("The argument must be a date");
         }
         
-        const adjustedDay = new Date(selectedDay.getTime() - selectedDay.getTimezoneOffset() * 60000);
+        const adjustedDay = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
         setSelectedDay(adjustedDay);
     };
 

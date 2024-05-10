@@ -48,7 +48,7 @@ export default function Home() {
     }
 
     const storedCart = JSON.parse(localStorage.getItem('cart')) || { products: {} };
-    const productToAdd = productList.products.find(product => product.id === productId);
+    const productToAdd = productList.find(product => product.id === productId);
     if (productToAdd) {
       const updatedCart = {
         ...storedCart,
