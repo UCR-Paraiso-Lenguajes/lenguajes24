@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Cart, Product } from '../../lib/products-data-definitions';
+import { Cart, Product } from '../../lib/data-definitions';
 import Link from 'next/link';
 import Modal from '../modal';
 import ModalInput from '../modalInput';

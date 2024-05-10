@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace TodoApi.Controllers
     [ApiController]
     public class StoreController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "Admin")]
         public Store GetStore()
         {
             return Store.Instance ;

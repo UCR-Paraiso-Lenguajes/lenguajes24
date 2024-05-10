@@ -6,5 +6,6 @@ namespace MyStoreAPI.DB
 {
     public class DB_Store{
         
+        
     }
 }

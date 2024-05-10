@@ -2,7 +2,7 @@ using MediatR;
 
 namespace StoreApi.Commands
 {
-    public class DeleteProductCommand : IRequest<int>
+    public sealed class DeleteProductCommand : IRequest<int>
     {
         public Guid Uuid { get; set; }
     }

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using storeapi.Bussisnes;
 using storeapi.Models;
 
@@ -31,18 +30,24 @@ namespace storeapi.Controllers
         {
             if (cart == null)
             {
-                throw new ArgumentNullException(nameof(cart), "Cart object cannot be null.");
+                throw new ArgumentNullException("cart", "Cart object cannot be null.");
             }
 
             if (cart.ProductIds == null || cart.ProductIds.Count == 0)
             {
-                throw new ArgumentException("Cart must contain at least one product.", nameof(cart.ProductIds));
+                throw new ArgumentException("Cart must contain at least one product.", "ProductIds");
             }
 
             if (string.IsNullOrWhiteSpace(cart.Address))
             {
-                throw new ArgumentException("Address must be provided.", nameof(cart.Address));
+                throw new ArgumentException("Address must be provided.", "Address");
+            }
+
+            if (cart.TotalPrice <= 0)
+            {
+                throw new ArgumentException("Total price must be greater than zero.", "TotalPrice");
             }
         }
     }
 }
+

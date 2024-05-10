@@ -4,12 +4,16 @@ using StoreApi.Repositories;
 
 namespace StoreApi.Handler
 {
-    public class UpdateSalesHandler : IRequestHandler<UpdateSalesCommand, int>
+    public sealed class UpdateSalesHandler : IRequestHandler<UpdateSalesCommand, int>
     {
         private readonly ISalesRepository _salesRepository;
 
         public UpdateSalesHandler(ISalesRepository salesRepository)
         {
+            if (salesRepository == null)
+            {
+                throw new ArgumentException("Illegal action, salesRepository is invalid.");
+            }
             _salesRepository = salesRepository;
         }
         public async Task<int> Handle(UpdateSalesCommand command, CancellationToken cancellationToken)

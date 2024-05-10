@@ -1,0 +1,93 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 120px;
+    background-color: #222222;
+    padding-top: 50px;
+    transition: width 0.3s ease;
+}
+
+.sidebar.open {
+    width: 50px;
+}
+
+.sidebar ul {
+    padding-left: 0;
+}
+
+.sidebar ul li {
+    list-style: none;
+}
+
+.sidebar ul li {
+    display: block;
+    padding: 10px 15px;
+    color: #fff;
+}
+
+.sidebar ul li:hover {
+    background-color: white;
+    color: black;
+}
+
+.nav {
+    padding: 10px 15px;
+    color: white;
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    background-color: #222222;
+}
+
+.text-hidden {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    text-decoration: none;
+}
+
+.sidebar.open .text-hidden {
+    opacity: 0;
+    pointer-events: none;
+    text-decoration: none;
+}
+
+.sidebar .list-unstyled li a:active,
+.sidebar .list-unstyled li a:focus {
+    color: gray;
+}
+
+.close {
+    position: absolute;
+    bottom: 0;
+}
+
+a:hover .fa-icon {
+    animation: bounce 0.5s;
+    /* Aplica la animación "bounce" con una duración de 0.5 segundos */
+}
+
+@keyframes bounce {
+
+    /* Definición de la animación "bounce" */
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+        /* Mantiene el ícono en su posición original */
+    }
+
+    40% {
+        transform: translateY(-10px);
+        /* Hace que el ícono suba 10px */
+    }
+
+    60% {
+        transform: translateY(-5px);
+        /* Hace que el ícono suba 5px */
+    }
+}

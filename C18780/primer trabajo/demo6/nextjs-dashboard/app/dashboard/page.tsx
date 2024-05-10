@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import ProductItem from '../dashboard/product';
 import SideNav from '../ui/dashboard/sidenav';
-import { Cart, Product } from '../lib/products-data-definitions';
+import { Cart, Category, Product } from '../lib/data-definitions';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import React from 'react';
 import { getInitialCartLocalStorage, saveInitialCartLocalStorage } from '../lib/cart_data_localeStore';
@@ -67,17 +67,11 @@ const ProductsRow = ({ products, onAdd }: { products: Product[], onAdd: any }) =
 
 
 export default function Page() {
-  const initialStore = useFetchInitialStore();
+  const [category, setCategory] = useState<string>("All");
+  const initialStore = useFetchInitialStore(category);
   const initialCart = getInitialCartLocalStorage();
   const [count, setCount] = useState(initialCart.cart.products.length > 0 ? initialCart.cart.products.length : 0);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (initialStore && initialStore.length > 0) {
-      setLoading(false);
-    }
-  }, [initialStore]);
-
+  
   const handleAddToCart = ({ product }: { product: Product }) => {
     initialCart.cart.products.push(product);
     initialCart.cart.subtotal = initialCart.cart.subtotal + product.price;
@@ -86,10 +80,15 @@ export default function Page() {
     saveInitialCartLocalStorage(initialCart);
   }
 
+  const handleAddtoCategory = ({ category }: { category: Category }) => {
+    setCategory(category.name);
+    console.log(initialStore);
+  }
+
   return (
     <>
-      <SideNav countCart={count} />
-      {!loading && <ProductsRow products={initialStore ? initialStore : []} onAdd={handleAddToCart} />}
+      <SideNav countCart={count} onAdd={handleAddtoCategory} />
+      {<ProductsRow products={initialStore ? initialStore : []} onAdd={handleAddToCart} />}
     </>
   );
 }

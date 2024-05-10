@@ -10,10 +10,7 @@ namespace storeapi.Database
 {
     public class CartSave
     {
-        
-        
-
-        public static async Task SaveSaleAndItemsToDatabaseAsync(Sale sale)
+        public async Task SaveSaleAndItemsToDatabaseAsync(Sale sale)
         {
             string saleValidationMessage = ValidateSaleForDatabase(sale);
 
@@ -31,9 +28,7 @@ namespace storeapi.Database
                     try
                     {
                         await InsertSaleAsync(connection, transaction, sale);
-                        await InsertManualComprasAsync(connection, transaction);
                         await InsertItemsAsync(connection, transaction, sale);
-
                         await transaction.CommitAsync();
                     }
                     catch (Exception)
@@ -45,7 +40,7 @@ namespace storeapi.Database
             }
         }
 
-        private static string ValidateSaleForDatabase(Sale sale)
+        private string ValidateSaleForDatabase(Sale sale)
         {
             if (sale == null)
             {
@@ -65,13 +60,18 @@ namespace storeapi.Database
             return string.Empty;
         }
 
-        private static async Task InsertSaleAsync(MySqlConnection connection, MySqlTransaction transaction, Sale sale)
+        private async Task InsertSaleAsync(MySqlConnection connection, MySqlTransaction transaction, Sale sale)
         {
             ValidateSaleForInsert(sale);
 
+            // Convert products to string representations
+            List<string> Productos = sale.Products.Select(p => p.id.ToString()).ToList();
+            string productosString = string.Join(",", Productos);
+
+            // Insert sale
             string insertSaleQuery = @"
-                INSERT INTO Compras (total, date, purchaseNumber, Paymethod)
-                VALUES (@total, @date, @purchaseNumber, @Paymethod);";
+                INSERT INTO Compras (total, date, purchaseNumber, Paymethod, ProductsId)
+                VALUES (@total, @date, @purchaseNumber, @Paymethod, @Productos);";
 
             using (var command = new MySqlCommand(insertSaleQuery, connection, transaction))
             {
@@ -79,12 +79,13 @@ namespace storeapi.Database
                 command.Parameters.AddWithValue("@date", DateTime.Now);
                 command.Parameters.AddWithValue("@purchaseNumber", sale.PurchaseNumber);
                 command.Parameters.AddWithValue("@Paymethod", (int)sale.PaymentMethod);
+                command.Parameters.AddWithValue("@Productos", productosString);
 
                 await command.ExecuteNonQueryAsync();
             }
         }
 
-        private static void ValidateSaleForInsert(Sale sale)
+        private void ValidateSaleForInsert(Sale sale)
         {
             if (sale == null)
             {
@@ -97,21 +98,7 @@ namespace storeapi.Database
             }
         }
 
-        private static async Task InsertManualComprasAsync(MySqlConnection connection, MySqlTransaction transaction)
-        {
-            string insertManualCompras = @"
-                -- Aquí se incluyen las inserciones manuales simuladas como operaciones asíncronas
-                -- por ejemplo:
-                -- INSERT INTO Compras (total, date, purchaseNumber, Paymethod) VALUES (...);
-            ";
-
-            using (var command = new MySqlCommand(insertManualCompras, connection, transaction))
-            {
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        private static async Task InsertItemsAsync(MySqlConnection connection, MySqlTransaction transaction, Sale sale)
+        private async Task InsertItemsAsync(MySqlConnection connection, MySqlTransaction transaction, Sale sale)
         {
             foreach (var product in sale.Products)
             {
@@ -132,7 +119,7 @@ namespace storeapi.Database
             }
         }
 
-        private static void ValidateItemForInsert(Product product, string purchaseNumber, string address)
+        private void ValidateItemForInsert(Product product, string purchaseNumber, string address)
         {
             if (product == null)
             {
@@ -150,7 +137,7 @@ namespace storeapi.Database
             }
         }
 
-        public static async Task EnsureItemsTableExistsAsync()
+        public async Task EnsureItemsTableExistsAsync()
         {
             string createItemsTableQuery = @"
                 CREATE TABLE IF NOT EXISTS Items (
@@ -163,7 +150,7 @@ namespace storeapi.Database
                     FOREIGN KEY (ProductId) REFERENCES products(id)
                 );";
 
-             await using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionStringMyDb))
+            await using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionStringMyDb))
             {
                 await connection.OpenAsync();
 
@@ -174,7 +161,7 @@ namespace storeapi.Database
             }
         }
 
-        public static async Task EnsureComprasTableExistsAsync()
+        public async Task EnsureComprasTableExistsAsync()
         {
             string createComprasTableQuery = @"
                 CREATE TABLE IF NOT EXISTS Compras (
@@ -182,6 +169,7 @@ namespace storeapi.Database
                     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     purchaseNumber VARCHAR(255) NOT NULL,
                     Paymethod INT,
+                    ProductsId varchar(100),
                     PRIMARY KEY (purchaseNumber)
                 );";
 

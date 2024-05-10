@@ -8,12 +8,16 @@ namespace StoreApi
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SalesController : ControllerBase
+    public sealed class SalesController : ControllerBase
     {
         private readonly IMediator mediator;
 
         public SalesController(IMediator mediator)
         {
+            if (mediator == null)
+            {
+                throw new ArgumentException("Illegal action, the mediator is being touched. The mediator is null and void.");
+            }
             this.mediator = mediator;
         }
 

@@ -14,7 +14,7 @@ namespace storeapi.Models
         private Payment()
         {
             (Cash, Sinpe) = LoadPaymentMethodsFromDatabase();
-            
+
             if (Cash == null || Sinpe == null)
             {
                 throw new InvalidOperationException("No se encontraron ambos métodos de pago necesarios.");
@@ -34,13 +34,18 @@ namespace storeapi.Models
                 {
                     if (int.TryParse(row[0], out int id) && Enum.TryParse(row[1], out PaymentMethods.Type type))
                     {
-                        if (type == PaymentMethods.Type.CASH)
+                        PaymentMethods paymentMethod = PaymentMethods.Find(type);
+
+                        if (paymentMethod != null)
                         {
-                            cash = new Cash();
-                        }
-                        else if (type == PaymentMethods.Type.SINPE)
-                        {
-                            sinpe = new Sinpe();
+                            if (paymentMethod.PaymentType == PaymentMethods.Type.CASH)
+                            {
+                                cash = paymentMethod;
+                            }
+                            else if (paymentMethod.PaymentType == PaymentMethods.Type.SINPE)
+                            {
+                                sinpe = paymentMethod;
+                            }
                         }
                     }
                 }
@@ -52,7 +57,8 @@ namespace storeapi.Models
                 throw new InvalidOperationException("No se encontraron ambos métodos de pago necesarios.");
             }
 
-            return (cash, sinpe);
+            return (cash, sinpe); // Asegúrate de devolver un valor válido
         }
     }
 }
+

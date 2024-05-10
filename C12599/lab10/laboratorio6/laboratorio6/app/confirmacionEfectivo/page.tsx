@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
+import { useRouter } from 'next/router';
 
 const ConfirmacionEfectivoPage = () => {
+    const router = useRouter();
     const [formState, setFormState] = useState({
         comprobante: '',
         confirmado: false,
@@ -38,7 +40,7 @@ const ConfirmacionEfectivoPage = () => {
     };
 
     const handleVolver = () => {
-        window.location.href = '/';
+        router.push('/');
     };
 
     return (

@@ -6,10 +6,10 @@ namespace storeapi.Models
 {
     public sealed class Store
     {
-        public List<Product> Products { get; private set; }
+        public IEnumerable<Product> Products { get; private set; }
         public int TaxPercentage { get; private set; }
 
-        private Store(List<Product> products, int taxPercentage)
+        private Store(IEnumerable<Product> products, int taxPercentage)
         {
             Products = products;
             TaxPercentage = taxPercentage;
@@ -18,11 +18,11 @@ namespace storeapi.Models
         public static readonly Store Instance;
         static Store()
         {
-            List<Product> products = LoadProductsFromDatabase();
+            IEnumerable<Product> products = LoadProductsFromDatabase();
             Instance = new Store(products, 13); 
         }
 
-        private static List<Product> LoadProductsFromDatabase()
+        private static IEnumerable<Product> LoadProductsFromDatabase()
         {
             List<string[]> productData = StoreDB.RetrieveDatabaseInfo();
             List<Product> products = new List<Product>();

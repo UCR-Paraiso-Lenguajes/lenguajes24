@@ -1,5 +1,6 @@
 using System;
 using MyStoreAPI.DB;
+using MyStoreAPI.Business;
 using System.Collections.Generic;//para usar list
 
 namespace MyStoreAPI.Models
@@ -28,7 +29,11 @@ namespace MyStoreAPI.Models
             this.Products = DB_Product.SelectProducts();            
             this.StoreConnectedWithDB = true;
             //Ahora la tienda tendra productos para el StoreController (GET) 
+
+            //Creamos el mockData
+            //mockDataAsync(Products);
         }
+
 
         //Le decimos que solo acepte clases estaticas, con readonly le indicamos que solo 1
         public static readonly Store Instance;
@@ -136,6 +141,61 @@ namespace MyStoreAPI.Models
                 });
 
                 return products;
+        }
+
+        public void mockDataAsync(List<Product> productsFromDB){
+
+            //Generamos productos
+            //var productsFromDB = Store.Products;            
+            Random rand = new Random();            
+            SaleLogic saleLogic = new SaleLogic();           
+            DateTime startDate = new DateTime(2024, 1, 1);  // Ajusta la fecha de inicio según sea necesario
+
+            for (int week = 0; week < 2; week++){
+
+                for (int day = 0; day < 7; day++){
+                    
+                    DateTime currentDate = startDate.AddDays(week * 7 + day);
+
+                    //cantidad de ventas por dia
+                    for (int saleCount = 0; saleCount < 5; saleCount++){            
+
+                        //cantidad de productos por venta
+                        List<Product> someProductsFromDB = new List<Product>(); 
+                        int countProduct = 0;
+
+                        //cantidad de productos por venta
+                        while (countProduct < 4){
+
+                            // Generamos un índice aleatorio para seleccionar un producto de la lista
+                            int randomIndex = rand.Next(productsFromDB.Count);
+                            Product selectedProduct = productsFromDB[randomIndex];
+
+                            // Verificamos si el producto seleccionado ya está en la lista someProductsFromDB
+                            if (!someProductsFromDB.Any(p => p.name == selectedProduct.name)){
+                                someProductsFromDB.Add(selectedProduct);
+                                countProduct++;
+                            }
+                        }
+
+                        decimal subTotal = 0;
+                        decimal total = 0;
+                        foreach (var product in someProductsFromDB){
+                            subTotal += product.price;
+                            total += ( product.price + (product.price * 0.13m / 100));
+                        }
+
+                        var cartTest = new Cart{
+                            allProduct = someProductsFromDB,
+                            Subtotal = subTotal,
+                            Total = total,
+                            Direction = "Costa Rica",
+                            PaymentMethod = PaymentMethods.paymentMethodsList.First(p => p.payment == PaymentMethodNumber.CASH)
+                        };                        
+                        saleLogic.createSaleAsync(cartTest,currentDate);
+                    }
+                }
+            }
         }
     }    
 }

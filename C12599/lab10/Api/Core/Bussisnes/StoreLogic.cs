@@ -41,9 +41,9 @@ namespace storeapi.Bussisnes
             PaymentMethods.Type paymentMethodType = cart.PaymentMethod;
 
             var sale = new Sale(shadowCopyProducts, cart.Address, purchaseAmount, paymentMethodType);
-
-            // Llama al método SaveSaleAndItemsToDatabaseAsync para guardar la venta y los elementos de forma asíncrona
-            await CartSave.SaveSaleAndItemsToDatabaseAsync(sale);
+            CartSave cartSave = new CartSave();
+            await cartSave.SaveSaleAndItemsToDatabaseAsync(sale);
+  
 
             return sale;
         }

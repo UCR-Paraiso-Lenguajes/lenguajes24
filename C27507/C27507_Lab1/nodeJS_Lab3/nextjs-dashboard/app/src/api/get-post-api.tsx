@@ -1,5 +1,9 @@
-//Peticiones API
-    //POST
+//Interfaces
+import { RegisteredSaleAPI } from "../models-data/RegisteredSale";
+import { RegisteredSaleReport } from "../models-data/RegisteredSaleReport";
+import { RegisteredSaleWeek } from "../models-data/RegisteredSaleWeek";
+
+    //POST Sale
     export async function sendDataAPI(directionAPI:string, data:any): Promise<string | null> {
 
         //Especificacion POST
@@ -31,6 +35,36 @@
             return purchaseNum;
             
         } catch (error) {
+            throw new Error('Failed to POST data: '+ error);
+        }        
+    }
+
+
+    export async function getRegisteredSalesFromAPI(directionAPI: string, data: any): Promise<string | RegisteredSaleReport | null> {
+
+
+        //Especificacion POST
+        let postConfig = {
+            method: "POST",
+            //pasamos un objeto como atributo de otro
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        }
+    
+        try {         
+            let responsePost = await fetch(directionAPI,postConfig);
+            if(!responsePost.ok){                
+                const errorMessage = await responsePost.text();                
+                return errorMessage;
+            }        
+            const jsonRegisteredSales = await responsePost.json();            
+
+            return jsonRegisteredSales.specificListOfRegisteredSales;
+            
+        } catch (error) {            
             throw new Error('Failed to POST data: '+ error);
         }        
     }

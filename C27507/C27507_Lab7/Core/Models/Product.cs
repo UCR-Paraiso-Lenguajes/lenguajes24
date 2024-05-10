@@ -9,6 +9,7 @@ namespace MyStoreAPI.Models
         public string description { get; set; }        
         public decimal id { get; set; }
 
+
         public object Clone()
         {
             return new Product{

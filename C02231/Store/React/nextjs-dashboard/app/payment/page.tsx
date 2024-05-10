@@ -90,18 +90,19 @@ export default function PaymentPage() {
                 });
 
                 if (response.ok) {
+                    // debugger
                     const responseData = await response.json();
                     const { purchaseNumber } = responseData;
                     const orderNumber = purchaseNumber;
 
                     updateLocalStorage({
-                        productos: [],
-                        direccionEntrega: '',
-                        metodoPago: '',
+                        products: [],
+                        deliveryAddress: '',
+                        paymentMethod: '',
                         isCartEmpty: true,
                         numeroCompra: orderNumber 
                     });
-                    
+                    window.location.href = "/confirm";
                 } else {
                     const errorResponseData = await response.json();
                     throw new Error('Error to send data: ' + JSON.stringify(errorResponseData));
@@ -167,11 +168,11 @@ export default function PaymentPage() {
                 {cart.paymentMethod === 'cash' && (
                     <div>
                         <div >
-                        <Link  href="/confirm">
+                      
                         <button className="btn btn-success" style={{margin: '1px'}} onClick={handleSubmit} >
                             Confirm Payment
                         </button>
-                        </Link>
+                     
                         </div>
                         <p>{cart.confirmation}</p>
                         
@@ -193,11 +194,9 @@ export default function PaymentPage() {
                         </div>
                         <div>
                             {cart && cart.receipt && cart.receipt.length > 0 ? (
-                                <Link  href="/confirm">
                                 <button className="btn btn-success" onClick={handleSubmit}  >
                                     Confirm Payment
-                                </button>
-                                </Link>
+                                </button>                            
                             ) : (
                                 <button className="btn btn-success" disabled >Confirm Payment</button>
                             )}

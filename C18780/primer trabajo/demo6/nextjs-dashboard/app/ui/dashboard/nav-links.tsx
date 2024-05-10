@@ -32,7 +32,7 @@ export default function NavLinks({ countCart }: { countCart: number }) {
         
         const count = index === links.length - 1 ? countCart : "";
         return (
-          <li className={className} key={index}>
+          <ul className={className} key={index}>
             <Link
               href={link.href}
               className={clsx(
@@ -46,7 +46,7 @@ export default function NavLinks({ countCart }: { countCart: number }) {
               <span className="cart-count">{count}</span>
               <p className="linkName">{link.name}</p>
             </Link >
-          </li >
+          </ul >
         );
       })}
     </>

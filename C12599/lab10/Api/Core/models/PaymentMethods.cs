@@ -12,28 +12,36 @@ namespace storeapi.Models
 
         public Type PaymentType { get; set; }
 
-        protected PaymentMethods(PaymentMethods.Type paymentType)
+        protected PaymentMethods(Type paymentType)
         {
             PaymentType = paymentType;
         }
 
-        public static PaymentMethods Find(PaymentMethods.Type type)
+        private static readonly Sinpe sinpe = new Sinpe();
+        private static readonly Cash cash = new Cash();
+
+        public static PaymentMethods Find(Type type)
         {
             switch (type)
             {
                 case Type.CASH:
-                    return new Cash();
+                    return cash;
                 case Type.SINPE:
-                    return new Sinpe();
+                    return sinpe;
                 default:
-                    throw new ArgumentException("Invalid payment type");
+                    throw new NotImplementedException("Payment method not implemented");
             }
+        }
+
+        public static PaymentMethods SetPaymentType(Type type)
+        {
+            return Find(type);
         }
     }
 
     public sealed class Sinpe : PaymentMethods
     {
-        public Sinpe() : base(PaymentMethods.Type.SINPE)
+        public Sinpe() : base(Type.SINPE)
         {
 
         }
@@ -41,7 +49,7 @@ namespace storeapi.Models
 
     public sealed class Cash : PaymentMethods
     {
-        public Cash() : base(PaymentMethods.Type.CASH)
+        public Cash() : base(Type.CASH)
         {
 
         }

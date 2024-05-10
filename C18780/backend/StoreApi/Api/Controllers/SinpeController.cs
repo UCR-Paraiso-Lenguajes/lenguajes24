@@ -7,12 +7,16 @@ namespace StoreApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SinpeController : ControllerBase
+    public sealed class SinpeController : ControllerBase
     {
         private readonly IMediator _mediator;
 
         public SinpeController(IMediator mediator)
         {
+            if (mediator == null)
+            {
+                throw new ArgumentException("Illegal action, the mediator is being touched. The mediator is null and void.");
+            }
             _mediator = mediator;
         }
         public class SinpeInputModel

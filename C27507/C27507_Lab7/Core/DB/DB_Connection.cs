@@ -56,6 +56,7 @@ namespace MyStoreAPI{
                     Console.WriteLine("Exito al crear Tablas Products");
                 }
 
+
                 string createTableSales = @"
                     CREATE TABLE IF NOT EXISTS Sales (
                         IdSale INT AUTO_INCREMENT PRIMARY KEY,                            

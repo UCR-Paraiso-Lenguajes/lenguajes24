@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
+import { useRouter } from 'next/router';
 
 const ConfirmacionSinpePage = () => {
+    const router = useRouter();
     const [formState, setFormState] = useState({
         comprobante: '',
         confirmado: false,
@@ -48,7 +50,7 @@ const ConfirmacionSinpePage = () => {
     };
 
     const handleVolver = () => {
-        window.location.href = '/';
+        router.push('/');
     };
 
     const cartDataString = localStorage.getItem('cartData');

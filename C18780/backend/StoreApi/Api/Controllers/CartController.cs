@@ -8,19 +8,24 @@ namespace StoreApi
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CartController : ControllerBase
+    public sealed class CartController : ControllerBase
     {
         private readonly IMediator _mediator;
 
         public CartController(IMediator mediator)
         {
+            if (mediator == null)
+            {
+                throw new ArgumentException("Illegal action, the mediator is being touched. The mediator is null and void.");
+            }
             _mediator = mediator;
         }
 
         [HttpPost]
         public async Task<PurchaseNumber> AddCartAsync([FromBody] Cart cart)
         {
-            object paymentMethodName = PaymentMethods.Find((PaymentMethods.Type)cart.PaymentMethod);
+            PaymentMethods.Type paymentMethod = (PaymentMethods.Type)cart.PaymentMethod;
+            string paymentMethodName = Enum.GetName(typeof(PaymentMethods.Type), paymentMethod);
             decimal total = 0;
 
             var createSalesCommand = new CreateSalesCommand(

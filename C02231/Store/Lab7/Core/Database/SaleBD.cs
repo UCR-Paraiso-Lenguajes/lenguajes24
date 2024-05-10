@@ -1,4 +1,5 @@
 using System;
+using Core;
 using MySqlConnector;
 using StoreAPI.models;
 
@@ -6,13 +7,17 @@ namespace StoreAPI.Database
 {
     public sealed class SaleBD
     {
-        public void Save(Sale sale)
+        public async Task SaveAsync(Sale sale)
         {
-            using (var connection = new MySqlConnection("Server=localhost;Database=store;Port=3306;Uid=root;Pwd=123456;"))
-            {
-                connection.Open();
+            if (sale == null) throw new ArgumentNullException($"The {nameof(sale)} object cannot be null.");
+            if (sale.Products == null) throw new ArgumentException($"The {nameof(sale)} must contain at least one product.");
 
-                using (var transaction = connection.BeginTransaction())
+
+            using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var transaction = await connection.BeginTransactionAsync())
                 {
                     try
                     {
@@ -24,51 +29,50 @@ namespace StoreAPI.Database
                         {
                             command.Parameters.AddWithValue("@date", DateTime.Now);
                             command.Parameters.AddWithValue("@total", sale.Amount);
-                            command.Parameters.AddWithValue("@PaymentMethod", sale.PaymentMethod);
+                            command.Parameters.AddWithValue("@PaymentMethod", sale.PaymentMethod.GetHashCode().ToString());
                             command.Parameters.AddWithValue("@orderNumber", sale.NumberOrder);
 
-                            command.ExecuteNonQuery();
+                            await command.ExecuteNonQueryAsync();
                             long saleId = command.LastInsertedId;
 
-                            InsertSaleLines(saleId, sale.Products.ToList(), connection, transaction);
-
+                            await InsertSaleLinesAsync(saleId, sale.Products.ToList(), connection, transaction);
                         }
 
-
-
-                        transaction.Commit();
+                        await transaction.CommitAsync();
                     }
                     catch (Exception)
                     {
-                        transaction.Rollback();
-                        throw new Exception("Error al guardar la venta en la base de datos.");
+                        await transaction.RollbackAsync();
+                        throw new Exception("Error saving the sale in the database.");
                     }
                 }
             }
         }
-        private void InsertSaleLines(long saleId, List<Product> products, MySqlConnection connection, MySqlTransaction transaction)
+        private async Task InsertSaleLinesAsync(long saleId, List<Product> products, MySqlConnection connection, MySqlTransaction transaction)
         {
+            if (products == null || products.Count == 0) throw new ArgumentException("The products list cannot be null or empty.", nameof(products));
             try
             {
                 foreach (var product in products)
                 {
                     string insertSaleLineQuery = @"
-                        INSERT INTO sale_lines (sale_id, product_id, final_price)
-                        VALUES (@saleId, @productId, @finalPrice);";
+                        INSERT INTO saleLines (sale_id, product_id, quantity, final_price)
+                        VALUES (@saleId, @productId, @quantity, @finalPrice);";
 
                     using (var insertCommand = new MySqlCommand(insertSaleLineQuery, connection, transaction))
                     {
                         insertCommand.Parameters.AddWithValue("@saleId", saleId);
                         insertCommand.Parameters.AddWithValue("@productId", product.Id);
+                        insertCommand.Parameters.AddWithValue("@quantity", 1);
                         insertCommand.Parameters.AddWithValue("@finalPrice", product.Price);
-                        insertCommand.ExecuteNonQuery();
+                        await insertCommand.ExecuteNonQueryAsync();
                     }
                 }
             }
             catch (Exception)
             {
                 // Si ocurre un error, deshace la transacción
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 throw new Exception("An error occurred while saving the sale. Please check the logs for more details.");
             }
         }

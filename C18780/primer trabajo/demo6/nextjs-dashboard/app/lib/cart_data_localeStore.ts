@@ -1,4 +1,4 @@
-import { Cart } from './products-data-definitions';
+import { Cart } from './data-definitions';
 
 export function saveInitialCartLocalStorage(cart: Cart): void {
   const dataAsString = JSON.stringify(cart);

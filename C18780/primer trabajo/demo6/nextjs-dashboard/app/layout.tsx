@@ -1,5 +1,4 @@
-//Raiz de la aplicacion
-import 'bootstrap/dist/css/bootstrap.min.css';
+ 
 export default function RootLayout({
   children,
 }: {

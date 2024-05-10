@@ -1,4 +1,5 @@
 //API
+using Core;
 using MyStoreAPI.DB;
 using MyStoreAPI.Models;
 
@@ -8,6 +9,7 @@ namespace MyStoreAPI.Business
 
         private Cart newCart {get;}
 
+
         public CartLogic(Cart newCart){
             this.newCart = newCart;
         }
@@ -16,20 +18,20 @@ namespace MyStoreAPI.Business
 
             //Validaciones manejadas a partir de ahora con try catch
              if (newCart == null){
-                throw new NotImplementedException("Not valid");
+                throw new BussinessException("El carrito no puede ser nulo");
             }
 
             if (!validatePaymentMethodFromCart(newCart.PaymentMethod)){
-                throw new NotImplementedException("Not valid");
+                throw new BussinessException("El metodo de pago no es valido por el momento");
             }
             if (!validateProductsFromCart(newCart.allProduct)){
-                throw new NotImplementedException("Not valid");
+                throw new BussinessException("La lista de productos del carrito no puede ser nula ni estar vacia");
             }
             if (!validateDirectionFromCart(newCart.Direction)){
-                throw new NotImplementedException("Not valid");
+                throw new BussinessException("La direccion debe contener informacion verdadera");
             }
             if (!validateTotalFromCart(newCart.Total)){
-                throw new NotImplementedException("Not valid");
+                throw new BussinessException("El total de los productos del carrito no puede ser igual o menor a cero");
             }            
             //El carrito podra ser procesado con la BD
             return true;

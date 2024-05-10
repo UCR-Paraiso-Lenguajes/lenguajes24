@@ -13,15 +13,16 @@ namespace storeapi.Models
             public DateTime TransactionDate { get; set; }
             public string PurchaseNumber { get; set; }
             public PaymentMethods PaymentMethod { get; set; }
+            public IEnumerable<string> Products { get; set; }
         }
 
-        public static async Task<IEnumerable<TransactionRecord>> LoadTransactionsFromDatabaseAsync(IEnumerable<string[]> transactionData)
+        public static async Task<IEnumerable<TransactionRecord>> LoadTransactionsFromDayAsync(IEnumerable<string[]> transactionData)
         {
             List<TransactionRecord> transactions = new List<TransactionRecord>();
 
             foreach (string[] row in transactionData)
             {
-                if (row.Length < 4)
+                if (row.Length < 5) // Assuming there's product information in the transaction data
                 {
                     continue;
                 }
@@ -31,7 +32,7 @@ namespace storeapi.Models
                     int.TryParse(row[2], out int purchaseNumber) &&
                     Enum.TryParse(row[3], out PaymentMethods.Type paymentMethodType))
                 {
-                    // Simula la búsqueda del método de pago de forma asincrónica
+                    // Simulate the asynchronous search for the payment method
                     PaymentMethods paymentMethod = await Task.FromResult(PaymentMethods.Find(paymentMethodType));
 
                     if (paymentMethod != null)
@@ -46,12 +47,16 @@ namespace storeapi.Models
                             throw new ArgumentException("El número de compra no puede estar vacío.");
                         }
 
+                        // Extract products from the row
+                        IEnumerable<string> products = row[4..]; // Assuming products start from index 4
+
                         TransactionRecord transaction = new TransactionRecord
                         {
                             TotalAmount = totalAmount,
                             TransactionDate = transactionDate,
                             PurchaseNumber = purchaseNumber.ToString(),
-                            PaymentMethod = paymentMethod
+                            PaymentMethod = paymentMethod,
+                            Products = products
                         };
 
                         transactions.Add(transaction);
@@ -65,5 +70,19 @@ namespace storeapi.Models
 
             return transactions;
         }
+       public static async Task<IEnumerable<string>> LoadTransactionsFromWeekAsync(IEnumerable<string[]> transactionData)
+{
+    var purchaseNumbers = transactionData
+        .Where(row => row.Length >= 4 && int.TryParse(row[2], out _))
+        .Select(row => int.Parse(row[2]).ToString());
+
+    return purchaseNumbers;
+}
+
     }
 }
+
+
+
+
+

@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.carousel-item {
+  height: 500px; /* Altura deseada para cada slide */
+}
+
+.carousel-item img {
+  max-height: 1000px; 
+  object-fit: cover; 
+}
+
+.product {
+  margin-right: 40px; 
+  margin-bottom: 40px; 
+}
+
+.product h3 {
+  margin-top: 40px;
+  margin-right: 40px; 
+  margin-bottom: 40px; 
+}
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.product img {
+  max-width: 100%;
+  height: auto;
+  
+}
+.border {
+  border: 1px solid #ccc; 
+  border-radius: 5px; 
+}
+.BTNBuy {
+  background-color: rgb(163, 11, 132); 
+  color: #fff;
+  border: none; 
+  padding: 10px 20px; 
+  border-radius: 5px; 
+  cursor: pointer; 
+  transition: background-color 0.3s ease; 
+  margin-right: 10px; 
+}
+
+.BTNBuy:last-child {
+  margin-right: 0; 
+}
+
+.BTNBuy:hover {
+  background-color: #0056b3; 
+}
+
+.input-group{
+  display: flex;
+  justify-content: center;
+}
+.input-group .form-control {
+  margin-right: 5px; 
+}
+/* Estilos para el encabezado */
+.header-container-fluid {
+  background-color: #a81010;
+  padding: 20px; /* Espaciado interno */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sombra */
+}
+
+.header-title {
+  font-size: 2rem; 
+  margin-bottom: 10px; 
+}
+
+/* Estilos para el botón de búsqueda */
+.search-button {
+  margin-left: 10px; /* Espaciado izquierdo */
+}
+
+/* Estilos para el botón del carrito de compras */
+.cart-button {
+  margin-left: 10px; /* Espaciado izquierdo */
+}
+
+/* Cambio de color al botón de carrito de compras al pasar el mouse */
+.cart-button:hover {
+  background-color: #007bff; /* Nuevo color de fondo al pasar el mouse */
+  color: #fff; /* Nuevo color del texto al pasar el mouse */
+}
+
+/* Cambio de color al botón de búsqueda al pasar el mouse */
+.search-button:hover {
+  background-color: #007bff; /* Nuevo color de fondo al pasar el mouse */
+  color: #fff; /* Nuevo color del texto al pasar el mouse */
+}
+.alert-container {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+}
+
+.alert {
+  height: 60px;
+  width: 250px;
+  background-color: rgb(210, 91, 91);
+  font-size: 1.1rem;
+  color: white;
+  font-family: cursive;
+  padding: 5px;
+  border-radius: 5px;
+}
+

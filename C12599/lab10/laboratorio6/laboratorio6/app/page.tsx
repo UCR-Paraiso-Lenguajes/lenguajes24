@@ -69,13 +69,9 @@ const Page = () => {
       throw new Error('Invalid event object');
     }
 
-    const selectedCategory = event.target.value;
+    const selectedCategoryId = event.target.value.trim(); // Obtener el valor y eliminar espacios en blanco
 
-    if (typeof selectedCategory !== 'string') {
-      throw new Error('Selected category is not a valid string');
-    }
-
-    if (selectedCategory.trim() === '') {
+    if (selectedCategoryId === '') {
       const response = await fetch('https://localhost:7043/api/Store');
       if (!response.ok) {
         throw new Error('Failed to fetch products');
@@ -86,13 +82,19 @@ const Page = () => {
       setState(prevState => ({
         ...prevState,
         productList,
-        selectedCategory: '', // Resetear la categoría seleccionada
+        selectedCategory: '',
       }));
 
       return;
     }
 
-    const response = await fetch(`https://localhost:7043/api/Products/GetProducts?Category=${selectedCategory}`);
+    const categoryId = selectedCategoryId.replace(/\D/g, '');
+
+    if (!categoryId) {
+      throw new Error('Invalid category ID');
+    }
+
+    const response = await fetch(`https://localhost:7043/api/Products/GetProducts?category=${categoryId}`);
     if (!response.ok) {
       throw new Error('Failed to fetch products');
     }
@@ -102,8 +104,9 @@ const Page = () => {
     setState(prevState => ({
       ...prevState,
       productList,
-      selectedCategory,
+      selectedCategory: categoryId,
     }));
+
   };
 
   const renderDropdown = () => {
@@ -113,7 +116,7 @@ const Page = () => {
       <select value={selectedCategory} onChange={handleCategoryChange} className="form-select mb-3">
         <option value="">Todas las categorías</option>
         {categories.map(category => (
-          <option key={category.id} value={category.name}>
+          <option key={category.id} value={category.id}>
             {category.name}
           </option>
         ))}
@@ -125,7 +128,7 @@ const Page = () => {
     const { productList } = state;
 
     if (!productList || productList.length === 0) {
-      return []; // Devolver un arreglo vacío si no hay productos
+      return [];
     }
 
     return productList.map((product) => (
@@ -173,7 +176,6 @@ const Page = () => {
       );
     });
   };
-
   return (
     <div className="container">
       <div className="row">
@@ -223,7 +225,7 @@ const Page = () => {
       <div className="row">
         <h1 className="mb-0">Lista de Productos</h1>
       </div>
-      <div className="row row-cols-4 g-4"> {/* Utiliza Bootstrap grid para controlar el diseño */}
+      <div className="row row-cols-4 g-4">
         {renderGridItems()}
       </div>
       <div className="row mt-4">

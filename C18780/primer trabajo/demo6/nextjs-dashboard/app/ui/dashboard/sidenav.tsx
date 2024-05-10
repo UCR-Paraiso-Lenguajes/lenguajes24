@@ -1,11 +1,35 @@
 import Link from 'next/link';
 import NavLinks from '@/app/ui/dashboard/nav-links'; // componente que contiene los enlaces de navegación de la barra lateral
 import Abacaxi from '@/app/ui/abacaxi-logo'; // muestra el logotipo de la aplicación
-import { PowerIcon } from '@heroicons/react/24/outline'; // representa un icono de "power" para la opción de cerrar sesión
 import "bootstrap/dist/css/bootstrap.min.css";
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '../../ui/styles/nav.css';
+import { useFetchCategoriesList } from '@/app/api/http.category';
+import { Category } from '@/app/lib/data-definitions';
+import { useState } from 'react';
 
-export default function SideNav({ countCart = 0 }: { countCart: number }) {
+const Categories = ({ categories, onAdd }: { categories: Category[], onAdd: any }) => {
+  return (
+    <li className="nav-item dropdown">
+      <div className="dropdown">
+        <button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Category
+        </button>
+        <ul className="dropdown-menu dropdown-menu-dark">
+          {categories.map((category, index) => (
+            <li key={index}>
+              <a className={`dropdown-item ${index === 0 ? "active" : ""}`} onClick={() => onAdd({ category })} href="#">{category.name}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </li>
+  );
+}
+
+
+export default function SideNav({ countCart = 0, onAdd }: { countCart: number, onAdd: any }) {
+  const categories = useFetchCategoriesList();
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <Link href="/dashboard">
@@ -13,7 +37,7 @@ export default function SideNav({ countCart = 0 }: { countCart: number }) {
           <Abacaxi />
         </div>
       </Link>
-      
+
       <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
         aria-label="Toggle navigation">
@@ -39,10 +63,12 @@ export default function SideNav({ countCart = 0 }: { countCart: number }) {
               </button>
             </a>
           </li>
-
-          <NavLinks countCart={countCart}/>
+          <Categories categories={categories} onAdd={onAdd} />
+          <li className="nav-item">
+            <NavLinks countCart={countCart} />
+          </li>
         </ul>
       </div>
-    </nav>
+    </nav >
   );
 }

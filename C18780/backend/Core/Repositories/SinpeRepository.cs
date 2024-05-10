@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using StoreApi.Data;
 using StoreApi.Models;
 
@@ -5,16 +6,19 @@ namespace StoreApi.Repositories
 {
     public class SinpeRepository : ISinpeRepository
     {
-        private readonly DbContextClass _dbContext;
-        public SinpeRepository(DbContextClass dbContext)
+        private readonly IConfiguration _configuration;
+        public SinpeRepository(IConfiguration configuration)
         {
-            _dbContext = dbContext;
+            _configuration = configuration;
         }
         public async Task<Sinpe> AddSinpeAsync(Sinpe sinpe)
         {
-            var result = _dbContext.Sinpe.Add(sinpe);
-            await _dbContext.SaveChangesAsync();
-            return result.Entity;
+            using (var dbContext = new DbContextClass(_configuration))
+            {
+                var result = dbContext.Sinpe.Add(sinpe);
+                await dbContext.SaveChangesAsync();
+                return result.Entity;
+            }
         }
     }
 }

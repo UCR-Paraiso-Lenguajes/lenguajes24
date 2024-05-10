@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "API",
+            "name": "StoreApi debug",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Lab8/Lab7/StoreAPI/bin/Debug/net8.0/StoreAPI.dll",
+            "program": "C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Store/Lab7/bin/Debug/net8.0/StoreAPI.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,

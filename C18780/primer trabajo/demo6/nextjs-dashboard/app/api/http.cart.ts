@@ -1,4 +1,4 @@
-import { getInitialCartLocalStorage, saveInitialCartLocalStorage } from '../lib/cart_data_localeStore';
+import { getInitialCartLocalStorage } from '../lib/cart_data_localeStore';
 
 
 export async function useFetchCartPurchase() {

@@ -22,7 +22,7 @@ namespace storeapi.Database
             int currentProductCount = Convert.ToInt32(countProductsCommand.ExecuteScalar());
 
          
-            if (currentProductCount >= 66)
+            if (currentProductCount >= 14)
             {
                 throw new InvalidOperationException("No se pueden insertar más productos. Ya se han insertado 12 productos.");
             }
@@ -150,3 +150,4 @@ namespace storeapi.Database
         }
     }
 }
+

@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { Cart, Product } from '../../lib/products-data-definitions';
+import { Cart, Product } from '../../lib/data-definitions';
 import Image from 'next/image';
 import { getInitialCartLocalStorage, saveInitialCartLocalStorage } from '../../lib/cart_data_localeStore';
 import { ShoppingCartIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
@@ -143,7 +143,7 @@ const InterestingProducts = ({ products, onAdd }: { products: Product[] | null, 
     );
 }
 export default function MyCart() {
-    const initialStore = useFetchInitialStore();
+    const initialStore = useFetchInitialStore("All");
     const initialCart = getInitialCartLocalStorage();
     const handleAddToCart = ({ product }: { product: Product }) => {
         if (initialCart) {

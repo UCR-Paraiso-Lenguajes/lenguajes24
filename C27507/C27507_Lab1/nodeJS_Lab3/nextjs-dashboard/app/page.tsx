@@ -32,7 +32,7 @@ function Page() {
 
         const loadDataProductAPI = async ()=>{
             try{            
-                const response = await fetch('https://localhost:7580/api/Store')
+                const response = await fetch('https://localhost:7161/api/Store')
                 if (!response.ok){
                     throw new Error('Failed to fetch data');                
                 }
@@ -56,7 +56,13 @@ function Page() {
    
   return (
     <main className="flex min-h-screen flex-col p-6">
-      
+        <Link href='/login'>
+            <Button variant="secondary">Iniciar compra</Button>
+        </Link>
+
+        <Link href='/admin/init'>
+            <Button variant="secondary">Dashboard</Button>
+        </Link>
       <div className="main_banner">    
             
             <div className="row">

@@ -121,16 +121,6 @@ public sealed class StoreDB
                 createProcedureCommand.ExecuteNonQuery();
                 Console.WriteLine("Stored procedure InsertSales created successfully.");
             }
-
-            using (MySqlCommand createViewCommand = connection.CreateCommand())
-            {
-                createViewCommand.CommandText = @"
-                    CREATE VIEW AllSales AS
-                    SELECT * FROM sales inner;
-                ";
-                createViewCommand.ExecuteNonQuery();
-                Console.WriteLine("View AllSales created successfully.");
-            }
         
         }
     }

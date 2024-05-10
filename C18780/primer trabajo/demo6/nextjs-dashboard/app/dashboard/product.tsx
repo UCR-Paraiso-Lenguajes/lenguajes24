@@ -1,4 +1,4 @@
-import type { Product } from  '../lib/products-data-definitions';
+import type { Product } from  '../lib/data-definitions';
 import Image from 'next/image';
 
 export default function Product({ product, onAdd }: { product: Product, onAdd: any }) {
@@ -7,7 +7,7 @@ export default function Product({ product, onAdd }: { product: Product, onAdd: a
     return (
       <div className="col-sm-3">
         <div className="card">
-          <Image src={product.imageUrl}
+          <img src={product.imageUrl}
             width={1000}
             height={760}
             className="card-img-top hidden md:block" alt={product.name} />

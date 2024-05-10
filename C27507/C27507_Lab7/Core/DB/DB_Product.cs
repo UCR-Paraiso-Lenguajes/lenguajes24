@@ -10,6 +10,7 @@ namespace MyStoreAPI.DB
     public class DB_Product{
 
 
+
         //Funciones CRUD
         public static void InsertProductsStore(List<Product> allProducts){
             try{
