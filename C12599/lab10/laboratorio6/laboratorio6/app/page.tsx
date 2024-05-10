@@ -94,7 +94,8 @@ const Page = () => {
       throw new Error('Invalid category ID');
     }
 
-    const response = await fetch(`https://localhost:7043/api/Products/GetProducts?category=${categoryId}`);
+    const response = await fetch(`https://localhost:7043/api/Products?categoryId=${categoryId}`);
+
     if (!response.ok) {
       throw new Error('Failed to fetch products');
     }
