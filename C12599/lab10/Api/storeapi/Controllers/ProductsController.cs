@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Linq;
 using storeapi.Database;
+using storeapi.Models;
 using storeapi.Models;
 
 namespace storeapi.Controllers
@@ -11,21 +11,21 @@ namespace storeapi.Controllers
     public class ProductsController : ControllerBase
     {
 
-        [HttpGet("GetProducts")]
+
+        [HttpGet]
         public IActionResult GetProducts([FromQuery] string categoryID)
         {
+
             if (string.IsNullOrWhiteSpace(categoryID))
             {
                 return BadRequest("La categoría no puede estar vacía.");
             }
 
-            if (!int.TryParse(categoryID, out int idCategoryParsed))
-            {
-                return BadRequest("La categoría debe ser un número entero.");
-            }
+            Categories categories = new Categories();
+            int idCategoryparsed = categories.GetCategoryId(categoryID);
 
             Products products = new Products();
-            return Ok(products.LoadProductsFromDatabase(idCategoryParsed));
+            return Ok(products.LoadProductsFromDatabase(idCategoryparsed));
         }
     }
 }
