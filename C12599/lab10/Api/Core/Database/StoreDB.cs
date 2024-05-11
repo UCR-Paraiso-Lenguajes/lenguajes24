@@ -18,7 +18,7 @@ namespace storeapi.Database
             {
                 connection.Open();
 
-                 Category randomCategory = GetRandomCategory(categories);
+                
 
                 string countProductsQuery = "SELECT COUNT(*) FROM products";
 
@@ -50,6 +50,7 @@ namespace storeapi.Database
 
                 for (int i = 1; i <= 14; i++)
                 {
+                    Category randomCategory = GetRandomCategory(categories);
                     int randomIndex = random.Next(0, categories.ListCategories.Count); // Obtener un índice aleatorio válido
                     products.Add(new Product
                     {
