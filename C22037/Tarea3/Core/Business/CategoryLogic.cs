@@ -42,7 +42,7 @@ namespace TodoApi.Business
             }
             else
             {
-                return null;
+                throw new ArgumentNullException("List is null");
             }
         }
     }
