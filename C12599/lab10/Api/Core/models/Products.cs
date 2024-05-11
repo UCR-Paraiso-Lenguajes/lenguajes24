@@ -6,10 +6,12 @@ namespace storeapi.Models
 {
     public sealed class Products
     {
-        public IEnumerable<Product> LoadProductsFromDatabase(string CategoryID)
+        public IEnumerable<Product> LoadProductsFromDatabase(int categoryId)
         {
             List<string[]> productData = StoreDB.RetrieveDatabaseInfo();
             List<Product> products = new List<Product>();
+
+            Categories categories = new Categories(); // Instancia de la lista de categorías disponibles
 
             foreach (string[] row in productData)
             {
@@ -20,21 +22,30 @@ namespace storeapi.Models
                     decimal price = decimal.Parse(row[2]);
                     string imageUrl = row[3];
                     string description = row[4];
-                    int categoryId = int.Parse(row[5]);
+                    int rowCategoryId = int.Parse(row[5]);
 
-                    if (categoryId.ToString() == CategoryID)
+                    // Verificar si el ID de la categoría del producto coincide con el ID de la categoría deseada
+                    if (rowCategoryId == categoryId)
                     {
-                        Product product = new Product
-                        {
-                            id = id,
-                            Name = name,
-                            Price = price,
-                            Description = description,
-                            ImageUrl = imageUrl,
-                            CategoryID = categoryId
-                        };
+                        // Buscar la categoría correspondiente en la lista de categorías disponibles
+                        Category category = categories.GetCategoryById(rowCategoryId);
 
-                        products.Add(product);
+                    
+                        {
+                            // Crear un nuevo producto y asignar la categoría encontrada
+                            Product product = new Product
+                            {
+                                id = id,
+                                Name = name,
+                                Price = price,
+                                Description = description,
+                                ImageUrl = imageUrl,
+                                Category = category
+                            };
+
+                            products.Add(product);
+                        }
+                      
                     }
                 }
             }
@@ -44,6 +55,7 @@ namespace storeapi.Models
 
         private bool ValidateProductRow(string[] row)
         {
+           
             if (row == null || row.Length < 6)
             {
                 throw new ArgumentException("Invalid product data row: Insufficient columns.");
@@ -51,12 +63,7 @@ namespace storeapi.Models
 
             if (!int.TryParse(row[0], out _))
             {
-                throw new ArgumentException("Invalid product ID: not a valid integer.");
-            }
-
-            if (!decimal.TryParse(row[2], out _))
-            {
-                throw new ArgumentException("Invalid product price: not a valid decimal value.");
+                throw new ArgumentException("Invalid product ID.");
             }
 
             if (string.IsNullOrWhiteSpace(row[1]))
@@ -66,7 +73,7 @@ namespace storeapi.Models
 
             if (!int.TryParse(row[5], out _))
             {
-                throw new ArgumentException("Invalid category ID: not a valid integer.");
+                throw new ArgumentException("Invalid category ID.");
             }
 
             return true;
