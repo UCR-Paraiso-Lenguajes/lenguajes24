@@ -18,7 +18,8 @@ namespace storeapi.Database
             {
                 connection.Open();
 
-                // Verificar el número actual de productos en la tabla
+                 Category randomCategory = GetRandomCategory(categories);
+
                 string countProductsQuery = "SELECT COUNT(*) FROM products";
 
                 using (var countProductsCommand = new MySqlCommand(countProductsQuery, connection))
@@ -50,14 +51,13 @@ namespace storeapi.Database
                 for (int i = 1; i <= 14; i++)
                 {
                     int randomIndex = random.Next(0, categories.ListCategories.Count); // Obtener un índice aleatorio válido
-                    int randomCategoryId = categories.ListCategories[randomIndex].Id; // Obtener el ID de la categoría en el índice aleatorio
                     products.Add(new Product
                     {
                         Name = $"Product {i}",
                         ImageUrl = $"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
                         Price = 10.99m * i,
                         Description = $"Description of Product {i}",
-                        CategoryID = randomCategoryId // Asignar el ID de la categoría aleatoria al producto
+                        Category = randomCategory 
                     });
                 }
 
@@ -84,7 +84,7 @@ namespace storeapi.Database
                                 insertCommand.Parameters.AddWithValue("@price", product.Price);
                                 insertCommand.Parameters.AddWithValue("@description", product.Description);
                                 insertCommand.Parameters.AddWithValue("@image", product.ImageUrl);
-                                insertCommand.Parameters.AddWithValue("@category", product.CategoryID);
+                                insertCommand.Parameters.AddWithValue("@category", product.Category.Id);
                                 insertCommand.ExecuteNonQuery();
                             }
                         }
@@ -129,6 +129,28 @@ namespace storeapi.Database
 
             return databaseInfo;
         }
+          
+     private static Category GetRandomCategory(Categories categories)
+        {
+            if (categories == null)
+            {
+                throw new ArgumentNullException(nameof(categories), "La instancia de 'categories' no puede ser nula.");
+            }
+
+            List<Category> categoryList = categories.ListCategories;
+
+            if (categoryList == null || categoryList.Count == 0)
+            {
+                throw new ArgumentException("La lista de categorías está vacía o es nula.");
+            }
+
+            Random random = new Random();
+            int index = random.Next(0, categoryList.Count);
+
+   
+            return categoryList[index];
+        }
+    
 
         private static void ValidateProductForInsert(Product product)
         {
@@ -147,10 +169,7 @@ namespace storeapi.Database
                 throw new ArgumentException("El precio del producto no puede ser negativo.", nameof(product.Price));
             }
 
-            if (product.CategoryID <= 0)
-            {
-                throw new ArgumentException("El ID de categoría del producto debe ser mayor que cero.", nameof(product.CategoryID));
-            }
         }
     }
+    
 }
