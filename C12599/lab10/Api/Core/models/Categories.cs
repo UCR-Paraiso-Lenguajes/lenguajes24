@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace storeapi.Models
 {
     public struct Category
     {
-        private int Id;
-        private string Name;
+        internal int Id { get; }
+        internal string Name { get; }
 
         public Category(int id, string name)
         {
@@ -34,5 +35,11 @@ namespace storeapi.Models
         {
             ListCategories.Sort((x, y) => string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase));
         }
+
+        public Category GetCategoryById(int categoryId)
+        {
+            return ListCategories.FirstOrDefault(c => c.Id == categoryId);
+        }
     }
 }
+
