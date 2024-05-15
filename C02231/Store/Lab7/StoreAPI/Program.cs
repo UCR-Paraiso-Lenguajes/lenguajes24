@@ -21,7 +21,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-builder.Configuration.AddJsonFile("C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Store/Lab7/StoreAPI/appsettings.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Store/Lab7/StoreAPI/appsettings.json", optional: true, reloadOnChange: true);
+//builder.Configuration.AddJsonFile("C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Store/Lab7/StoreAPI/appsettings.Development.json", optional: true, reloadOnChange: true);
 string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
 Storage.Init(connection) ;
 // Configure the HTTP request pipeline.
@@ -32,7 +33,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     
 }
-
+Console.Write("Hello");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
