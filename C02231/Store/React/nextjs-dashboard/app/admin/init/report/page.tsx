@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { Chart } from 'react-google-charts';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'
-import { format } from 'date-fns';
 
 export default function ReportPage() {
 
@@ -23,7 +22,10 @@ export default function ReportPage() {
     const fetchData = async () => {
         try {
 
-            const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+            const year = selectedDate.getFullYear();
+            const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+            const day = String(selectedDate.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
             const response = await fetch(`http://localhost:5207/api/Sale?date=${formattedDate}`);
 
             if (!response.ok) {
