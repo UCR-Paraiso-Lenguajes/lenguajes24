@@ -23,17 +23,27 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
-string connectionStringMyDb = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDB").Value.ToString();
-Storage.Init(connection, connectionStringMyDb) ;
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    StoreDataBase.CreateMysql();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+string connection = "";
+
+var value = Environment.GetEnvironmentVariable("DB");
+
+if (value == null)
+{
+ builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+ connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
+}else{
+        connection = value;
+}
+Storage.Init(connection);
+StoreDataBase.CreateMysql();
 
 app.UseHttpsRedirection();
 
@@ -41,7 +51,6 @@ app.UseRouting();
 
 // Use CORS
 app.UseCors();
-
 app.UseAuthorization();
 
 app.MapControllers();

@@ -178,7 +178,7 @@ namespace storeApi.DataBase
                     }
                 }
             }
-            using (var connectionMyDb = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
+            using (var connectionMyDb = new MySqlConnection(Storage.Instance.ConnectionString))
             {
                 connectionMyDb.Open();
                 using (var transaction = connectionMyDb.BeginTransaction())
@@ -251,7 +251,7 @@ namespace storeApi.DataBase
         {
             List<Product> products = new List<Product>();
             var categoryList = new Categories();
-            using (var connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
+            using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
             {
                 await connection.OpenAsync();
                 string query = "SELECT id, name, description, price, imageURL,categoryID FROM products";

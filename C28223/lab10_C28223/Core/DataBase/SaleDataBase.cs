@@ -9,7 +9,7 @@ namespace storeApi.DataBase
         public async Task SaveAsync(Sale sale)
         {
             if (sale == null) { throw new ArgumentNullException( $"El parámetro {nameof(sale)} no puede ser nulo."); }
-            using (MySqlConnection connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
+            using (MySqlConnection connection = new MySqlConnection(Storage.Instance.ConnectionString))
             {
                 await connection.OpenAsync();
 
@@ -64,7 +64,7 @@ namespace storeApi.DataBase
         {
             if (date == DateTime.MinValue || date == DateTime.MaxValue) { throw new ArgumentException($"La variable {nameof(date)} no puede ser defualt."); }
             List<SalesData> salesList = new List<SalesData>();
-            using (MySqlConnection connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
+            using (MySqlConnection connection = new MySqlConnection(Storage.Instance.ConnectionString))
             {
                 await connection.OpenAsync();
                 string query = @"
@@ -104,7 +104,7 @@ namespace storeApi.DataBase
         {
             if (date == DateTime.MinValue || date == DateTime.MaxValue) { throw new ArgumentException($"La variable {nameof(date)} no puede ser defualt."); }
             List<SaleAnnotation> salesByDay = new List<SaleAnnotation>();
-            using (MySqlConnection connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
+            using (MySqlConnection connection = new MySqlConnection(Storage.Instance.ConnectionString))
             {
                 await connection.OpenAsync();
                 string query = @"

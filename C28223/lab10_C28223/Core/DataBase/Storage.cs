@@ -3,20 +3,18 @@
 public class Storage
 {
     public string ConnectionString { get; private set; }
-    public string ConnectionStringMyDb { get; private set; }
 
     public static Storage Instance;
-    public static void Init(string connectionString, string connectionStringMyDb)
+    public static void Init(string connectionString)
     {
-        if (string.IsNullOrEmpty(connectionString) || string.IsNullOrEmpty(connectionStringMyDb))
+        if (string.IsNullOrEmpty(connectionString))
             throw new ArgumentNullException("Connection strings are required.");
-        Instance = new Storage(connectionString, connectionStringMyDb);
+        Instance = new Storage(connectionString);
     }
 
-    private Storage(string connectionString, string connectionStringMyDb)
+    private Storage(string connectionString)
     {
         ConnectionString = connectionString;
-        ConnectionStringMyDb = connectionStringMyDb;
     }
 
 }
