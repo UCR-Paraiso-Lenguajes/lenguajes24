@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Console } from 'console';
+import { loadEnvConfig } from '@next/env';
 
 
 export default function Home() {
@@ -13,12 +14,13 @@ export default function Home() {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
 
-
   useEffect(() => {
     const loadData = async () => {
       try {
+        
+        console.log(process.env.DB_HOST)
         //const response = await fetch('http://localhost:5000/api/Store');
-        const response = await fetch('http://localhost:5207/api/Store');
+        const response = await fetch( process.env.DB_HOST + '/api/Store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -81,14 +83,14 @@ export default function Home() {
       setSelectedCategory(selected);
       let productsForCategory = [];
       if (selected === "0") {
-        const response = await fetch('http://localhost:5207/api/Store');
+        const response = await fetch( process.env.DB_HOST +'/api/Store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
         productsForCategory = await response.json();
         setStoreProducts(productsForCategory);
       } else {
-        const response = await fetch(`http://localhost:5207/api/Store/Products?category=${selected}`);
+        const response = await fetch( process.env.DB_HOST + `/api/Store/Products?category=${selected}`);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }

@@ -20,20 +20,32 @@ builder.Services.AddCors(options =>
     });
 });
 
+string connection = null;
 var app = builder.Build();
-builder.Configuration.AddJsonFile("C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Store/Lab7/StoreAPI/appsettings.json", optional: true, reloadOnChange: true);
-//builder.Configuration.AddJsonFile("C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Store/Lab7/StoreAPI/appsettings.Development.json", optional: true, reloadOnChange: true);
-string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
-Storage.Init(connection) ;
+
+var value = Environment.GetEnvironmentVariable("DB");
+
+if (value == null)
+{
+    builder.Configuration.AddJsonFile("C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Store/Lab7/StoreAPI/appsettings.json", optional: true, reloadOnChange: true);
+    connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
+}
+else
+{
+    connection = value;
+}
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    StoreDB.CreateMysql();
     app.UseSwagger();
     app.UseSwaggerUI();
-    
 }
-Console.Write("Hello");
+
+Storage.Init(connection);
+StoreDB.CreateMysql();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
