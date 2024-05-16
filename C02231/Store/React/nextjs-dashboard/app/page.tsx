@@ -106,7 +106,6 @@ export default function Home() {
     }
   };
 
-  // const carruselProducts = carrusel.productsCarrusel.filter(item => item.productCategory.idCategory === 10);
 
   return (
 
