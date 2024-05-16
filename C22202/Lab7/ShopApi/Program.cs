@@ -21,15 +21,32 @@ builder.Services.AddCors(options =>
     });
 });
 
-var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    StoreDB.CreateMysql();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+string connection = null; 
+var app = builder.Build(); 
+ 
+var value = Environment.GetEnvironmentVariable("DB"); 
+ 
+if (value == null) 
+{ 
+    builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true); 
+    connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString(); 
+} 
+else 
+{ 
+    connection = value; 
+} 
+ 
+ 
+// Configure the HTTP request pipeline. 
+if (app.Environment.IsDevelopment()) 
+{ 
+    app.UseSwagger(); 
+    app.UseSwaggerUI(); 
+} 
+ 
+Storage.Init(connection); 
+StoreDB.CreateMysql();
 
 app.UseHttpsRedirection();
 

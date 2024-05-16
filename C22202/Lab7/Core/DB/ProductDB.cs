@@ -9,7 +9,7 @@ public sealed class ProductDB
 
     public static void insertProduct(Product product)
     {
-        string connectionString = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
+        string connectionString = Storage.Instance.ConnectionString;
         using (var connection = new MySqlConnection(connectionString))
         {
             connection.Open();
@@ -23,7 +23,7 @@ public sealed class ProductDB
                     // price DECIMAL(10, 2),
                     // imgSource VARCHAR(100)
                     string insertProductQuery = @"
-                            INSERT INTO products (name, price, imgSource, category)
+                            INSERT INTO store.products (name, price, imgSource, category)
                             VALUES (@name, @price, @imgSource, @category);";
 
                     using (var insertCommand = new MySqlCommand(insertProductQuery, connection, transaction))
@@ -54,14 +54,14 @@ public sealed class ProductDB
 
         List<Product> products = new List<Product>();
         List<Dictionary<string, string>> databaseInfo = new List<Dictionary<string, string>>();
-        string ConnectionString = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
+        string ConnectionString = Storage.Instance.ConnectionString;
 
 
         using (var connection = new MySqlConnection(ConnectionString))
         {
             connection.Open();
 
-            string sql = "SELECT * FROM products";
+            string sql = "SELECT * FROM store.products";
 
             using (var command = new MySqlCommand(sql, connection))
             {
