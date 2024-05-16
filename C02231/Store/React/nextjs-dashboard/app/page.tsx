@@ -20,7 +20,8 @@ export default function Home() {
         
         console.log(process.env.DB_HOST)
         //const response = await fetch('http://localhost:5000/api/Store');
-        const response = await fetch( process.env.DB_HOST + '/api/Store');
+        const response = await fetch(`http://localhost:5207/api/Store/products?category=${selected}`);
+        //const response = await fetch( process.env.DB_HOST + '/api/Store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
