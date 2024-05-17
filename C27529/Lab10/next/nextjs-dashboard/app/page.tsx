@@ -37,7 +37,7 @@ export default function Page() {
     <main className="flex min-h-screen flex-col p-6">
       <Router>
         <Routes>
-          <Route path='/' element={<Home />} />
+          <Route path='/' element={<Home/>} />
         </Routes>
       </Router>
     </main>
@@ -46,13 +46,14 @@ export default function Page() {
 
 function Home() {
   const [Actualpage, setPage] = useState(0);
-
   const goToPage = (pageNumber: React.SetStateAction<number>) => {
     setPage(pageNumber);
   };
 
+
   return (
     <div style={{ width: 'auto', height: 'auto' }}>
+
       <Header goToPage={goToPage} />
       {Actualpage === 0 ? (
         <Products />

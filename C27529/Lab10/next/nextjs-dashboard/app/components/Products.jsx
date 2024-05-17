@@ -14,6 +14,7 @@ export const Products = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const categoriesString = params.get('categories') || '';
@@ -74,6 +75,8 @@ export const Products = () => {
       setSelectedCategories([...selectedCategories, categoryId]);
     }
   };
+
+  
 
   const [storeData, setStoreData] = useState(() => {
     const storedStoreData = localStorage.getItem("tienda");

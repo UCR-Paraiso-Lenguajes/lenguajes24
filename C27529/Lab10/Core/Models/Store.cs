@@ -17,9 +17,7 @@ namespace storeApi
         {
             this.Products = products;
         }
-
         public readonly static Store Instance;
-
         static Store()
         {
             Task<IEnumerable<Product>> productsTask = productsFromDB();
@@ -84,18 +82,14 @@ namespace storeApi
             int left = 0;
             int right = sortedProducts.Count - 1;
             List<Product> foundProducts = new List<Product>();
-
             while (left <= right)
             {
                 int mid = left + (right - left) / 2;
                 int compareResult = selector(sortedProducts[mid]).IndexOf(searchText, StringComparison.OrdinalIgnoreCase);
-
                 if (compareResult >= 0)
                 {
-                    // Encontramos un producto que contiene el texto de búsqueda, ahora buscamos hacia ambos lados
                     int leftIndex = mid;
                     int rightIndex = mid;
-
                     while (leftIndex >= 0 && selector(sortedProducts[leftIndex]).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
                     {
                         if (!foundProducts.Contains(sortedProducts[leftIndex]))
@@ -104,7 +98,6 @@ namespace storeApi
                         }
                         leftIndex--;
                     }
-
                     while (rightIndex < sortedProducts.Count && selector(sortedProducts[rightIndex]).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
                     {
                         if (!foundProducts.Contains(sortedProducts[rightIndex]))
@@ -113,10 +106,8 @@ namespace storeApi
                         }
                         rightIndex++;
                     }
-
                     break;
                 }
-
                 if (string.Compare(selector(sortedProducts[mid]), searchText, StringComparison.OrdinalIgnoreCase) < 0)
                 {
                     left = mid + 1;
@@ -126,7 +117,6 @@ namespace storeApi
                     right = mid - 1;
                 }
             }
-
             return foundProducts;
         }
 

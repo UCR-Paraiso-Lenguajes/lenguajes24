@@ -16,12 +16,10 @@ namespace storeApi.Controllers
         {
             return await Task.FromResult(Store.Instance);
         }
-
         [HttpGet("products")]
         public async Task<IActionResult> GetCategories([FromQuery] string categoriesString, [FromQuery] string searchText)
         {
             var store = Store.Instance;
-
             if (string.IsNullOrEmpty(categoriesString) || categoriesString == "0")
             {
                 categoriesString = null; 
@@ -55,7 +53,6 @@ namespace storeApi.Controllers
                 var filteredProducts = store.GetFilteredTextProducts(searchText);
                 return Ok(new { products = filteredProducts });
             }
-
             return BadRequest("Invalid search parameters.");
         }
     }
