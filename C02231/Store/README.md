@@ -127,6 +127,7 @@ C --> E{Cache}
 <li>Los controladores interactúan con las vistas para generar la respuesta al usuario.
 <li>Las vistas envían la respuesta al usuario.
 </ul>
+
 __Funciones principales del sistema:__
 
 <ul>
