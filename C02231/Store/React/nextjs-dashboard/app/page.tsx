@@ -91,12 +91,26 @@ export default function Home() {
   }, []);
 
   const handleCategoryChange = async (event) => {
+
+    const selectedValue = event.target.value;
+    let updatedSelectedCategories = [...selectedCategories];
+
+    if (updatedSelectedCategories.includes(selectedValue)) {
+      updatedSelectedCategories = updatedSelectedCategories.filter(value => value !== selectedValue);
+    } else {
+      updatedSelectedCategories.push(selectedValue);
+    }
+
+    if (updatedSelectedCategories.length === 0) {
+      updatedSelectedCategories.push("0");
+    }
+    setSelectedCategories(updatedSelectedCategories);
+
+
     try {
-      const selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
-      setSelectedCategories(selectedOptions);
       let productsForCategory = [];
 
-      if (selectedOptions.includes("0")) {
+      if (updatedSelectedCategories.includes("0")) {
         const response = await fetch('http://localhost:5207/api/Store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
@@ -104,7 +118,7 @@ export default function Home() {
         productsForCategory = await response.json();
         setStoreProducts(productsForCategory);
       } else {
-        const params = selectedOptions.map(id => `categories=${id}`).join('&');
+        const params = updatedSelectedCategories.map(id => `categories=${id}`).join('&');
         const response = await fetch(`http://localhost:5207/api/Store/products?${params}`);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
@@ -114,10 +128,7 @@ export default function Home() {
       }
 
       setStoreProducts(productsForCategory);
-      router.push(pathname + '?' + createQueryString('categories', selectedOptions));
-
-
-
+      router.push(pathname + '?' + createQueryString('categories', updatedSelectedCategories));
     } catch (error) {
       throw new Error('Fail handleCategory: ' + error.message);
     }
@@ -126,8 +137,8 @@ export default function Home() {
   const handleSearchSubmit = async (event) => {
     event.preventDefault();
     try {
-      if (!searchQuery.trim() && selectedCategories.length === 0) {
-        throw new Error('Please enter keywords or select at least one category.');
+      if (!searchQuery.trim()) {
+        throw new Error('Please enter keywords');
       }
 
       const keywords = searchQuery || '';
@@ -154,10 +165,7 @@ export default function Home() {
     setSearchQuery(e.target.value);
   };
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-
+ 
   return (
 
     <main className="flex min-h-screen flex-col p-6" style={{ backgroundColor: 'silver' }}>
@@ -180,8 +188,38 @@ export default function Home() {
                 value={searchQuery}
                 onChange={handleSearchInputChange}
               />
-              <button type="submit">Search</button>
             </form>
+            <Dropdown show={isOpen} onToggle={() => setIsOpen(!isOpen)}>
+              <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                {selectedCategories.length === 0 ? "Select Categories" : selectedCategories.includes("ALL") ? "ALL" : selectedCategories.map(catId => {
+                  const categoryId = parseInt(catId);
+                  const category = categories.find(cat => cat.idCategory === categoryId);
+                  return category ? category.name : "Select Categories";
+                }).filter(Boolean).join(', ')
+                }
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Form>
+                  <Form.Check
+                    type="checkbox"
+                    label="ALL"
+                    value="0"
+                    checked={selectedCategories.includes("0")}
+                    onChange={handleCategoryChange}
+                  />
+                  {categories && categories.map(category => (
+                    <Form.Check
+                      key={category.idCategory}
+                      type="checkbox"
+                      label={category.name}
+                      value={category.idCategory}
+                      checked={selectedCategories.includes(category.idCategory.toString())}
+                      onChange={handleCategoryChange}
+                    />
+                  ))}
+                </Form>
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
 
           <div className="col-sm-2 d-flex justify-content-end align-items-center">
@@ -206,16 +244,6 @@ export default function Home() {
 
       <div className='container'>
         <h2 className='text-left mt-5 mb-5'>List of Books</h2>
-
-        <Form.Control as="select" multiple className="btn btn-secondary" onChange={handleCategoryChange} value={selectedCategories}>
-          <option value={0}>ALL</option>
-          {categories && categories.map(category => (
-            <option key={category.idCategory} value={category.idCategory}>
-              {category.name}
-            </option>
-          ))}
-        </Form.Control>
-
 
         <div className="container" style={{ display: 'flex', flexWrap: 'wrap' }}>
           {storeProducts && storeProducts.products && storeProducts.products.map(item => (

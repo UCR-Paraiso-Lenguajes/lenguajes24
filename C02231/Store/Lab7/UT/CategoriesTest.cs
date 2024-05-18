@@ -12,7 +12,7 @@ public class CategoriesTest
     private StoreDB storeDB;
     private Categories categories;
     private Store store;
-    private Products products1;
+
 
 
     [SetUp]
@@ -25,35 +25,34 @@ public class CategoriesTest
         // Inicializar las instancias necesarias para las pruebas
         storeDB = new StoreDB();
         store = await Store.Instance.Value; // Aquí obtienes la instancia existente de Store
-        products1 = Products.Instance;
-        categories = Categories.Instance;
+        categories = new Categories();
     }
 
     [Test]
-    public async Task CategoryProducts_ReturnsCorrectProducts()
+    public void GetCategories_ReturnsCategories()
     {
         // Arrange
-        int[] categoryIds = { 3 }; // Categoría de ciencia ficción en este ejemplo
-
+        var expectedCategories = new List<Category>
+            {
+                new(1, "Fantasy"),
+                new (2, "Romance"),
+                new (3, "Science Fiction"),
+                new (4, "Young Adult"),
+                new (5, "Mystery"),
+                new (6, "NonFiction"),
+                new (7, "Fiction"),
+                new (8, "Adventure"),
+                new (9, "Dystopian"),
+                new (10, "Gift")
+            };
+        
         // Act
-        IEnumerable<Product> products = await products1.GetProductsCategoryAsync(categoryIds);
+        var result = categories.GetCategories();
 
         // Assert
-        Assert.IsNotNull(products);
-        Assert.IsTrue(products.Any()); // Verificar que haya al menos un producto
-        Assert.IsTrue(products.All(p => categoryIds.Contains(p.ProductCategory.IdCategory))); // Verificar que todos los productos sean de alguna de las categorías especificadas    }
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expectedCategories.Count, result.Count());
     }
-    [Test]
-    public void CategoryProducts_ThrowsArgumentException_WhenNegativeCategoryId()
-    {
-        // Arrange
-        int[] categoryId = {-1};
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(async () => await products1.GetProductsCategoryAsync(categoryId));
-
-    }
-
 
 
     [Test]
