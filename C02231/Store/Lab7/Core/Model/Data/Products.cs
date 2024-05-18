@@ -83,29 +83,29 @@ public class Products
 
 
 
-    public async Task<IEnumerable<Product>> SearchProductsAsync(IEnumerable<int> categoryIds, string keywords)
+    public async Task<IEnumerable<Product>> SearchProductsAsync(IEnumerable<int> categoryIdsList, string searchKeywords)
     {
 
-        if (categoryIds.Any(id => id < 0)) throw new ArgumentException($"Invalid category IDs are provided.");
-        if (keywords == null) throw new ArgumentNullException($"The parameter {nameof(keywords)} cannot be null.");
-        if (categoryIds == null) _ = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        if (categoryIdsList.Any(id => id < 0)) throw new ArgumentException($"Invalid category IDs are provided.");
+        if (searchKeywords == null) throw new ArgumentNullException($"The parameter {nameof(searchKeywords)} cannot be null.");
+        if (categoryIdsList == null) _ = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         List<Product> matchingProducts = new List<Product>();
 
         // Si categoryIds contiene 0, buscar en todas las categorías
-        if (categoryIds.Contains(0))
+        if (categoryIdsList.Contains(0))
         {
             foreach (var productList in productByCategoryId.Values)
             {
-                matchingProducts.AddRange(BinarySearchProducts(productList, keywords));
+                matchingProducts.AddRange(BinarySearchProducts(productList, searchKeywords));
             }
         }
-        else if (categoryIds != null && categoryIds.Any())
+        else if (categoryIdsList != null && categoryIdsList.Any())
         {
-            foreach (var categoryId in categoryIds)
+            foreach (var categoryId in categoryIdsList)
             {
                 if (productByCategoryId.TryGetValue(categoryId, out List<Product> categoryProducts))
                 {
-                    matchingProducts.AddRange(BinarySearchProducts(categoryProducts, keywords));
+                    matchingProducts.AddRange(BinarySearchProducts(categoryProducts, searchKeywords));
                 }
             }
         }
@@ -113,16 +113,16 @@ public class Products
         {
             foreach (var productList in productByCategoryId.Values)
             {
-                matchingProducts.AddRange(BinarySearchProducts(productList, keywords));
+                matchingProducts.AddRange(BinarySearchProducts(productList, searchKeywords));
             }
         }
 
         return await Task.FromResult(matchingProducts);
     }
 
-    private List<Product> BinarySearchProducts(List<Product> products, string keywords)
+    private List<Product> BinarySearchProducts(List<Product> products, string searchKeywords)
     {
-        if (products == null || !products.Any() || string.IsNullOrEmpty(keywords)) throw new ArgumentException("Products list and keywords cannot be null or empty.");
+        if (products == null || !products.Any() || string.IsNullOrEmpty(searchKeywords)) throw new ArgumentException("Products list and keywords cannot be null or empty.");
 
         List<Product> matchingProducts = new List<Product>();
         var sortedProducts = products.OrderBy(p => p.Name).ToList();
@@ -135,8 +135,8 @@ public class Products
         {
             int mid = left + (right - left) / 2;
             //int comparison = string.Compare(sortedProducts[mid].Name, keywords, StringComparison.OrdinalIgnoreCase);
-            bool nameContainsKeywords = sortedProducts[mid].Name.Contains(keywords, StringComparison.OrdinalIgnoreCase);
-            bool authorContainsKeywords = sortedProducts[mid].Author.Contains(keywords, StringComparison.OrdinalIgnoreCase);
+            bool nameContainsKeywords = sortedProducts[mid].Name.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase);
+            bool authorContainsKeywords = sortedProducts[mid].Author.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase);
 
             // No buscamos una coincidencia exacta, sino el primer punto de inserción
             if (nameContainsKeywords || authorContainsKeywords)
@@ -146,20 +146,20 @@ public class Products
 
                 // Buscar hacia la izquierda y derecha para encontrar todos los productos coincidentes
                 int temp = mid;
-                while (--temp >= 0 && (sortedProducts[temp].Name.Contains(keywords, StringComparison.OrdinalIgnoreCase) || sortedProducts[temp].Author.Contains(keywords, StringComparison.OrdinalIgnoreCase)))
+                while (--temp >= 0 && (sortedProducts[temp].Name.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase) || sortedProducts[temp].Author.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase)))
                 {
                     matchingProducts.Add(sortedProducts[temp]);
                 }
 
                 temp = mid;
-                while (++temp < sortedProducts.Count && (sortedProducts[temp].Name.Contains(keywords, StringComparison.OrdinalIgnoreCase) || sortedProducts[temp].Author.Contains(keywords, StringComparison.OrdinalIgnoreCase)))
+                while (++temp < sortedProducts.Count && (sortedProducts[temp].Name.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase) || sortedProducts[temp].Author.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase)))
                 {
                     matchingProducts.Add(sortedProducts[temp]);
                 }
 
                 break;
             }
-            else if (string.Compare(sortedProducts[mid].Name, keywords, StringComparison.OrdinalIgnoreCase) < 0)
+            else if (string.Compare(sortedProducts[mid].Name, searchKeywords, StringComparison.OrdinalIgnoreCase) < 0)
             {
                 left = mid + 1;
             }
@@ -173,7 +173,7 @@ public class Products
         {
             foreach (var product in sortedProducts)
             {
-                if (product.Name.Contains(keywords, StringComparison.OrdinalIgnoreCase) || product.Author.Contains(keywords, StringComparison.OrdinalIgnoreCase))
+                if (product.Name.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase) || product.Author.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase))
                 {
                     matchingProducts.Add(product);
                 }
