@@ -56,6 +56,11 @@ const Page = () => {
 
   const fetchProductsByCategory = async (categoryIds) => {
     try {
+      if (categoryIds.length === 0) {
+        await fetchAllProducts();
+        return;
+      }
+
       const url = new URL('http://localhost:5072/api/Store/Products');
       categoryIds.forEach(id => url.searchParams.append('categoryIds', id));
 
@@ -64,13 +69,30 @@ const Page = () => {
         throw new Error('Failed to fetch data');
       }
       const data = await response.json();
-      if (Array.isArray(data)) {
-        setProductList(data);
-      } else if (data.products && Array.isArray(data.products)) {
+      if (data && data.products) {
         setProductList(data.products);
       } else {
-        throw new Error('API response does not contain a valid products array');
+        setProductList([]);
       }
+    } catch (error) {
+      throw new Error('Failed to fetch data: ' + error.message);
+    }
+  };
+
+  const fetchAllProducts = async () => {
+    try {
+      const response = await fetch('http://localhost:5072/api/Store');
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const json = await response.json();
+      if (Array.isArray(json.products)) {
+        setProductList(json.products);
+      } else {
+        setProductList([]);
+      }
+      const categories = json.categorias;
+      setCategories(categories);
     } catch (error) {
       throw new Error('Failed to fetch data: ' + error.message);
     }
@@ -89,12 +111,10 @@ const Page = () => {
         throw new Error('Failed to fetch data');
       }
       const data = await response.json();
-      if (Array.isArray(data)) {
-        setProductList(data);
-      } else if (data.products && Array.isArray(data.products)) {
+      if (data && data.products) {
         setProductList(data.products);
       } else {
-        throw new Error('API response does not contain a valid products array');
+        setProductList([]);
       }
     } catch (error) {
       throw new Error('Failed to fetch data: ' + error.message);
@@ -120,10 +140,13 @@ const Page = () => {
 
   const handleCategorySelect = async (selectedCategory) => {
     setSelectedCategory(selectedCategory);
-    await fetchProductsByCategory([selectedCategory.id]);
+    const updatedCategoryIds = selectedCategory
+      ? [selectedCategory.id]
+      : [];
+    await fetchProductsByCategory(updatedCategoryIds);
     setSearchParams(prev => ({
       ...prev,
-      categoryIds: [selectedCategory.id]
+      categoryIds: updatedCategoryIds
     }));
   };
 
@@ -137,24 +160,7 @@ const Page = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      try {
-        const response = await fetch('http://localhost:5072/api/Store');
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const json = await response.json();
-        if (Array.isArray(json)) {
-          setProductList(json);
-        } else if (json.products && Array.isArray(json.products)) {
-          setProductList(json.products);
-        } else {
-          throw new Error('API response does not contain a valid products array');
-        }
-        const categories = json.categorias;
-        setCategories(categories);
-      } catch (error) {
-        throw new Error('Failed to fetch data: ' + error.message);
-      }
+      await fetchAllProducts();
     };
 
     loadData();
@@ -188,7 +194,7 @@ const Page = () => {
       />
       {currentView === 'login' && <LoginForm />}
       {warning && <div className='alert'>El producto ya se encuentra en el carrito</div>}
-      {currentView === 'products' && productList && productList.length > 0 && (
+      {currentView === 'products' && productList && productList.length > 0 ? (
         <div className='container'>
           <div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
             <div className="carousel-indicators">
@@ -210,6 +216,10 @@ const Page = () => {
               <span className="visually-hidden">Next</span>
             </button>
           </div>
+        </div>
+      ) : (
+        <div className='container'>
+          <div>No hay productos que coincidan con los criterios de búsqueda.</div>
         </div>
       )}
       <div className='AddFromCarousel'>

@@ -34,6 +34,7 @@ namespace KEStoreApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpGet("store/search")]
         public async Task<IActionResult> SearchProductsAsync([FromQuery] string productName, [FromQuery] IEnumerable<int> categoryIds)
         {
@@ -46,11 +47,6 @@ namespace KEStoreApi.Controllers
             {
                 var store = await Store.Instance;
                 var products = await store.searchProductsStore(productName, categoryIds);
-
-                if (products == null || !products.Any())
-                {
-                    return NotFound();
-                }
 
                 return Ok(new { Products = products });
             }
