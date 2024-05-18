@@ -19,23 +19,11 @@ public class Products
         if (allProducts == null || allProducts.Count() == 0) throw new ArgumentNullException($"The list of products {nameof(allProducts)}can't be null.");
         if (productByCategoryId == null || productByCategoryId.Count() == 0) throw new ArgumentNullException($"The {nameof(productByCategoryId)} can't be null or 0.");
 
-
         this.allProducts = allProducts;
         this.productByCategoryId = productByCategoryId;
         this.productByName = new Dictionary<string, List<Product>>();
-
-        // Index products por name
-        foreach (var product in allProducts.OrderBy(p => p.Name))
-        {
-            if (!productByName.ContainsKey(product.Name))
-            {
-                productByName[product.Name] = new List<Product>();
-            }
-            productByName[product.Name].Add(product);
-        }
     }
     public static Products Instance;
-
 
     static async Task<Products> InitializeAsync()
     {
@@ -93,45 +81,22 @@ public class Products
         return await Task.FromResult(products);
     }
 
-    public async Task<IEnumerable<Product>> GetProductsByNameAsync(string productName)
-    {
-        if (string.IsNullOrWhiteSpace(productName))
-            throw new ArgumentException("Product name cannot be null or empty.");
 
-        if (productByName.TryGetValue(productName, out List<Product> products))
-        {
-            return await Task.FromResult(products);
-        }
-        else
-        {
-            throw new ArgumentException($"No products found with name '{productName}'.");
-        }
-    }
 
     public async Task<IEnumerable<Product>> SearchProductsAsync(IEnumerable<int> categoryIds, string keywords)
     {
-        if (categoryIds == null) throw new ArgumentNullException($"The parameter {nameof(categoryIds)} cannot be null.");
+
         if (categoryIds.Any(id => id < 0)) throw new ArgumentException($"Invalid category IDs are provided.");
-
         if (keywords == null) throw new ArgumentNullException($"The parameter {nameof(keywords)} cannot be null.");
-
-
+        if (categoryIds == null) _ = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         List<Product> matchingProducts = new List<Product>();
-        if (productByCategoryId == null)
-            throw new InvalidOperationException("Product dictionary by category is null.");
 
         // Si categoryIds contiene 0, buscar en todas las categorías
         if (categoryIds.Contains(0))
         {
             foreach (var productList in productByCategoryId.Values)
             {
-                foreach (var product in productList)
-                {
-                    if (ProductMatchesKeywords(product, keywords))
-                    {
-                        matchingProducts.Add(product);
-                    }
-                }
+                matchingProducts.AddRange(BinarySearchProducts(productList, keywords));
             }
         }
         else if (categoryIds != null && categoryIds.Any())
@@ -140,62 +105,82 @@ public class Products
             {
                 if (productByCategoryId.TryGetValue(categoryId, out List<Product> categoryProducts))
                 {
-                    foreach (var product in categoryProducts)
-                    {
-                        if (ProductMatchesKeywords(product, keywords))
-                        {
-                            matchingProducts.Add(product);
-                        }
-                    }
+                    matchingProducts.AddRange(BinarySearchProducts(categoryProducts, keywords));
                 }
             }
-
         }
         else // Buscar en todos los productos si no se indica ninguna categoría
         {
             foreach (var productList in productByCategoryId.Values)
             {
-                foreach (var product in productList)
-                {
-                    if (ProductMatchesKeywords(product, keywords))
-                    {
-                        matchingProducts.Add(product);
-                    }
-                }
+                matchingProducts.AddRange(BinarySearchProducts(productList, keywords));
             }
         }
 
         return await Task.FromResult(matchingProducts);
     }
 
-    public async Task<IEnumerable<Product>> SearchProductsAsync(string keywords)
+    private List<Product> BinarySearchProducts(List<Product> products, string keywords)
     {
-        List<Product> matchingProducts = new List<Product>();
+        if (products == null || !products.Any() || string.IsNullOrEmpty(keywords)) throw new ArgumentException("Products list and keywords cannot be null or empty.");
 
-        foreach (var productList in productByCategoryId.Values)
+        List<Product> matchingProducts = new List<Product>();
+        var sortedProducts = products.OrderBy(p => p.Name).ToList();
+
+        int left = 0;
+        int right = sortedProducts.Count - 1;
+        bool foundMatch = false;
+
+        while (left <= right)
         {
-            foreach (var product in productList)
+            int mid = left + (right - left) / 2;
+            //int comparison = string.Compare(sortedProducts[mid].Name, keywords, StringComparison.OrdinalIgnoreCase);
+            bool nameContainsKeywords = sortedProducts[mid].Name.Contains(keywords, StringComparison.OrdinalIgnoreCase);
+            bool authorContainsKeywords = sortedProducts[mid].Author.Contains(keywords, StringComparison.OrdinalIgnoreCase);
+
+            // No buscamos una coincidencia exacta, sino el primer punto de inserción
+            if (nameContainsKeywords || authorContainsKeywords)
             {
-                if (ProductMatchesKeywords(product, keywords))
+                foundMatch = true;
+                matchingProducts.Add(sortedProducts[mid]);
+
+                // Buscar hacia la izquierda y derecha para encontrar todos los productos coincidentes
+                int temp = mid;
+                while (--temp >= 0 && (sortedProducts[temp].Name.Contains(keywords, StringComparison.OrdinalIgnoreCase) || sortedProducts[temp].Author.Contains(keywords, StringComparison.OrdinalIgnoreCase)))
+                {
+                    matchingProducts.Add(sortedProducts[temp]);
+                }
+
+                temp = mid;
+                while (++temp < sortedProducts.Count && (sortedProducts[temp].Name.Contains(keywords, StringComparison.OrdinalIgnoreCase) || sortedProducts[temp].Author.Contains(keywords, StringComparison.OrdinalIgnoreCase)))
+                {
+                    matchingProducts.Add(sortedProducts[temp]);
+                }
+
+                break;
+            }
+            else if (string.Compare(sortedProducts[mid].Name, keywords, StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                left = mid + 1;
+            }
+            else
+            {
+                right = mid - 1;
+            }
+        }
+
+        if (!foundMatch)
+        {
+            foreach (var product in sortedProducts)
+            {
+                if (product.Name.Contains(keywords, StringComparison.OrdinalIgnoreCase) || product.Author.Contains(keywords, StringComparison.OrdinalIgnoreCase))
                 {
                     matchingProducts.Add(product);
                 }
             }
         }
 
-        return await Task.FromResult(matchingProducts);
-    }
-
-    private bool ProductMatchesKeywords(Product product, string keywords)
-    {
-        if (string.IsNullOrWhiteSpace(keywords))
-        {
-            return true; // Si no hay palabras clave, consideramos que todos los productos coinciden.
-        }
-        // Compruebe si algún campo del producto contiene las palabras clave
-        return product.Name.Contains(keywords, StringComparison.OrdinalIgnoreCase) ||
-               product.Author.Contains(keywords, StringComparison.OrdinalIgnoreCase) ||
-               product.ProductCategory.Name.Contains(keywords, StringComparison.OrdinalIgnoreCase);
+        return matchingProducts;
     }
 
 }

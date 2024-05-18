@@ -34,10 +34,14 @@ namespace StoreAPI.Controllers
         }
 
 
-
         [HttpGet("search")]
         public async Task<IActionResult> SearchAsync([FromQuery] IEnumerable<int> categories, [FromQuery] string keywords)
         {
+            // Inicializar Products.Instance si no se ha inicializado
+            if (Products.Instance == null)
+            {
+                await Products.InitializeInstanceAsync();
+            }
             // Validar las categorías
             if (categories != null)
             {
@@ -57,24 +61,9 @@ namespace StoreAPI.Controllers
             {
                 IEnumerable<Product> products;
 
-                // Si se proporcionan tanto categorías como palabras clave, buscar productos que coincidan con ambas
-                if (categories != null && categories.Any() && !string.IsNullOrWhiteSpace(keywords))
-                {
-                    products = await Products.Instance.SearchProductsAsync(categories, keywords);
+                categories ??= new List<int> { 1,2,3,4,5,6,7,8,9,10 };
+                products = await Products.Instance.SearchProductsAsync(categories, keywords);
 
-                }
-                //Si solo se proporcionan categorías
-                else if (categories != null && categories.Any())
-                {
-                    products = await Products.Instance.GetProductsCategoryAsync(categories);
-
-                }
-                // Si solo se proporcionan palabras clave
-                else
-                {
-                    products = await Products.Instance.SearchProductsAsync(keywords);
-
-                }
 
                 return Ok(products);
             }
