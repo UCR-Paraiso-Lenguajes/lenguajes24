@@ -1,18 +1,34 @@
 "use client";
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Console } from 'console';
+import { Form, Dropdown } from 'react-bootstrap';
+import { usePathname, useRouter, useParams, useSearchParams } from 'next/navigation';
 
 
 export default function Home() {
-
   const [storeProducts, setStoreProducts] = useState([]);
   const [carrusel, setCarrusel] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState<string[]>([]);
   const [categories, setCategories] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
+
+
+  const createQueryString = useCallback(
+    (name: string, values: string[]) => {
+      const params = new URLSearchParams();
+      values.forEach(value => {
+        params.append(name, value);
+      });
+      return params.toString();
+    },
+    []
+  );
 
   useEffect(() => {
     const loadData = async () => {
@@ -49,7 +65,7 @@ export default function Home() {
   });
 
   const handleAddToCart = (product) => {
-    if (product === undefined) throw new Error('The product is empty.');
+    if (product === undefined || product === "") throw new Error('The product is empty.');
 
     let productsNotInCart = !cart.products.some(item => item.id === product.id);
     if (productsNotInCart) {
@@ -76,10 +92,11 @@ export default function Home() {
 
   const handleCategoryChange = async (event) => {
     try {
-      const selected = event.target.value;
-      setSelectedCategory(selected);
+      const selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
+      setSelectedCategories(selectedOptions);
       let productsForCategory = [];
-      if (selected === "0") {
+
+      if (selectedOptions.includes("0")) {
         const response = await fetch('http://localhost:5207/api/Store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
@@ -87,7 +104,8 @@ export default function Home() {
         productsForCategory = await response.json();
         setStoreProducts(productsForCategory);
       } else {
-        const response = await fetch(`http://localhost:5207/api/Store/products?category=${selected}`);
+        const params = selectedOptions.map(id => `categories=${id}`).join('&');
+        const response = await fetch(`http://localhost:5207/api/Store/products?${params}`);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -96,6 +114,8 @@ export default function Home() {
       }
 
       setStoreProducts(productsForCategory);
+      router.push(pathname + '?' + createQueryString('categories', selectedOptions));
+
 
 
     } catch (error) {
@@ -103,7 +123,40 @@ export default function Home() {
     }
   };
 
-  // const carruselProducts = carrusel.productsCarrusel.filter(item => item.productCategory.idCategory === 10);
+  const handleSearchSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      if (!searchQuery.trim() && selectedCategories.length === 0) {
+        throw new Error('Please enter keywords or select at least one category.');
+      }
+
+      const keywords = searchQuery || '';
+      const params = selectedCategories.map(id => `categories=${id}`).join('&');
+      const query = `keywords=${encodeURIComponent(keywords)}&${params}`;
+
+      const response = await fetch(`http://localhost:5207/api/Store/search?${query}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const productsForCategory = await response.json();
+      setFilteredProducts(productsForCategory);
+      setStoreProducts(productsForCategory);
+
+      const queryString = createQueryString('categories', selectedCategories) + `&keywords=${encodeURIComponent(keywords)}`;
+      router.push(pathname + '?' + queryString);
+    } catch (error) {
+      throw new Error('Fail handleCategory: ' + error.message);
+    }
+  };
+
+
+  const handleSearchInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
 
@@ -116,9 +169,17 @@ export default function Home() {
               <img src="Logo1.jpg" style={{ height: '75px', width: '200px', margin: '1.4rem' }} className="img-fluid" />
             </Link>
           </div>
+
           <div className="col-sm-8 d-flex justify-content-center align-items-center">
-            <form className="d-flex justify-content-center">
-              <input type="search" name="search" style={{ width: '805%' }} placeholder="Book..."></input>
+            <form className="d-flex justify-content-center" onSubmit={handleSearchSubmit}>
+              <input
+                type="search"
+                name="search"
+                style={{ width: '805%' }}
+                placeholder="Book..."
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+              />
               <button type="submit">Search</button>
             </form>
           </div>
@@ -146,15 +207,14 @@ export default function Home() {
       <div className='container'>
         <h2 className='text-left mt-5 mb-5'>List of Books</h2>
 
-        <select className="btn btn-secondary dropdown-toggle" onChange={handleCategoryChange} value={selectedCategory}>
+        <Form.Control as="select" multiple className="btn btn-secondary" onChange={handleCategoryChange} value={selectedCategories}>
           <option value={0}>ALL</option>
-
           {categories && categories.map(category => (
             <option key={category.idCategory} value={category.idCategory}>
               {category.name}
             </option>
           ))}
-        </select>
+        </Form.Control>
 
 
         <div className="container" style={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -188,7 +248,7 @@ export default function Home() {
 }
 
 const Products = ({ product, handleAddToCart }) => {
-  if (product === undefined) throw new Error('The product is empty.');
+  if (product === undefined || product === "") throw new Error('The product is empty.');
 
   if (product.productCategory.idCategory !== 10) {
     const { id, name, author, imgUrl, price } = product;

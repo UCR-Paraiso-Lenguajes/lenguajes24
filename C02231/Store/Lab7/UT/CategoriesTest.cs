@@ -16,7 +16,7 @@ public class CategoriesTest
 
 
     [SetUp]
-    public void Setup()
+    public async Task Setup()
     {
         string connectionString = "Server=localhost;Database=store;Port=3306;Uid=root;Pwd=123456;";
         Storage.Init(connectionString);
@@ -24,34 +24,33 @@ public class CategoriesTest
 
         // Inicializar las instancias necesarias para las pruebas
         storeDB = new StoreDB();
-        store = Store.Instance; // Aquí obtienes la instancia existente de Store
+        store = await Store.Instance.Value; // Aquí obtienes la instancia existente de Store
         products1 = Products.Instance;
         categories = Categories.Instance;
     }
 
     [Test]
-    public void CategoryProducts_ReturnsCorrectProducts()
+    public async Task CategoryProducts_ReturnsCorrectProducts()
     {
         // Arrange
-        int categoryId = 3; // Categoría de ciencia ficción en este ejemplo
+        int[] categoryIds = { 3 }; // Categoría de ciencia ficción en este ejemplo
 
         // Act
-        IEnumerable<Product> products = products1.GetProductsCategory(categoryId);
+        IEnumerable<Product> products = await products1.GetProductsCategoryAsync(categoryIds);
 
         // Assert
         Assert.IsNotNull(products);
         Assert.IsTrue(products.Any()); // Verificar que haya al menos un producto
-        Assert.IsTrue(products.All(p => p.ProductCategory.IdCategory == categoryId)); // Verificar que todos los productos sean de la categoría especificada
+        Assert.IsTrue(products.All(p => categoryIds.Contains(p.ProductCategory.IdCategory))); // Verificar que todos los productos sean de alguna de las categorías especificadas    }
     }
-
     [Test]
     public void CategoryProducts_ThrowsArgumentException_WhenNegativeCategoryId()
     {
         // Arrange
-        int categoryId = -1;
+        int[] categoryId = {-1};
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() =>products1.GetProductsCategory(categoryId));
+        Assert.Throws<ArgumentException>(async () => await products1.GetProductsCategoryAsync(categoryId));
 
     }
 
