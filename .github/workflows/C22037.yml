@@ -22,13 +22,13 @@ jobs:
         dotnet-version: 8.0.x
     - name: Restore dependencies
       run: |
-        cd C22037\Dokcer
+        cd C22037/Docker
         dotnet restore
     - name: Build
       run: |
-        cd C22037\Dokcer
+        cd C22037/Docker
         dotnet build --no-restore
     - name: Test
       run: |
-        cd C22037\Dokcer
+        cd C22037/Docker
         dotnet test --no-build --verbosity normal
