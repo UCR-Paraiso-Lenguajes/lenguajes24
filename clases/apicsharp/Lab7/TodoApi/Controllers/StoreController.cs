@@ -10,7 +10,7 @@ namespace TodoApi.Controllers
     [ApiController]
     public class StoreController : ControllerBase
     {
-        [HttpGet, Authorize(Roles = "Admin")]
+        [HttpGet, Authorize(Roles = "Customer")]
         public Store GetStore()
         {
             return Store.Instance ;

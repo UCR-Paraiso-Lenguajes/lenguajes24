@@ -16,7 +16,7 @@ import { deleteAllProduct } from '../src/storage/cart-storage';
 
 //Recursos
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../src/css/demoCSS.css'
+import '../src/css/modal_cart.css'
 import '../src/css/fonts_awesome/css/all.min.css'
 import { mock } from 'node:test';
 

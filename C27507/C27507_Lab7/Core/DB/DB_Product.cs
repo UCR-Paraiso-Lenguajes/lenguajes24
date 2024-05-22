@@ -12,15 +12,15 @@ namespace MyStoreAPI.DB
 
 
         //Funciones CRUD
-        public static void InsertProductsStore(List<Product> allProducts){
+        public static void InsertProductsInDB(IEnumerable<Product> allProducts){
             try{
                 using (TransactionScope scopeTransaction = new TransactionScope()){
                     using (MySqlConnection connectionWithDB = new MySqlConnection(DB_Connection.INIT_CONNECTION_DB())){                
                         connectionWithDB.Open();
                         foreach (var actualProduct in allProducts){
                             string insertQuery = @"
-                                INSERT INTO Products (Name, ImageUrl, Price, Quantity, Description)
-                                VALUES (@name, @imageUrl, @price, @quantity, @description);
+                                INSERT INTO Products (Name, ImageUrl, Price, Quantity, Description, Category)
+                                VALUES (@name, @imageUrl, @price, @quantity, @description,@idCategory);
                             ";
 
                             using (MySqlCommand command = new MySqlCommand(insertQuery, connectionWithDB)){                            
@@ -29,6 +29,7 @@ namespace MyStoreAPI.DB
                                 command.Parameters.AddWithValue("@price", actualProduct.price);
                                 command.Parameters.AddWithValue("@quantity", actualProduct.quantity);
                                 command.Parameters.AddWithValue("@description", actualProduct.description);
+                                command.Parameters.AddWithValue("@idCategory", actualProduct.category.id);
 
                                 command.ExecuteNonQuery();
                             }
@@ -42,7 +43,7 @@ namespace MyStoreAPI.DB
             }            
         }
 
-        public static List<Product> SelectProducts(){
+        public static IEnumerable<Product> SelectProducts(){
 
             List<Product> productListToStoreInstance = new List<Product>();
 
@@ -52,7 +53,7 @@ namespace MyStoreAPI.DB
                     
                     connectionWithDB.Open();
                     string selectProducts = @"
-                        SELECT IdProduct, Name, ImageUrl, Price, Quantity, Description
+                        SELECT IdProduct, Name, ImageUrl, Price, Quantity, Description, Category
                         FROM Products;
                         ";                
 
@@ -63,19 +64,33 @@ namespace MyStoreAPI.DB
 
                             //Mientras haya al menos una tupla que leer, guarde los datos de ese Select en la lista
                             while(readerTable.Read()){
+
+                                //recibimos por aparte el id y construimos la categorias con la
+                                //lista de categorias en memoria
+                                int idCategory = Convert.ToInt32(readerTable["Category"]);
+
+                                if(idCategory <= 0) throw new Exception($"{nameof(idCategory)} no es válido.");
+
+                                var categoryForProduct = Categories.Instance.AllProductCategories.FirstOrDefault( c => c.id == idCategory );
+
+                                if(categoryForProduct.id <= 0) throw new Exception($"{nameof(categoryForProduct)} no es valido.");
+                                if(string.IsNullOrEmpty(categoryForProduct.name)) throw new Exception($"{nameof(categoryForProduct)} no es valido.");
+
                                 productListToStoreInstance.Add(new Product{
                                     id = Convert.ToInt32(readerTable["IdProduct"]),
                                     name = readerTable["Name"].ToString(),
                                     imageUrl = readerTable["ImageUrl"].ToString(),
                                     price = Convert.ToDecimal(readerTable["Price"]),
                                     quantity = Convert.ToInt32(readerTable["Quantity"]),
-                                    description = readerTable["Description"].ToString()
+                                    description = readerTable["Description"].ToString(),
+                                    category = categoryForProduct
                                 });
                             }
                         }
                     }
                 }
             }catch (Exception ex){
+                Console.WriteLine("Error desde DB_Sale: " + ex);
                 throw;
             }            
             return productListToStoreInstance;

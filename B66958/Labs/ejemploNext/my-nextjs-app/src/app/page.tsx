@@ -5,14 +5,24 @@ import NavBar from "./navbar/page";
 import Cart from './Cart/page';
 import Alert from 'react-bootstrap/Alert';
 import Carousel from 'react-bootstrap/Carousel';
+import { Dropdown } from "react-bootstrap";
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 export default function Home() {
+
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const querySearch = searchParams.get('query')
+  const categoriesSearch = searchParams.getAll('categories')
+
   const [isErrorShowing, setIsErrorShowing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [productQuery, setProductQuery] = useState('');
 
   const [isCartActive, setIsCartActive] = useState(false);
 
@@ -33,13 +43,53 @@ export default function Home() {
     necesitaVerificacion: false
   });
 
+  const categoriesSearchString = Array.isArray(categoriesSearch) ? categoriesSearch.join(',') : categoriesSearch;
+  useEffect(() => {
+    if (categoriesSearch.length !== 0 || querySearch !== null) {
+      let urlToFilterCategories = buildQueryString(categoriesSearch);
+      let searchedQuerie = querySearch ? `query=${querySearch}` : '';
+      let urlToFilterQuery = urlToFilterCategories ? (searchedQuerie ? `&${searchedQuerie}` : '') : (searchedQuerie ? `?${searchedQuerie}` : '')
+      if (categoriesSearch)
+        setSelectedCategories(categoriesSearch);
+      const fetchUrl = 'https://localhost:7151/api/store/products' + urlToFilterCategories + urlToFilterQuery;
+      const fetchData = async () => {
+        /* try { */
+        const res = await fetch(fetchUrl, {
+          method: 'GET',
+          headers: {
+            'content-type': 'application/json'
+          }
+        });
+        console.log(urlToFilterCategories, urlToFilterQuery)
+        var productsForQuerySearch = await res.json();
+        setProducts(productsForQuerySearch);
+        /* } catch (error) {
+          setErrorMessage(error)
+          setIsErrorShowing(true)
+        } */
+      };
+      fetchData();
+    } else {
+      const fetchStore = async () => {
+        try {
+          const result = await getData();
+          setProducts(result.productsInStore);
+        } catch (error) {
+          setErrorMessage(error)
+          setIsErrorShowing(true)
+        }
+      };
+      fetchStore();
+    }
+  }, [querySearch, categoriesSearchString]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const result = await getData();
         const paymentTypes = result.paymentMethods.map(payment => payment.paymentType);
-        setProducts(result.products);
-        setCategories(result.categoriesList);
+        setProducts(result.productsInStore);
+        setCategories(result.categoriesInStore);
         setCart(cart => ({
           ...cart,
           carrito: {
@@ -132,15 +182,42 @@ export default function Home() {
     setIsCartActive(action ? true : false);
   };
 
+  function updateBrowserUrl(categoriesSelected: Array<Number>) {
+    let overOneCategorySelected = categoriesSelected.length > 0
+    let urlToBeDisplayed = ''
+    let categoriesParams = overOneCategorySelected ? buildQueryString(categoriesSelected) : '?'
+    let queryParams = productQuery ? (overOneCategorySelected ? `&query=${productQuery}` : `query=${productQuery}`) : ''
+    urlToBeDisplayed = categoriesParams + queryParams
+
+    return urlToBeDisplayed
+  }
+
   async function getData() {
     try {
-      const res = await fetch('https://localhost:7151/api/Store');
+      const res = await fetch('https://localhost:7151/api/store');
       if (!res.ok) {
         throw new Error('Failed to fetch data');
       }
       return res.json();
     } catch (error) {
       throw error;
+    }
+  }
+
+  function buildQueryString(categories: any) {
+    if (!categories || categories.length === 0) {
+      return '';
+    }
+    const queryString = categories.map(category => `categories=${category}`).join('&');
+    return `?${queryString}`;
+  }
+
+  function searchProduct() {
+    if (!productQuery) {
+      setErrorMessage('Por favor ingrese una consulta');
+      setIsErrorShowing(true);
+    } else {
+      router.push(pathname + updateBrowserUrl(selectedCategories))
     }
   }
 
@@ -165,26 +242,13 @@ export default function Home() {
 
   const MyRow = () => {
 
-    async function handleCategoryChange(event: any) {
-      let selected = event.target.value;
-      setSelectedCategory(selected)
-      if (selected === "0") {
-        var allProducts = await getData();
-        setProducts(allProducts.products)
-      } else
-        try {
-          const res = await fetch(`https://localhost:7151/api/Store/Products?category=${selected}`, {
-            method: 'GET',
-            headers: {
-              'content-type': 'application/json'
-            }
-          })
-          var productsForCategory = await res.json();
-          setProducts(productsForCategory)
-        } catch (error) {
-          setErrorMessage(error);
-          setIsErrorShowing(true);
-        }
+    function handleCategoryChange(newCategory: string) {
+      const updatedCategories = selectedCategories.includes(newCategory)
+        ? selectedCategories.filter(category => category !== newCategory)
+        : [...selectedCategories, newCategory];
+
+      setSelectedCategories(updatedCategories);
+      router.push(pathname + updateBrowserUrl(updatedCategories))
     }
 
     return (
@@ -192,14 +256,22 @@ export default function Home() {
         <div className="row">
           <div className="col-auto">
             <h1>Lista de productos</h1>
-            <select className="form-control" onChange={handleCategoryChange} value={selectedCategory}>
-              <option value={0}>Todas las categorías</option>
-              {categories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                Todas las categorías
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {categories.map(category => (
+                  <Dropdown.Item
+                    key={category.id}
+                    onClick={() => handleCategoryChange(String(category.id))}
+                    active={
+                      selectedCategories.includes(category.id) || selectedCategories.includes(String(category.id))}>
+                    {category.name}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
         </div>
         <div className="row justify-content-md-center">
@@ -232,7 +304,8 @@ export default function Home() {
 
   return (
     <div className="d-grid gap-2">
-      <NavBar productCount={count} toggleCart={(action) => toggleCart({ action })} />
+      <NavBar productCount={count} toggleCart={(action) => toggleCart({ action })}
+        searchFunction={searchProduct} setQuery={setProductQuery} />
       {isCartActive ? <Cart cart={cart} setCart={setCart}
         toggleCart={(action) => toggleCart({ action })} clearProducts={clearProducts} /> : <><MyRow /> <CarouselBootstrap /></>}
       {isErrorShowing ?

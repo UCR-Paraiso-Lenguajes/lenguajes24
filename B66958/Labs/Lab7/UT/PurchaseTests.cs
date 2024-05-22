@@ -60,9 +60,9 @@ public class PurchaseTests
         CartBusiness cartBusiness = new CartBusiness();
         List<string> products =
         [
-            store.Products.ElementAt(0).Uuid.ToString(),
-            store.Products.ElementAt(1).Uuid.ToString(),
-            store.Products.ElementAt(2).Uuid.ToString()
+            store.ProductsInStore.ElementAt(0).Uuid.ToString(),
+            store.ProductsInStore.ElementAt(1).Uuid.ToString(),
+            store.ProductsInStore.ElementAt(2).Uuid.ToString()
         ];
 
         Cart cart = new Cart()

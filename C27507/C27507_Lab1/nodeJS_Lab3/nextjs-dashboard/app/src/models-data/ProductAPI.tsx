@@ -1,3 +1,5 @@
+import { CategoryAPI } from "./CategoryAPI";
+
 //Interfaces para serializar las objetos JSON de la API
 export interface ProductAPI {
     id: number,  
@@ -5,5 +7,6 @@ export interface ProductAPI {
     imageUrl: string;
     price: number;
     quantity: number;  
-    description: string  
+    description: string;
+    //category: CategoryAPI;
   }

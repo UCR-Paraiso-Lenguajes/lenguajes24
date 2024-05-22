@@ -19,7 +19,6 @@ namespace MyStoreAPI.Controllers
         [HttpGet]
         public IActionResult getStore(){                        
             return Ok(Store.Instance);            
-        }
-                
+        }                
     }
 }

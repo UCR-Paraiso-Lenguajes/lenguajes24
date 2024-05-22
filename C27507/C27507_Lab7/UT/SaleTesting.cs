@@ -17,8 +17,8 @@ namespace UT{
             //var productsFromDB = DB.SelectProducts();
             var productsFromDB = Store.Instance.Products;
             someProductsFromDB = new List<Product>();
-            someProductsFromDB.Add(productsFromDB[0]);
-            someProductsFromDB.Add(productsFromDB[1]);
+            someProductsFromDB.Add(productsFromDB.ElementAt(0));
+            someProductsFromDB.Add(productsFromDB.ElementAt(1));
         }
 
 

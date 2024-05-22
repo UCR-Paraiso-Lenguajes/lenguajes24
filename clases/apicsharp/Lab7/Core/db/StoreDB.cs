@@ -30,7 +30,7 @@ public sealed class StoreDB
                 Uuid = Guid.NewGuid()
             });
         }
-
+        Console.WriteLine(Storage.Instance.ConnectionString);
         using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
         {
             connection.Open();

@@ -7,6 +7,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import React from 'react';
 import { getInitialCartLocalStorage, saveInitialCartLocalStorage } from '../lib/cart_data_localeStore';
 import useFetchInitialStore from '../api/http.initialStore';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const Carousel = ({ products, onAdd }: { products: Product[], onAdd: any }) => {
   const chunkSize = 4;
@@ -64,27 +65,68 @@ const ProductsRow = ({ products, onAdd }: { products: Product[], onAdd: any }) =
   );
 };
 
-
-
 export default function Page() {
-  const [category, setCategory] = useState<string>("All");
-  const initialStore = useFetchInitialStore(category);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  let initialCategory: string[] = [];
+  let initialSearch = 'none';
+
+  if (searchParams) {
+    const categoryParams = searchParams.getAll('category');
+    initialCategory = categoryParams.length > 0 ? categoryParams : ['All'];
+    initialSearch = searchParams.get('search') || 'none';
+  }
+
+  const [category, setCategory] = useState<string[]>(initialCategory);
+  const [search, setSearch] = useState<string>(initialSearch);
+
+  const initialStore = useFetchInitialStore({ category, search });
   const initialCart = getInitialCartLocalStorage();
+
   const [count, setCount] = useState(initialCart.cart.products.length > 0 ? initialCart.cart.products.length : 0);
+
   const handleAddToCart = ({ product }: { product: Product }) => {
     initialCart.cart.products.push(product);
-    initialCart.cart.subtotal = initialCart.cart.subtotal + product.price;
+    initialCart.cart.subtotal += product.price;
     initialCart.cart.total = initialCart.cart.subtotal + initialCart.cart.subtotal * initialCart.cart.taxPercentage;
     setCount(count + 1);
     saveInitialCartLocalStorage(initialCart);
   }
+
   const handleAddtoCategory = ({ category }: { category: Category }) => {
-    setCategory(category.name);
-    console.log(initialStore);
+    setCategory(prevCategories => {
+      let newCategories;
+      if (category.name === 'All') {
+        newCategories = ['All'];
+      } else {
+        newCategories = prevCategories.includes('All')
+          ? [category.name]
+          : prevCategories.includes(category.name)
+            ? prevCategories.filter(c => c !== category.name)
+            : [...prevCategories, category.name];
+      }
+      const queryString = `category=${newCategories.join('&category=')}&search=${search}`;
+      router.push(`/dashboard?${queryString}`);
+      return newCategories;
+    });
   }
+
+  const handleAddtoSearch = (searchQuery: string) => {
+    if (searchQuery && searchQuery.trim().length !== 0) {
+      setSearch(searchQuery.trim());
+      const queryString = `category=${category.join('&category=')}&search=${searchQuery.trim()}`;
+      router.push(`/dashboard?${queryString}`);
+    } else {
+      setSearch("none");
+      const queryString = `category=${category.join('&category=')}&search=none`;
+      router.push(`/dashboard?${queryString}`);
+    }
+  }
+
   return (
     <>
-      <SideNav countCart={count} onAdd={handleAddtoCategory} />
+      <SideNav countCart={count} onAddCategory={handleAddtoCategory} onAddSearch={handleAddtoSearch} />
       {<ProductsRow products={initialStore ? initialStore : []} onAdd={handleAddToCart} />}
     </>
   );

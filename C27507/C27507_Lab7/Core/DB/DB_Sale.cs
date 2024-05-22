@@ -66,7 +66,6 @@ namespace MyStoreAPI.DB{
                 //Commiteamos tanto la insercion en DB_Sale y DB_SaleLine
                 await transaction.CommitAsync();
             }catch(Exception ex){
-                
                 await transaction.RollbackAsync();
                 throw;
 

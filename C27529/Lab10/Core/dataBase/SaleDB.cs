@@ -1,5 +1,6 @@
 using System;
 using MySqlConnector;
+using Core;
 using storeApi.Models;
 
 namespace storeApi.Database
@@ -10,7 +11,7 @@ namespace storeApi.Database
         {
             if (sale == null) throw new ArgumentException("Sale must contain at least one product.");
 
-            using (MySqlConnection connection = new MySqlConnection("Server=localhost;Port=3306;Database=mysql;Uid=root;Pwd=123456;"))
+            using (MySqlConnection connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
             {
                 await connection.OpenAsync();
 
@@ -63,20 +64,23 @@ namespace storeApi.Database
         }
         public async Task<Dictionary<string, decimal>> getWeekSalesAsync(DateTime date)
         {
+            if (date == DateTime.MinValue) throw new ArgumentException("Invalid date.", nameof(date));
+
+
             Dictionary<string, decimal> weekSales = new Dictionary<string, decimal>();
 
-            using (MySqlConnection connection = new MySqlConnection("Server=localhost;Port=3306;Database=mysql;Uid=root;Pwd=123456;"))
+            using (MySqlConnection connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
             {
                 await connection.OpenAsync();
 
                 string selectQuery = @"
-                    USE store;
+            USE store;
 
-                    SELECT DAYNAME(sale.purchase_date) AS day,
-                           SUM(sale.total) AS total
-                    FROM sales sale 
-                    WHERE YEARWEEK(sale.purchase_date) = YEARWEEK(@date)
-                    GROUP BY DAYNAME(sale.purchase_date);";
+            SELECT DAYNAME(sale.purchase_date) AS day,
+                   SUM(sale.total) AS total
+            FROM sales sale 
+            WHERE YEARWEEK(sale.purchase_date) = YEARWEEK(@date)
+            GROUP BY DAYNAME(sale.purchase_date);";
 
                 using (var command = new MySqlCommand(selectQuery, connection))
                 {
@@ -106,13 +110,15 @@ namespace storeApi.Database
         }
 
 
-        public async Task<List<(string purchaseNumber, decimal total)>> getDailySales(DateTime date)
+        public async Task<Dictionary<string, decimal>> getDailySales(DateTime date)
         {
-            List<(string purchaseNumber, decimal total)> dailySales = new List<(string purchaseNumber, decimal total)>();
+             if (date == DateTime.MinValue) throw new ArgumentException("Invalid date.", nameof(date));
+              if (date != DateTime.Today) throw new ArgumentException("Invalid date.", nameof(date));
+            Dictionary<string, decimal> dailySales = new Dictionary<string, decimal>();
 
             using (MySqlConnection connection = new MySqlConnection("Server=localhost;Port=3306;Database=mysql;Uid=root;Pwd=123456;"))
             {
-                await connection.OpenAsync(); // Abrir la conexión de forma asíncrona
+                await connection.OpenAsync();
 
                 string selectQuery = @"
             USE store;
@@ -126,17 +132,19 @@ namespace storeApi.Database
                 {
                     command.Parameters.AddWithValue("@date", date);
 
-                    using (var reader = await command.ExecuteReaderAsync()) // Ejecutar la consulta de forma asíncrona
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        while (await reader.ReadAsync()) // Leer los resultados de forma asíncrona
+                        while (await reader.ReadAsync())
                         {
                             string purchaseNumber = reader.GetString("purchase_number");
                             decimal total = reader.GetDecimal("total");
-                            dailySales.Add((purchaseNumber, total));
+                            dailySales.Add(purchaseNumber, total);
                         }
                     }
                 }
             }
+
+           
 
             return dailySales;
         }
