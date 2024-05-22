@@ -12,6 +12,7 @@ WORKDIR /app/my-nextjs-app
 # Instala las dependencias del proyecto 
 RUN npm install 
  
+COPY . .
 EXPOSE 3000 
 CMD npm run dev
  

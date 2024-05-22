@@ -13,14 +13,16 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const URL = process.env.NEXT_PUBLIC_API;
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        
+
         console.log(process.env.DB_HOST)
         //const response = await fetch('http://localhost:5000/api/Store');
-        const response = await fetch( process.env.DB_HOST + '/api/Store');
+        //const response = await fetch(process.env.NEXT_PUBLIC_API + '/api/Store');
+        const response = await fetch(URL + '/api/Store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -83,14 +85,15 @@ export default function Home() {
       setSelectedCategory(selected);
       let productsForCategory = [];
       if (selected === "0") {
-        const response = await fetch( process.env.DB_HOST +'/api/Store');
+        const response = await fetch(URL + '/api/Store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
         productsForCategory = await response.json();
         setStoreProducts(productsForCategory);
       } else {
-        const response = await fetch(`http://localhost:5207/api/Store/products?category=${selected}`);
+        //const response = await fetch(`http://localhost:5207/api/Store/products?category=${selected}`);
+        const response = await fetch(URL + `/api/Store/products?category=${selected}`);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
