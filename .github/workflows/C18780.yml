@@ -32,3 +32,28 @@ jobs:
       run: |
         cd C18780/backend
         dotnet test --no-build --verbosity normal
+        
+  publish-Api:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+        cd C22037/Docker
+        docker image build -t zjean42/api:latest .
+        docker image build -t zjean42/api:0.0.1 .
+        echo "${{ secrets.DOCKERHUBPASSC18780  }}" | docker login -u "zjeancarlo42@gmail.com" --password-stdin
+        docker push zjean42/api:latest
+        docker push zjean42/api:0.0.1
+  publish-UI:   
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+        cd C22037/Docker/my-app
+        docker image build -t zjean42/ui:latest .
+        docker image build -t zjean42/ui:0.0.1 .
+        echo "${{ secrets.DOCKERHUBPASSC18780  }}" | docker login -u "zjeancarlo42@gmail.com" --password-stdin
+        docker push zjean42/ui:latest
+        docker push zjean42/ui:0.0.1   
