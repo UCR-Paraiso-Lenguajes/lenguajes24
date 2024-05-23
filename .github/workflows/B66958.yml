@@ -37,7 +37,7 @@ jobs:
     - name: Build & Push Image
       run: |
         cd B66958/Labs
-        echo "${{ secrets.DOCKERHUBPASSB66958  }}" | docker login -u "corey1898@hotmail.com" --password-stdin
+        echo "${{ secrets.DOCKERHUBPASSB66958  }}" | docker login -u "EisenheimDiego" --password-stdin
         docker image build -t eisenheimdiego/store_api:latest .
         docker image build -t eisenheimdiego/store_api:0.0.1 .
         docker push eisenheimdiego/store_api:latest
