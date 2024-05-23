@@ -5,11 +5,11 @@ import "@/app/ui/styles.css";
 import Header from "@/app/navStarBuyStore/page";
 import Carrito from "@/app/Cart/page";
 import Carousel from 'react-bootstrap/Carousel';
-
+import { DropdownButton, Dropdown } from 'react-bootstrap';
 
 // cards
 const Product = ({ product, handleClick }) => {
-  if ( product==undefined|| handleClick==undefined) {
+  if (product == undefined || handleClick == undefined) {
     throw new Error('Error: Los argumentos de producto no pueden ser nulos.');
   }
   const { name, description, imageURL, price } = product;
@@ -30,42 +30,28 @@ const Product = ({ product, handleClick }) => {
   );
 };
 
-const CarruselProductos=({productos, handleClick}) =>{
-  if (productos==undefined || handleClick==undefined) {
+const CarruselProductos = ({ productos, handleClick }) => {
+  if (productos == undefined || handleClick == undefined) {
     throw new Error('Error: Los argumentos de CarruselProductos no pueden ser nulos.');
   }
   return (
     <Carousel data-bs-theme="dark">
       {productos && productos.products && productos.products.map(product => (
-         <Carousel.Item interval={1000}>
-        <div className="carrusel-item">
-        <Product key={product.id} product={product} handleClick={handleClick} />
-        </div>
+        <Carousel.Item interval={1000}>
+          <div className="carrusel-item">
+            <Product key={product.id} product={product} handleClick={handleClick} />
+          </div>
         </Carousel.Item>
       ))}
     </Carousel>
   );
 };
 
-const MostrarProductos = ({ handleClick }) => {
-  if ( handleClick==undefined) {throw new Error('Error: Los argumentos de MostrarProductos no pueden ser nulos.');}
-  const [Productos, setProductos] = useState([]);
-  useEffect(() => {
-    const loadData = async () => {
-      const response = await fetch('https://localhost:7223/api/Store');// 7223
-      if (!response.ok) {
-         throw new Error('Failed to fetch data');
-      }
-      const json = await response.json();
-      setProductos(json);
-  };
-  loadData();
-  }, []);
-
-
+const MostrarProductos = ({ Productos, handleClick }) => {
+  if (handleClick == undefined || Productos==undefined) { throw new Error('Error: Los argumentos de MostrarProductos no pueden ser nulos.'); }
   return (
     <div>
-      <CarruselProductos productos={Productos} handleClick={handleClick}/>
+      <CarruselProductos productos={Productos} handleClick={handleClick} />
       <h3> Lista de productos</h3>
       <div className="productos">
         {Productos && Productos.products && Productos.products.map(product => (
@@ -78,7 +64,7 @@ const MostrarProductos = ({ handleClick }) => {
 
 
 const ModalProductoYaAgregado = ({ closeModal }) => {
-  if ( closeModal==undefined) {throw new Error('Error: Los argumentos de ModalProductoYaAgregado no pueden ser indefinidos.');}
+  if (closeModal == undefined) { throw new Error('Error: Los argumentos de ModalProductoYaAgregado no pueden ser indefinidos.'); }
   return (
     <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
       <div className="modal-dialog" role="document">
@@ -105,6 +91,40 @@ const ModalProductoYaAgregado = ({ closeModal }) => {
 export default function Page() {
   const [show, setShow] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [productos, setProductos] = useState([]);
+  const [category, setCategory] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://localhost:7223/api/Store');
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const data = await response.json();
+        setProductos(data);
+        setCategory(data.categories);
+      } catch (error) {
+        throw new Error('Failed to fetch data');
+      }
+    };
+    fetchData();
+  }, []);
+
+  const fetchDataByCategory = async (category) => {
+    if (category == undefined) throw new Error("Error: Los argumentos fetchDataByCategory  no pueden ser indefinidos.");
+    try {
+      const response = await fetch(`https://localhost:7223/api/Store/Products?categoryID=${category.categoryID}`);
+      if (!response.ok)throw new Error('Failed to fetch filtered products');
+  
+      const data = await response.json();
+      const filteredProducts = { products: data.filteredProducts.result };
+      setProductos(filteredProducts);
+    } catch (error) {
+      throw new Error('Failed to fetch filtered products');
+    }
+  };
+
   const initialCart = {
     carrito: {
       subtotal: 0,
@@ -122,12 +142,13 @@ export default function Page() {
     return storedStore ? JSON.parse(storedStore) : initialCart;
   });
 
+
   useEffect(() => {
     handlePrice();
   }, [store]);
 
   const handleClick = (item) => {
-    if(item===undefined ){throw new Error('Los argumentos para agregar un productom no pueden ser nulos.');}
+    if (item == undefined) { throw new Error('Los argumentos para agregar un productom no pueden ser nulos.'); }
     const isPresent = store.productos.some(producto => producto.id === item.id);
     if (isPresent) {
       setShowModal(true);
@@ -168,14 +189,27 @@ export default function Page() {
     };
 
     localStorage.setItem("tienda", JSON.stringify(updatedStore));
-  }; 
- 
+  };
+  const handleCategoryChange = (categoryID) => {
+    if (categoryID == undefined) throw new Error("Error: Los argumentos handleCategoryChange  no pueden ser indefinidos.");
+    fetchDataByCategory(categoryID);
+  };
 
   return (
     <div>
       <Header size={store.productos.length} setShow={setShow} />
+      <DropdownButton id="dropdown-basic-button" title="Categorías">
+        {category && category.map((category) => (
+          <Dropdown.Item
+            key={category.categoryID}
+            onClick={() => handleCategoryChange(category)}
+          >
+            {category.nameCategory}
+          </Dropdown.Item>
+        ))}
+      </DropdownButton>
       {
-        show ? <MostrarProductos handleClick={handleClick} /> : <Carrito />
+        show ? <MostrarProductos handleClick={handleClick} Productos={productos} /> : <Carrito />
       }
       {showModal && <ModalProductoYaAgregado closeModal={closeModal} />}
 

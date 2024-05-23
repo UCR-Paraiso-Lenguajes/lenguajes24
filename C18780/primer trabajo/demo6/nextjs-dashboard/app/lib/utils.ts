@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { Product } from "./products-data-definitions";
+import { Product } from "./data-definitions";
 
 export const findProductsDuplicates = (products: Product[]) => {
   const duplicates: Product[] = [];

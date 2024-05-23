@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using StoreApi.Data;
 using StoreApi.Models;
 
@@ -5,16 +6,19 @@ namespace StoreApi.Repositories
 {
     public class SalesLineRepository : ISalesLineRepository
     {
-        private readonly DbContextClass _dbContext;
-        public SalesLineRepository(DbContextClass dbContext)
+        private readonly IConfiguration _configuration;
+        public SalesLineRepository(IConfiguration configuration)
         {
-            _dbContext = dbContext;
+            _configuration = configuration;
         }
         public async Task<SalesLine> AddSalesLineAsync(SalesLine salesLine)
         {
-            var result = _dbContext.SalesLine.Add(salesLine);
-            await _dbContext.SaveChangesAsync();
-            return result.Entity;
+            using (var dbContext = new DbContextClass(_configuration))
+            {
+                var result = dbContext.SalesLine.Add(salesLine);
+                await dbContext.SaveChangesAsync();
+                return result.Entity;
+            }
         }
     }
 }

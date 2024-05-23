@@ -1,0 +1,39 @@
+name: class Api image
+
+on:
+  push:
+   branches: [ master ]
+  pull_request:
+    branches: [ master ]
+      
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: |
+        cd clases/apicsharp/Lab7
+        dotnet restore
+    - name: Build
+      run: |
+        cd clases/apicsharp/Lab7
+        dotnet build --no-restore
+    - name: Test
+      run: |
+        cd clases/apicsharp/Lab7
+        dotnet test --no-build --verbosity normal
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+        cd clases/apicsharp/Lab7
+        echo "${{ secrets.DOCKERHUBPASS  }}" | docker login -u "cris.guillen0@gmail.com" --password-stdin
+        docker image build -t cguillenmendez/leng2024:latest .
+        docker push cguillenmendez/leng2024:latest

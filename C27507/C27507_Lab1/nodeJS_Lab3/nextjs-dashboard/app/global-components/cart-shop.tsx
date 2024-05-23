@@ -5,6 +5,11 @@ import { ModalCart } from './modal-cart';
 import { CartShopAPI } from '../src/models-data/CartShopAPI';
 //Funciones
 
+//Recursos
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../src/css/cart_shop.css'
+import '../src/css/fonts_awesome/css/all.min.css'
+
 interface CartShopProps {    
     myCartInStorage: CartShopAPI| null;
     setMyCartInStorage: React.Dispatch<React.SetStateAction<CartShopAPI | null>>;
@@ -18,15 +23,13 @@ interface CartShopProps {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);  
     return(
-      <div className="cart_container col-sm-6">
+      <div className="cart-shop-container" title='Mi Carrito'>
         {/* Cuando se presione cualquier parte del Carrito, se abre el modal */}
         <a onClick={handleShow}>
             <div className="cart-info">
                 <i className="fas fa-shopping-cart"></i>                    
                 <div className="notify-cart">{myCartInStorage?.allProduct.length}</div>
-            </div>                    
-            <p className="col-sm-6">Mi carrito</p>                                                                   
-            
+            </div>                                            
         </a>  
   
         {/* Llamamos al carrito desde modal_cart.tsx 

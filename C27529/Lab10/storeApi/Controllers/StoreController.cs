@@ -13,10 +13,27 @@ namespace storeApi.Controllers
     public class StoreController : ControllerBase
     {
         [HttpGet]
-        public  Store GetStore()
+        public async Task<Store> GetStoreAsync()
         {
-            return Store.Instance ;
+            return await Task.FromResult(Store.Instance);
         }
+
+        [HttpGet("products")]
+        public async Task<IActionResult> GetCategories(int category)
+        {
+            if (category < 1) throw new ArgumentException("Invalid category ID");
+
+            var store = Store.Instance;
+            var products = await store.GetFilteredProductsAsync(category);
+
+            return Ok(new { products });
+        }
+
+        
+
+
+
+
     }
 
 }

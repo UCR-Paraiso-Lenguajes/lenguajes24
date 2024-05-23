@@ -5,12 +5,14 @@ namespace storeapi.Models
     public class Product : ICloneable
     {
         public int id { get; set; }
-        private string? _name;
-        private string? _imageUrl;
+        private string _name;
+        private string _imageUrl;
         private decimal _price;
-        private string? _description;
+        private string _description;
 
-        public string? Name
+        private Category _category ;
+
+        public string Name
         {
             get => _name;
             set
@@ -23,7 +25,7 @@ namespace storeapi.Models
             }
         }
 
-        public string? ImageUrl
+        public string ImageUrl
         {
             get => _imageUrl;
             set
@@ -49,7 +51,7 @@ namespace storeapi.Models
             }
         }
 
-        public string? Description
+        public string Description
         {
             get => _description;
             set
@@ -62,15 +64,39 @@ namespace storeapi.Models
             }
         }
 
+             public Category Category
+    {
+        get => _category;
+        set
+        {
+            // Validar que el Id sea mayor que cero
+            if (value.Id <= 0)
+            {
+                throw new ArgumentException("El Id de Category debe ser mayor que cero.");
+            }
+
+            // Validar que el nombre no esté vacío
+            if (string.IsNullOrWhiteSpace(value.Name))
+            {
+                throw new ArgumentException("El nombre de Category no puede estar vacío o ser nulo.");
+            }
+
+            // Asignar el valor solo si pasa las validaciones
+            _category = value;
+        }
+    }
+    
         public object Clone()
         {
+            // Create a new instance of Product and copy all properties
             return new Product
             {
-                id = this.id,
+              
                 Name = this.Name,
                 ImageUrl = this.ImageUrl,
                 Price = this.Price,
-                Description = this.Description
+                Description = this.Description,
+                Category = this.Category // Assign the category directly
             };
         }
     }

@@ -4,7 +4,7 @@ using StoreApi.utils;
 
 namespace StoreApi.Commands
 {
-    public class CreateSalesCommand : IRequest<Sales>
+    public sealed class CreateSalesCommand : IRequest<Sales>
     {
         public DateTime Date { get; set; }
         public int Confirmation {get; set;}

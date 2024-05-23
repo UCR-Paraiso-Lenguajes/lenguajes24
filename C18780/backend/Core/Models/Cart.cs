@@ -1,5 +1,3 @@
-using StoreApi.utils;
-
 namespace StoreApi.Models
 {
     public sealed class Cart

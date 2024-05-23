@@ -4,12 +4,12 @@ namespace StoreApi.Models
 {
     public sealed class Store
     {
-        public List<Product> Products { get; set; }
+        public IEnumerable<Product> Products { get; set; }
         public int TaxPercentage { get; set; }
-        public Store(List<Product> products, int TaxPercentage)
+        public Store(IEnumerable<Product> products)
         {
             this.Products = products;
-            this.TaxPercentage = TaxPercentage;
+            TaxPercentage = 13;
         }
     }
 }

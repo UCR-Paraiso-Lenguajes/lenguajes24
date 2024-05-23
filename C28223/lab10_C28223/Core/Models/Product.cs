@@ -1,3 +1,5 @@
+using storeApi.Models.Data;
+
 namespace storeApi.Models;
 public class Product : ICloneable
 {
@@ -7,6 +9,7 @@ public class Product : ICloneable
     public string description { get; set; }
     public int id { get; set; }
     public int cant { get; set; }
+    public Category category{ get; set; }
 
     // Implementation of the ICloneable interface
     public object Clone()
@@ -18,7 +21,8 @@ public class Product : ICloneable
             imageURL = this.imageURL,
             price = this.price,
             description = this.description,
-            cant = this.cant
+            cant = this.cant, 
+            category=this.category
         };
     }
 }

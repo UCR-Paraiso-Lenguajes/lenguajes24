@@ -1,3 +1,4 @@
+
 *{
 	margin: 0;
 	padding: 0;
@@ -68,15 +69,29 @@ button{
 .main_banner{
 
 	width: 100%;
-	height: auto;
-	background: #8a9597;
-	padding: 1.4rem;	
+	height: 100px;
+	height: auto;	
+	padding: 0 1.4rem;
+	justify-content: center;
+	align-items: center;
+}
+
+.main_banner > *{
+	height: 100%;
+	border-left: 2px #F2F2F2 solid;
+	border-right: none;
+}
+
+
+.logo-container img{
+	width: 100%;
+	height: 100%;
 }
 
 /* Div con el buscador */
 .search_container{
 	width: 50%;
-	height: 25px;
+	height: 25px;	
 	display: flex;	
 	align-items: center;
 	justify-content: center;
@@ -84,123 +99,83 @@ button{
 
 
 .search_container input{
+	
 	width: 75%;	
 	height: 100%;
-	padding: 15px 10px;
-	border-radius: 25px;
+	background: #F2F2F2;
+	color: #0a0a0a;		
+	padding: 1.2rem;
 	border: none;
 }
 
-.search_container i{	
-	color: white;
-	font-size: 1.5rem;
-	margin-left: 5px;
-}
-
-/* Div con el carrito */
-.cart_container{
-	width: 50%;
-	height: 25px;		
-}
-
-
-.cart_container a{	
-	width: 100%;
+.search_container button{	
 	height: 100%;
-	cursor: pointer;
+	background-color: #FFA500;
+	color: #FFF;
 	display: flex;
-	flex-flow: row nowrap;
+	align-items: center;
+	padding: 1.2rem;
+}
+
+.category-list-searching{
+	width: 50px;
+	height: 100%;
+	background-color: #FFA500;	
+	padding: 1.2rem;
+	position: relative;	
+	display: flex;
 	justify-content: center;
 	align-items: center;	
 }
 
-/* Subcontenedor que contiene el num y la img del carrito */
-.cart_container .cart-info{
-	position: relative;
+.category-list-searching ul{
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-flow: column;
+	justify-content: space-around;	
+	align-items: center;	
+	position: absolute;
+	top: 100%;
+	left: 0;		
+	visibility: hidden;
+}
+
+.category-list-searching:hover ul{
+	visibility: visible;
+}
+
+.category-list-searching ul li{
+
+	display: flex;
+	flex-flow: row;
+	background-color: #FFA500;	
+	padding: 1rem;
+	cursor: pointer;
+}
+.category-list-searching ul li:hover{
+	background-color: #FFF;	
+	color: #000;
+}
+.category-list-searching ul li > *{
+	cursor: pointer;
+}
+
+/* .category-list-searching:hover ul{
+	display: block;
+} */
+
+
+
+
+
+.category-container{
 	text-align: center;	
 }
 
-/* Num de productos en el carrito */
-.cart_container .notify-cart{	
-	position: absolute;
-	top: -40%;
-	left: -50%;
-	border-radius: 50%;
-	background: black;
-	color: white;
-	width: 25px;
-	height: 25px;
-	line-height: 25px;
+.dropdown-style{
+	background-color: #FFA500;
 }
-
-.cart_container a *{	
-	width: auto;
-	color: white;
-	font-size: 1.5rem;
-	margin: 0 5px;	
-}
-
-
-
-
-/* Menu Modal del carrito */
-
-.product-menu-cart div{
-	width: 100%;
-	height: auto;	
-	margin: 50px 0;
-}
-
-.product-menu-cart br{
-	width: 100%;
-	color: black;
-	font-size: large;
-}
-
-.product-menu-cart img{
-	width: 100%;
-	height: 100px;		
-	object-fit: contain;
-}
-
-.product-menu-cart p{
-	text-align: center;
-	margin-right: 1,2rem;
-}
-.product-menu-cart button{
-	width: 100%;
-	background: orange;
-	color: white;	
-	padding: 0.5rem;	
-}
-
-.product-menu-cart span, .total-price-container  span{
-	color: orange;
-}
-
-.modal-footer {
-	position: sticky;
-	bottom: 0;
-	background-color: white; /* Ajusta el color de fondo según tu diseño */
-  }
-
-.total-price-container{		
-	background: white;
-	position: sticky;
-	bottom: 71px;
-	padding: 0 1.2rem;
-	font-weight: bolder;
-}
-
-.total-price-cart{	
-	text-align: right;
-
-}
-
-
-
-
-
 
 
 /* Galeria de productos */
@@ -241,7 +216,7 @@ button{
 .product button{
 	border-radius: 25px;
 	padding: 10px 0;
-	background: orange;
+	background-color: #FFA500;
 	color: white;
 	cursor: pointer;
 }
@@ -297,7 +272,7 @@ button{
     	font-weight: bolder;		
 	}
 	.info_carousel button{	
-		background: orange;		
+		background-color: #FFA500;
 		color: white;		
 		padding: 1.2rem;
 	}	
@@ -322,10 +297,10 @@ button{
 /* Footer */
 footer{
 	margin-top: 25px;
-	background: #8a9597;
+	background-color: #FFA500;
 	width: 100%;
 	height: 50px;
 	text-align: center;
-	color: white;
+	color: #FFF;
 	align-items: center;
 }

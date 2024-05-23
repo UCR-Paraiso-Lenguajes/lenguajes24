@@ -47,7 +47,8 @@ namespace MyStoreAPI{
                         ImageUrl VARCHAR(255),
                         Price DECIMAL(10, 2) NOT NULL,
                         Quantity INT NOT NULL,
-                        Description TEXT
+                        Description TEXT,
+                        Category INT
                     );";
                 using (MySqlCommand command = new MySqlCommand(createTableProducts, connectionWithDB))
                 {
@@ -55,6 +56,7 @@ namespace MyStoreAPI{
                     command.ExecuteNonQuery();
                     Console.WriteLine("Exito al crear Tablas Products");
                 }
+
 
                 string createTableSales = @"
                     CREATE TABLE IF NOT EXISTS Sales (
@@ -92,10 +94,8 @@ namespace MyStoreAPI{
                     command.ExecuteNonQuery();
                     Console.WriteLine("Exito al crear Tablas SalesLines");
                 }
-
                 //se guardan los cambios realizados en la BD
                 transaction.Commit();
-                //connectionStatus = true;
             }
             catch (Exception ex)
             {   

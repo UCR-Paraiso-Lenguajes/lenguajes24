@@ -20,7 +20,7 @@ public class CartBusiness
 
         // Find matching products based on the product IDs in the cart
         IEnumerable<Product> matchingProducts = Store
-            .Instance.Products.Where(p => cart.ProductIds.Contains(p.Uuid.ToString()))
+            .Instance.ProductsInStore.Where(p => cart.ProductIds.Contains(p.Uuid.ToString()))
             .ToList();
 
         // Create shadow copies of the matching products

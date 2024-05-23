@@ -12,7 +12,6 @@ export async function useFetchSinpePurchase(uuidSales: string, confirmationNumbe
                 'content-type': 'application/json'
             }
         })
-        console.log('Response:', res);
         if (res.ok) {
             const data = await res.json();
             return data;

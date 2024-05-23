@@ -5,12 +5,16 @@ using StoreApi.Repositories;
 
 namespace StoreApi.Handler
 {
-    public class CreateSinpeHandler : IRequestHandler<CreateSinpeCommand, Sinpe>
+    public sealed class CreateSinpeHandler : IRequestHandler<CreateSinpeCommand, Sinpe>
     {
         private readonly ISinpeRepository _sinpeRepository;
 
         public CreateSinpeHandler(ISinpeRepository sinpeRepository)
         {
+            if (sinpeRepository == null)
+            {
+                throw new ArgumentException("Illegal action, sinpeRepository is invalid.");
+            }
             _sinpeRepository = sinpeRepository;
         }
 

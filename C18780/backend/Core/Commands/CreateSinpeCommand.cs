@@ -3,7 +3,7 @@ using StoreApi.Models;
 
 namespace StoreApi.Commands
 {
-    public class CreateSinpeCommand : IRequest<Sinpe>
+    public sealed class CreateSinpeCommand : IRequest<Sinpe>
     {
         public Guid UuidSales {get; set; }
         public string ConfirmationNumber {get; set; }

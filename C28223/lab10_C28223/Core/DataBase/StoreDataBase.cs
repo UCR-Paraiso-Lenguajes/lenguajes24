@@ -4,6 +4,7 @@ using System.IO.Compression;
 using Core;
 using MySqlConnector;
 using storeApi.Models;
+using storeApi.Models.Data;
 
 namespace storeApi.DataBase
 {
@@ -11,6 +12,7 @@ namespace storeApi.DataBase
     {
         public static void CreateMysql()
         {
+            Categories categoryList = new Categories();
             var products = new List<Product>
             {
                 new Product
@@ -18,84 +20,96 @@ namespace storeApi.DataBase
                     name = "Producto 1",
                     description = "Esta computadora es muy rapida",
                     price = 20000,
-                    imageURL = "https://m.media-amazon.com/images/I/71Cco7OaVxL.__AC_SX300_SY300_QL70_FMwebp_.jpg"
+                    imageURL = "https://m.media-amazon.com/images/I/71Cco7OaVxL.__AC_SX300_SY300_QL70_FMwebp_.jpg",
+                    category=categoryList.GetCategories().ToList()[0] //aqui lo correcto es llamar a la categoria por el id y asignarle el struct, por el momento esta random
                 },
                 new Product
                 {
                     name = "Producto 2",
                     description = "Esta computadora es muy rapida",
                     price = 20000,
-                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg"
+                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg",
+                    category=categoryList.GetCategories().ToList()[1]
                 },
                 new Product
                 {
                     name = "Producto 3",
                     description = "Esta computadora es muy rapida",
                     price = 20000,
-                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg"
+                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg",
+                    category=categoryList.GetCategories().ToList()[1]
                 },
                 new Product
                 {
                     name = "Producto 4",
                     description = "Esta computadora es muy rapida",
                     price = 20000,
-                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg"
+                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg",
+                    category=categoryList.GetCategories().ToList()[2]
                 },
                 new Product
                 {
                     name = "Producto 5",
                     description = "Esta computadora es muy rapida",
                     price = 20000,
-                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg"
+                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg",
+                    category=categoryList.GetCategories().ToList()[2]
                 },
                 new Product
                 {
                     name = "Producto 6",
                     description = "Esta computadora es muy rapida",
                     price = 20000,
-                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg"
+                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg",
+                    category=categoryList.GetCategories().ToList()[2]
                 },
                 new Product
                 {
                     name = "Producto 7",
                     description = "Esta computadora es muy rapida",
                     price = 20000,
-                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg"
+                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg",
+                    category=categoryList.GetCategories().ToList()[3]
                 },
                 new Product
                 {
                     name = "Producto 8",
                     description = "Esta computadora es muy rapida",
                     price = 20000,
-                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg"
+                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg",
+                    category=categoryList.GetCategories().ToList()[5]
                 },
                 new Product
                 {
                     name = "Producto 9",
                     description = "Esta computadora es muy rapida",
                     price = 20000,
-                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg"
+                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg",
+                    category=categoryList.GetCategories().ToList()[3]
                 },
                 new Product
                 {
                     name = "Producto 10",
                     description = "Esta computadora es muy rapida",
                     price = 20000,
-                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg"
+                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg",
+                    category=categoryList.GetCategories().ToList()[3]
                 },
                 new Product
                 {
                     name = "Producto 11",
                     description = "Esta computadora es muy rapida",
                     price = 20000,
-                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg"
+                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg",
+                    category=categoryList.GetCategories().ToList()[4]
                 },
                 new Product
                 {
                     name = "Producto 12",
                     description = "Esta computadora es muy rapida",
                     price = 20000,
-                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg"
+                    imageURL = "https://images-na.ssl-images-amazon.com/images/G/01/AmazonExports/Events/2023/EBF23/Fuji_Desktop_Single_image_EBF_1x_v1._SY304_CB573698005_.jpg",
+                    category=categoryList.GetCategories().ToList()[5]
                 }
             };
             using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
@@ -108,29 +122,30 @@ namespace storeApi.DataBase
                                     CREATE DATABASE store;
                                     USE store;
                                     CREATE TABLE IF NOT EXISTS products (
-                                     id INT AUTO_INCREMENT PRIMARY KEY,
-                                     name VARCHAR(100),
-                                     description VARCHAR(255),
-                                     price DECIMAL(10, 2),
-                                     imageURL VARCHAR(255)
+                                     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+                                     name VARCHAR(100) NOT NULL,
+                                     description VARCHAR(255) NOT NULL,
+                                     price DECIMAL(10, 2) NOT NULL,
+                                     imageURL VARCHAR(255) NOT NULL,
+                                     categoryID INT NOT NULL
                                  );
                                  CREATE TABLE IF NOT EXISTS paymentMethod (
-                                     id INT PRIMARY KEY,
-                                     method_name VARCHAR(50)
+                                     id INT PRIMARY KEY NOT NULL,
+                                     method_name VARCHAR(50) NOT NULL
                                  );
                                  CREATE TABLE IF NOT EXISTS sales (
                                      purchase_date DATETIME NOT NULL,
                                      total DECIMAL(10, 2) NOT NULL,
-                                     payment_method INT,
+                                     payment_method INT NOT NULL,
                                      purchase_id VARCHAR(30) NOT NULL PRIMARY KEY,
                                      FOREIGN KEY (payment_method) REFERENCES paymentMethod(id)
                                  );
                                  CREATE TABLE IF NOT EXISTS linesSales(
                                      id INT AUTO_INCREMENT PRIMARY KEY,
                                      purchase_id VARCHAR(30) NOT NULL,
-                                     product_id INT,
-                                     quantity INT,
-                                     price DECIMAL(10, 2),
+                                     product_id INT NOT NULL,
+                                     quantity INT NOT NULL,
+                                     price DECIMAL(10, 2) NOT NULL,
                                      FOREIGN KEY (purchase_id) REFERENCES sales(purchase_id),
                                      FOREIGN KEY (product_id) REFERENCES products(id)
                                  );
@@ -153,7 +168,6 @@ namespace storeApi.DataBase
                              ('2024-04-12 18:00:00', 270.00, 0, 'PUR12'),
                              ('2024-04-13 20:00:00', 200.00, 1, 'PUR13'),
                              ('2024-04-14 22:00:00', 380.00, 0, 'PUR14');";
-
                 using (var command = new MySqlCommand(createTableQuery, connection))
                 {
                     int result = command.ExecuteNonQuery();
@@ -174,8 +188,8 @@ namespace storeApi.DataBase
                         foreach (var product in products)
                         {
                             string insertQuery = @"
-                                INSERT INTO products (name, description, price, imageURL)
-                                VALUES (@name, @description, @price, @imageURL)";
+                                INSERT INTO products (name, description, price, imageURL, categoryID)
+                                VALUES (@name, @description, @price, @imageURL, @categoryID)";
 
                             using (var command = new MySqlCommand(insertQuery, connectionMyDb, transaction))
                             {
@@ -183,6 +197,7 @@ namespace storeApi.DataBase
                                 command.Parameters.AddWithValue("@description", product.description);
                                 command.Parameters.AddWithValue("@price", product.price);
                                 command.Parameters.AddWithValue("@imageURL", product.imageURL);
+                                command.Parameters.AddWithValue("@categoryID", product.category.CategoryID);
                                 command.ExecuteNonQuery();
                             }
                         }
@@ -232,29 +247,30 @@ namespace storeApi.DataBase
                 }
             }
         }
-
-        public static async Task<IEnumerable<Product>> GetProductsFromDBAsync()
+        internal async Task<IEnumerable<Product>> GetProductsFromDBAsync()
         {
             List<Product> products = new List<Product>();
-
+            var categoryList = new Categories();
             using (var connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
             {
                 await connection.OpenAsync();
-
-                string query = "SELECT id, name, description, price, imageURL FROM products";
+                string query = "SELECT id, name, description, price, imageURL,categoryID FROM products";
                 using (var command = new MySqlCommand(query, connection))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
                         {
+                            int categoryIdFromDB = reader.GetInt32("categoryID");
+                            Category category = categoryList.GetCategoryById(categoryIdFromDB);
                             products.Add(new Product
                             {
                                 id = reader.GetInt32("id"),
                                 name = reader.GetString("name"),
                                 description = reader.GetString("description"),
                                 price = reader.GetDecimal("price"),
-                                imageURL = reader.GetString("imageURL")
+                                imageURL = reader.GetString("imageURL"),
+                                category = category
                             });
                         }
                     }

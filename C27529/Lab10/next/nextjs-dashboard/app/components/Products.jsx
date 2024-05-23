@@ -6,23 +6,52 @@ import Carousel from 'react-bootstrap/Carousel';
 export const Products = ({ }) => {
 
   const [productList, setProductList] = useState([]);
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const response = await fetch(`https://localhost:7280/api/Store`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const json = await response.json();
-        setProductList(json);
-      } catch (error) {
+  const [listNames, setListNames] = useState([]);
+
+  const loadData = async () => {
+    try {
+      const response = await fetch(`https://localhost:7280/api/store`);
+      if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
-    };
+      const json = await response.json();
+      if (json == null )throw new Error('Failed to fetch data, null response');
+      var nameData = json.categoriesNames;
 
-    loadData(); // Llamar a loadData() solo una vez al montar el componente
+      setListNames(nameData);
+      setProductList(json);
 
-  }, []); 
+    } catch (error) {
+      throw new Error('Failed to fetch data');
+    }
+  };
+  useEffect(() => {
+
+    loadData();
+
+
+  }, []);
+
+  const loadFilteredData = async (category) => {
+    try {
+      const response = await fetch(`https://localhost:7280/api/store/products?category=${category}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const json = await response.json();
+      if (json == null )throw new Error('Failed to fetch data, null response');
+      var data = json.products;
+      
+      setProductList(data);
+    } catch (error) {
+      throw new Error('Failed to fetch data');
+    }
+  };
+
+  const selectCategory = (category) => {
+    loadFilteredData(category);
+
+  }
 
   const [storeData, setStoreData] = useState(() => {
     const storedStoreData = localStorage.getItem("tienda");
@@ -41,7 +70,7 @@ export const Products = ({ }) => {
     if (product == undefined) throw new Error('Invalid Parameter');
     if (storeData.productos.some(item => item.id === product.id)) {
       setShowModal(true);
-      
+
     } else {
       const updatedStore = {
         ...storeData,
@@ -52,7 +81,7 @@ export const Products = ({ }) => {
         },
         productos: [...storeData.productos, product]
       };
-      
+
       setStoreData(updatedStore);
       localStorage.setItem("tienda", JSON.stringify(updatedStore));
     }
@@ -60,8 +89,8 @@ export const Products = ({ }) => {
 
 
   const Product = ({ product, onAddProduct }) => {
-    const { name, description, imageURL, price } = product;
-    
+    const { name, description, imageURL, price, category } = product;
+
     return (
       <div className="col-sm-3">
         <div className='info-product'>
@@ -76,55 +105,54 @@ export const Products = ({ }) => {
     );
   };
 
-  const ProductCarrusel = ({ product }) => {
-    const { name,  imageURL  } = product;
-    return (
-      <div className="col-sm-3">
-        <div className='info-product'>
-          <h2>{name}</h2>
-          <img src={imageURL} alt={name} />
+
+
+
+  return (
+    <div className="container-fluid vh-100">
+    <nav className="navbar navbar-expand-lg bg-body-tertiary">
+      <div className="container-fluid">
+        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+          aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div className="navbar-nav">
+            <div className="secciones">
+              <div className="row">
+                <button className="nav-link btn btn-primary" onClick={() => loadData()}> Página Principal</button>
+                {listNames.map((category) => (
+                  <div key={category.id} className="col-sm-2">
+                    <button className="nav-link btn btn-primary" onClick={() => selectCategory(category.id)}> {category.name} </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    );
-  };
-  const Carrusel=({productos}) =>{
-    return (
-      <Carousel data-bs-theme="dark">
-        {productos && productos.products && productos.products.map(product => (
-           <Carousel.Item interval={1000}>
-          <div className="carrusel-item">
-          <ProductCarrusel key={product.id} product={product}  />
-          </div>
-          </Carousel.Item>
-        ))}
-      </Carousel>
-    );
-  };
-
-return (
+    </nav>
   
-    <div>
     {showModal && <ModalError closeModal={closeModal} />}
-    <div className="row">
-      {productList && productList.products && productList.products.map(product => (
+    <div className="row flex-grow-1">
+      {productList && Array.isArray(productList.products) && productList.products.map(product => (
         <Product key={product.id} product={product} onAddProduct={onAddProduct} />
-        
-        ))}
+      ))}
     </div>
-
-    <Carousel data-bs-theme="dark">
-        {productList && productList.products && productList.products.map(product => (
-          <Carousel.Item key={product.id} interval={1000}>
-            <div className="info-product">
-              <h2>{product.name}</h2>
-              <img src={product.imageURL} alt={product.name} />
-            </div>
-          </Carousel.Item>
-        ))}
-      </Carousel>
-    
+  
+    <Carousel data-bs-theme="dark" className="flex-grow-1">
+      {productList && productList.products && productList.products.map(product => (
+        <Carousel.Item key={product.id} interval={1000}>
+          <div className="info-product">
+            <h2>{product.name}</h2>
+            <img src={product.imageURL} alt={product.name} />
+          </div>
+        </Carousel.Item>
+      ))}
+    </Carousel>
   </div>
-);
+  
+  );
 }
 
 const ModalError = ({ closeModal }) => {

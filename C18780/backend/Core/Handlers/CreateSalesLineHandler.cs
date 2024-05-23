@@ -5,12 +5,16 @@ using StoreApi.Repositories;
 
 namespace StoreApi.Handler
 {
-    public class CreateSalesLineHandler : IRequestHandler<CreateSalesLineCommand, SalesLine>
+    public sealed class CreateSalesLineHandler : IRequestHandler<CreateSalesLineCommand, SalesLine>
     {
         private readonly ISalesLineRepository _salesLineRepository;
 
         public CreateSalesLineHandler(ISalesLineRepository salesLineRepository)
         {
+            if (salesLineRepository == null)
+            {
+                throw new ArgumentException("Illegal action, salesLineRepository is invalid.");
+            }
             _salesLineRepository = salesLineRepository;
         }
 

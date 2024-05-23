@@ -4,24 +4,28 @@ using StoreApi.Repositories;
 
 namespace StoreApi.Handler
 {
-    public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, int>
+    public sealed class DeleteProductHandler : IRequestHandler<DeleteProductCommand, int>
     {
-        private readonly IProductRepository _studentRepository;
+        private readonly IProductRepository _productRepository;
 
-        public DeleteProductHandler(IProductRepository studentRepository)
+        public DeleteProductHandler(IProductRepository productRepository)
         {
-            _studentRepository = studentRepository;
+            if (productRepository == null)
+            {
+                throw new ArgumentException("Illegal action, studentRepository is invalid.");
+            }
+            _productRepository = productRepository;
         }
 
         public async Task<int> Handle(DeleteProductCommand command, CancellationToken cancellationToken)
         {
             ValidateCommand(command);
 
-            var product = await _studentRepository.GetProductByIdAsync(command.Uuid);
+            var product = await _productRepository.GetProductByIdAsync(command.Uuid);
             if (product == null)
                 return default;
 
-            return await _studentRepository.DeleteProductAsync(product.Uuid);
+            return await _productRepository.DeleteProductAsync(product.Uuid);
         }
 
         private void ValidateCommand(DeleteProductCommand command)

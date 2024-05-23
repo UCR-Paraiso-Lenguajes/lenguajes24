@@ -9,6 +9,7 @@ namespace MyStoreAPI.DB
 {
     public class DB_PaymentMethod{
 
+
         public static void InsertPaymentMethod(){
             try{
                 using (TransactionScope scopeTransaction = new TransactionScope()){

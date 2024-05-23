@@ -11,6 +11,7 @@ namespace MyStoreAPI.Models
             this.verify = verify;
         }        
     }
+    
 
     //Tipos de pago por default
     public enum PaymentMethodNumber{

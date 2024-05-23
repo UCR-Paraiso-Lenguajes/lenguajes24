@@ -1,13 +1,14 @@
 namespace ShopApi.Models;
 public class Product : ICloneable
 {
+
+    public required int id { get; set; }
     public required string name { get; set; }
     public required string imgSource { get; set; }
-    public decimal price { get; set; }
-    public required string description { get; set; }
-    public int id {get; set;}
+    public required decimal price { get; set; }
+    public required int category { get; set; }
 
-        // Implementation of the ICloneable interface
+    // Implementation of the ICloneable interface
     public object Clone()
     {
         return new Product
@@ -16,7 +17,7 @@ public class Product : ICloneable
             name = this.name,
             imgSource = this.imgSource,
             price = this.price,
-            description = this.description
+            category = this.category
         };
     }
 }

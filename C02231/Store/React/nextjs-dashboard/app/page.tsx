@@ -30,7 +30,6 @@ export default function Home() {
         setStoreProducts(data);
         setCarrusel(data);
         setCategories(data.categoriesList);
-        console.log(data)
       } catch (error) {
         throw new Error('Failed to fetch data');
       }
@@ -92,8 +91,12 @@ export default function Home() {
         productsForCategory = await response.json();
         setStoreProducts(productsForCategory);
       } else {
+<<<<<<< HEAD
         //const response = await fetch(`http://localhost:5207/api/Store/products?category=${selected}`);
         const response = await fetch(URL + `/api/Store/products?category=${selected}`);
+=======
+        const response = await fetch(`http://localhost:5207/api/Store/products?category=${selected}`);
+>>>>>>> bb5d67977deef764d46f365410a1d6111d510350
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
