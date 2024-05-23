@@ -41,7 +41,7 @@ jobs:
         cd C22037/Docker
         docker image build -t itschaco26/todoapi:latest .
         docker image build -t itschaco26/todoapi:0.0.1 .
-        echo "${{ secrets.DOCKERHUBPASSC22037  }}" | docker login -u "aaronchacon2601@gmail.com" --password-stdin
+        echo "${{ secrets.C22037DOCKERHUBPASS  }}" | docker login -u "aaronchacon2601@gmail.com" --password-stdin
         docker push itschaco26/todoapi:latest
         docker push itschaco26/todoapi:0.0.1
   publish-UI:   
@@ -53,6 +53,6 @@ jobs:
         cd C22037/Docker/my-app
         docker image build -t itschaco26/react:latest .
         docker image build -t itschaco26/react:0.0.1 .
-        echo "${{ secrets.DOCKERHUBPASSC22037  }}" | docker login -u "aaronchacon2601@gmail.com" --password-stdin
+        echo "${{ secrets.C22037DOCKERHUBPASS  }}" | docker login -u "aaronchacon2601@gmail.com" --password-stdin
         docker push itschaco26/react:latest
         docker push itschaco26/react:0.0.1    
