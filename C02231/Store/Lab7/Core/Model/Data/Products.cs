@@ -62,10 +62,11 @@ public class Products
             {
                 return products;
             }
+            return null;
         }
         catch (ArgumentException ex)
         {
-           throw new ArgumentException("The list is empty", ex);
+            throw new ArgumentException("The list is empty", ex);
         }
     }
 

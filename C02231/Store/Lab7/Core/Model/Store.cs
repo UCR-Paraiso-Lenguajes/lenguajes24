@@ -29,7 +29,7 @@ public sealed class Store
     {
         List<Product> products = LoadProducts();
         IEnumerable<Category> categories = Categories.Instance.GetCategories();
-        const taxPercentage = 13;
+        const int taxPercentage = 13;
         
 
         Store.Instance = new Store(products, categories, taxPercentage);
