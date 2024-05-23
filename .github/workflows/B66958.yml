@@ -42,7 +42,7 @@ jobs:
         docker image build -t eisenheimdiego/store_api:0.0.1 .
         docker push eisenheimdiego/store_api:latest
         docker push eisenheimdiego/store_api:0.0.1
-    publish-ui:
+  publish-ui:
       runs-on: ubuntu-latest
       steps:
       - uses: actions/checkout@v1
