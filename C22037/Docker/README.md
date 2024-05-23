@@ -1,7 +1,5 @@
 # Diagramas Examen 1 - Aarón Chacón Céspedes
 
-## Test2
-
 ## Diagramas de Clases
 ### Diagrama de la página principal
 ![Diagrama de la página principal](https://postimage.me/images/2024/05/18/pagprincipal.jpeg)
