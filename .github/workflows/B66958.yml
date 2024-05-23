@@ -37,7 +37,7 @@ jobs:
     - name: Build & Push Image
       run: |
         cd B66958/Labs
-        echo "${{ secrets.DOCKERHUBPASSB66958  }}" | docker login -u "EisenheimDiego" --password-stdin
+        echo "${{ secrets.DOCKERHUBPASSB66958  }}" | docker login -u echo "${{ secrets.DOCKERHUBACCOUNTB66958  }}" --password-stdin
         docker image build -t eisenheimdiego/store_api:latest .
         docker image build -t eisenheimdiego/store_api:0.0.1 .
         docker push eisenheimdiego/store_api:latest
@@ -49,7 +49,7 @@ jobs:
       - name: Build & Push Image
         run: |
           cd B66958/Labs
-          echo "${{ secrets.DOCKERHUBPASSB66958  }}" | docker login -u "${{ secrets.DOCKERHUBACCOUNTB66958  }}" --password-stdin
+          echo "${{ secrets.DOCKERHUBPASSB66958  }}" | docker login -u echo "${{ secrets.DOCKERHUBACCOUNTB66958  }}" --password-stdin
           docker image build -t eisenheimdiego/store_fe:latest .
           docker image build -t eisenheimdiego/store_fe:0.0.1 .
           docker push eisenheimdiego/store_fe:latest 
