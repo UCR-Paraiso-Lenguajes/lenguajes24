@@ -56,7 +56,7 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
         }
 
         try {
-            const res = await fetch('https://localhost:7151/api/Cart', {
+            const res = await fetch('https://localhost:7151/api/cart', {
                 method: 'POST',
                 body: JSON.stringify(purchaseToPersist),
                 headers: {

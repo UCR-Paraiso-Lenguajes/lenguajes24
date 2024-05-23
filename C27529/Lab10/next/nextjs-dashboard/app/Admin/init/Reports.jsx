@@ -4,8 +4,7 @@ import DatePicker from "react-datepicker";
 import 'chart.js/auto';
 import { Pie } from 'react-chartjs-2';
 import "react-datepicker/dist/react-datepicker.css";
-import { useHref } from 'react-router-dom';
-import { ArcElement } from "chart.js";
+import { Chart } from 'react-google-charts';
 
 
 
@@ -13,10 +12,12 @@ import { ArcElement } from "chart.js";
 function Reports() {
 
   const [weekDate, setweekDate] = useState(new Date());
-  const [dailyDate, setDailyDay] = useState(new Date());
+  const [dailyDate, setDailyDate] = useState(new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())));
+  
+
 
   const [weekSaleData, setWeekSaleData] = useState([]);
-  const [dailySaleData, setDaliySaleData] = useState([]);
+  const [dailySaleData, setDailySaleData] = useState([[ 'Purchase Number', 'Total']]);
 
   const fetchData = async () => {
     try {
@@ -25,7 +26,6 @@ function Reports() {
         weekDate: weekDate,
         dailyDate: dailyDate
       };
-
       const response = await fetch(`https://localhost:7280/api/Sale`, {
         method: 'POST',
         headers: {
@@ -39,15 +39,18 @@ function Reports() {
       const data = await response.json();
 
       if (data != null) {
-
+        //Weekly
         const newDataWeek = Object.entries(data.weekSales).map(([day, total]) => ({ day, total }));
         setWeekSaleData(newDataWeek);
 
-        const newDataDaily = data.map(item => ({ day: item.day, total: item.total }));
-        setDailySaleData(newDataDaily);
-
-
-
+        //Daily
+        const dailySalesArray = [['Purchase Number', 'Total']]; 
+        for (const day in data.dailySales) {
+          if (Object.hasOwnProperty.call(data.dailySales, day)) {
+            dailySalesArray.push([day, data.dailySales[day]]);
+          }
+        }
+        setDailySaleData(dailySalesArray);
       } else {
         throw new Error('Empty data received');
       }
@@ -55,6 +58,7 @@ function Reports() {
       throw new Error('Error fetching data:', error);
     }
   };
+
 
   // config pie
   const data = {
@@ -80,39 +84,31 @@ function Reports() {
 
   return (
     <div className="product-list-container">
-
-      <h2>Reports</h2>
-      Seleccionar Fecha:
-      <DatePicker selected={weekDate} onChange={(date) => setweekDate(date)} />
-      <div>
-        {dailySaleData && dailySaleData.length > 0 ? (
-          <table>
-            <thead>
-              <tr>
-                <th style={{ paddingRight: '20px' }}>Día</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dailySaleData.map((item, index) => (
-                <tr key={index}>
-                  <td style={{ paddingRight: '20px' }}>{item.day}</td>
-                  <td>{item.total}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>No hay datos de ventas diarias disponibles.</p>
-        )}
-      </div>
-
-
-      <div className="chartContainer">
-        <h6 className="centered">Ventas Semanales</h6>
-        <Pie data={data} options={opciones} />
-      </div>
+  <h2>Reports</h2>
+  <div>
+    Seleccionar Fecha:
+    <DatePicker selected={weekDate} onChange={(date) => setweekDate(date)} />
+  </div>
+  <div style={{ display: "flex", justifyContent: "space-between" }}>
+    <div>
+      <Chart
+        width={"100%"}
+        height={"300px"}
+        chartType="Table"
+        loader={<div>Loading Chart</div>}
+        data={dailySaleData}
+        options={{
+          title: "Weekly Sales",
+        }}
+      />
     </div>
+    <div className="chartContainer">
+      <h6 className="centered">Ventas Semanales</h6>
+      <Pie data={data} options={opciones} />
+    </div>
+  </div>
+</div>
+
 
 
   )

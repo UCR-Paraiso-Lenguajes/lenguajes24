@@ -1,3 +1,4 @@
+"use client"
 import AcmeLogo from '@/app/ui/acme-logo';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
@@ -24,6 +25,8 @@ const DisplayItem = ({ item }) => {
 };
 
 export default function Page() {
+  console.log("----------------------")
+  console.log(process.env.NEXT_PUBLIC_DB)
   const [item, setItem] = useState({ count: 0 });
   return (
     <>

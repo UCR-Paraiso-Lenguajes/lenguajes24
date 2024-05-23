@@ -73,7 +73,7 @@ import { RegisteredSaleWeek } from "../models-data/RegisteredSaleWeek";
 
     export async function getProductsByCategory(idCategory: number): Promise<string | ProductAPI[] | null> {
 
-        const directionAPI = `https://localhost:7161/api/products/store/product?category=${encodeURIComponent(idCategory)}`;
+        const directionAPI = `https://localhost:7161/store/products/product/category?category=${encodeURIComponent(idCategory)}`;
         //Especificacion POST
         let getConfig = {
             method: "GET",
@@ -88,6 +88,31 @@ import { RegisteredSaleWeek } from "../models-data/RegisteredSaleWeek";
             let responsePost = await fetch(directionAPI,getConfig);
             if(!responsePost.ok){                
                 const errorMessage = await responsePost.text();                
+                return errorMessage;
+            }        
+            const productsFilteredFromAPI = await responsePost.json();                      
+            return productsFilteredFromAPI;
+            
+        } catch (error) {            
+            throw new Error('Failed to POST data: '+ error);
+        }        
+    }
+
+    export async function getProductsBySearchTextAndCategory(searchText:string,categoryIds: number[]): Promise<string | ProductAPI[] | null> {
+        
+        const searchTextToUrl = encodeURIComponent(searchText);        
+        //se construye manualmente, ya que es por GET
+        const categoryIdsToUrl = categoryIds.map(id => `categoryIds=${encodeURIComponent(id.toString())}`).join("&");        
+        const directionAPI = `https://localhost:7161/store/products/product/search?searchText=${searchTextToUrl}&${categoryIdsToUrl}`;
+        //Especificacion POST
+        let getConfig = {
+            method: "GET"            
+        }
+    
+        try {         
+            let responsePost = await fetch(directionAPI,getConfig);            
+            if(!responsePost.ok){                                
+                const errorMessage = await responsePost.text();                                
                 return errorMessage;
             }        
             const productsFilteredFromAPI = await responsePost.json();                      

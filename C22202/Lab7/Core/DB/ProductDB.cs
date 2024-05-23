@@ -74,7 +74,7 @@ public sealed class ProductDB
                         {
                             string columnName = reader.GetName(i);
                             string? columnValue = reader.GetValue(i).ToString();
-                            row[columnName] = columnValue;
+                            if(columnValue != null) row[columnName] = columnValue;
                         }
                         databaseInfo.Add(row);
                     }

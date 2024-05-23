@@ -8,7 +8,7 @@ namespace ApiLab7.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        [HttpPost]
+        [HttpPost("cart")]
         public async Task<IActionResult> CreateCartAsync([FromBody] Cart cart)
         {
             if (!ModelState.IsValid)

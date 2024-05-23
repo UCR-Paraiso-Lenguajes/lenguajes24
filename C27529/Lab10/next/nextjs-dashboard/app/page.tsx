@@ -63,21 +63,19 @@ function Home() {
   
 
   return (
-    <div>
+    <div style={{ width: '100%', height: '100vh' }}>
+  <Header goToPage={goToPage} />
 
-      <Header goToPage={goToPage} />
+  {Actualpage === 0 ? (
+    <Products />
+  ) : Actualpage === 1 ? (
+    <Cart goToPage={goToPage} />
+  ) : Actualpage === 2 ? (
+    <Address goToPage={goToPage} />
+  ) : (
+    <Payment />
+  )}
+</div>
 
-      {Actualpage === 0 ? (
-
-        <Products />
-      ) : Actualpage === 1 ? (
-        <Cart goToPage={goToPage} />
-      ) : Actualpage === 2 ? (
-        <Address goToPage={goToPage} />
-      ) : (
-        <Payment />
-      )}
-   
-    </div>
   );
 }

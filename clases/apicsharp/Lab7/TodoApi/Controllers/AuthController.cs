@@ -36,6 +36,7 @@ public class AuthController : ControllerBase
         
         if (hostEnvironment.IsDevelopment())
         {
+        
             if (user.UserName == "cris" && user.Password == "123456")
                     {
                         var claims = new List<Claim>
@@ -43,6 +44,7 @@ public class AuthController : ControllerBase
                             new Claim(ClaimTypes.Name, "cris"),
                             new Claim(ClaimTypes.Role, "Operator"),
                             new Claim(ClaimTypes.Role, "Admin"),
+                            new Claim(ClaimTypes.Role, "Customer")
                         };
                         var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
                         var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);

@@ -8,31 +8,79 @@ import Link from 'next/link';
 export default function Page() {
   const [availableProducts, setAvailableProducts] = useState<ProductItem[]>([]);
   const [cartProducts, setCartProducts] = useState<ProductItem[]>([]);
+  const [categories, setCategories] = useState<{ idCategory: number; nameCategory: string; }[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
-    const loadProductApiData = async () => {
+    const loadProductData = async () => {
       try {
-        const response = await fetch('https://localhost:7165/api/Store');
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
+        const productResponse = await fetch('https://localhost:7165/api/Store');
+        if (!productResponse.ok) {
+          throw new Error('Failed to fetch products');
         }
-        const json = await response.json();
-        if (json.products) {
-          setAvailableProducts(json.products);
-        } else {
-          throw new Error('Failed to fetch data: No products found');
+        const productJson = await productResponse.json();
+        if (!Array.isArray(productJson.products)) {
+          throw new Error('Invalid product data format');
         }
+        setAvailableProducts(productJson.products);
       } catch (error) {
-        throw new Error('Failed to fetch data');
+        setError('Error al cargar productos');
+      } finally {
+        setLoading(false);
       }
     };
-    loadProductApiData();
-  }, []);
 
-  useEffect(() => {
+    const loadCategoryData = async () => {
+      try {
+        const categoryResponse = await fetch('https://localhost:7165/api/Store/Categories');
+        if (!categoryResponse.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        const categoryJson = await categoryResponse.json();
+        setCategories(categoryJson.map((category: any) => category));
+      } catch (error) {
+        setError('Error al cargar categorías');
+      }
+    };
+
+    loadProductData();
+    loadCategoryData();
+
     const savedCartProducts = JSON.parse(localStorage.getItem('cartProducts') || '[]');
     setCartProducts(savedCartProducts);
   }, []);
+
+  const handleCategoryChange = async (category: number) => {
+    setSelectedCategory(category);
+    setLoading(true);
+    setError('');
+
+    try {
+      if (category === 0) {
+        const productResponse = await fetch('https://localhost:7165/api/Store');
+        if (!productResponse.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const productJson = await productResponse.json();
+        setAvailableProducts(productJson.products);
+      } else {
+        const response = await fetch(`https://localhost:7165/api/Store/Products?categoryId=${category}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const productJson = await response.json();
+        const filteredProducts = productJson.filter((product: any) => product.categoria.idCategory === category);
+        setAvailableProducts(filteredProducts);
+      }
+    } catch (error) {
+      setError('Error al cargar productos');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const addToCart = (product: ProductItem) => {
     setCartProducts(prevProducts => {
@@ -42,26 +90,88 @@ export default function Page() {
     });
   };
 
+  const handleSearch = async () => {
+    try {
+      setLoading(true);
+      setError('');
+  
+      let searchUrl = `https://localhost:7165/api/Store/Search?productName=${encodeURIComponent(searchQuery)}`;
+  
+      if (selectedCategory !== 0) {
+        searchUrl += `&categoryId=${selectedCategory}`;
+      }
+  
+      const response = await fetch(searchUrl);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+  
+      const productJson = await response.json();
+      setAvailableProducts(productJson);
+    } catch (error) {
+      setError('Error al cargar productos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredProducts = availableProducts.filter(product =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <main className="flex min-h-screen flex-col p-6">
       <header className="header-container row">
-        <div className="search-container col-sm-4 ">
-          <input type="search" placeholder="Buscar" value="" />
-          <button className="col-sm-2"><img src="/img/Lupa.png" className="col-sm-4" /> </button>
+        <div className="search-container col-sm-4 d-flex">
+          <input
+            type="search"
+            className="form-control"
+            placeholder="Buscar"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+
+          <button className="btn btn-primary" onClick={handleSearch}>
+            Buscar
+          </button>
           <Link href="/cart" className="col-sm-4 d-flex justify-content-end">
-            <button><img src="/img/carrito.png" className="col-sm-6" />{cartProducts.length}</button>
+            <button className="btn btn-outline-secondary">
+              <img src="/img/carrito.png" className="col-sm-6" />
+              {cartProducts.length}
+            </button>
           </Link>
+        </div>
+        <div className="categories-container col-sm-4">
+          <select
+            className="form-select"
+            style={{ height: "auto", maxHeight: "200px", overflowY: "auto" }}
+            value={selectedCategory}
+            onChange={(e) => handleCategoryChange(Number(e.target.value))}
+          >
+            <option value="0">Todas las Categorías</option>
+            {categories.map(category => (
+              <option key={category.idCategory} value={category.idCategory}>
+                {category.nameCategory}
+              </option>
+            ))}
+          </select>
         </div>
       </header>
 
-      <div>
-        <h1>Lista de Productos</h1>
-        <div className='row' style={{ display: 'flex', flexWrap: 'wrap' }}>
-          {availableProducts && availableProducts.map(product =>
-            <Product key={product.id} product={product} addToCart={addToCart} />
-          )}
+      {loading ? (
+        <div>Cargando...</div>
+      ) : error ? (
+        <div>{error}</div>
+      ) : (
+        <div>
+          <h1>Lista de Productos</h1>
+          <div className='row' style={{ display: 'flex', flexWrap: 'wrap' }}>
+            {filteredProducts && filteredProducts.map(product =>
+              <Product key={product.id} product={product} addToCart={addToCart} />
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="products col-sm-6" style={{ margin: '0 auto' }}>
         <div id="productsCarouselControl" className="carousel" data-bs-ride="carousel">

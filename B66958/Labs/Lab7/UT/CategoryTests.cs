@@ -7,7 +7,9 @@ public class CategoryTests
     [OneTimeSetUp]
     public void SetUp()
     {
-        Db.BuildDb("Data Source=163.178.173.130;User ID=basesdedatos;Password=BaSesrp.2024; Encrypt=False;");
+        Db.BuildDb(
+            "Data Source=163.178.173.130;User ID=basesdedatos;Password=BaSesrp.2024; Encrypt=False;"
+        );
     }
 
     [Test]
@@ -45,8 +47,11 @@ public class CategoryTests
     [Test]
     public void ProductsByCategory_DoesNotThrowsArgumentExceptionAndHasProducts()
     {
-        int category = 1;
-        Assert.DoesNotThrow(() => Store.Instance.ProductsByCategory(category));
-        CollectionAssert.IsNotEmpty(Store.Instance.ProductsByCategory(category));
+        List<Category> categories = Categories.Instance.GetCategories().ToList();
+        List<int> categoriesToSearch = new List<int>();
+        categoriesToSearch.Add(categories.ElementAt(0).Id);
+        categoriesToSearch.Add(categories.ElementAt(3).Id);
+        Assert.DoesNotThrow(() => Store.Instance.ProductsByCategory(categoriesToSearch));
+        CollectionAssert.IsNotEmpty(Store.Instance.ProductsByCategory(categoriesToSearch));
     }
 }
