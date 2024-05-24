@@ -26,7 +26,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: 123456
           MYSQL_DATABASE: lab
-          MYSQL_USER: root
+          MYSQL_USER: root1
           MYSQL_PASSWORD: 123456
 
     steps:
