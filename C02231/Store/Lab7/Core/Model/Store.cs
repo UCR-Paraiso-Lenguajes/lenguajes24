@@ -8,7 +8,7 @@ namespace StoreAPI.models;
 
 public sealed class Store
 {
-    public List<Product> Products { get; private set; } //hacer un diccionario de productos por categoria
+    public List<Product> Products { get; private set; }
     public IEnumerable<Category> CategoriesList { get; private set; }
     public int TaxPercentage { get; private set; }
 
@@ -23,21 +23,21 @@ public sealed class Store
         this.TaxPercentage = TaxPercentage;
     }
 
-    public readonly static Store Instance;
-
-    static Store()
+    public static async Task<Store> InitializeAsync()
     {
-        List<Product> products = LoadProducts();
+        List<Product> products = await LoadProductsAsync();
         IEnumerable<Category> categories = Categories.Instance.GetCategories();
         const int taxPercentage = 13;
-        
 
-        Store.Instance = new Store(products, categories, taxPercentage);
+        return new Store(products, categories, taxPercentage);
     }
 
-    internal static List<Product> LoadProducts()
+    public readonly static Lazy<Task<Store>> Instance = new Lazy<Task<Store>>(InitializeAsync);
+
+
+    public static async Task<List<Product>> LoadProductsAsync()
     {
-        List<Dictionary<string, string>> productData = StoreDB.RetrieveDatabaseInfo();
+        List<Dictionary<string, string>> productData = await StoreDB.RetrieveDatabaseInfoAsync();
         List<Product> products = new List<Product>();
 
         foreach (var row in productData)
@@ -46,8 +46,7 @@ public sealed class Store
             {
                 if (int.TryParse(row["id"], out int id) &&
                     decimal.TryParse(row["price"], out decimal price) &&
-                    int.TryParse(row["idCategory"], out int idCategory)) // Conversión de idCategory a int
-
+                    int.TryParse(row["idCategory"], out int idCategory))
                 {
                     string name = row["name"];
                     string author = row["author"];
@@ -58,14 +57,14 @@ public sealed class Store
                     if (!category.Equals(default(Category)))
                     {
                         Product product = new Product
-                        {
-                            Id = id,
-                            Name = name,
-                            Author = author,
-                            Price = price,
-                            ProductCategory = category,
-                            ImgUrl = imageUrl
-                        };
+                        (
+                            name,
+                            author, 
+                            imageUrl,
+                            price,
+                            category,
+                            id
+                        );
 
                         products.Add(product);
                     }

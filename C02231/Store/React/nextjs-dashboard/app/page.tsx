@@ -1,19 +1,34 @@
 "use client";
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Console } from 'console';
-import { loadEnvConfig } from '@next/env';
+import { Form, Dropdown } from 'react-bootstrap';
+import { usePathname, useRouter, useParams, useSearchParams } from 'next/navigation';
 
 
 export default function Home() {
-
   const [storeProducts, setStoreProducts] = useState([]);
   const [carrusel, setCarrusel] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState<string[]>([]);
   const [categories, setCategories] = useState([]);
-  const URL = process.env.NEXT_PUBLIC_API;
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+
+
+
+  const createQueryString = useCallback(
+    (name: string, values: string[]) => {
+      const params = new URLSearchParams();
+      values.forEach(value => {
+        params.append(name, value);
+      });
+      return params.toString();
+    },
+    []
+  );
 
   useEffect(() => {
     const loadData = async () => {
@@ -53,7 +68,7 @@ export default function Home() {
   });
 
   const handleAddToCart = (product) => {
-    if (product === undefined) throw new Error('The product is empty.');
+    if (product === undefined || product === "") throw new Error('The product is empty.');
 
     let productsNotInCart = !cart.products.some(item => item.id === product.id);
     if (productsNotInCart) {
@@ -79,24 +94,35 @@ export default function Home() {
   }, []);
 
   const handleCategoryChange = async (event) => {
+
+    const selectedValue = event.target.value;
+    let updatedSelectedCategories = [...selectedCategories];
+
+    if (updatedSelectedCategories.includes(selectedValue)) {
+      updatedSelectedCategories = updatedSelectedCategories.filter(value => value !== selectedValue);
+    } else {
+      updatedSelectedCategories.push(selectedValue);
+    }
+
+    if (updatedSelectedCategories.length === 0) {
+      updatedSelectedCategories.push("0");
+    }
+    setSelectedCategories(updatedSelectedCategories);
+
+
     try {
-      const selected = event.target.value;
-      setSelectedCategory(selected);
       let productsForCategory = [];
-      if (selected === "0") {
-        const response = await fetch(URL + '/api/Store');
+
+      if (updatedSelectedCategories.includes("0")) {
+        const response = await fetch('http://localhost:5207/api/Store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
         productsForCategory = await response.json();
         setStoreProducts(productsForCategory);
       } else {
-<<<<<<< HEAD
-        //const response = await fetch(`http://localhost:5207/api/Store/products?category=${selected}`);
-        const response = await fetch(URL + `/api/Store/products?category=${selected}`);
-=======
-        const response = await fetch(`http://localhost:5207/api/Store/products?category=${selected}`);
->>>>>>> bb5d67977deef764d46f365410a1d6111d510350
+        const params = updatedSelectedCategories.map(id => `categories=${id}`).join('&');
+        const response = await fetch(`http://localhost:5207/api/Store/products?${params}`);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -105,14 +131,44 @@ export default function Home() {
       }
 
       setStoreProducts(productsForCategory);
+      router.push(pathname + '?' + createQueryString('categories', updatedSelectedCategories));
+    } catch (error) {
+      throw new Error('Fail handleCategory: ' + error.message);
+    }
+  };
 
+  const handleSearchSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      if (!searchQuery.trim()) {
+        throw new Error('Please enter keywords');
+      }
 
+      const keywords = searchQuery || '';
+      const params = selectedCategories.map(id => `categories=${id}`).join('&');
+      const query = `keywords=${encodeURIComponent(keywords)}&${params}`;
+
+      const response = await fetch(`http://localhost:5207/api/Store/search?${query}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const productsForCategory = await response.json();
+      setFilteredProducts(productsForCategory);
+      setStoreProducts(productsForCategory);
+
+      const queryString = createQueryString('categories', selectedCategories) + `&keywords=${encodeURIComponent(keywords)}`;
+      router.push(pathname + '?' + queryString);
     } catch (error) {
       throw new Error('Fail handleCategory: ' + error.message);
     }
   };
 
 
+  const handleSearchInputChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+ 
   return (
 
     <main className="flex min-h-screen flex-col p-6" style={{ backgroundColor: 'silver' }}>
@@ -124,11 +180,49 @@ export default function Home() {
               <img src="Logo1.jpg" style={{ height: '75px', width: '200px', margin: '1.4rem' }} className="img-fluid" />
             </Link>
           </div>
+
           <div className="col-sm-8 d-flex justify-content-center align-items-center">
-            <form className="d-flex justify-content-center">
-              <input type="search" name="search" style={{ width: '805%' }} placeholder="Book..."></input>
-              <button type="submit">Search</button>
+            <form className="d-flex justify-content-center" onSubmit={handleSearchSubmit}>
+              <input
+                type="search"
+                name="search"
+                style={{ width: '805%' }}
+                placeholder="Book..."
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+              />
             </form>
+            <Dropdown show={isOpen} onToggle={() => setIsOpen(!isOpen)}>
+              <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                {selectedCategories.length === 0 ? "Select Categories" : selectedCategories.includes("ALL") ? "ALL" : selectedCategories.map(catId => {
+                  const categoryId = parseInt(catId);
+                  const category = categories.find(cat => cat.idCategory === categoryId);
+                  return category ? category.name : "Select Categories";
+                }).filter(Boolean).join(', ')
+                }
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Form>
+                  <Form.Check
+                    type="checkbox"
+                    label="ALL"
+                    value="0"
+                    checked={selectedCategories.includes("0")}
+                    onChange={handleCategoryChange}
+                  />
+                  {categories && categories.map(category => (
+                    <Form.Check
+                      key={category.idCategory}
+                      type="checkbox"
+                      label={category.name}
+                      value={category.idCategory}
+                      checked={selectedCategories.includes(category.idCategory.toString())}
+                      onChange={handleCategoryChange}
+                    />
+                  ))}
+                </Form>
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
 
           <div className="col-sm-2 d-flex justify-content-end align-items-center">
@@ -153,17 +247,6 @@ export default function Home() {
 
       <div className='container'>
         <h2 className='text-left mt-5 mb-5'>List of Books</h2>
-
-        <select className="btn btn-secondary dropdown-toggle" onChange={handleCategoryChange} value={selectedCategory}>
-          <option value={0}>ALL</option>
-
-          {categories && categories.map(category => (
-            <option key={category.idCategory} value={category.idCategory}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-
 
         <div className="container" style={{ display: 'flex', flexWrap: 'wrap' }}>
           {storeProducts && storeProducts.products && storeProducts.products.map(item => (
@@ -196,7 +279,7 @@ export default function Home() {
 }
 
 const Products = ({ product, handleAddToCart }) => {
-  if (product === undefined) throw new Error('The product is empty.');
+  if (product === undefined || product === "") throw new Error('The product is empty.');
 
   if (product.productCategory.idCategory !== 10) {
     const { id, name, author, imgUrl, price } = product;

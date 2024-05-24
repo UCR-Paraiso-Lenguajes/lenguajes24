@@ -11,13 +11,27 @@ namespace UT
   {
 
     private StoreLogic storeLogic;
-
+    private List<Category> categoryList;
     [SetUp]
     public async Task SetupAsync()
     {
       string connectionString = "Server=localhost;Database=store;Port=3306;Uid=root;Pwd=123456;";
       Storage.Init(connectionString);
       storeLogic = new StoreLogic();
+      categoryList = new List<Category>
+        {
+            new(1, "Fantasy"),
+            new (2, "Romance"),
+            new (3, "Science Fiction"),
+            new (4, "Young Adult"),
+            new (5, "Mystery"),
+            new (6, "NonFiction"),
+            new (7, "Fiction"),
+            new (8, "Adventure"),
+            new (9, "Dystopian"),
+            new (10, "Gift")
+        };
+
     }
 
     //Compra con carrito vacío:
@@ -50,8 +64,8 @@ namespace UT
       var cart = new Cart
       {
         ProductIds = new List<string> { "1", "2" },
-        Address = "", 
-        PaymentMethod = PaymentMethods.Type.CASH 
+        Address = "",
+        PaymentMethod = PaymentMethods.Type.CASH
       };
 
       Assert.ThrowsAsync<ArgumentException>(async () => await storeLogic.PurchaseAsync(cart));
@@ -63,9 +77,9 @@ namespace UT
     {
       var cart = new Cart
       {
-        ProductIds = null, 
+        ProductIds = null,
         Address = "Dirección válida",
-        PaymentMethod = PaymentMethods.Type.CASH 
+        PaymentMethod = PaymentMethods.Type.CASH
       };
 
       Assert.ThrowsAsync<ArgumentException>(async () => await storeLogic.PurchaseAsync(cart));
@@ -77,9 +91,9 @@ namespace UT
     {
       var cart = new Cart
       {
-        ProductIds = new List<string>(), 
+        ProductIds = new List<string>(),
         Address = "Dirección válida",
-        PaymentMethod = PaymentMethods.Type.CASH 
+        PaymentMethod = PaymentMethods.Type.CASH
       };
 
       Assert.ThrowsAsync<ArgumentException>(async () => await storeLogic.PurchaseAsync(cart));
@@ -90,10 +104,13 @@ namespace UT
     public async Task PurchaseAsync_CorrectPurchaseAmount()
     {
 
+      var storeInstance = await Store.Instance.Value;
+
+
       var products = new List<Product>
             {
-                new Product { Id = 1, Name = "Producto 1", Author= "Ana", ImgUrl= "a", Price = 6700 },
-                new Product { Id = 2, Name = "Producto 2", Author= "Maria", ImgUrl= "a",  Price = 5800 }
+                new Product ( "Producto 1", "Ana", "a", 6700, categoryList.Single(category => category.IdCategory == 8),1 ),
+                new Product ("Producto 2", "Maria", "a", 5800,  categoryList.Single(category => category.IdCategory == 8), 1)
             };
 
       var cart = new Cart
@@ -108,8 +125,9 @@ namespace UT
 
       Assert.IsNotNull(sale);
 
-      decimal price = (6700 * (1 + (decimal)Store.Instance.TaxPercentage / 100)) + (5800 * (1 + (decimal)Store.Instance.TaxPercentage / 100));
-      decimal expectedPrice = (6700 + 5800) * (1 + (decimal)Store.Instance.TaxPercentage / 100);
+      decimal price = (6700 * (1 + (decimal)storeInstance.TaxPercentage / 100)) + (5800 * (1 + (decimal)storeInstance.TaxPercentage / 100));
+      decimal expectedPrice = (6700 + 5800) * (1 + (decimal)storeInstance.TaxPercentage / 100);
+
 
       // Comprobar que el monto total de la venta sea igual al monto esperado
       Assert.That(sale.Amount, Is.EqualTo(21470));
@@ -121,16 +139,16 @@ namespace UT
     {
       var cart = new Cart
       {
-        ProductIds = new List<string> { "1", "2" }, 
+        ProductIds = new List<string> { "1", "2" },
         Address = "Dirección válida",
-        PaymentMethod = PaymentMethods.Type.CASH 
+        PaymentMethod = PaymentMethods.Type.CASH
       };
 
 
       var sale = await storeLogic.PurchaseAsync(cart);
 
       Assert.IsNotNull(sale);
-      Assert.IsTrue(IsValidPurchaseNumber(sale.NumberOrder)); 
+      Assert.IsTrue(IsValidPurchaseNumber(sale.NumberOrder));
     }
 
     //Manejo adecuado del método de pago
@@ -140,9 +158,9 @@ namespace UT
 
       var cart = new Cart
       {
-        ProductIds = new List<string> { "1", "2" }, 
+        ProductIds = new List<string> { "1", "2" },
         Address = "Turrialba",
-        PaymentMethod = PaymentMethods.Type.CASH 
+        PaymentMethod = PaymentMethods.Type.CASH
       };
 
       var sale = await storeLogic.PurchaseAsync(cart);
@@ -171,8 +189,8 @@ namespace UT
       Assert.That(sale.Address, Is.EqualTo("Turrialba"));
       Assert.That(sale.Products.Count(), Is.EqualTo(2));
       Assert.That(sale.Amount, Is.EqualTo(21470));
-      Assert.That(sale.PaymentMethod, Is.EqualTo(PaymentMethods.Type.CASH)); 
-      Assert.IsTrue(sale.Amount > 0); 
+      Assert.That(sale.PaymentMethod, Is.EqualTo(PaymentMethods.Type.CASH));
+      Assert.IsTrue(sale.Amount > 0);
       Assert.IsFalse(String.IsNullOrEmpty(sale.NumberOrder));
     }
 
