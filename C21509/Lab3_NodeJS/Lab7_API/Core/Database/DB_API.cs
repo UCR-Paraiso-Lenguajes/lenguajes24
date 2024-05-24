@@ -135,11 +135,8 @@ namespace Store_API.Database
                             while (readerTable.Read())
                             {
 
-                                Console.WriteLine($"ID: {readerTable["IdProduct"]}, Name: {readerTable["Name"]}, Price: {readerTable["Price"]}, Categoria: {readerTable["Categoria"]}");
                                 int categoryId = Convert.ToInt32(readerTable["Categoria"]);
                                 Category category = Categories.GetCategoryById(categoryId);
-
-                                Console.WriteLine($"Category ID: {category.IdCategory}, Category Name: {category.NameCategory}");
 
 
                                 productListToStoreInstance.Add(new Product

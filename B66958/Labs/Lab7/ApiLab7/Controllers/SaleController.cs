@@ -7,7 +7,7 @@ namespace ApiLab7.Controllers
     [ApiController]
     public class SaleController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("sales")]
         public async Task<IActionResult> GetSalesAsync(DateTime dateToFind)
         {
             ValidateDate(dateToFind);

@@ -18,6 +18,11 @@ builder.Services.AddCors(p =>
     )
 );
 
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.LowercaseUrls = true;
+});
+
 var app = builder.Build();
 
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);

@@ -58,7 +58,7 @@ export default function MainAdmin() {
 
         async function getData() {
             try {
-                const res = await fetch(`https://localhost:7151/api/Sale?dateToFind=${selectedDate.toISOString().split('T')[0]}`,
+                const res = await fetch(`https://localhost:7151/api/sales?dateToFind=${selectedDate.toISOString().split('T')[0]}`,
                     {
                         method: 'GET',
                         headers: {
