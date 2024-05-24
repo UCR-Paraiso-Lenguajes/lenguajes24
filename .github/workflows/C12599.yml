@@ -47,3 +47,13 @@ jobs:
       run: |
         cd C12599/Examen1/Api
         dotnet test --no-build --verbosity normal
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+         cd C12599/Examen1/Api
+        echo "${{ secrets.DOCKERHUBPASSC12599  }}" | docker login -u "marianoda20027@gmail.com" --password-stdin
+        docker image build -t marianoda2002/storeapi:latest .
+        docker push marianoda2002/storeapi:latest
