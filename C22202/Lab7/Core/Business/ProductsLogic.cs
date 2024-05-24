@@ -1,3 +1,4 @@
+using System.Drawing;
 using ShopApi.Models;
 
 public class ProductsLogic
@@ -31,15 +32,80 @@ public class ProductsLogic
 
     }
 
-    public IEnumerable<Product> GetProductsCategory(int categoryId)
+    public IEnumerable<Product> searchProducts(IEnumerable<Product> productos, string search)
     {
-        if (categoryId < 0) throw new ArgumentException($"The {nameof(categoryId)} number must be greater than 0");
+        var productosOrdenados = productos.OrderBy(p => p.name).ToList();
 
-        if(categoryId == 0) return this.products;
+        List<Product> resultados = new List<Product>();
 
-        this.productsDictionary.TryGetValue(categoryId, out var products);
-        if (products == null) products = new List<Product>();
+        Product searchProduct = new Product{
+            name = search,
+            id = 1,
+            imgSource = "",
+            price = 0,
+            category = 0
+            };
+        int index = productosOrdenados.BinarySearch(searchProduct, new ProductoComparer());
+
+        if (index < 0)
+        {
+            index = ~index;
+        }
+
+        for (int i = index; i < productosOrdenados.Count && productosOrdenados[i].name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0; i++)
+        {
+            if (productosOrdenados[i].name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                resultados.Add(productosOrdenados[i]);
+            }
+        }
+
+        for (int i = index - 1; i >= 0 && productosOrdenados[i].name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0; i--)
+        {
+            if (productosOrdenados[i].name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                resultados.Add(productosOrdenados[i]);
+            }
+        }
+
+        return resultados;
+    }
+
+    public IEnumerable<Product> GetProductsCategory(List<int> categoryIds)
+    {
+        if (categoryIds.Count <= 0) throw new ArgumentException($"The {nameof(categoryIds)} number must be greater than 0");
+
+        if(categoryIds.Contains(0)) return this.products;
+
+        List<Product> products = new List<Product>();
+        foreach (int item in categoryIds)
+        {
+            this.productsDictionary.TryGetValue(item, out var productsTmp);
+            if (productsTmp == null) productsTmp = new List<Product>();
+            products.AddRange(productsTmp);
+            
+        }
         return products;
     }
 
 }
+
+public class ProductoComparer : IComparer<Product>
+    {
+        public int Compare(Product? x, Product? y)
+        {
+            if (x == null && y == null)
+            {
+                return 0;
+            }
+            if (x == null)
+            {
+                return -1;
+            }
+            if (y == null)
+            {
+                return 1;
+            }
+            return string.Compare(x.name, y.name, StringComparison.OrdinalIgnoreCase);
+        }
+    }

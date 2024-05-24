@@ -12,6 +12,7 @@ export default function Page() {
   const [selectedCategory, setSelectedCategory] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
     const loadProductData = async () => {
@@ -89,19 +90,65 @@ export default function Page() {
     });
   };
 
+  const handleSearch = async () => {
+    try {
+      setLoading(true);
+      setError('');
+  
+      let searchUrl = `https://localhost:7165/api/Store/Search?productName=${encodeURIComponent(searchQuery)}`;
+  
+      if (selectedCategory !== 0) {
+        searchUrl += `&categoryId=${selectedCategory}`;
+      }
+  
+      const response = await fetch(searchUrl);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+  
+      const productJson = await response.json();
+      setAvailableProducts(productJson);
+    } catch (error) {
+      setError('Error al cargar productos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredProducts = availableProducts.filter(product =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <main className="flex min-h-screen flex-col p-6">
       <header className="header-container row">
-        <div className="search-container col-sm-4 ">
-          <input type="search" placeholder="Buscar" value="" />
-          <button className="col-sm-2"><img src="/img/Lupa.png" className="col-sm-4" /> </button>
+        <div className="search-container col-sm-4 d-flex">
+          <input
+            type="search"
+            className="form-control"
+            placeholder="Buscar"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+
+          <button className="btn btn-primary" onClick={handleSearch}>
+            Buscar
+          </button>
           <Link href="/cart" className="col-sm-4 d-flex justify-content-end">
-            <button><img src="/img/carrito.png" className="col-sm-6" />{cartProducts.length}</button>
+            <button className="btn btn-outline-secondary">
+              <img src="/img/carrito.png" className="col-sm-6" />
+              {cartProducts.length}
+            </button>
           </Link>
         </div>
-        <div className="categories-container">
-          <select className="form-select" style={{ height: "auto", maxHeight: "200px", overflowY: "auto" }} value={selectedCategory} onChange={(e) => handleCategoryChange(Number(e.target.value))}>
-            <option value="0">Categorías</option>
+        <div className="categories-container col-sm-4">
+          <select
+            className="form-select"
+            style={{ height: "auto", maxHeight: "200px", overflowY: "auto" }}
+            value={selectedCategory}
+            onChange={(e) => handleCategoryChange(Number(e.target.value))}
+          >
+            <option value="0">Todas las Categorías</option>
             {categories.map(category => (
               <option key={category.idCategory} value={category.idCategory}>
                 {category.nameCategory}
@@ -119,7 +166,7 @@ export default function Page() {
         <div>
           <h1>Lista de Productos</h1>
           <div className='row' style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {availableProducts && availableProducts.map(product =>
+            {filteredProducts && filteredProducts.map(product =>
               <Product key={product.id} product={product} addToCart={addToCart} />
             )}
           </div>

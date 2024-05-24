@@ -1,7 +1,14 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
-const NavBar = ({ productCount, toggleCart }: { productCount: number, toggleCart: (action: boolean) => void }) => {
+const NavBar = ({ productCount, toggleCart, searchFunction, setQuery }:
+    { productCount: number, toggleCart: (action: boolean) => void, searchFunction: () => void, setQuery: (text: string) => void }) => {
+
+
+    function handleQueryChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const inputValue = event.target.value;
+        setQuery(inputValue);
+    }
 
     return <>
         <nav className="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
@@ -13,9 +20,10 @@ const NavBar = ({ productCount, toggleCart }: { productCount: number, toggleCart
                 </div>
                 <div className="navbar-center w-75">
                     <div className="input-group w-100">
-                        <input className="form-control mr-2 w-25" type="search" placeholder="Buscar" aria-label="Search" />
+                        <input className="form-control mr-2 w-25" type="search" placeholder="Buscar"
+                            aria-label="Search" onChange={handleQueryChange} />
                         <div className="input-group-append">
-                            <button className="btn btn-outline-success" type="submit">
+                            <button className="btn btn-outline-success" type="submit" onClick={searchFunction}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="24" fill="white"
                                     className="bi bi-search" viewBox="0 0 16 16">
                                     <path

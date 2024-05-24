@@ -14,12 +14,36 @@ namespace ApiLab7.Controllers
             return Store.Instance;
         }
 
-        [HttpGet("Products")]
-        public IEnumerable<Product> GetCategories(int category)
+        [HttpGet("products")]
+        public IEnumerable<Product> GetProductsCategories(
+            [FromQuery(Name = "categories")] List<int> categories = null,
+            [FromQuery(Name = "query")] string query = null
+        )
         {
-            if (category < 1)
-                throw new ArgumentException("The category number must be above 0");
-            return Store.Instance.ProductsByCategory(category);
+            bool queryIsPresentButCategoriesAreNot =
+                (categories == null || categories.Count() == 0) && query != null;
+            bool queryIsNotPresentButCategoriesAre =
+                query == null && (categories != null && categories.Count() > 0);
+            bool categoriesAndQueryAreNotPresent =
+                (categories == null || categories.Count() == 0)
+                && (query == null || string.IsNullOrWhiteSpace(query));
+
+            if (queryIsPresentButCategoriesAreNot)
+            {
+                return Store.Instance.ProductsByQuery(query);
+            }
+            if (queryIsNotPresentButCategoriesAre)
+            {
+                return Store.Instance.ProductsByCategory(categories);
+            }
+            if (categoriesAndQueryAreNotPresent)
+            {
+                return Store.Instance.ProductsInStore;
+            }
+            else
+            {
+                return Store.Instance.ProductsByCategoryAndQuery(categories, query);
+            }
         }
     }
 }

@@ -2,7 +2,7 @@ using ShopApi.Models;
 public class CategoriesLogic
 {
     private readonly List<Category> categories;
-    public static readonly CategoriesLogic Instance;
+    public static CategoriesLogic Instance;
 
     private CategoriesLogic(List<Category> categories)
     {
