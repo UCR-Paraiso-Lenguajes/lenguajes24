@@ -232,7 +232,7 @@ const Page = () => {
           <div className="card-body">
             <h5 className="card-title">{product.name}</h5>
             <p className="card-text">{product.description}</p>
-            <p className="card-text">Precio: ${product.price}</p>
+            <p className="card-text">${product.price}</p>
 
             <button className="btn btn-primary" onClick={() => handleAddToCart(product)}>
               Comprar
@@ -263,7 +263,7 @@ const Page = () => {
               <div className="mt-3 text-center">
                 <h3>{product.name}</h3>
                 <p>{product.description}</p>
-                <p>Precio: ${product.price}</p>
+                <p>${product.price}</p>
 
                 <button className="btn btn-primary" onClick={() => handleAddToCart(product)}>
                   Comprar

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using storeapi.Database;
+using System.Globalization;
 
 namespace storeapi.Models
 {
@@ -39,71 +40,105 @@ namespace storeapi.Models
             return DateTime.Now - lastCacheRefreshTime > cacheRefreshInterval;
         }
 
-        public IEnumerable<Dictionary<string, string>> LoadProductsFromDatabase(List<int> categoryIds, string search)
+      public IEnumerable<Dictionary<string, string>> LoadProductsFromDatabase(List<int> categoryIds, string search)
+{
+    // Verificar si los datos están en caché
+    bool verificacionCache = _cachedProducts == null || _cachedProducts.Count == 0 || NeedsCacheRefresh();
+    if (verificacionCache)
+    {
+        lock (_cacheLock)
         {
-            // Verificar si los datos están en caché
-            if (_cachedProducts == null || _cachedProducts.Count == 0 || NeedsCacheRefresh())
+            if (verificacionCache)
             {
-                lock (_cacheLock)
+                // Consultar a la base de datos solo una vez
+                List<string[]> productData = StoreDB.RetrieveDatabaseInfo();
+                
+                // Limpiar el árbol antes de insertar nuevos productos
+                root = null;
+
+                // Limpiar la caché antes de insertar nuevos productos
+                _cachedProducts = new List<Dictionary<string, string>>();
+
+                // Convertir las filas a diccionarios y validar
+                foreach (string[] row in productData)
                 {
-                    if (_cachedProducts == null || _cachedProducts.Count == 0 || NeedsCacheRefresh())
+                    if (row == null || row.Length < 6)
                     {
-                        // Consultar a la base de datos solo una vez
-                        List<string[]> productData = StoreDB.RetrieveDatabaseInfo();
-                        List<Dictionary<string, string>> newCachedProducts = new List<Dictionary<string, string>>();
+                        continue; // Ignorar filas inválidas
+                    }
 
-                        // Convertir las filas a diccionarios y validar
-                        foreach (string[] row in productData)
-                        {
-                            if (row == null || row.Length < 6)
-                            {
-                                continue; // Ignorar filas inválidas
-                            }
+                    var productDict = CreateProductDictionary(row);
 
-                            var productDict = CreateProductDictionary(row);
-
-                            if (ValidateProductDictionary(productDict))
-                            {
-                                Insert(productDict); // Insertar en el árbol
-                                newCachedProducts.Add(productDict);
-                            }
-                        }
-
-                        // Actualizar la caché solo si se ha cargado nueva información
-                        if (newCachedProducts.Count > 0)
-                        {
-                            _cachedProducts = newCachedProducts;
-                            lastCacheRefreshTime = DateTime.Now; // Actualizar el tiempo de actualización de la caché
-                        }
+                    if (ValidateProductDictionary(productDict))
+                    {
+                        Insert(productDict); // Insertar en el árbol
+                        _cachedProducts.Add(productDict); // Agregar a la caché
                     }
                 }
+
+                lastCacheRefreshTime = DateTime.Now; // Actualizar el tiempo de actualización de la caché
             }
-
-            // Filtrar los productos en base a categoryIds y search
-            IEnumerable<Dictionary<string, string>> result = _cachedProducts;
-
-            if (!string.IsNullOrWhiteSpace(search) && !search.Equals("null", StringComparison.OrdinalIgnoreCase))
-            {
-                result = SearchProductsByKeyword(root, search);
-            }
-
-            if (categoryIds != null && categoryIds.Count > 0)
-            {
-                // Crear una lista para almacenar los resultados filtrados por categoría
-                List<Dictionary<string, string>> categoryFilteredProducts = new List<Dictionary<string, string>>();
-
-                // Filtrar productos por categoría utilizando el árbol binario de búsqueda
-                foreach (int categoryId in categoryIds)
-                {
-                    SearchByCategory(root, categoryId, categoryFilteredProducts);
-                }
-
-                // Intersección de los resultados de búsqueda por categoría y los productos filtrados por búsqueda
-                result = result.Intersect(categoryFilteredProducts, new DictionaryEqualityComparer());
-            }
-
-            return result;
         }
+    }
+
+    // Filtrar los productos en base a categoryIds y search
+    IEnumerable<Dictionary<string, string>> result = _cachedProducts;
+    bool searchNullCase = !string.IsNullOrWhiteSpace(search) && !search.Equals("null", StringComparison.OrdinalIgnoreCase);
+    if (searchNullCase)
+    {
+        result = SearchProductsByKeyword(root, search);
+    }
+    bool SearchCategory = categoryIds != null && categoryIds.Count > 0;
+    if (SearchCategory)
+    {
+        // Crear una lista para almacenar los resultados filtrados por categoría
+        List<Dictionary<string, string>> categoryFilteredProducts = new List<Dictionary<string, string>>();
+
+        // Filtrar productos por categoría utilizando el árbol binario de búsqueda
+        SearchByCategories(root, categoryIds, categoryFilteredProducts);
+
+        // Intersección de los resultados de búsqueda por categoría y los productos filtrados por búsqueda
+        result = result.Intersect(categoryFilteredProducts, new DictionaryEqualityComparer());
+    }
+
+    return result;
+}
+
+private void SearchByCategories(TreeNode node, List<int> categoryIds, List<Dictionary<string, string>> result)
+{
+    if (result == null)
+    {
+        throw new ArgumentNullException(nameof(result), "Result list cannot be null.");
+    }
+
+    if (node == null)
+    {
+        return;
+    }
+
+    if (!node.Product.ContainsKey("categoryId"))
+    {
+        throw new ArgumentException("Product dictionary does not contain 'categoryId' key.");
+    }
+
+    int currentCategoryId;
+    if (!int.TryParse(node.Product["categoryId"], out currentCategoryId))
+    {
+        throw new ArgumentException("Invalid category ID in product dictionary.");
+    }
+
+    // Verificar si el nodo actual pertenece a alguna de las categorías especificadas
+    if (categoryIds.Contains(currentCategoryId))
+    {
+        // Agregar el producto del nodo al resultado
+        result.Add(node.Product);
+    }
+
+    // Buscar en las ramas izquierda y derecha del árbol
+    SearchByCategories(node.Left, categoryIds, result);
+    SearchByCategories(node.Right, categoryIds, result);
+}
+
         public void Insert(Dictionary<string, string> product)
         {
             if (root == null)
@@ -158,56 +193,18 @@ namespace storeapi.Models
         }
 
 
-        public void SearchByCategory(TreeNode node, int categoryId, List<Dictionary<string, string>> result)
-        {
-            if (result == null)
-            {
-                throw new ArgumentNullException(nameof(result), "Result list cannot be null.");
-            }
-
-            if (node == null)
-            {
-                return;
-            }
-
-            if (!node.Product.ContainsKey("categoryId"))
-            {
-                throw new ArgumentException("Product dictionary does not contain 'categoryId' key.");
-            }
-
-            int currentCategoryId;
-            if (!int.TryParse(node.Product["categoryId"], out currentCategoryId))
-            {
-                throw new ArgumentException("Invalid category ID in product dictionary.");
-            }
-
-            if (categoryId < currentCategoryId)
-            {
-                SearchByCategory(node.Left, categoryId, result);
-            }
-            else if (categoryId > currentCategoryId)
-            {
-                SearchByCategory(node.Right, categoryId, result);
-            }
-            else
-            {
-                // Encontramos un nodo con la categoría especificada, agregamos el producto al resultado
-                result.Add(node.Product);
-
-                // Buscamos en la rama izquierda del árbol por más productos con la misma categoría
-                SearchByCategory(node.Left, categoryId, result);
-
-                // Buscamos en la rama derecha del árbol por más productos con la misma categoría
-                SearchByCategory(node.Right, categoryId, result);
-            }
-        }
-
-
         public IEnumerable<Dictionary<string, string>> SearchProductsByKeyword(TreeNode node, string keyword)
         {
+            // Verifica si el nodo es nulo
             if (node == null)
             {
-                return Enumerable.Empty<Dictionary<string, string>>();
+                throw new ArgumentNullException(nameof(node), "El nodo no puede ser nulo.");
+            }
+
+            // Verifica si la palabra clave es nula o está vacía
+            if (string.IsNullOrEmpty(keyword))
+            {
+                throw new ArgumentException("La palabra clave no puede ser nula o vacía.", nameof(keyword));
             }
 
             List<Dictionary<string, string>> result = new List<Dictionary<string, string>>();
@@ -219,6 +216,7 @@ namespace storeapi.Models
 
         private void SearchByKeyword(TreeNode node, string keyword, List<Dictionary<string, string>> result)
         {
+            // Verifica si el nodo es nulo
             if (node == null)
             {
                 return;
@@ -226,6 +224,7 @@ namespace storeapi.Models
 
             SearchByKeyword(node.Left, keyword, result);
 
+            // Verifica si el producto del nodo contiene la palabra clave
             if (ProductContainsKeyword(node.Product, keyword))
             {
                 result.Add(node.Product);
@@ -234,30 +233,53 @@ namespace storeapi.Models
             SearchByKeyword(node.Right, keyword, result);
         }
 
+
         public bool ProductContainsKeyword(Dictionary<string, string> product, string keyword)
         {
+            // Verifica si el diccionario del producto es nulo
+            if (product is null)
+                throw new ArgumentNullException(nameof(product), "El diccionario del producto no puede ser nulo.");
+
+            // Verifica si la palabra clave es nula o está vacía
+            if (string.IsNullOrEmpty(keyword))
+                throw new ArgumentException("La palabra clave no puede ser nula o vacía.", nameof(keyword));
+
+            // Convierte la palabra clave a minúsculas
             keyword = keyword.ToLower();
 
             // Verificar si alguna propiedad del producto contiene el keyword
             return product.Values.Any(v => v != null && v.ToLower().Contains(keyword));
         }
 
+
         public class DictionaryEqualityComparer : IEqualityComparer<Dictionary<string, string>>
         {
             public bool Equals(Dictionary<string, string> x, Dictionary<string, string> y)
             {
-                if (ReferenceEquals(x, y)) return true;
-                if (x is null || y is null) return false;
-                if (x.Count != y.Count) return false;
+                // Verifica si las referencias son iguales
+                if (ReferenceEquals(x, y))
+                    return true;
 
+                // Verifica si alguno de los diccionarios es nulo
+                if (x is null || y is null)
+                    return false;
+
+                // Verifica si los diccionarios tienen la misma cantidad de elementos
+                if (x.Count != y.Count)
+                    return false;
+
+                // Verifica cada par de clave-valor en el primer diccionario
                 foreach (var pair in x)
                 {
+                    // Intenta obtener el valor correspondiente en el segundo diccionario
                     if (!y.TryGetValue(pair.Key, out var value) || value != pair.Value)
                         return false;
                 }
 
+                // Si pasa todas las verificaciones anteriores, los diccionarios son iguales
                 return true;
             }
+
 
             public int GetHashCode(Dictionary<string, string> obj)
             {
@@ -308,12 +330,6 @@ namespace storeapi.Models
             if (string.IsNullOrWhiteSpace(productDict["name"]))
             {
                 throw new ArgumentException("Product name is null or empty.");
-            }
-
-            decimal price;
-            if (!decimal.TryParse(productDict["price"], out price) || price < 0)
-            {
-                throw new ArgumentException("Invalid product price.");
             }
 
             if (string.IsNullOrWhiteSpace(productDict["imageUrl"]))
@@ -382,7 +398,7 @@ namespace storeapi.Models
             {
                 { "id", id.ToString() },
                 { "name", name },
-                { "price", price.ToString() },
+                { "price", price.ToString("0.00", CultureInfo.InvariantCulture) },           
                 { "imageUrl", imageUrl },
                 { "description", description },
                 { "categoryId", categoryId.ToString() }

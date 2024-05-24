@@ -14,23 +14,9 @@ namespace storeapi.Database
             var products = new List<Product>();
             Random random = new Random();
 
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
                 connection.Open();
-
-                
-
-                string countProductsQuery = "SELECT COUNT(*) FROM products";
-
-                using (var countProductsCommand = new MySqlCommand(countProductsQuery, connection))
-                {
-                    int currentProductCount = Convert.ToInt32(countProductsCommand.ExecuteScalar());
-
-                    if (currentProductCount >= 14)
-                    {
-                        throw new InvalidOperationException("No se pueden insertar más productos. Ya se han insertado 12 productos.");
-                    }
-                }
 
                 // Continuar con la creación de la tabla y la inserción de productos
                 string createTableQuery = @"
@@ -48,17 +34,34 @@ namespace storeapi.Database
                     createTableCommand.ExecuteNonQuery();
                 }
 
+                string[] randomWords = { "amazing", "awesome", "fantastic", "incredible", "superb", "excellent", "wonderful", "marvelous", "brilliant", "fabulous" };
+                string[] productNames = { "Gizmo", "Widget", "Contraption", "Gadget", "Appliance", "Device", "Tool", "Instrument", "Machine", "Equipment" };
+
                 for (int i = 1; i <= 14; i++)
                 {
                     Category randomCategory = GetRandomCategory(categories);
                     int randomIndex = random.Next(0, categories.ListCategories.Count); // Obtener un índice aleatorio válido
+
+                    // Generar una descripción aleatoria seleccionando algunas palabras al azar
+                    string description = $"Description of Product {i}: ";
+                    for (int j = 0; j < 1; j++)
+                    {
+                        int innerRandomWordIndex = random.Next(0, randomWords.Length); // Cambiar el nombre de la variable aquí
+                        description += randomWords[innerRandomWordIndex] + " ";
+                    }
+
+                    // Seleccionar un nombre aleatorio para el producto
+                    int randomWordIndex = random.Next(0, randomWords.Length);
+                    int randomNameIndex = random.Next(0, productNames.Length);
+                    string productName = $"{productNames[randomNameIndex]} {randomWords[randomWordIndex]}";
+
                     products.Add(new Product
                     {
-                        Name = $"Product {i}",
+                        Name = productName,
                         ImageUrl = $"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
                         Price = 10.99m * i,
-                        Description = $"Description of Product {i}",
-                        Category = randomCategory 
+                        Description = description.Trim(), // Eliminar el espacio adicional al final
+                        Category = randomCategory
                     });
                 }
 
@@ -104,7 +107,7 @@ namespace storeapi.Database
         public static List<string[]> RetrieveDatabaseInfo()
         {
             List<string[]> databaseInfo = new List<string[]>();
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
                 connection.Open();
 
@@ -130,8 +133,8 @@ namespace storeapi.Database
 
             return databaseInfo;
         }
-          
-     private static Category GetRandomCategory(Categories categories)
+
+        private static Category GetRandomCategory(Categories categories)
         {
             if (categories == null)
             {
@@ -148,10 +151,8 @@ namespace storeapi.Database
             Random random = new Random();
             int index = random.Next(0, categoryList.Count);
 
-   
             return categoryList[index];
         }
-    
 
         private static void ValidateProductForInsert(Product product)
         {
@@ -169,8 +170,6 @@ namespace storeapi.Database
             {
                 throw new ArgumentException("El precio del producto no puede ser negativo.", nameof(product.Price));
             }
-
         }
     }
-    
 }
