@@ -1,0 +1,447 @@
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.exe
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.deps.json
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.runtimeconfig.json
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.geekstore_api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.build.geekstore_api.props
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.geekstore_api.props
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.geekstore_api.props
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\scopedcss\bundle\geekstore_api.styles.css
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\geekstor.8D09E603.Up2Date
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\refint\geekstore_api.dll
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.genruntimeconfig.cache
+C:\Users\Usuario\Desktop\lab_7_b66291\geekstore_api\obj\Debug\net8.0\ref\geekstore_api.dll
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.exe
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.deps.json
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.runtimeconfig.json
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.geekstore_api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.build.geekstore_api.props
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.geekstore_api.props
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.geekstore_api.props
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\scopedcss\bundle\geekstore_api.styles.css
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\geekstor.8D09E603.Up2Date
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\refint\geekstore_api.dll
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.genruntimeconfig.cache
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\obj\Debug\net8.0\ref\geekstore_api.dll
+C:\Users\Usuario\Desktop\Lab_8_b66291\geekstore_api\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.exe
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.deps.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.runtimeconfig.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.AssemblyReference.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfoInputs.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfo.cs
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.sourcelink.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.geekstore_api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.build.geekstore_api.props
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.geekstore_api.props
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.geekstore_api.props
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\scopedcss\bundle\geekstore_api.styles.css
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstor.8D09E603.Up2Date
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\refint\geekstore_api.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.genruntimeconfig.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b62291\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\ref\geekstore_api.dll
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.exe
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.deps.json
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.runtimeconfig.json
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.geekstore_api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.build.geekstore_api.props
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.geekstore_api.props
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.geekstore_api.props
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\scopedcss\bundle\geekstore_api.styles.css
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstor.8D09E603.Up2Date
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\refint\geekstore_api.dll
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.genruntimeconfig.cache
+C:\Users\Usuario\Desktop\Version exponer\Lab_9_b66291\geekstore_api\obj\Debug\net8.0\ref\geekstore_api.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.exe
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.deps.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.runtimeconfig.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.AssemblyReference.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfoInputs.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfo.cs
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.sourcelink.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.geekstore_api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.build.geekstore_api.props
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.geekstore_api.props
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.geekstore_api.props
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\scopedcss\bundle\geekstore_api.styles.css
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\geekstor.8D09E603.Up2Date
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\refint\geekstore_api.dll
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.genruntimeconfig.cache
+C:\Users\Usuario\Documents\UCR cursos\Semestre I 2024\Lenguajes comerciales\lenguajes24\B66291\lab9_b66291\geekstore_api\obj\Debug\net8.0\ref\geekstore_api.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.exe
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.deps.json
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.runtimeconfig.json
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.geekstore_api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.build.geekstore_api.props
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.geekstore_api.props
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.geekstore_api.props
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\scopedcss\bundle\geekstore_api.styles.css
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstor.8D09E603.Up2Date
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\refint\geekstore_api.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.genruntimeconfig.cache
+C:\Users\Usuario\Desktop\lab_10_b66291\geekstore_api\obj\Debug\net8.0\ref\geekstore_api.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.exe
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.deps.json
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.runtimeconfig.json
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.geekstore_api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.build.geekstore_api.props
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.geekstore_api.props
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.geekstore_api.props
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\scopedcss\bundle\geekstore_api.styles.css
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstor.8D09E603.Up2Date
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\refint\geekstore_api.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.genruntimeconfig.cache
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\geekstore_api\obj\Debug\net8.0\ref\geekstore_api.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.exe
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.deps.json
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.runtimeconfig.json
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.geekstore_api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.build.geekstore_api.props
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.geekstore_api.props
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.geekstore_api.props
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\scopedcss\bundle\geekstore_api.styles.css
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstor.8D09E603.Up2Date
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\refint\geekstore_api.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.genruntimeconfig.cache
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\geekstore_api\obj\Debug\net8.0\ref\geekstore_api.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.exe
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.deps.json
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.runtimeconfig.json
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.geekstore_api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.build.geekstore_api.props
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.geekstore_api.props
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.geekstore_api.props
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\scopedcss\bundle\geekstore_api.styles.css
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstor.8D09E603.Up2Date
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\refint\geekstore_api.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.genruntimeconfig.cache
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\geekstore_api\obj\Debug\net8.0\ref\geekstore_api.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.exe
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.deps.json
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.runtimeconfig.json
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.geekstore_api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.build.geekstore_api.props
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.geekstore_api.props
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.geekstore_api.props
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\scopedcss\bundle\geekstore_api.styles.css
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstor.8D09E603.Up2Date
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\refint\geekstore_api.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.genruntimeconfig.cache
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\ref\geekstore_api.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.exe
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.deps.json
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.runtimeconfig.json
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.geekstore_api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.build.geekstore_api.props
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.geekstore_api.props
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.geekstore_api.props
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\scopedcss\bundle\geekstore_api.styles.css
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstor.8D09E603.Up2Date
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\refint\geekstore_api.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.genruntimeconfig.cache
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\geekstore_api\obj\Debug\net8.0\ref\geekstore_api.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.Development.json
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\appsettings.json
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.exe
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.deps.json
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.runtimeconfig.json
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Microsoft.OpenApi.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.build.json
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.development.json
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.geekstore_api.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.build.geekstore_api.props
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.geekstore_api.props
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.geekstore_api.props
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\staticwebassets.pack.json
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\scopedcss\bundle\geekstore_api.styles.css
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstor.8D09E603.Up2Date
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\refint\geekstore_api.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.pdb
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\geekstore_api.genruntimeconfig.cache
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\geekstore_api\obj\Debug\net8.0\ref\geekstore_api.dll

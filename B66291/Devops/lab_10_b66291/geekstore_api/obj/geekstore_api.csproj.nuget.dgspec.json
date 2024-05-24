@@ -1,0 +1,151 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\B66291\\Devops\\lab_10_b66291\\geekstore_api\\geekstore_api.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\B66291\\Devops\\lab_10_b66291\\core\\core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\B66291\\Devops\\lab_10_b66291\\core\\core.csproj",
+        "projectName": "core",
+        "projectPath": "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\B66291\\Devops\\lab_10_b66291\\core\\core.csproj",
+        "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\B66291\\Devops\\lab_10_b66291\\core\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "MySqlConnector": {
+              "target": "Package",
+              "version": "[2.3.6, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\B66291\\Devops\\lab_10_b66291\\geekstore_api\\geekstore_api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\B66291\\Devops\\lab_10_b66291\\geekstore_api\\geekstore_api.csproj",
+        "projectName": "geekstore_api",
+        "projectPath": "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\B66291\\Devops\\lab_10_b66291\\geekstore_api\\geekstore_api.csproj",
+        "packagesPath": "C:\\Users\\Usuario\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\B66291\\Devops\\lab_10_b66291\\geekstore_api\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Usuario\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\B66291\\Devops\\lab_10_b66291\\core\\core.csproj": {
+                "projectPath": "C:\\Users\\Usuario\\Documents\\UCR cursos\\Semestre I 2024\\Lenguajes comerciales\\lenguajes24\\B66291\\Devops\\lab_10_b66291\\core\\core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Cors": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.InMemory": {
+              "target": "Package",
+              "version": "[8.0.3, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.4.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.203/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

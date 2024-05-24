@@ -1,0 +1,13 @@
+.reports-container {
+    display: flex;
+  }
+  
+  .charts-container {
+    display: flex;
+    width: 100%;
+  }
+  
+  .column {
+    flex: 1;
+    padding: 10px;
+  }

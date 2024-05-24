@@ -1,0 +1,84 @@
+C:\Users\Usuario\Desktop\lab_10_b66291\core\bin\Debug\net8.0\core.deps.json
+C:\Users\Usuario\Desktop\lab_10_b66291\core\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\core\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\lab_10_b66291\core\obj\Debug\net8.0\core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\lab_10_b66291\core\obj\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\core\obj\Debug\net8.0\refint\core.dll
+C:\Users\Usuario\Desktop\lab_10_b66291\core\obj\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\lab_10_b66291\core\obj\Debug\net8.0\ref\core.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\core\bin\Debug\net8.0\core.deps.json
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\core\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\core\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\core\obj\Debug\net8.0\core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\core\obj\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\core\obj\Debug\net8.0\refint\core.dll
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\core\obj\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\Version exponer\lab_10_b66291\core\obj\Debug\net8.0\ref\core.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\core\bin\Debug\net8.0\core.deps.json
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\core\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\core\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\core\obj\Debug\net8.0\core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\core\obj\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\core\obj\Debug\net8.0\refint\core.dll
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\core\obj\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\mejora tr3\lab_10_b66291\core\obj\Debug\net8.0\ref\core.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\core\bin\Debug\net8.0\core.deps.json
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\core\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\core\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\core\obj\Debug\net8.0\core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\core\obj\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\core\obj\Debug\net8.0\refint\core.dll
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\core\obj\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\mejoras\lab_10_b66291\core\obj\Debug\net8.0\ref\core.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\core\bin\Debug\net8.0\core.deps.json
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\core\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\core\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\core\obj\Debug\net8.0\core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\core\obj\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\core\obj\Debug\net8.0\refint\core.dll
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\core\obj\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\examen\lab_10_b66291\core\obj\Debug\net8.0\ref\core.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\core\bin\Debug\net8.0\core.deps.json
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\core\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\core\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\core\obj\Debug\net8.0\core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\core\obj\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\core\obj\Debug\net8.0\refint\core.dll
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\core\obj\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\respaldo examen\lab_10_b66291\core\obj\Debug\net8.0\ref\core.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\core\bin\Debug\net8.0\core.deps.json
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\core\bin\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\core\bin\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\core\obj\Debug\net8.0\core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfoInputs.cache
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\core\obj\Debug\net8.0\core.AssemblyInfo.cs
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\core\obj\Debug\net8.0\core.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\core\obj\Debug\net8.0\core.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\core\obj\Debug\net8.0\refint\core.dll
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\core\obj\Debug\net8.0\core.pdb
+C:\Users\Usuario\Desktop\ProyectoStore\lab_10_b66291\core\obj\Debug\net8.0\ref\core.dll
