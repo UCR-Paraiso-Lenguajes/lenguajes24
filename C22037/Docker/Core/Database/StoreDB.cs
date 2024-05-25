@@ -10,6 +10,7 @@ public sealed class StoreDB
 {
     public static void CreateMysql()
     {
+        Console.WriteLine("Entró en create");
         Categories category = new Categories();
         var products = new List<Product>
             {
