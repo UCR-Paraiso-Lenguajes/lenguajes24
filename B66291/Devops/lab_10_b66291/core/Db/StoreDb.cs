@@ -9,96 +9,95 @@ namespace core.DataBase;
 
 public sealed class StoreDb
 {
-
-    public static async Task CrearDatosAsync()
+    public static void CrearDatosSync()
     {
         using (var connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
         {
-            await connection.OpenAsync();
+            connection.Open();
 
-            using (var transaction = await connection.BeginTransactionAsync())
+            using (var transaction = connection.BeginTransaction())
             {
                 try
                 {
                     StoreDb _storeDb = new StoreDb();
                     string createTableQuery = @"
-                    DROP TABLE IF EXISTS salesLine;
-                    DROP TABLE IF EXISTS sales; 
-                    DROP TABLE IF EXISTS products;
-                    DROP TABLE IF EXISTS paymentMethod;
-                    CREATE TABLE IF NOT EXISTS products (
-                        id INT AUTO_INCREMENT PRIMARY KEY,
-                        name VARCHAR(100),
-                        description VARCHAR(255),
-                        price DECIMAL(10, 2),
-                        imageURL VARCHAR(255),
-                        pcant INT,
-                        idCat INT 
-                    );
-                    CREATE TABLE IF NOT EXISTS paymentMethod (
-                        id INT PRIMARY KEY,
-                        payment_type VARCHAR(50)
-                    );
-                    CREATE TABLE IF NOT EXISTS sales (
-                        purchase_number VARCHAR(30) NOT NULL PRIMARY KEY,
-                        purchase_date DATETIME NOT NULL,
-                        total DECIMAL(10, 2) NOT NULL,
-                        payment_type INT,
-                        FOREIGN KEY (payment_type) REFERENCES paymentMethod(id)
-                    );
-                    CREATE TABLE IF NOT EXISTS salesLine(
-                        id INT AUTO_INCREMENT PRIMARY KEY,
-                        purchase_id VARCHAR(30) NOT NULL,
-                        product_id INT,
-                        quantity INT,
-                        price DECIMAL(10, 2),
-                        FOREIGN KEY (purchase_id) REFERENCES sales(purchase_number),
-                        FOREIGN KEY (product_id) REFERENCES products(id)
-                    );";
+                DROP TABLE IF EXISTS salesLine;
+                DROP TABLE IF EXISTS sales; 
+                DROP TABLE IF EXISTS products;
+                DROP TABLE IF EXISTS paymentMethod;
+                CREATE TABLE IF NOT EXISTS products (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(100),
+                    description VARCHAR(255),
+                    price DECIMAL(10, 2),
+                    imageURL VARCHAR(255),
+                    pcant INT,
+                    idCat INT 
+                );
+                CREATE TABLE IF NOT EXISTS paymentMethod (
+                    id INT PRIMARY KEY,
+                    payment_type VARCHAR(50)
+                );
+                CREATE TABLE IF NOT EXISTS sales (
+                    purchase_number VARCHAR(30) NOT NULL PRIMARY KEY,
+                    purchase_date DATETIME NOT NULL,
+                    total DECIMAL(10, 2) NOT NULL,
+                    payment_type INT,
+                    FOREIGN KEY (payment_type) REFERENCES paymentMethod(id)
+                );
+                CREATE TABLE IF NOT EXISTS salesLine(
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    purchase_id VARCHAR(30) NOT NULL,
+                    product_id INT,
+                    quantity INT,
+                    price DECIMAL(10, 2),
+                    FOREIGN KEY (purchase_id) REFERENCES sales(purchase_number),
+                    FOREIGN KEY (product_id) REFERENCES products(id)
+                );";
 
                     using (var command = new MySqlCommand(createTableQuery, connection, transaction))
                     {
-                        await command.ExecuteNonQueryAsync();
+                        command.ExecuteNonQuery();
                     }
 
-                    await _storeDb.agregarProductosAsync();
-                    await _storeDb.agregarMetodosPagoAsync();
-                    await _storeDb.InsertarVentasPasadasAsync();
+                    _storeDb.agregarProductos(); //ya
+                    _storeDb.agregarMetodosPago(); //ya
+                    _storeDb.InsertarVentasPasadas(); //ya
 
-                    await transaction.CommitAsync();
+                    transaction.Commit();
                 }
                 catch (Exception)
                 {
-                    await transaction.RollbackAsync();
+                    transaction.Rollback();
                     throw;
                 }
             }
         }
     }
 
-    internal async Task agregarProductosAsync()
+    internal void agregarProductos()
     {
         Categories cat = new Categories();
 
         var products = new List<Product>
     {
-        new Product { id = 1, name = "Gamer tools", description = "Perifericos disponibles de diferentes diseños", price = 30, imageUrl = "https://png.pngtree.com/png-vector/20220725/ourmid/pngtree-gaming-equipment-computer-peripheral-device-png-image_6064567.png", pcant = 0, category = cat.obtenerCategoria(1)},
-        new Product { id = 2, name = "Portatil", description = "Portatiles para todo tipo de usuario y necesidad", price = 625, imageUrl = "https://sitechcr.com/wp-content/uploads/2016/06/A15_i781T3GSW10s4.jpg", pcant = 0, category = cat.obtenerCategoria(2)},
-        new Product { id = 3, name = "Figuras MHA", description = "Decora tu lugar preferido a tu propio estilo", price = 44, imageUrl = "https://m.media-amazon.com/images/I/61lHgRfaG2L._AC_UF894,1000_QL80_.jpg", pcant = 0, category = cat.obtenerCategoria(6)},
-        new Product { id = 4, name = "Hoodie Viñeta", description = "Busca tu diseño personalizado y característico", price = 55, imageUrl = "https://eg.jumia.is/unsafe/fit-in/500x500/filters:fill(white)/product/28/651172/1.jpg?7281", pcant = 0, category = cat.obtenerCategoria(3)},
-        new Product { id = 5, name = "Shonen Jump", description = "Mantente al día con las publicaciones", price = 40, imageUrl = "https://pbs.twimg.com/media/FslBjwGWIAElbQv.jpg:large", pcant = 0, category = cat.obtenerCategoria(5)},
-        new Product { id = 6, name = "FFVII", description = "Compra los últimos lanzamientos", price = 49, imageUrl = "https://sm.ign.com/ign_ap/cover/f/final-fant/final-fantasy-vii-remake-part-2_gq8f.jpg", category = cat.obtenerCategoria(4)},
-        new Product { id = 7, name = "Kimetsu DVD", description = "Consigue los ultimos lanzamientos", price = 28, imageUrl = "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/9111c4a7-8d9d-47c6-adbe-424a9b2dc5f4.jpg", pcant = 0, category = cat.obtenerCategoria(5)},
-        new Product { id = 8, name = "Vinyl Record", description = "Encuentra una gran variedad de generos", price = 23, imageUrl = "https://static.dezeen.com/uploads/2022/09/bioplastic-record-pressing_dezeen_2364_col_1.jpg", pcant = 0, category = cat.obtenerCategoria(5)},
-        new Product { id = 9, name = "SSD Drives", description = "Actualiza tu PC de la mejor manera", price = 38, imageUrl = "https://c1.neweggimages.com/productimage/nb640/20-250-088-V03.jpg", pcant = 0, category = cat.obtenerCategoria(1)},
-        new Product { id = 10, name = "Merch", description = "Mercaderia de tu evento preferido", price = 28, imageUrl = "https://members.asicentral.com/media/32573/tshirtathome-616.jpg", pcant = 0, category = cat.obtenerCategoria(3)},
-        new Product { id = 11, name = "Software", description = "Instala las mejores herramientas actuales", price = 40, imageUrl = "https://m.media-amazon.com/images/I/81CucSxYsJL._AC_UF1000,1000_QL80_.jpg", pcant = 0, category = cat.obtenerCategoria(2) },
-        new Product { id = 12, name = "Bento Box", description = "Consigue tu caja bento preferida", price = 13, imageUrl = "https://m.media-amazon.com/images/I/51O0hWbj2gL._AC_UF894,1000_QL80_.jpg", pcant = 0, category = cat.obtenerCategoria(6) }
+    new Product { id = 1, name = "Gamer tools", description = "Perifericos disponibles de diferentes diseños", price = 30, imageUrl = "https://png.pngtree.com/png-vector/20220725/ourmid/pngtree-gaming-equipment-computer-peripheral-device-png-image_6064567.png", pcant = 0, category = cat.obtenerCategoria(1)},
+    new Product { id = 2, name = "Portatil", description = "Portatiles para todo tipo de usuario y necesidad", price = 625, imageUrl = "https://sitechcr.com/wp-content/uploads/2016/06/A15_i781T3GSW10s4.jpg", pcant = 0, category = cat.obtenerCategoria(2)},
+    new Product { id = 3, name = "Figuras MHA", description = "Decora tu lugar preferido a tu propio estilo", price = 44, imageUrl = "https://m.media-amazon.com/images/I/61lHgRfaG2L._AC_UF894,1000_QL80_.jpg", pcant = 0, category = cat.obtenerCategoria(6)},
+    new Product { id = 4, name = "Hoodie Viñeta", description = "Busca tu diseño personalizado y característico", price = 55, imageUrl = "https://eg.jumia.is/unsafe/fit-in/500x500/filters:fill(white)/product/28/651172/1.jpg?7281", pcant = 0, category = cat.obtenerCategoria(3)},
+    new Product { id = 5, name = "Shonen Jump", description = "Mantente al día con las publicaciones", price = 40, imageUrl = "https://pbs.twimg.com/media/FslBjwGWIAElbQv.jpg:large", pcant = 0, category = cat.obtenerCategoria(5)},
+    new Product { id = 6, name = "FFVII", description = "Compra los últimos lanzamientos", price = 49, imageUrl = "https://sm.ign.com/ign_ap/cover/f/final-fant/final-fantasy-vii-remake-part-2_gq8f.jpg", category = cat.obtenerCategoria(4)},
+    new Product { id = 7, name = "Kimetsu DVD", description = "Consigue los ultimos lanzamientos", price = 28, imageUrl = "https://pisces.bbystatic.com/image2/BestBuy_US/images/products/9111c4a7-8d9d-47c6-adbe-424a9b2dc5f4.jpg", pcant = 0, category = cat.obtenerCategoria(5)},
+    new Product { id = 8, name = "Vinyl Record", description = "Encuentra una gran variedad de generos", price = 23, imageUrl = "https://static.dezeen.com/uploads/2022/09/bioplastic-record-pressing_dezeen_2364_col_1.jpg", pcant = 0, category = cat.obtenerCategoria(5)},
+    new Product { id = 9, name = "SSD Drives", description = "Actualiza tu PC de la mejor manera", price = 38, imageUrl = "https://c1.neweggimages.com/productimage/nb640/20-250-088-V03.jpg", pcant = 0, category = cat.obtenerCategoria(1)},
+    new Product { id = 10, name = "Merch", description = "Mercaderia de tu evento preferido", price = 28, imageUrl = "https://members.asicentral.com/media/32573/tshirtathome-616.jpg", pcant = 0, category = cat.obtenerCategoria(3)},
+    new Product { id = 11, name = "Software", description = "Instala las mejores herramientas actuales", price = 40, imageUrl = "https://m.media-amazon.com/images/I/81CucSxYsJL._AC_UF1000,1000_QL80_.jpg", pcant = 0, category = cat.obtenerCategoria(2) },
+    new Product { id = 12, name = "Bento Box", description = "Consigue tu caja bento preferida", price = 13, imageUrl = "https://m.media-amazon.com/images/I/51O0hWbj2gL._AC_UF894,1000_QL80_.jpg", pcant = 0, category = cat.obtenerCategoria(6) }
     };
 
         using (var connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
         {
-            await connection.OpenAsync();
+            connection.Open();
 
             using (var transaction = connection.BeginTransaction())
             {
@@ -107,8 +106,8 @@ public sealed class StoreDb
                     foreach (var product in products)
                     {
                         string insertQuery = @"
-                        INSERT INTO products (name, description, price, imageURL, pcant, idCat) 
-                        VALUES (@name, @description, @price, @imageURL, @pcant, @idCat)";
+                INSERT INTO products (name, description, price, imageURL, pcant, idCat) 
+                VALUES (@name, @description, @price, @imageURL, @pcant, @idCat)";
 
                         using (var command = new MySqlCommand(insertQuery, connection, transaction))
                         {
@@ -119,7 +118,7 @@ public sealed class StoreDb
                             command.Parameters.AddWithValue("@pcant", product.pcant);
                             command.Parameters.AddWithValue("@idCat", product.category.id);
 
-                            await command.ExecuteNonQueryAsync();
+                            command.ExecuteNonQuery();
                         }
                     }
                     transaction.Commit();
@@ -170,35 +169,35 @@ public sealed class StoreDb
         return productList;
     }
 
-    internal async Task agregarMetodosPagoAsync()
+    internal void agregarMetodosPago()
     {
         using (var connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
         {
-            await connection.OpenAsync();
+            connection.Open();
 
             using (var insertCommand = connection.CreateCommand())
             {
                 insertCommand.CommandText = @"
-                    INSERT INTO paymentMethod (id, payment_type)
-                    VALUES (@id, @payment_type);";
+                INSERT INTO paymentMethod (id, payment_type)
+                VALUES (@id, @payment_type);";
 
                 insertCommand.Parameters.AddWithValue("@id", 0);
                 insertCommand.Parameters.AddWithValue("@payment_type", "Cash");
-                await insertCommand.ExecuteNonQueryAsync();
+                insertCommand.ExecuteNonQuery();
 
                 insertCommand.Parameters.Clear();
                 insertCommand.Parameters.AddWithValue("@id", 1);
                 insertCommand.Parameters.AddWithValue("@payment_type", "Sinpe");
-                await insertCommand.ExecuteNonQueryAsync();
+                insertCommand.ExecuteNonQuery();
             }
         }
     }
 
-    internal async Task InsertarVentasPasadasAsync()
+    internal void InsertarVentasPasadas()
     {
         using (var connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
         {
-            await connection.OpenAsync();
+            connection.Open();
 
             using (var insertCommand = connection.CreateCommand())
             {
@@ -228,7 +227,31 @@ public sealed class StoreDb
                     purchaseNumber
                 );
 
-                await cart.saveAsync(sale);
+                insertCommand.CommandText = @"
+            INSERT INTO sales (purchase_date, total, payment_type, purchase_number)
+            VALUES (@purchase_date, @total, @payment_type, @purchase_number);";
+
+                insertCommand.Parameters.AddWithValue("@purchase_number", sale.PurchaseNumber);
+                insertCommand.Parameters.AddWithValue("@purchase_date", new DateTime(2024, 5, 1)); //cambio fecha por 01/05/24 
+                insertCommand.Parameters.AddWithValue("@total", sale.Amount);
+                insertCommand.Parameters.AddWithValue("@payment_type", (int)sale.PaymentMethod);
+                insertCommand.ExecuteNonQuery();
+
+                insertCommand.Parameters.Clear(); //limpio parametros para reutilizar
+
+                //inserta linea de venta1
+                insertCommand.CommandText = @"
+                INSERT INTO salesLine (purchase_id,  product_id, quantity, price)
+                VALUES (@purchase_id, @product_id, @quantity, @price);";
+
+                foreach (var product in sale.Products)
+                {
+                    insertCommand.Parameters.AddWithValue("@purchase_id", sale.PurchaseNumber);
+                    insertCommand.Parameters.AddWithValue("@product_id", product.id);
+                    insertCommand.Parameters.AddWithValue("@quantity", product.pcant);
+                    insertCommand.Parameters.AddWithValue("@price", product.price);
+                    insertCommand.ExecuteNonQuery();
+                }
 
                 Product product2 = new Product
                 {
@@ -253,7 +276,34 @@ public sealed class StoreDb
                     purchaseNumber
                 );
 
-                await cart.saveAsync(sale);
+                insertCommand.Parameters.Clear(); //limpio parametros para reutilizar
+
+                insertCommand.CommandText = @"
+            INSERT INTO sales (purchase_date, total, payment_type, purchase_number)
+            VALUES (@purchase_date, @total, @payment_type, @purchase_number);";
+
+                insertCommand.Parameters.AddWithValue("@purchase_number", sale.PurchaseNumber);
+                insertCommand.Parameters.AddWithValue("@purchase_date", new DateTime(2024, 5, 2)); //cambio fecha por 01/05/24 
+                insertCommand.Parameters.AddWithValue("@total", sale.Amount);
+                insertCommand.Parameters.AddWithValue("@payment_type", (int)sale.PaymentMethod);
+                insertCommand.ExecuteNonQuery();
+
+                //inserta lineaVenta2
+
+                insertCommand.Parameters.Clear(); //limpio parametros para reutilizar
+
+                insertCommand.CommandText = @"
+                INSERT INTO salesLine (purchase_id,  product_id, quantity, price)
+                VALUES (@purchase_id, @product_id, @quantity, @price);";
+
+                foreach (var product in sale.Products)
+                {
+                    insertCommand.Parameters.AddWithValue("@purchase_id", sale.PurchaseNumber);
+                    insertCommand.Parameters.AddWithValue("@product_id", product.id);
+                    insertCommand.Parameters.AddWithValue("@quantity", product.pcant);
+                    insertCommand.Parameters.AddWithValue("@price", product.price);
+                    insertCommand.ExecuteNonQuery();
+                }//final de la segunda venta
             }
         }
     }

@@ -11,8 +11,7 @@ public class StoreDbTesting
     public void Setup()
     {
         store = new StoreDb();
-        var tk = StoreDb.CrearDatosAsync();
-        tk.Wait();
+        StoreDb.CrearDatosSync();
     }
 
     [Test]

@@ -15,8 +15,7 @@ public class PurchaseTesting
     public  void Setup()
     {
         _purchaseTest = new PurchaseTesting();
-        var tk = StoreDb.CrearDatosAsync();
-        tk.Wait();
+        StoreDb.CrearDatosSync();
     }
 
     [Test]

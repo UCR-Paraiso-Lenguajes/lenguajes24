@@ -18,8 +18,7 @@ namespace UT
             public void Setup()
             {
                 _reportDb = new ReportDb();
-                var tk = StoreDb.CrearDatosAsync();
-                tk.Wait();
+                StoreDb.CrearDatosSync();
             }
 
             [Test]
