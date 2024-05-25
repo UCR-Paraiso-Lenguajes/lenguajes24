@@ -50,10 +50,13 @@ const SalesChart = () => {
   // Define static data for weekly sales
   const weeklySalesData = [
     ['Week', 'Sales'],
-    ['Week 1', 1000],
-    ['Week 2', 1500],
-    ['Week 3', 2000],
-    ['Week 4', 1200],
+    ['day 1', 1000],
+    ['day 2', 1500],
+    ['day 3', 2000],
+    ['day 4', 1200],
+    ['day 5', 1200],
+    ['day 6', 1200],
+    ['day 7', 1800],
   ];
 
   // Render a DataTable chart with the static sales data and child rows for products

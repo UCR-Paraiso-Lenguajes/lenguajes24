@@ -1,0 +1,11 @@
+net8.0
+obj
+/Lab7/StoreAPI/obj
+/Lab7/StoreAPI/bin/Debug/net8.0
+/Lab7/Core/bin
+/Lab7/Core/obj
+/Lab7/UT/bin
+/Lab7/UT/obj
+node_modules
+Class1.cs
+WeatherForecast.cs

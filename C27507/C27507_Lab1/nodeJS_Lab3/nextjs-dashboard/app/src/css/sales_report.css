@@ -1,0 +1,14 @@
+
+.container_datepicker *{        
+    font-size: medium;  
+    padding: 1rem;  
+}
+
+.container_datepicker input{     
+    border: 1px solid black;
+    width: 50%;
+}
+
+.container_datepicker label{
+    font-weight: bolder;
+}

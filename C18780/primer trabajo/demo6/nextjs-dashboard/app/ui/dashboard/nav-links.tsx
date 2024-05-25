@@ -1,37 +1,55 @@
+'use client';
 import {
   UserGroupIcon,
-  HomeIcon,
-  DocumentDuplicateIcon,
+  ShoppingCartIcon,
 } from '@heroicons/react/24/outline';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import clsx from 'clsx';
 
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
-const links = [
-  { name: 'Home', href: '/dashboard', icon: HomeIcon },
+interface LinkItem {
+  name: string;
+  href: string;
+  icon: any;
+}
+
+const links: LinkItem[] = [
   {
-    name: 'Invoices',
-    href: '/dashboard/invoices',
-    icon: DocumentDuplicateIcon,
+    name: 'Cart', href: '/dashboard/cart', icon: ShoppingCartIcon,
   },
-  { name: 'Customers', href: '/dashboard/customers', icon: UserGroupIcon },
 ];
 
-export default function NavLinks() {
+export default function NavLinks({ countCart }: { countCart: number }) {
+  const pathname = usePathname();
+
   return (
     <>
-      {links.map((link) => {
+      {links.map((link, index) => {
         const LinkIcon = link.icon;
+        const className = index === 0 ? "nav-item active" : "nav-item";
+        
+        const count = index === links.length - 1 ? countCart : "";
         return (
-          <a
-            key={link.name}
-            href={link.href}
-            className="flex h-[48px] grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3"
-          >
-            <LinkIcon className="w-6" />
-            <p className="hidden md:block">{link.name}</p>
-          </a>
+          <ul className={className} key={index}>
+            <Link
+              href={link.href}
+              className={clsx(
+                'nav-link',
+                {
+                  'bg-sky-100 text-blue-600': pathname === link.href,
+                },
+              )}
+            >
+              <LinkIcon className="linkIcon" />
+              <span className="cart-count">{count}</span>
+              <p className="linkName">{link.name}</p>
+            </Link >
+          </ul >
         );
       })}
     </>
   );
 }
+

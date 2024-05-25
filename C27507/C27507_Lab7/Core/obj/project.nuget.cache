@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "vDzWOgpoSowyWVUQmG4shUi1lps/l5W2zAlJt6MTF7j8hkx8sVQdP1FB1+szreEabRvopkz8xtH83vWp6En8og==",
+  "success": true,
+  "projectFilePath": "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\Core\\Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Hewlett Packard\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\7.0.1\\microsoft.extensions.logging.abstractions.7.0.1.nupkg.sha512",
+    "C:\\Users\\Hewlett Packard\\.nuget\\packages\\mysqlconnector\\2.3.6\\mysqlconnector.2.3.6.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -11,7 +11,7 @@ namespace ApiLab7.Controllers
         [HttpGet]
         public Store GetStore()
         {
-            return Store.Instance ;
+            return Store.Instance;
         }
     }
 

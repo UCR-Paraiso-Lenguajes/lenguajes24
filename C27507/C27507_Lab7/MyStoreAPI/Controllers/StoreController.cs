@@ -1,23 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
-using MyStoreAPI; // Importa el espacio de nombres donde se define Store
+//API
+using MyStoreAPI.Business;
+using MyStoreAPI.DB;
+using MyStoreAPI.Models;
 namespace MyStoreAPI.Controllers
 {
 
     [Route("api/[controller]")]
     [ApiController]
 
+
     //cuando heredamos de ControllerBase, la clase ahora puede manejar solicitudes HTTP
-    public class StoreController : ControllerBase
-    {
+    public class StoreController : ControllerBase{
+
+        private StoreLogic storeLogic = new StoreLogic();
         
-        //Enviar los productos
+        //Enviar la tienda
         [HttpGet]
-        public Store getStore()
-        {            
-            //Cuando se solicita esta rutA la de "api/Store" por cualquier fetch, el método getStore() se ejecuta
-            //y devuelve la instancia única de la tienda (Store.Instance)
-            return Store.Instance;
-        }
-                
+        public IActionResult getStore(){                        
+            return Ok(Store.Instance);            
+        }                
     }
 }

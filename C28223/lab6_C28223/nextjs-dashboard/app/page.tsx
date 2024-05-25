@@ -44,7 +44,7 @@ const CarruselProductos=({productos, handleClick}) =>{
 const MostrarProductos = ({ handleClick }) => {
   const [Productos, setProductos] = useState([]);
   const loadData = async () => {
-      const response = await fetch('https://localhost:7223/api/Store');
+      const response = await fetch('https://localhost:7223/api/Store');// 7223
       if (!response.ok) {
         // throw new Error('Failed to fetch data');
       }
@@ -155,7 +155,8 @@ export default function Page() {
     };
 
     localStorage.setItem("tienda", JSON.stringify(updatedStore));
-  };
+  }; 
+ 
 
   return (
     <div>

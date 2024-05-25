@@ -19,6 +19,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    ApiLab7.Db.CreateDB();
+    ApiLab7.Db.FillProducts();
 }
 
 app.UseHttpsRedirection();

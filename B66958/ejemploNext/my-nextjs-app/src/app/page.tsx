@@ -35,13 +35,15 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const result = await getData();
-        setProducts(result.products)
+        const paymentTypes = result.paymentMethods.map(payment => payment.paymentType);
+        setProducts(result.products);
         setCart(cart => ({
           ...cart,
           carrito: {
             ...cart.carrito,
             porcentajeImpuesto: result.taxPercentage
-          }
+          },
+          metodosDePago: paymentTypes
         }));
       } catch (error) {
         setErrorMessage(error)
@@ -70,8 +72,10 @@ export default function Home() {
   function clearProducts() {
     localStorage.removeItem('cart');
     setIdList([]);
-    setCart({
+    setCart(cart => ({
+      ...cart,
       carrito: {
+        ...cart.carrito,
         productos: [],
         subtotal: 0,
         total: 0,
@@ -79,7 +83,7 @@ export default function Home() {
         metodoDePago: ''
       },
       necesitaVerificacion: false
-    });
+    }));
   }
 
   function productAlreadyAdded({ product }) {

@@ -1,0 +1,15 @@
+./Controllers/WeatherForecastController.cs
+/obj/Debug
+/bin
+/WeatherForecast.cs
+/obj/Models
+/Core/bin
+/Core/obj/Debug
+Properties/launchSettings.json
+appsettings.Development.json
+appsettings.json
+/obj/project.nuget.cache
+/obj/storeApi.csproj.nuget.dgspec.json
+/obj/storeApi.csproj.nuget.g.props
+/obj/storeApi.csproj.nuget.g.targets
+storeApi.sln

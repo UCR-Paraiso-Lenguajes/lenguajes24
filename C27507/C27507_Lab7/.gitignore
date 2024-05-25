@@ -1,0 +1,10 @@
+/Core/bin
+/MyStoreAPI/obj
+/Core/obj
+/UT/bin
+/UT/obj
+/MyStoreAPI/obj/Debug
+/MyStoreAPI/bin
+/MyStoreAPI/obj/Debug/net8.0/ref
+/MyStoreAPI/obj/Debug/net8.0/refint
+/MyStoreAPI/obj/Debug/net8.0

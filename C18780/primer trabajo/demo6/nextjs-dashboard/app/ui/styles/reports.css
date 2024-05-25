@@ -1,0 +1,11 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.container {
+    margin: 5vh;
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -50px;
+}

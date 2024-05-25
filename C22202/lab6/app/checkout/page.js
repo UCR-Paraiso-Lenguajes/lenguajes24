@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 export default function Page() {
-    const [mock, setMock] = useState(JSON.parse(localStorage.getItem('Mock')));
+    const [cartState, setCartState] = useState(JSON.parse(localStorage.getItem('Cart')));
 
     const [validated, setValidated] = useState(false);
     const [empty, setEmpty] = useState(true);
@@ -14,10 +14,10 @@ export default function Page() {
 
 
     const handleSubmit = (event) => {
-        let copyOfMock = { ...mock };
-        copyOfMock.cart.address = address;
-        setMock(copyOfMock)
-        localStorage.setItem('Mock', JSON.stringify(mock));
+        let copyOfCart = { ...cartState };
+        copyOfCart.address = address;
+        // setCartState(copyOfCart)
+        localStorage.setItem('Cart', JSON.stringify(copyOfCart));
 
         setValidated(true);
     };
@@ -32,7 +32,7 @@ export default function Page() {
 
         setValidated(true);
         setAddress(event.target.value);
-        console.log(address)
+        // console.log(address)
         setEmpty(false)
     }
 
@@ -48,7 +48,7 @@ export default function Page() {
                         <Form.Control required name="address" type="text" placeholder="Address" onChange={handleChange} />
                     </FloatingLabel>
                 </Form.Group>
-                <Button type="submit" disabled={empty} active={!empty} href='/.' onClick={handleSubmit}>Continuar Compra</Button>
+                <Button type="submit" disabled={empty} active={!empty} href='/payment' onClick={handleSubmit}>Continuar Compra</Button>
             </Form>
         </Container>
 

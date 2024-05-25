@@ -1,0 +1,22 @@
+.navbar-brand{
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-brand:hover{
+    transform: scale(1.1);
+}
+
+.navbar-collapse{
+    margin-left: 1rem;
+    margin-right: 1rem;
+    width: 100%;
+}
+
+.linkIcon{
+    width: 30px;
+}
+
+.cart-count{
+    color: aliceblue;
+}

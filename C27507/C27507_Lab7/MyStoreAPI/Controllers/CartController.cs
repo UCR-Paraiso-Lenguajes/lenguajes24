@@ -1,22 +1,37 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic; // Asegúrate de incluir este namespace si aún no lo has hecho
+using System.Collections.Generic;
+//API
+using MyStoreAPI.Business;
+using MyStoreAPI.DB;
+using MyStoreAPI.Models;
+using Core;
 namespace MyStoreAPI.Controllers
 
 {
+    
     [Route("api/[controller]")]
     [ApiController]
-    public class CartController : ControllerBase
-    {
-         private static List<Cart> Carts = new List<Cart>();
+    public class CartController : ControllerBase{                
 
         [HttpPost]
-        public IActionResult CreateCart([FromBody] Cart cart)
-        {
-            // Add the cart to the list
-            Carts.Add(cart);
+        [Consumes("application/json")]
+        public async Task<IActionResult> CreateCartAsync([FromBody] Cart cart){                        
+            
+            try{
+                SaleLogic saleLogic = new SaleLogic();
+                Sale saleConfirmed = await saleLogic.createSaleAsync(cart);
+                var purchaseNum = saleConfirmed.purchaseNum;
 
-            // Return the newly created cart
-            return Ok(cart);
+                Console.WriteLine("Antes de mandar la respuesta post - Valor de saleConfirmed.purchaseNum: " + saleConfirmed.purchaseNum);
+                return Ok(new { purchaseNum });                        
+                 }
+            catch (BussinessException){                
+                return StatusCode(501, "Ha ocurrido un error al generar la transaccion. Por favor inténtalo más tarde.");
+            }
+            catch (Exception){                                             
+                //Otros posibles errores
+                return StatusCode(500, "Ha ocurrido un error al generar la transaccion. Por favor inténtalo más tarde.");
+            }
         }        
     }
 }

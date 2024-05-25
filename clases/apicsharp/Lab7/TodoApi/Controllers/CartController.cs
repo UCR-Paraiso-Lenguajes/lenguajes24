@@ -12,15 +12,21 @@ namespace TodoApi.Controllers
     public class CartController : ControllerBase
     {
         private StoreLogic storeLogic = new StoreLogic();
-
+   
         [HttpPost]
         public IActionResult CreateCart([FromBody] Cart cart)
         {
-            var sale = storeLogic.Purchase(cart);
-            var purchaseNumber = sale.PurchaseNumber;
+            var cartWitStatus = storeLogic.Purchase(cart);
+            if(cartWitStatus is CartApproved)
+            {
+                var cartApproved = cartWitStatus as CartApproved;
+                var sale = cartApproved.Sale;
+                var purchaseNumber = sale.PurchaseNumber;
 
-            var response = new {purchaseNumber=purchaseNumber};
-            return Ok(response);
+                var response = new {purchaseNumber=purchaseNumber};
+                return Ok(response);
+            }
+            return BadRequest("Pending to approve");
         }
     }
 

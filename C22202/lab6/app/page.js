@@ -1,127 +1,25 @@
 "use client";
-import Image from "next/image";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState } from 'react';
+import { useState, useCallback, useLayoutEffect } from 'react';
 import Carousel from 'react-bootstrap/Carousel';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 import React from 'react';
 import { Card, Container } from "react-bootstrap";
-
-const Mock = {
-
-  products: [
-    {
-      id: 1,
-      imgSource: "producto.jpg",
-      name: "Producto 1",
-      price: 150
-    },
-    {
-      id: 2,
-      imgSource: "producto.jpg",
-      name: "Producto 2",
-      price: 100
-    },
-    {
-      id: 3,
-      imgSource: "producto.jpg",
-      name: "Producto 3",
-      price: 160
-    },
-    {
-      id: 4,
-      imgSource: "producto.jpg",
-      name: "Producto 4",
-      price: 90
-    },
-    {
-      id: 5,
-      imgSource: "producto.jpg",
-      name: "Producto 5",
-      price: 155
-    },
-    {
-      id: 6,
-      imgSource: "producto.jpg",
-      name: "Producto 6",
-      price: 70
-    },
-    {
-      id: 7,
-      imgSource: "producto.jpg",
-      name: "Producto 7",
-      price: 70
-    },
-    {
-      id: 8,
-      imgSource: "producto.jpg",
-      name: "Producto 8",
-      price: 150
-    },
-    {
-      id: 9,
-      imgSource: "producto.jpg",
-      name: "Producto 9",
-      price: 200
-    },
-    {
-      id: 10,
-      imgSource: "producto.jpg",
-      name: "Producto 10",
-      price: 150
-    },
-    {
-      id: 11,
-      imgSource: "producto.jpg",
-      name: "Producto 11",
-      price: 200
-    }
-  ],
-  cart: {
-    products: [],
-    subtotal: 0,
-    taxFare: 0.13,
-    address: '',
-    paymentMethod: '',
-    orderId: 0
-  },
-  paymentMethods: ['Efectivo', 'Sinpe']
-};
-
-
-
-const Cart = ({ count, total }) => {
-
-  return (
-    <div className='container'>
-      <Button href="/cart">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
-        </svg>
-        Products: {count} Total: ${total}
-      </Button>
-
-    </div>
-  )
-};
-
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useStateValue } from "./ui/StateContext";
 
 const Product = ({ product, addToCart }) => {
   const { id, imgSource, name, price } = product;
 
   return (
     <Col sm='3' className="mt-5">
-      {/* <img src={product.imgSource} width="400px" className="img-fluid" />
-      <h4>{product.name}</h4>
-      <p>Precio: {product.price}$</p>
-      <Button variant="primary" size="sm" onClick={() => addToCart(id)}>
-        Comprar
-      </Button> */}
 
       <Card style={{ width: '20rem' }}>
-        <Card.Img variant="top" src={product.imgSource} />
+      <div className="d-flex align-items-center justify-content-center" style={{ width: '100%', height: '300px', overflow: 'hidden' }}>
+          <img src={imgSource} alt={name} style={{ maxWidth: '100%', maxHeight: '100%' }} />
+        </div>
         <Card.Body>
           <Card.Title>{product.name}</Card.Title>
           <Card.Text>
@@ -154,44 +52,99 @@ const carrouselItems = [
   }
 ];
 
-const Item = React.forwardRef(({ carrouselItem }, ref) => {
+const Item = ({ carrouselItem }) => {
   const { id, imgSrc } = carrouselItem;
 
   return (
     <Carousel.Item >
-      <img src={carrouselItem.imgSrc} width="100%" />
+      <img src={carrouselItem.imgSrc} />
     </Carousel.Item>
   );
-});
+};
 
 export default function Home() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const { cartState, setCartState } = useStateValue();
+  const params = new URLSearchParams(searchParams)
 
-  var mockStoraged = JSON.parse(localStorage.getItem('Mock'));
-  if (mockStoraged === null) {
-    localStorage.setItem('Mock', JSON.stringify(Mock));
-    mockStoraged = JSON.parse(localStorage.getItem('Mock'));
+  const createQueryString = useCallback(
+    (name, value) => {
+      params.set(name, value)
+
+      return params.toString()
+    },
+    [searchParams]
+  )
+
+  if (!params.has('category')) {
+    router.push(pathname + '?' + createQueryString('category', '0'))
   }
-  // const [count, setCount] = useState(mockStoraged.cart.products.length);
-  const [mock, setMock] = useState(mockStoraged)
-  
+
+  var shopStorage = JSON.parse(localStorage.getItem('Shop'));
+  if (!shopStorage) {
+    shopStorage = { products: [], categories: [], slctCategory: 0 }
+    localStorage.setItem('Shop', JSON.stringify(shopStorage));
+  }
+  const [shop, setShop] = useState(shopStorage);
+  const [products, setProducts] = useState([]);
+
+  useLayoutEffect(() => {
+    fetchData();
+  }, [searchParams]);
+
+  const fetchData = async () => {
+    try {
+      let params = searchParams.toString()
+
+      const response = await fetch(`https://localhost:7194/api/Store`); // Replace with your API endpoint
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+      const data = await response.json();
+      localStorage.setItem('Shop', JSON.stringify(data));
+      setShop(data);
+
+      if(params != null){
+        const responseProducts = await fetch(`https://localhost:7194/api/Store/Products?${params}`); // Replace with your API endpoint
+        if (!responseProducts.ok) {
+          throw new Error('Network response was not ok.');
+        }
+        const dataProducts = await responseProducts.json();
+        setProducts(dataProducts)
+
+      } else {
+        setProducts(shop.products)
+      }
+
+    } catch (error) {
+      throw error
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
   const handleClick = (id) => {
-    let copyOfMock = { ...mock };
-    // const localStorageMock = JSON.parse(localStorage.getItem('Mock'));
-    const productToAdd = copyOfMock.products.find(product => product.id === id);
+    let copyOfCart = { ...cartState };
+    const productToAdd = products.find(product => product.id === id);
     if (productToAdd) {
-      copyOfMock.cart.products = [...copyOfMock.cart.products, productToAdd];
-      copyOfMock.cart.subtotal += productToAdd.price
-      setMock(copyOfMock)
-      localStorage.setItem('Mock', JSON.stringify(mock));
+      copyOfCart.products = [...copyOfCart.products, productToAdd];
+
+      const subtotal = copyOfCart.subtotal + productToAdd.price;
+      const formattedSubtotal = Number(subtotal.toFixed(2));
+      copyOfCart.subtotal = formattedSubtotal;
+      setCartState(copyOfCart);
+      localStorage.setItem('Cart', JSON.stringify(copyOfCart));
     }
   }
 
   return (
     <Container>
-      <Cart count={mock.cart.products.length} total={mock.cart.subtotal} />
       {/* <Carousel>
         {carrouselItems.map(carouselItem =>
-          <Item key={carouselItem.id} carrouselItem={carouselItem} />
+          <Carousel.Item key={carouselItem.id}><img src={carouselItem.imgSrc} width={'100%'}/></Carousel.Item>
+          
         )}
       </Carousel> */}
 
@@ -201,7 +154,7 @@ export default function Home() {
         <h1>Lista de productos</h1>
       </div>
       <Row className="justify-content-md-center">
-        {Mock.products.map(product =>
+        {products.map(product =>
           <Product key={product.id} product={product} addToCart={handleClick} />
         )}
       </Row>

@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
+using storeApi.Models;
+using storeApi.Business;
 
 namespace storeApi.Controllers
 {
@@ -10,9 +12,9 @@ namespace storeApi.Controllers
     public class StoreController : ControllerBase
     {
         [HttpGet]
-        public  Store GetStore()
+        public  ActionResult<Store>  GetStore()
         {
-            return Store.Instance ;
+            return Ok(Store.Instance) ;
         }
     }
 

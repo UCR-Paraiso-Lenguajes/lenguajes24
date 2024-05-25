@@ -8,8 +8,7 @@ namespace TodoApi.Business
 {
     public sealed class StoreLogic
     {
-
-         private SaleDB saleDB = new SaleDB();
+        private SaleDB saleDB = new SaleDB();
 
         public Sale Purchase(Cart cart)
         {

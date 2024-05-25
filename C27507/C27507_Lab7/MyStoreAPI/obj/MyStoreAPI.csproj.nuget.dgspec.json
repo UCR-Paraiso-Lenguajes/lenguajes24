@@ -4,14 +4,14 @@
     "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\MyStoreAPI\\MyStoreAPI.csproj": {}
   },
   "projects": {
-    "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\MyStoreAPI\\MyStoreAPI.csproj": {
+    "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\Core\\Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\MyStoreAPI\\MyStoreAPI.csproj",
-        "projectName": "MyStoreAPI",
-        "projectPath": "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\MyStoreAPI\\MyStoreAPI.csproj",
+        "projectUniqueName": "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\Core\\Core.csproj",
+        "projectName": "Core",
+        "projectPath": "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\Core\\Core.csproj",
         "packagesPath": "C:\\Users\\Hewlett Packard\\.nuget\\packages\\",
-        "outputPath": "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\MyStoreAPI\\obj\\",
+        "outputPath": "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Hewlett Packard\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -43,9 +43,85 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "MySqlConnector": {
+              "target": "Package",
+              "version": "[2.3.6, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\MyStoreAPI\\MyStoreAPI.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\MyStoreAPI\\MyStoreAPI.csproj",
+        "projectName": "MyStoreAPI",
+        "projectPath": "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\MyStoreAPI\\MyStoreAPI.csproj",
+        "packagesPath": "C:\\Users\\Hewlett Packard\\.nuget\\packages\\",
+        "outputPath": "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\MyStoreAPI\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Hewlett Packard\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\Core\\Core.csproj": {
+                "projectPath": "C:\\Lenguajes Comerciales\\Lab1_C27507\\lenguajes24\\C27507\\C27507_Lab7\\Core\\Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
             "Microsoft.EntityFrameworkCore.InMemory": {
               "target": "Package",
               "version": "[8.0.3, )"
+            },
+            "MySql.Data": {
+              "target": "Package",
+              "version": "[8.3.0, )"
+            },
+            "MySqlConnector": {
+              "target": "Package",
+              "version": "[2.3.6, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -71,7 +147,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

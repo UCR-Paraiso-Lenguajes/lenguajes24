@@ -8,20 +8,15 @@ namespace ApiLab7.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        private static List<Cart> Carts = new List<Cart>();
-
-        /*public CartController()
-        {
-            _cartHandler = new CartHandler();
-        }
-        */
 
         [HttpPost]
         public IActionResult CreateCart([FromBody] Cart cart)
         {
-            Carts.Add(cart);
-
-            return Ok(cart);
+            CartBusiness cartBusiness = new CartBusiness();
+            Sale sale = cartBusiness.Purchase(cart);
+            return Ok(new {
+                purchaseNumber = sale.PurchaseNumber
+            });
         }
     }
 

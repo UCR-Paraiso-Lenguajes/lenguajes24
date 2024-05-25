@@ -3,9 +3,7 @@ import React, { useState } from 'react';
 import { Button, Container } from 'react-bootstrap';
 import Table from 'react-bootstrap/Table';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-
-const localStorageMock = JSON.parse(localStorage.getItem('Mock'));
+import { useStateValue } from '../ui/StateContext';
 
 const Tupla = ({ item, deleteAction, index }) => {
     const { id, imgSource, name, price } = item;
@@ -28,50 +26,56 @@ const Tupla = ({ item, deleteAction, index }) => {
 };
 
 export default function Page() {
-
-    const [mock, setMock] = useState(JSON.parse(localStorage.getItem('Mock')));
-    const [hasProducts, toggleHasProducts] = useState(mock.cart.products.length > 0)
+    const { cartState, setCartState } = useStateValue();
+    const [shopState, setShopState] = useState(JSON.parse(localStorage.getItem('Shop')));
+    const [hasProducts, toggleHasProducts] = useState(cartState.products.length > 0)
 
     const handleClick = (index) => {
-        let copyOfMock = { ...mock };
-        const deletedProduct = copyOfMock.cart.products.splice(index, 1);
-        copyOfMock.cart.subtotal -= deletedProduct[0].price;
-        setMock(copyOfMock)
-        localStorage.setItem('Mock', JSON.stringify(mock));
-        toggleHasProducts(mock.cart.products.length > 0)
+        let copyOfCart = { ...cartState };
+        const deletedProduct = copyOfCart.products.splice(index, 1);
+        const subtotal = copyOfCart.subtotal - deletedProduct[0].price;
+        const formattedSubtotal = Number(subtotal.toFixed(2));
+        copyOfCart.subtotal = formattedSubtotal;
+        setCartState(copyOfCart)
+        localStorage.setItem('Cart', JSON.stringify(copyOfCart));
+        toggleHasProducts(cartState.products.length > 0)
     }
 
     return (
         <Container>
-                <h1>Carrito de Compras</h1>
+            <h1>Carrito de Compras</h1>
 
-                <Table striped bordered variant='dark'>
-                    <thead>
-                        <tr>
-                            <th width={500}>Product</th>
-                            <th width={500}>Description</th>
-                            <th width={100}></th>
-                            <th width={500}>Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {mock.cart.products.map((item, index) => (
-                            <Tupla key={index} item={item} deleteAction={handleClick} index={index} />
-                        ))}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td rowSpan={2} colSpan={2}></td>
-                            <td>Subtotal</td>
-                            <td>${mock.cart.subtotal}</td>
-                        </tr>
-                        <tr>
-                            <td>Total</td>
-                            <td>${mock.cart.subtotal * mock.cart.taxFare + mock.cart.subtotal}</td>
-                        </tr>
-                    </tfoot>
-                </Table>
-                <Button disabled={!hasProducts} active={hasProducts} href='/checkout'>Comprar</Button>
+            <Table striped bordered variant='dark'>
+                <thead>
+                    <tr>
+                        <th width={500}>Product</th>
+                        <th width={500}>Description</th>
+                        <th width={100}></th>
+                        <th width={500}>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {cartState.products.map((item, index) => (
+                        <Tupla key={index} item={item} deleteAction={handleClick} index={index} />
+                    ))}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td rowSpan={3} colSpan={2}></td>
+                        <td>Subtotal</td>
+                        <td>${cartState.subtotal}</td>
+                    </tr>
+                    <tr>
+                        <td>+ IVA {shopState.taxPercentage}%</td>
+                        <td>${(cartState.subtotal * shopState.taxPercentage / 100).toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Total</td>
+                        <td>${((cartState.subtotal * shopState.taxPercentage / 100) + cartState.subtotal).toFixed(2)}</td>
+                    </tr>
+                </tfoot>
+            </Table>
+            <Button disabled={!hasProducts} active={hasProducts} href='/checkout'>Comprar</Button>
         </Container>
 
     );
