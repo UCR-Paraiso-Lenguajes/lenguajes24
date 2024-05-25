@@ -10,7 +10,7 @@ public class SaleDBTest
     [SetUp]
     public void Setup()
     {
-        Storage.Init("Server=localhost;Port=3407;Database=store;Uid=root;Pwd=123456;");
+        Storage.Init("Server=localhost;Port=3407;Database=mysql;Uid=root;Pwd=123456;");
         StoreDB.CreateMysql();
     }
 
