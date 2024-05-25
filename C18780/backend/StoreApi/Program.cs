@@ -73,8 +73,10 @@ var app = builder.Build();
 // Ensure database is created and tables are set up
 using (var scope = app.Services.CreateScope())
 {
+    Console.WriteLine("No hay tablas");
     var dbContext = scope.ServiceProvider.GetRequiredService<DbContextClass>();
     dbContext.EnsureDatabaseCreated();
+    Console.WriteLine("Se crearon las tablas");
 }
 
 // Configure the HTTP request pipeline.
