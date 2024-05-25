@@ -39,8 +39,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     StoreDB.CreateMysql();
-
-    Storage.Init(connection);
 }
 
 app.UseHttpsRedirection();
