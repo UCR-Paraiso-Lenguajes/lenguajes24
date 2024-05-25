@@ -5,14 +5,56 @@ using System.Threading.Tasks;
 using core.DataBase;
 using core.Models;
 using core.Business;
+using MySqlConnector;
 namespace UT;
 
-public class PurchaseTesting
+public class PurchaseTesting //falla geekStoreDB.products
 { 
 
-    [Test]
-    public async Task PurchaseTest_ExcenarioExitoso()
+    public static async Task CrearDatosAsyncProducts()
     {
+        using (var connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
+        {
+            await connection.OpenAsync();
+
+            using (var transaction = await connection.BeginTransactionAsync())
+            {
+                try
+                {
+                    string createTableQuery = @"
+                    DROP TABLE IF EXISTS products;
+                    CREATE TABLE IF NOT EXISTS products (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(100),
+                        description VARCHAR(255),
+                        price DECIMAL(10, 2),
+                        imageURL VARCHAR(255),
+                        pcant INT,
+                        idCat INT 
+                    );";
+
+                    using (var command = new MySqlCommand(createTableQuery, connection, transaction))
+                    {
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    await transaction.CommitAsync();
+                }
+                catch (Exception)
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            }
+        }
+    }
+
+    
+
+    [Test]
+    public async Task PurchaseTest_ExcenarioExitoso() 
+    {
+        await CrearDatosAsyncProducts();
         var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
         Storage.Init( myDbtest);
         
@@ -36,8 +78,9 @@ public class PurchaseTesting
     }
 
     [Test]
-    public void Purchase_CartIncompleto()
+    public async Task Purchase_CartIncompleto()
     {
+        await CrearDatosAsyncProducts();
         var cart = new Cart
         {
             ProductIds = new List<string> { "1", "2" },
