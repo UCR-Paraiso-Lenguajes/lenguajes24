@@ -14,8 +14,30 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:latest
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        env:
+          MYSQL_ROOT_PASSWORD: 123456
+          MYSQL_DATABASE: sys
+          MYSQL_USER: user
+          MYSQL_PASSWORD: 123456
+
     steps:
     - uses: actions/checkout@v4
+
+    - name: Wait for MySQL to be healthy
+      run: |
+        docker ps -a
+        #docker-compose run --rm wait-for-it.sh mysql:3306 -t 30
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
