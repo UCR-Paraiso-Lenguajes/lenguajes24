@@ -1,5 +1,6 @@
 using System.Security.Cryptography.X509Certificates;
 using Core;
+using StoreAPI.Database;
 using StoreAPI.models;
 
 namespace UT;
@@ -15,7 +16,7 @@ public class ProductTest
     {
         string connectionString = "Server=localhost;Database=store;Port=3306;Uid=root;Pwd=123456;";
         Storage.Init(connectionString);
-
+        StoreDB.CreateMysql();
         var loadedProducts = await Store.LoadProductsAsync();
         var productByName = new Dictionary<string, List<Product>>();
         var productByCategoryId = new Dictionary<int, List<Product>>();

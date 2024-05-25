@@ -1,5 +1,6 @@
 using Core;
 using StoreAPI.Business;
+using StoreAPI.Database;
 using StoreAPI.models;
 
 
@@ -16,6 +17,8 @@ namespace UT
     {
       string connectionString = "Server=localhost;Database=store;Port=3306;Uid=root;Pwd=123456;";
       Storage.Init(connectionString);
+      StoreDB.CreateMysql();
+      
       saleReportLogic = new SaleReportLogic();
     }
 
