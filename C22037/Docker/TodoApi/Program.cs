@@ -28,19 +28,21 @@ if (app.Environment.IsDevelopment())
 
     string DB_value = Environment.GetEnvironmentVariable("DB");
     if (!String.IsNullOrEmpty(DB_value))
-    {
-        Console.WriteLine("varible is not empty", connection);
-        connection = DB_value;
+    {  
+         connection = DB_value;
+         Console.WriteLine("varible is not empty1"+ DB_value);
+         Console.WriteLine("varible is not empty1"+ connection);
     }
-    Console.WriteLine("connection", connection);
+
+    Console.WriteLine("connection"+ connection);
     Storage.Init(connection);
+    StoreDB.CreateMysql();
 
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    StoreDB.CreateMysql();
 
-    Storage.Init(connection);
+
 }
 
 app.UseHttpsRedirection();
