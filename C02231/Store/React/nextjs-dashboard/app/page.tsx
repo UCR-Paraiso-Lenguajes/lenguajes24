@@ -17,7 +17,7 @@ export default function Home() {
   const router = useRouter();
   const pathname = usePathname();
   const URL = process.env.NEXT_PUBLIC_API;
-
+  //const URL ="http://localhost:5207";
   if (!URL) {
     throw new Error('NEXT_PUBLIC_API is not defined');
   }
@@ -151,8 +151,8 @@ export default function Home() {
       const keywords = searchQuery || '';
       const params = selectedCategories.map(id => `categories=${id}`).join('&');
       const query = `keywords=${encodeURIComponent(keywords)}&${params}`;
-
-      const response = await fetch(`${URL}/api/Store/search?${query}`);
+      console.log(`${URL}/api/Store/search?${query}`);
+      const response = await fetch(URL +`/api/Store/search?${query}`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
