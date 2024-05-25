@@ -16,6 +16,7 @@ namespace core.Business
 
         public async Task<Sale> PurchaseAsync(Cart cart)
         {
+            
             if (cart.ProductIds.Count == 0)
                 throw new ArgumentException("Cart must contain at least one product.");
 

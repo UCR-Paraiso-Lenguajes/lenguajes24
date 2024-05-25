@@ -39,9 +39,7 @@ var app = builder.Build();
         app.UseSwagger();
         app.UseSwaggerUI();
 
-        await StoreDb.CrearDatosAsync();
-
-
+        await StoreDb.CrearDatosAsync();//esto ahora debe estar en los test
     }
 
 app.UseHttpsRedirection();
