@@ -8,10 +8,11 @@ public class StoreDbTesting
     private StoreDb store;
 
     [SetUp]
-    public async void Setup()
+    public void Setup()
     {
         store = new StoreDb();
-        await StoreDb.CrearDatosAsync();
+        var tk = StoreDb.CrearDatosAsync();
+        tk.Wait();
     }
 
     [Test]

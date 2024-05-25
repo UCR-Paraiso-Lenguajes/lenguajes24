@@ -15,10 +15,11 @@ namespace UT
             private ReportDb _reportDb;
 
             [SetUp]
-            public async void Setup()
+            public void Setup()
             {
                 _reportDb = new ReportDb();
-                await StoreDb.CrearDatosAsync();
+                var tk = StoreDb.CrearDatosAsync();
+                tk.Wait();
             }
 
             [Test]

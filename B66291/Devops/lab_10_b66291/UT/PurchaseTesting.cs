@@ -12,11 +12,11 @@ public class PurchaseTesting
     private PurchaseTesting _purchaseTest;
 
     [SetUp]
-    public async void Setup()
+    public  void Setup()
     {
         _purchaseTest = new PurchaseTesting();
-        await StoreDb.CrearDatosAsync();
-
+        var tk = StoreDb.CrearDatosAsync();
+        tk.Wait();
     }
 
     [Test]
