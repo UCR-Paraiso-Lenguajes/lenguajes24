@@ -24,7 +24,12 @@ public class CategoriesTest
         saleReportLogic = new SaleReportLogic();
 
         // Inicializar las instancias necesarias para las pruebas
-        
+        // Inicializar las instancias neces arias para las pruebas
+        storeDB = new StoreDB();
+        store = await Store.Instance.Value; // Aquí obtienes la instancia existente de Store
+
+        // Asegúrate de que la instancia de Categories se inicialice correctamente
+        categories = new Categories(); // Suponiendo que Categories toma un StoreDB en el constructor
     }
 
     [Test]
@@ -44,9 +49,9 @@ public class CategoriesTest
                 new (9, "Dystopian"),
                 new (10, "Gift")
             };
-        
+
         // Act
-        var result = categories.GetCategories();
+        var result = categories.GetCategories(); //esta
 
         // Assert
         Assert.IsNotNull(result);
@@ -61,7 +66,7 @@ public class CategoriesTest
         int expectedCount = 10; // Suponiendo que hay 9 categorías en la lista
 
         // Act
-        var _categories = categories.GetCategories();
+        var _categories = categories.GetCategories(); //esta
 
         // Assert
         Assert.That(_categories.Count(), Is.EqualTo(expectedCount));
@@ -71,7 +76,7 @@ public class CategoriesTest
     public void GetCategories_ReturnsNotNull()
     {
         // Act
-        var _categories = categories.GetCategories();
+        var _categories = categories.GetCategories(); //esta
 
         // Assert
         Assert.IsNotNull(_categories);
@@ -85,7 +90,7 @@ public class CategoriesTest
         var expectedCategories = new List<string> { "Adventure", "Dystopian", "Fantasy", "Fiction", "Gift", "Mystery", "NonFiction", "Romance", "Science Fiction", "Young Adult" };
 
         // Act
-        var _categories = categories.GetCategories();
+        var _categories = categories.GetCategories(); //esta
 
         // Assert
         CollectionAssert.AreEqual(expectedCategories, _categories.Select(c => c.Name));
