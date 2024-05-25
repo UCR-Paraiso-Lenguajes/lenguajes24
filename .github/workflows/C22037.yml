@@ -32,7 +32,7 @@ jobs:
     - name: Wait for MySQL to be healthy
       run: |
         docker ps -a
-        #docker-compose run --rm wait-for-it.sh mysql:3407 -t 30
+        #docker-compose run --rm wait-for-it.sh mysql:3306 -t 30
     - uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
