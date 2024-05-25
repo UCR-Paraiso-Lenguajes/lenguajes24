@@ -27,6 +27,8 @@ namespace StoreApi.Data
 
         public void EnsureDatabaseCreated()
         {
+            Database.ExecuteSqlRaw("CREATE DATABASE IF NOT EXISTS sys;");
+            Database.ExecuteSqlRaw("USE sys;");
             var tableCreationScripts = new string[]
             {
                 @"

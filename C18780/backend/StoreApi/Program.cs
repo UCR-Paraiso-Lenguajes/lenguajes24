@@ -69,7 +69,7 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
     }));
 
 var app = builder.Build();
-
+Console.WriteLine("Estamos afuera");
 // Ensure database is created and tables are set up
 using (var scope = app.Services.CreateScope())
 {
