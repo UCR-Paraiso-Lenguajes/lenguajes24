@@ -14,6 +14,8 @@ public class PurchaseTesting
     [SetUp]
     public  void Setup()
     {
+        var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
+        Storage.Init(myDbtest);
         _purchaseTest = new PurchaseTesting();
         StoreDb.CrearDatosSync();
     }
@@ -21,9 +23,6 @@ public class PurchaseTesting
     [Test]
     public async Task PurchaseTest_ExcenarioExitoso()
     {
-        var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
-        Storage.Init(myDbtest);
-
         var cart = new Cart
         {
             ProductIds = new List<string> { "1", "2" },

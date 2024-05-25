@@ -10,6 +10,8 @@ public class StoreDbTesting
     [SetUp]
     public void Setup()
     {
+         var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
+        Storage.Init(myDbtest);
         store = new StoreDb();
         StoreDb.CrearDatosSync();
     }
@@ -17,8 +19,7 @@ public class StoreDbTesting
     [Test]
     public void ExtraerProductosDB_ListaNoVacia()
     {
-        var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
-        Storage.Init(myDbtest);
+       
         List<Product> productList;
         productList = StoreDb.ExtraerProductosDB();
         Assert.IsNotNull(productList);

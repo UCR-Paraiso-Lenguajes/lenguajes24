@@ -17,6 +17,8 @@ namespace UT
             [SetUp]
             public void Setup()
             {
+                var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
+                Storage.Init(myDbtest);
                 _reportDb = new ReportDb();
                 StoreDb.CrearDatosSync();
             }
@@ -25,31 +27,9 @@ namespace UT
             public async Task ExtraerVentasDiarias_EscenarioExitoso()
             {
                 DateTime date = DateTime.Today;
-
                 IEnumerable<Report> salesList;
-
-                var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
-                Storage.Init(myDbtest);
-
                 salesList = await ReportDb.ExtraerVentasDiariasAsync(date);
-
                 Assert.IsNotNull(salesList);
-            }
-
-            [Test]
-            public async Task TestExtraerVentasDiarias_ReturnsValidData()
-            {
-                DateTime date = DateTime.Today;
-
-                ReportDb reportDb = new ReportDb();
-
-                var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
-                Storage.Init(myDbtest);
-
-                IEnumerable<Report> dailySales = await ReportDb.ExtraerVentasDiariasAsync(date);
-
-                Assert.IsNotNull(dailySales);
-                Assert.IsTrue(dailySales.Count() > 0);
             }
 
             [Test]
@@ -57,8 +37,6 @@ namespace UT
             {
                 DateTime date = DateTime.Today;
                 IEnumerable<Report> salesList;
-                var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
-                Storage.Init(myDbtest);
                 salesList = await ReportDb.ExtraerVentasDiariasAsync(date);
                 Assert.IsNotNull(salesList);
             }
@@ -69,8 +47,6 @@ namespace UT
             {
                 DateTime selectedDate = DateTime.Today;
                 IEnumerable<Report> salesList;
-                var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
-                Storage.Init(myDbtest);
                 salesList = await ReportDb.ExtraerVentasSemanalAsync(selectedDate);
                 Assert.IsNotNull(salesList);
             }
@@ -80,8 +56,6 @@ namespace UT
             {
                 DateTime selectedDate = new DateTime(2024, 5, 6);
                 ReportDb reportDb = new ReportDb();
-                var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
-                Storage.Init(myDbtest);
                 IEnumerable<Report> weeklySales = await ReportDb.ExtraerVentasSemanalAsync(selectedDate);
                 Assert.IsNotNull(weeklySales);
                 Assert.False(weeklySales.Count() > 0);

@@ -39,7 +39,7 @@ var app = builder.Build();
         app.UseSwagger();
         app.UseSwaggerUI();
 
-        StoreDb.CrearDatosSync();//esto ahora debe estar en los test
+        StoreDb.CrearDatosSync();
     }
 
 app.UseHttpsRedirection();
