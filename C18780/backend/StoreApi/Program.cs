@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using StoreApi;
 using StoreApi.Commands;
 using StoreApi.Data;
@@ -13,7 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
-builder.Services.AddDbContext<DbContextClass>();
+builder.Services.AddDbContext<DbContextClass>(options =>
+    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
@@ -67,6 +69,13 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
     }));
 
 var app = builder.Build();
+
+// Ensure database is created and tables are set up
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DbContextClass>();
+    dbContext.EnsureDatabaseCreated();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
