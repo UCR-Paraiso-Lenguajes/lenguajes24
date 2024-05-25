@@ -11,7 +11,6 @@ on:
 
 jobs:
   Test:
-
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -29,20 +28,30 @@ jobs:
           MYSQL_USER: root1
           MYSQL_PASSWORD: 123456
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: |
-        cd B66291/Devops/lab_10_b66291
-        dotnet restore
-    - name: Build
-      run: |
-        cd B66291/Devops/lab_10_b66291
-        dotnet build --no-restore
-    - name: Test
-      run: |
-        cd B66291/Devops/lab_10_b66291
-        dotnet test --no-build --verbosity normal
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: |
+          cd B66291/Devops/lab_10_b66291
+          dotnet restore
+      - name: Build
+        run: |
+          cd B66291/Devops/lab_10_b66291
+          dotnet build --no-restore
+      - name: Test
+        run: |
+          cd B66291/Devops/lab_10_b66291
+          dotnet test --no-build --verbosity normal
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build & Push Image
+        run: |
+          cd clases/apicsharp/Lab7
+          echo "${{ secrets.DOCKERHUBPASSB66291 }}" | docker login -u "jaziel.rojas@ucr.ac.cr" --password-stdin
+          docker image build -t jazielrs1/len2024:latest .
+          docker push jazielrs1/len2024:latest
