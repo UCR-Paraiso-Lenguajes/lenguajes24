@@ -23,7 +23,7 @@ import './src/css/fonts_awesome/css/all.min.css'
 import { mock } from 'node:test';
 //Funciones
 import { getCartShopStorage } from './src/storage/cart-storage';
-import { getProductsByCategory } from './src/api/get-post-api';
+import { getAllProductsFromAPI, getProductsByCategory } from './src/api/get-post-api';
 import { CategoryAPI } from './src/models-data/CategoryAPI';
 
 
@@ -39,23 +39,12 @@ function Page() {
 
         const loadDataProductAPI = async ()=>{
             try{            
-                const response = await fetch('https://localhost:7161/api/Store')
-                if (!response.ok){
-                    throw new Error('Failed to fetch data');                
-                }
-                const json = await response.json();            
+                let dataFromStore = await getAllProductsFromAPI();
 
-                //Como ahora Store desde la API se devuelve dentro de un objeto Action
-                //hacemos una validacion para saber si trae datos dentro de su metodo
-                if(json.hasOwnProperty('value')){
-                    setProducts(json.valeu.products); 
-                    setCategoryList(json.allProductCategories);
-                }else{
-                    //si el dato no viene dentro de un ActionResult se guarda normal
-                    setProducts(json.products);
-                    setCategoryList(json.allProductCategories);
-                }                  
-                return json;
+                if (typeof dataFromStore  === "object" && dataFromStore !== null){
+                    setProducts(dataFromStore.productsFromStore);
+                    setCategoryList(dataFromStore.categoriesFromStore);
+                }   
             } catch (error) {                
                 throw new Error('Failed to fetch data:' + error);
             }

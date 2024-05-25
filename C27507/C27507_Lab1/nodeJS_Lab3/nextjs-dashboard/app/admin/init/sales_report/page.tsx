@@ -6,7 +6,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { Chart } from "react-google-charts";//no se le pueden pasar useStates, solo listas de listas
 
 //Funciones
-import { getRegisteredSalesFromAPI, sendDataAPI } from '@/app/src/api/get-post-api';
+import { getRegisteredSalesFromAPI} from '@/app/src/api/get-post-api';
 
 //Recursos
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -109,7 +109,7 @@ export default function SalesReport(){
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const registeredSalesReport = await getRegisteredSalesFromAPI("https://localhost:7161/api/Sale", eventDate);                
+                const registeredSalesReport = await getRegisteredSalesFromAPI(eventDate);
 
                 //Validar el tipo de informacion recibida (string = error 504/501...etc)
                 if (typeof registeredSalesReport === "string") {                    
