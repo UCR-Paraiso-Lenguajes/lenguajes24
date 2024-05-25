@@ -24,9 +24,7 @@ public class CategoriesTest
         saleReportLogic = new SaleReportLogic();
 
         // Inicializar las instancias necesarias para las pruebas
-        storeDB = new StoreDB();
-        store = await Store.Instance.Value; // Aquí obtienes la instancia existente de Store
-        categories = new Categories();
+        
     }
 
     [Test]

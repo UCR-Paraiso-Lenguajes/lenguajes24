@@ -143,15 +143,17 @@ export default function Home() {
 
   const handleSearchSubmit = async (event) => {
     event.preventDefault();
+    
     try {
       if (!searchQuery.trim()) {
         return;
       }
 
       const keywords = searchQuery || '';
-      const params = selectedCategories.map(id => `categories=${id}`).join('&');
+      const categories = selectedCategories && selectedCategories.length ? selectedCategories : [0];
+      const params = categories.map(id => `categories=${id}`).join('&');
       const query = `keywords=${encodeURIComponent(keywords)}&${params}`;
-      console.log(`${URL}/api/Store/search?${query}`);
+
       const response = await fetch(URL +`/api/Store/search?${query}`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
