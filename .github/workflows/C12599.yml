@@ -11,7 +11,6 @@ on:
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -30,30 +29,39 @@ jobs:
           MYSQL_PASSWORD: 123456
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: |
-        cd C12599/Examen1/Api
-        dotnet restore
-    - name: Build
-      run: |
-        cd C12599/Examen1/Api
-        dotnet build --no-restore
-    - name: Test
-      run: |
-        cd C12599/Examen1/Api
-        dotnet test --no-build --verbosity normal
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: |
+          cd C12599/Examen1/Api
+          dotnet restore
+      - name: Build
+        run: |
+          cd C12599/Examen1/Api
+          dotnet build --no-restore
+      - name: Test
+        run: |
+          cd C12599/Examen1/Api
+          dotnet test --no-build --verbosity normal
+
   publish:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Build & Push Image
-      run: |
-         cd C12599/Examen1/Api
-        echo "${{ secrets.DOCKERHUBPASSC12599  }}" | docker login -u "marianoda20027@gmail.com" --password-stdin
-        docker image build -t marianoda2002/storeapi:latest .
-        docker push marianoda2002/storeapi:latest
+      - uses: actions/checkout@v1
+      - name: Build & Push Image
+        run: |
+          cd C12599/Examen1/Api
+          echo "${{ secrets.DOCKERHUBPASSC12599  }}" | docker login -u "marianoda20027@gmail.com" --password-stdin
+          docker image build -t marianoda2002/storeapi:latest .
+          docker push marianoda2002/storeapi:latest
+
+      - name: Build & Push Image
+        run: |
+          cd C12599/Examen1/laboratorio6/laboratorio6
+          echo "${{ secrets.DOCKERHUBPASSC12599  }}" | docker login -u "marianoda20027@gmail.com" --password-stdin
+          docker image build -t marianoda2002/react:latest .
+          docker push marianoda2002/react:latest
+
