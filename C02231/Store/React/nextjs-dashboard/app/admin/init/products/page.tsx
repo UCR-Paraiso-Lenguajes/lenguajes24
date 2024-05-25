@@ -4,6 +4,15 @@ import Link from 'next/link';
 import '/app/ui/global.css';
 
 export default function Products() {
+    //Get/admin/products --api Get/products
+    //Datatable
+    //imagenes en http (también puede ser local, github) varias imagenes en un producto, list de img
+    //btn de pantalla que abre pantalla en admin/product, qie tinene un form para poner nombre, descrp, imagenes y que se bean los links y btn de quitar 
+    //hacer borrado lógico de los products, activado o borrado, porque después lo puede volver a activar
+    //al guardar el new product, el api lo recibe como un post
+    //el crud no  usa caché, hace la consulta directa a la BD
+    //para new product es un post, para modificar es un put 
+
     return (
         <div>
             <header className="p-3 text-bg-dark">

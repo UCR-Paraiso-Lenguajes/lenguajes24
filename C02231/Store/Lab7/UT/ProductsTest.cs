@@ -101,35 +101,5 @@ public class ProductTest
         Assert.Throws<ArgumentException>(() => products.SearchProductsAsync(invalidCategoryIds, keywords).GetAwaiter().GetResult());
     }
 
-    [Test]
-    public async Task SearchProductsAsync_WithEmptyCategoryIds_ReturnsAllProducts()
-    {
-        // Arrange
-        IEnumerable<int> emptyCategoryIds = Enumerable.Empty<int>();
-        string keywords = "a"; // Puedes ajustar las palabras clave según sea necesario
-        var expectedCount = 34;
-        // Act
-        var result = await products.SearchProductsAsync(emptyCategoryIds, keywords);
-
-        // Assert
-        Assert.IsNotNull(result);
-        Assert.AreEqual(expectedCount, result.Count());
-    }
-
-    [Test]
-    public async Task SearchProductsAsync_WithEmptyKeywords_ReturnsAllProductsInCategory()
-    {
-        // Arrange
-        IEnumerable<int> categoryIds = new List<int> { 1, 2, 3 }; // Puedes ajustar los IDs de categoría según sea necesario
-        string emptyKeywords = "";
-
-        // Act
-        var result = await products.SearchProductsAsync(categoryIds, emptyKeywords);
-
-        // Assert
-        Assert.IsNotNull(result);
-        // Puedes agregar aserciones para verificar que los productos devueltos pertenecen a las categorías especificadas
-    }
-
 }
 

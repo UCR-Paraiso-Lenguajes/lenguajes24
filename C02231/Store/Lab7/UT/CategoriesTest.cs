@@ -18,8 +18,9 @@ public class CategoriesTest
     [SetUp]
     public async Task Setup()
     {
-        string connectionString = "Server=localhost;Database=store;Port=3306;Uid=root;Pwd=123456;";
+        string connectionString = "Server=172.22.16.1;Database=store;Port=3306;Uid=root;Pwd=123456;";
         Storage.Init(connectionString);
+        StoreDB.CreateMysql();
         saleReportLogic = new SaleReportLogic();
 
         // Inicializar las instancias necesarias para las pruebas
