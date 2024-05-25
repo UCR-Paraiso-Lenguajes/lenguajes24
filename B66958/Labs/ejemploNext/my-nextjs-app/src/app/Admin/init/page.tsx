@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
 import Calendar from "react-calendar";
 import { Chart } from 'react-google-charts';
+import { checkTokenDate } from "@/app/hooks/jwtHooks";
+import { useRouter } from 'next/navigation';
 
 export default function MainAdmin() {
 
@@ -12,6 +14,7 @@ export default function MainAdmin() {
     const [showReports, setShowReports] = useState(false);
     const [showPayMeths, setShowPayMeths] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const router = useRouter();
 
     function handleShowProducts() {
         setShowProducts(true);
@@ -30,6 +33,12 @@ export default function MainAdmin() {
         setShowReports(false);
         setShowProducts(false);
     }
+
+    useEffect(() => {
+        var expiracyDate = sessionStorage.getItem("expiracyToken");
+        var isTokenAlive = checkTokenDate(Number(expiracyDate));
+        if(!isTokenAlive) router.push("/Admin");
+    }, []);
 
     const Reports = () => {
         const [salesOfTheDayObtained, setSalesOfTheDayObtained] = useState([]);
