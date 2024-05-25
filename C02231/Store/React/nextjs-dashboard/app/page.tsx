@@ -16,8 +16,11 @@ export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const URL = process.env.NEXT_PUBLIC_API;
 
-
+  if (!URL) {
+    throw new Error('NEXT_PUBLIC_API is not defined');
+  }
 
   const createQueryString = useCallback(
     (name: string, values: string[]) => {
@@ -34,7 +37,6 @@ export default function Home() {
     const loadData = async () => {
       try {
 
-        console.log(process.env.DB_HOST)
         //const response = await fetch('http://localhost:5000/api/Store');
         //const response = await fetch(process.env.NEXT_PUBLIC_API + '/api/Store');
         const response = await fetch(URL + '/api/Store');
@@ -64,7 +66,8 @@ export default function Home() {
     payMethods: {},
     receipt: '',
     orderNumber: '',
-    count: 0
+    count: 0,
+    cant: 0
   });
 
   const handleAddToCart = (product) => {
@@ -72,7 +75,8 @@ export default function Home() {
 
     let productsNotInCart = !cart.products.some(item => item.id === product.id);
     if (productsNotInCart) {
-      let updatedProductos = [...cart.products, product];
+      const productWithQuantity = { ...product, cant: 1 };
+      let updatedProductos = [...cart.products, productWithQuantity];
       let updatedCount = cart.count + 1;
       setCart({
         ...cart,
@@ -114,7 +118,7 @@ export default function Home() {
       let productsForCategory = [];
 
       if (updatedSelectedCategories.includes("0")) {
-        const response = await fetch('http://localhost:5207/api/Store');
+        const response = await fetch(URL +'/api/Store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -122,7 +126,7 @@ export default function Home() {
         setStoreProducts(productsForCategory);
       } else {
         const params = updatedSelectedCategories.map(id => `categories=${id}`).join('&');
-        const response = await fetch(`http://localhost:5207/api/Store/products?${params}`);
+        const response = await fetch(URL + `/api/Store/products?${params}`);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -141,14 +145,14 @@ export default function Home() {
     event.preventDefault();
     try {
       if (!searchQuery.trim()) {
-        throw new Error('Please enter keywords');
+        return;
       }
 
       const keywords = searchQuery || '';
       const params = selectedCategories.map(id => `categories=${id}`).join('&');
       const query = `keywords=${encodeURIComponent(keywords)}&${params}`;
 
-      const response = await fetch(`http://localhost:5207/api/Store/search?${query}`);
+      const response = await fetch(`${URL}/api/Store/search?${query}`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }

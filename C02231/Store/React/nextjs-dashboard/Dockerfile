@@ -3,7 +3,9 @@ FROM node:latest
  
 # Establece el directorio de trabajo dentro del contenedor 
 WORKDIR /app 
- 
+
+# Copia los archivos del proyecto al contenedor 
+COPY package*.json ./
 # Copia los archivos del proyecto al contenedor 
 COPY . . 
  

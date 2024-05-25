@@ -8,7 +8,6 @@ export default function ConfirmPage() {
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-
     const [orderNumber, setOrderNumber] = useState('No disponible');
 
     useEffect(() => {
@@ -18,6 +17,7 @@ export default function ConfirmPage() {
             const numeroCompra = cartData.numeroCompra;
             setOrderNumber(numeroCompra || 'No disponible');
         }
+
     }, []);
 
 
