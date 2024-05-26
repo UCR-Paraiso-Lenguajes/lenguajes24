@@ -1,17 +1,13 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
 name: C18780
 
 on:
   push:
-    branches: [ "DevOps_C18780" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "DevOps_C18780" ]
+    branches: [ "main" ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     services:
@@ -32,47 +28,93 @@ jobs:
 
     - name: Wait for MySQL to be healthy
       run: |
-        docker ps -a
-        #docker-compose run --rm wait-for-it.sh mysql:3306 -t 30
+        echo "Waiting for MySQL to be healthy..."
+        while ! docker inspect --format '{{json .State.Health.Status}}' $(docker ps -q --filter ancestor=mysql:latest) | grep -q '"healthy"'; do
+          echo "Waiting for MySQL..."
+          sleep 5
+        done
+        echo "MySQL is healthy."
+
+    - name: Create sys database and tables
+      run: |
+        docker exec $(docker ps -q --filter ancestor=mysql:latest) \
+        mysql -u root -p123456 -e "
+        CREATE DATABASE IF NOT EXISTS sys;
+        USE sys;
+        CREATE TABLE IF NOT EXISTS Category (
+          uuid varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+          name varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+          PRIMARY KEY (uuid)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+        CREATE TABLE IF NOT EXISTS Product (
+          name varchar(50) NOT NULL,
+          uuid varchar(36) NOT NULL,
+          imageUrl varchar(100) NOT NULL,
+          price decimal(10,0) NOT NULL,
+          description text NOT NULL,
+          category varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+          PRIMARY KEY (uuid),
+          KEY Product_Category_FK (category),
+          CONSTRAINT Product_Category_FK FOREIGN KEY (category) REFERENCES Category (uuid)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+        CREATE TABLE IF NOT EXISTS Sales (
+          uuid varchar(36) NOT NULL,
+          date date DEFAULT NULL,
+          confirmation tinyint(1) DEFAULT NULL,
+          paymentMethod varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+          total decimal(10,0) DEFAULT NULL,
+          address text,
+          PurchaseNumber varchar(20) NOT NULL,
+          PRIMARY KEY (uuid),
+          KEY Sales_PaymentMethods_FK (paymentMethod)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+        CREATE TABLE IF NOT EXISTS SalesLine (
+          uuid varchar(36) NOT NULL,
+          quantity int DEFAULT NULL,
+          subtotal decimal(10,0) DEFAULT NULL,
+          uuidProduct varchar(36) DEFAULT NULL,
+          uuidSales varchar(36) DEFAULT NULL,
+          PRIMARY KEY (uuid),
+          KEY SL_P_FK (uuidProduct),
+          KEY SL_S_FK (uuidSales),
+          CONSTRAINT SalesLine_Product_FK FOREIGN KEY (uuidProduct) REFERENCES Product (uuid),
+          CONSTRAINT SalesLine_Sales_FK FOREIGN KEY (uuidSales) REFERENCES Sales (uuid)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+        CREATE TABLE IF NOT EXISTS Sinpe (
+          uuid varchar(36) NOT NULL,
+          uuidSales varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+          confirmationNumber varchar(36) DEFAULT NULL,
+          PRIMARY KEY (uuid),
+          KEY Sinpe_Sales_FK (uuidSales),
+          CONSTRAINT Sinpe_Sales_FK FOREIGN KEY (uuidSales) REFERENCES Sales (uuid)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+        "
+
+    - name: Insert initial data into Category and Product tables
+      run: |
+        docker exec $(docker ps -q --filter ancestor=mysql:latest) \
+        mysql -u root -p123456 -e "
+        USE sys;
+        INSERT INTO Category (uuid, name) VALUES ('4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18', 'Categoría 1');
+        INSERT INTO Product (uuid, name, imageUrl, price, description, category) VALUES ('1547f3c3-54e6-4e7d-bf8f-f26daa15c843', 'Producto 1', 'example', 1, 'description', '4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18');
+        "
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
     - name: Restore dependencies
       run: |
         cd C18780/backend
         dotnet restore
+
     - name: Build
       run: |
         cd C18780/backend
         dotnet build --no-restore
+
     - name: Test
       run: |
         cd C18780/backend
         dotnet test --no-build --verbosity normal
-        
-  publish-Api:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Build & Push Image
-      run: |
-        cd C18780/backend
-        docker image build -t zjean42/api:latest .
-        docker image build -t zjean42/api:0.0.1 .
-        echo "${{ secrets.DOCKERHUBPASSC18780  }}" | docker login -u "zjeancarlo42@gmail.com" --password-stdin
-        docker push zjean42/api:latest
-        docker push zjean42/api:0.0.1
-  publish-UI:   
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Build & Push Image
-      run: |
-        cd C18780/primer_trabajo/demo6/nextjs-dashboard
-        docker image build -t zjean42/ui:latest .
-        docker image build -t zjean42/ui:0.0.1 .
-        echo "${{ secrets.DOCKERHUBPASSC18780  }}" | docker login -u "zjeancarlo42@gmail.com" --password-stdin
-        docker push zjean42/ui:latest
-        docker push zjean42/ui:0.0.1   
