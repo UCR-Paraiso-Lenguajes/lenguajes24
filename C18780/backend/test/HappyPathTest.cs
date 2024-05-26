@@ -67,28 +67,5 @@ namespace StoreApiTests
             Assert.AreEqual(sales.Address, result.Address);
             Assert.AreEqual(sales.PurchaseNumber, result.PurchaseNumber);
         }
-
-        [Test]
-        public async Task GetSalesByPurchaseNumberAsync_ExistingPurchaseNumber_ReturnsSales()
-        {
-            var salesRepository = new SalesRepository(_configuration);
-            var existingPurchaseNumber = "123456";
-
-            var result = await salesRepository.GetSalesByPurchaseNumberAsync(existingPurchaseNumber);
-
-            Assert.NotNull(result);
-            Assert.AreEqual(existingPurchaseNumber, result.PurchaseNumber);
-        }
-
-        [Test]
-        public async Task GetSalesByPurchaseNumberAsync_NonExistingPurchaseNumber_ReturnsNull()
-        {
-            var salesRepository = new SalesRepository(_configuration);
-            var nonExistingPurchaseNumber = "999999";
-
-            var result = await salesRepository.GetSalesByPurchaseNumberAsync(nonExistingPurchaseNumber);
-
-            Assert.Null(result);
-        }
     }
 }

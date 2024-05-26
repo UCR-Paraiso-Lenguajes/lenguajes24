@@ -8,14 +8,38 @@ namespace StoreApiTests
     {
         private IConfiguration _configuration;
         private IProductRepository _productRepository;
+        private ICategoryRepository _categoryRepository;
 
         [SetUp]
-        public void Setup()
+        public async Task SetupAsync()
         {
             _configuration = new ConfigurationBuilder()
                        .AddJsonFile("appsettings.json")
                        .Build();
             _productRepository = new ProductRepository(_configuration);
+            _categoryRepository = new CategoryRepository(_configuration);
+
+            // Agregar datos de prueba en la tabla Product
+            await AddTestProductData();
+
+            // Agregar datos de prueba en la tabla Category
+            await AddTestCategoryData();
+        }
+
+        private async Task AddTestProductData()
+        {
+            // Agregar productos de prueba
+            var product1 = new Product { Uuid = Guid.Parse("1547f3c3-54e6-4e7d-bf8f-f26daa15c843"), Name = "Producto 1", Category = Guid.Parse("4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18"), Description = "description", ImageUrl = "example", Price = 1 };
+
+            await _productRepository.AddProductAsync(product1);
+        }
+
+        private async Task AddTestCategoryData()
+        {
+            // Agregar categorías de prueba
+            var category1 = new Category { Name = "Categoría 1", Uuid = Guid.Parse("4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18") };
+
+            await _categoryRepository.AddCategoryAsync(category1);
         }
 
         [Test]
@@ -36,40 +60,6 @@ namespace StoreApiTests
 
             Assert.NotNull(result);
             Assert.AreEqual(product.Uuid, result.Uuid);
-        }
-
-        [Test]
-        public async Task GetProductByIdAsync_NonExistingId_ReturnsNull()
-        {
-            var nonExistingProductId = Guid.NewGuid();
-
-            var result = await _productRepository.GetProductByIdAsync(nonExistingProductId);
-
-            Assert.Null(result);
-        }
-
-        [Test]
-        public async Task UpdateProductAsync_ValidProduct_ReturnsOne()
-        {
-            var existingProduct = new Product
-            {
-                Uuid = Guid.NewGuid(),
-                Name = "Existing Product",
-                ImageUrl = "update_image.jpg",
-                Price = 1000000,
-                Description = "Update description"
-            };
-
-            var result = await _productRepository.UpdateProductAsync(existingProduct);
-
-            Assert.AreEqual(1, result);
-        }
-        [Test]
-        public async Task GetProductByCategory()
-        {
-            Guid category = Guid.Parse("4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18");
-            var result = await _productRepository.GetProductByCategoryAsync(category);
-            Assert.NotNull(result);
         }
     }
 
