@@ -32,11 +32,9 @@ builder.Services.AddSwaggerGen(setup =>
 
     setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
 
-    setup.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        { jwtSecurityScheme, Array.Empty<string>() }
-    });
-
+    setup.AddSecurityRequirement(
+        new OpenApiSecurityRequirement { { jwtSecurityScheme, Array.Empty<string>() } }
+    );
 });
 
 builder.Services.AddCors(p =>
@@ -54,21 +52,32 @@ builder.Services.Configure<RouteOptions>(options =>
     options.LowercaseUrls = true;
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+builder
+    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(
+        JwtBearerDefaults.AuthenticationScheme,
         options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = "https://localhost:5001",
-            ValidAudience = "https://localhost:5001",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
-        };
-    });
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = "https://localhost:5001",
+                ValidAudience = "https://localhost:5001",
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(
+                        "TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"
+                    )
+                )
+            };
+        }
+    );
+
+builder.Services.Configure<ApiLab7.CredentialOptions>(
+    builder.Configuration.GetSection("Credentials")
+);
 
 var app = builder.Build();
 
