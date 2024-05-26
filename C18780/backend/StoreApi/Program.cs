@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using StoreApi;
 using StoreApi.Commands;
 using StoreApi.Data;
@@ -14,8 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
-builder.Services.AddDbContext<DbContextClass>(options =>
-    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<DbContextClass>();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
@@ -69,15 +67,6 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
     }));
 
 var app = builder.Build();
-Console.WriteLine("Estamos afuera");
-// Ensure database is created and tables are set up
-using (var scope = app.Services.CreateScope())
-{
-    Console.WriteLine("No hay tablas");
-    var dbContext = scope.ServiceProvider.GetRequiredService<DbContextClass>();
-    dbContext.EnsureDatabaseCreated();
-    Console.WriteLine("Se crearon las tablas");
-}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -85,6 +74,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+CreateDatabaseAndTables(app);
 
 var value = Environment.GetEnvironmentVariable("DB");
 
@@ -98,3 +89,13 @@ app.MapControllers();
 app.UseCors("corsapp");
 
 app.Run();
+
+// Método para crear la base de datos y sus tablas si no existen
+void CreateDatabaseAndTables(IApplicationBuilder app)
+{
+    using (var serviceScope = app.ApplicationServices.CreateScope())
+    {
+        var dbContext = serviceScope.ServiceProvider.GetRequiredService<DbContextClass>();
+        dbContext.Database.EnsureCreated();
+    }
+}
