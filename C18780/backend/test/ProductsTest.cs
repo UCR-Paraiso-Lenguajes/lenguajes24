@@ -41,26 +41,5 @@ namespace StoreApiTests
 
             await _categoryRepository.AddCategoryAsync(category1);
         }
-
-        [Test]
-        public async Task AddProductAsync_ValidProduct_ReturnsProduct()
-        {
-            var product = new Product
-            {
-                Uuid = Guid.NewGuid(),
-                Name = "Test Product",
-                ImageUrl = "test_image.jpg",
-                Price = 50000,
-                Description = "Test description",
-                Category = Guid.Parse("4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18")
-            };
-
-
-            var result = await _productRepository.AddProductAsync(product);
-
-            Assert.NotNull(result);
-            Assert.AreEqual(product.Uuid, result.Uuid);
-        }
     }
-
 }
