@@ -7,10 +7,7 @@ import { RegisteredSaleWeek } from "../models-data/RegisteredSaleWeek";
 
 
     export async function getAllProductsFromAPI():Promise<string | { productsFromStore: ProductAPI[], categoriesFromStore: CategoryAPI[] } | null> {
-        console.log(process.env.NODE_ENV);
-        let urlByReactEnviroment = process.env.NODE_ENV === 'production'
-        ? process.env.NEXT_PUBLIC_API        
-        : process.env.NEXT_PUBLIC_LOCAL_API;
+        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV;
 
         let directionAPI = `${urlByReactEnviroment}/api/Store`;
         
@@ -39,11 +36,7 @@ import { RegisteredSaleWeek } from "../models-data/RegisteredSaleWeek";
     //POST Sale
     export async function sendCartDataToAPI(data:any): Promise<string | null> {
 
-        //Seleccion la url de la API dependiendo del ambiente de la APP                
-        console.log(process.env.NODE_ENV);
-        let urlByReactEnviroment = process.env.NODE_ENV === 'production'
-        ? process.env.NEXT_PUBLIC_API        
-        : process.env.NEXT_PUBLIC_LOCAL_API;
+        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV;
 
         let directionAPI = `${urlByReactEnviroment}/api/Cart`;
 
@@ -83,10 +76,7 @@ import { RegisteredSaleWeek } from "../models-data/RegisteredSaleWeek";
 
     export async function getRegisteredSalesFromAPI(data: any): Promise<string | RegisteredSaleReport | null> {
         
-        console.log(process.env.NODE_ENV);
-        let urlByReactEnviroment = process.env.NODE_ENV === 'production'
-        ? process.env.NEXT_PUBLIC_API        
-        : process.env.NEXT_PUBLIC_LOCAL_API;
+        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV;
 
         let directionAPI = `${urlByReactEnviroment}/api/Sale`;
 
@@ -118,11 +108,8 @@ import { RegisteredSaleWeek } from "../models-data/RegisteredSaleWeek";
 
 
     export async function getProductsByCategory(idCategory: number): Promise<string | ProductAPI[] | null> {        
-        console.log(process.env.NODE_ENV);
-        let urlByReactEnviroment = process.env.NODE_ENV === 'production'
-        ? process.env.NEXT_PUBLIC_API        
-        : process.env.NEXT_PUBLIC_LOCAL_API;
-
+        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV;
+        
         let directionAPI = `${urlByReactEnviroment}/api/products/store/product?category=${encodeURIComponent(idCategory)}`;
         //Especificacion POST
         let getConfig = {
