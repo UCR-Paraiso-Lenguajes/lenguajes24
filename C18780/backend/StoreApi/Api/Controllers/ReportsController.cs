@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StoreApi.Models;
 using StoreApi.Queries;
@@ -20,7 +21,7 @@ namespace StoreApi
             this.mediator = mediator;
         }
 
-        [HttpGet("Date")]
+        [HttpGet("Date"), Authorize(Roles = "Admin")]
         public async Task<Reports> GetReportsByDateAsync(DateTime dateTime)
         {
             var dailySalesTask = mediator.Send(new GetDailySalesQuery() { DateTime = dateTime });
