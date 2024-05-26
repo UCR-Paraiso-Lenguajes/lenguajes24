@@ -14,7 +14,7 @@ namespace StoreApiTests
         public async Task SetupAsync()
         {
             _configuration = new ConfigurationBuilder()
-                       .AddJsonFile("appsettings.json")
+                       .AddJsonFile("appsettingstest.json")
                        .Build();
             _productRepository = new ProductRepository(_configuration);
             _categoryRepository = new CategoryRepository(_configuration);
