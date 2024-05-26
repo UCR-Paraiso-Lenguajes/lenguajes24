@@ -26,9 +26,6 @@ jobs:
           --health-retries=3
         env:
           MYSQL_ROOT_PASSWORD: 123456
-          MYSQL_DATABASE: sys
-          MYSQL_USER: user
-          MYSQL_PASSWORD: 123456
 
     steps:
     - uses: actions/checkout@v4
