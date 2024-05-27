@@ -21,38 +21,44 @@ import { mock } from 'node:test';
 import { validateUserAndGetToken } from '../src/api/get-post-api';
 
 export default function Login(){
+
 	const router = useRouter();       
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 	const [formStatus, setFormStatus] = useState(true);	
 
-	const submitForm = () => {        		
-		formValidations()		
+	const submitForm = () => {
+		const emailValid = email && email.trim();
+		const passValid = password && password.trim();
+		if(emailValid && passValid){
+			getLoginCredentials();
+		}else{
+			//Desplegar errores de formulario			
+			setFormStatus(false)				
+		}		
     };
 
-	async function formValidations(){
-
-		const isEmailValid = email && email.trim();
-		const isPassValid = password && password.trim();
-		if(!isEmailValid || !isPassValid){			
-			setFormStatus(false)			
-		}else{
-			setFormStatus(true)
-			// Creación de un objeto de tipo UserAPI
+	async function getLoginCredentials(){
+		
+		try {			
 			let userData: UserAccountAPI = {
-				userName: "ejemploUsuario",
-				userPassword: "ejemploContraseña"
+				userName: email,
+				userPassword: password
 			};
-			let userToken = await validateUserAndGetToken(userData);
+			let loginToken = await validateUserAndGetToken(userData);
 
-			if(userToken !== null && userToken !== undefined){
-
-				sessionStorage.setItem("userToken",userToken);
+			if(loginToken !== null && loginToken !== undefined){
+				console.log(loginToken);
+				sessionStorage.setItem("loginToken",loginToken);
 				router.push("/admin/init/sales_report")
 				// sessionStorage.setItem("loginToken","loginToken");
 				// router.push("/admin/init/sales_report")
-			}						
-		}		
+			}			
+		} catch (error) {
+			//Desplegar errores de formulario
+			console.log("Error no autorizado");
+			setFormStatus(false);
+		}
 	}
 
 	return(		

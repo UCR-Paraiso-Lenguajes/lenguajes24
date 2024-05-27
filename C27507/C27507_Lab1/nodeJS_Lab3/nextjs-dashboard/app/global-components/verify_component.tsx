@@ -9,6 +9,7 @@ export default function  VerifyComponent({children,}: {children: React.ReactNode
 
         //Verificamos si existe un item en el localStorage
         const isLoggued = sessionStorage.getItem("loginToken");
+        console.log("Hola desde verify_component: " + isLoggued);
         if(isLoggued === null){            
             //nos vamos al login
             router.push("/../admin");

@@ -1,4 +1,7 @@
-﻿using MyStoreAPI.Controllers;
+﻿//para usar el "ConfigurationBuilder "
+using Microsoft.Extensions.Configuration;
+
+using MyStoreAPI.Controllers;
 using MyStoreAPI.Business;
 using MyStoreAPI.DB;
 using MyStoreAPI.Models;
@@ -6,6 +9,16 @@ using NUnit.Framework;
 //para poder simular el Enviroment en Test
 using Moq;
 using Microsoft.Extensions.Hosting;
+//JWT Authentication
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 namespace UT{
 
     public class TestUser{
@@ -41,13 +54,12 @@ namespace UT{
             foreach (var user in testUsers){
                 new UserAccount(user.UserName, user.UserPassword, user.UserRoles.Select(role => new Claim(ClaimTypes.Role, role)).ToList());
             }
+            
         }
 
         [Test]
         public async Task ValidUserAndGetToken(){
-            var userData = new UserAccount("varo", "123456", new List<Claim> {
-                new Claim(ClaimTypes.Role, "Admin")
-            });
+            var userData = new LoginModel("varo", "123456");
 
             var response = await authController.LoginAsync(userData) as OkObjectResult;
 
@@ -62,7 +74,7 @@ namespace UT{
         [Test]
         public async Task InvalidPassWord(){
             
-            var userData = new LoginModel { UserName = "varo", Password = "aaaa" };            
+            var userData = new LoginModel("varo", "123456");
             var response = await authController.LoginAsync(userData);            
             Assert.NotNull(response);
             Assert.IsInstanceOf<UnauthorizedResult>(response);
@@ -70,7 +82,7 @@ namespace UT{
 
         [Test]
         public async Task InvalidUserName(){            
-            var userData = new LoginModel { UserName = "aaaaa", Password = "password" };            
+            var userData = new LoginModel("aaa", "123456");
             var response = await authController.LoginAsync(userData);
             Assert.NotNull(response);
             Assert.IsInstanceOf<UnauthorizedResult>(response);

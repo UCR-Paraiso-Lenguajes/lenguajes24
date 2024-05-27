@@ -22,9 +22,7 @@ import { UserAccountAPI } from "../models-data/UserAccountAPI";
                 const errorMessage = await response.text();
                 return errorMessage;
             }
-            const dataStore = await response.json();
-            console.log(dataStore.products);
-            console.log(dataStore.allProductCategories);
+            const dataStore = await response.json();            
             return {
                 productsFromStore: dataStore.products,
                 categoriesFromStore: dataStore.allProductCategories
@@ -144,6 +142,7 @@ import { UserAccountAPI } from "../models-data/UserAccountAPI";
         let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
         
         let directionAPI = `${urlByReactEnviroment}/api/auth`;
+        
         //Especificacion POST
         let postConfig = {
             method: "POST",
@@ -162,6 +161,7 @@ import { UserAccountAPI } from "../models-data/UserAccountAPI";
                 return errorMessage;
             }        
             const userToken = await responsePost.json();                      
+            console.log(userToken);
             return userToken;
             
         } catch (error) {            
