@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StoreApi.Cache;
 using StoreApi.Commands;
@@ -24,6 +25,7 @@ namespace StoreApi
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<List<Product>> GetProductListAsync()
         {
             var product = await mediator.Send(new GetProductListQuery());
@@ -32,6 +34,7 @@ namespace StoreApi
         }
 
         [HttpGet("productId")]
+        [AllowAnonymous]
         public async Task<Product> GetProductByIdAsync(Guid uuid)
         {
             var product = await mediator.Send(new GetProductByIdQuery() { Uuid = uuid });
@@ -40,6 +43,7 @@ namespace StoreApi
         }
 
         [HttpGet("productCategory")]
+        [AllowAnonymous]
         public async Task<List<Product>> GetProductByCategoryAsync(string categoryName)
         {
             var guidCategory = categoriesCache.GetCategoryByName(categoryName);
@@ -48,7 +52,7 @@ namespace StoreApi
             return product;
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         public async Task<Product> AddProductAsync(Product products)
         {
             var product = await mediator.Send(new CreateProductCommand(
@@ -61,7 +65,7 @@ namespace StoreApi
             return product;
         }
 
-        [HttpPut]
+        [HttpPut, Authorize(Roles = "Admin")]
         public async Task<int> UpdateProductAsync(Product products)
         {
             var isProductUpdated = await mediator.Send(new UpdateProductCommand(
@@ -74,7 +78,7 @@ namespace StoreApi
             return isProductUpdated;
         }
 
-        [HttpDelete]
+        [HttpDelete, Authorize(Roles = "Admin")]
         public async Task<int> DeleteProductAsync(Guid Uuid)
         {
             return await mediator.Send(new DeleteProductCommand() { Uuid = Uuid });

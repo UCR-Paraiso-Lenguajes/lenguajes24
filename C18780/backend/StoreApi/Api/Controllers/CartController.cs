@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StoreApi.Commands;
 using StoreApi.Models;
@@ -22,6 +23,7 @@ namespace StoreApi
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<PurchaseNumber> AddCartAsync([FromBody] Cart cart)
         {
             PaymentMethods.Type paymentMethod = (PaymentMethods.Type)cart.PaymentMethod;

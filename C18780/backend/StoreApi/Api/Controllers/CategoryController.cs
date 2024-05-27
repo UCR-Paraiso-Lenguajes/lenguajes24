@@ -4,6 +4,7 @@ using StoreApi.Commands;
 using StoreApi.Models;
 using StoreApi.Cache;
 using StoreApi.Queries;
+using Microsoft.AspNetCore.Authorization;
 namespace StoreApi
 {
     [Route("api/[controller]")]
@@ -45,12 +46,14 @@ namespace StoreApi
             }
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IEnumerable<Categories>> GetCategoryListAsync()
         {
             return categories;
         }
 
         [HttpGet("categoryId")]
+        [AllowAnonymous]
         public Categories GetCategoryById(Guid uuid)
         {
             foreach (var category in categories)
@@ -63,7 +66,7 @@ namespace StoreApi
             return default;
         }
 
-        [HttpPost]
+        [HttpPost, Authorize(Roles = "Admin")]
         public async Task<Category> AddCategoryAsync(Category newCategory)
         {
             var category = await mediator.Send(new CreateCategoryCommand(
@@ -73,7 +76,7 @@ namespace StoreApi
             return category;
         }
 
-        [HttpDelete]
+        [HttpDelete, Authorize(Roles = "Admin")]
         public async Task<int> DeleteCategoryAsync(Guid Uuid)
         {
             return await mediator.Send(new DeleteCategoryCommand() { Uuid = Uuid });

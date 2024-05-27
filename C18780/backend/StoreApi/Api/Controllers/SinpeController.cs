@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StoreApi.Commands;
 using StoreApi.Models;
@@ -25,6 +26,7 @@ namespace StoreApi.Controllers
             public string confirmationNumber { get; set; }
         }
         [HttpPost]
+        [AllowAnonymous]
         public async Task<Sinpe> AddSinpeAsync([FromBody] SinpeInputModel sinpeMovilInput)
         {
             var sales = await GetSalesByPurchaseNumber(sinpeMovilInput.purchaseNumber);

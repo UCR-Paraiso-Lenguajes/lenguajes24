@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StoreApi.Cache;
 using StoreApi.Models;
@@ -26,6 +27,7 @@ namespace StoreApi.Controllers
             categoriesCache = CategoriesCache.GetInstance();
         }
         [HttpGet("Products")]
+        [AllowAnonymous]
         public async Task<Store> GetStoreAsync([FromQuery] List<string> category, string search)
         {
             List<Product> products = new List<Product>();

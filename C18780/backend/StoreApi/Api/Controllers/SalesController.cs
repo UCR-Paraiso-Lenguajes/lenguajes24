@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StoreApi.Commands;
 using StoreApi.Models;
@@ -22,6 +23,7 @@ namespace StoreApi
         }
 
         [HttpGet("salesPurchaseNumber")]
+        [AllowAnonymous]
         public async Task<Sales> GetSalesByPurchaseNumberAsync(string purchaseNumber)
         {
             var sales = await mediator.Send(new GetSalesByPurchaseNumberQuery() { PurchaseNumber = purchaseNumber });
