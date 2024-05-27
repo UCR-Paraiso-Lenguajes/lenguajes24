@@ -28,9 +28,19 @@ namespace MyStoreAPI.Controllers{
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> LoginAsync([FromBody] UserAccount userDataFromUI){
+        public async Task<IActionResult> LoginAsync([FromBody] LoginModel userDataFromUI){
+            //LoginModel es el equivalente a UserAccountAPI en React, para poder recibir solo el nombre y password
+            
+            // Accediendo a las propiedades de userDataFromUI
+            var userName = userDataFromUI.userName;
+            var userPassword = userDataFromUI.userPassword;
 
-            if (userDataFromUI is null) return BadRequest("Invalid client request");            
+            Console.WriteLine(userName);
+            Console.WriteLine(userPassword);            
+
+            if (userDataFromUI is null) return BadRequest("Invalid client request");
+            if (userName is null || string.IsNullOrEmpty(userName) ) return BadRequest("Invalid client request");            
+            if (userPassword is null || string.IsNullOrEmpty(userPassword) ) return BadRequest("Invalid client request");            
 
             if (hostEnvironment.IsDevelopment()){
                 this.mockDataUsers();
@@ -110,10 +120,7 @@ namespace MyStoreAPI.Controllers{
         }
     }
 
-    public class LoginModel{
-        public string? UserName { get; set; }
-        public string? Password { get; set; }
-    }
+    
 
     public class AuthenticatedResponse{
         public string? Token { get; set; }
