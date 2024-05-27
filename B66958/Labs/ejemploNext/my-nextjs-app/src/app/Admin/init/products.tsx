@@ -1,16 +1,19 @@
 import DataTable, { TableColumn } from "react-data-table-component";
-import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
-import { useRouter } from "next/navigation";
+import { Container, Row, Col, Button, Modal, Form, Alert } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Products() {
     const [show, setShow] = useState(false);
+    const [categories, setCategories] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [data, setData] = useState<Product[]>([]);
+    const [isErrorShowing, setIsErrorShowing] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-
-    const router = useRouter();
+    const categoriesArePresent = categories !== undefined && categories.length > 0;
 
     interface Product {
         id: string,
@@ -28,29 +31,52 @@ export default function Products() {
         {
             name: 'Product Link',
             cell: row => <a href={row.productLink} target="_blank" rel="noopener noreferrer">Link</a>,
-            sortable: false
+            width: '150px'
         },
         {
             name: 'Description',
             cell: row => <div dangerouslySetInnerHTML={{ __html: row.description }}></div>,
+            selector: row => row.description,
             sortable: true
         },
         {
             name: 'Image URL',
             selector: row => row.imageUrl,
-            sortable: true
         },
     ];
 
-    const data: Product[] = [
-        { id: '123', description: 'descr1', imageUrl: 'http1', productLink: 'www.google.com' },
-        { id: '456', description: '<h1>Hola hola</h1>', imageUrl: 'http2', productLink: 'www.google.com' },
-        { id: '678', description: 'desc3', imageUrl: 'http3', productLink: 'www.google.com' },
-    ];
-
     const handleAddProduct = () => {
-        //router.push('/add-product');
+        setShow(false);
     };
+
+    async function getData() {
+        const res = await fetch('https://localhost:7151/api/store');
+        if (!res.ok) {
+            throw new Error('Failed to fetch data');
+        }
+        return res.json();
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const result = await getData();
+                setCategories(result.categoriesInStore);
+                setProducts(result.productsInStore);
+                const formattedData = result.productsInStore.map((product: any) => ({
+                    id: product.uuid,
+                    description: product.description,
+                    imageUrl: product.imageUrl,
+                    productLink: `/product/${product.uuid}`
+                }));
+                setData(formattedData);
+            } catch (error) {
+                setErrorMessage(error)
+                setIsErrorShowing(true)
+            }
+        };
+        fetchData();
+    }, []);
 
     return (
         <>
@@ -97,17 +123,46 @@ export default function Products() {
                             <Form.Label>Link de imagen:</Form.Label>
                             <Form.Control type="text" placeholder="Imagen del producto" />
                         </Form.Group>
+                        <Form.Group className="mb-3" controlId="price">
+                            <Form.Label>Precio:</Form.Label>
+                            <Form.Control type="numeric" placeholder="Precio del producto" />
+                        </Form.Group>
+                        <Form.Group className="mb-3" controlId="imageUrl">
+                            <Form.Label>Categoría:</Form.Label>
+                            <Form.Select aria-label="Default select example">
+                                {categories.map(category => (
+                                    <option key={category.id} value={category.id}>{category.name}</option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
                         Cancelar
                     </Button>
-                    <Button variant="primary" onClick={handleClose}>
+                    <Button variant="primary" onClick={handleAddProduct} disabled={(categoriesArePresent) ? false : true}>
                         Agregar
                     </Button>
                 </Modal.Footer>
-            </Modal>
+            </Modal >
+            {
+                isErrorShowing ?
+                    <div
+                        style={{
+                            position: 'fixed',
+                            bottom: 20,
+                            right: 20,
+                            zIndex: 9999,
+                        }
+                        }
+                    >
+                        <Alert variant="danger" onClose={() => setIsErrorShowing(false)} dismissible>
+                            <Alert.Heading>Error</Alert.Heading>
+                            <p>{errorMessage.toString()}</p>
+                        </Alert>
+                    </div > : ''
+            }
         </>
     );
 }
