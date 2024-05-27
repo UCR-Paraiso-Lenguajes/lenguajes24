@@ -7,6 +7,7 @@ import Calendar from "react-calendar";
 import { Chart } from 'react-google-charts';
 import { checkTokenDate } from "@/app/hooks/jwtHooks";
 import { useRouter } from 'next/navigation';
+import Products from "./products";
 
 export default function MainAdmin() {
 
@@ -34,11 +35,11 @@ export default function MainAdmin() {
         setShowProducts(false);
     }
 
-    useEffect(() => {
+    /* useEffect(() => {
         var expiracyDate = sessionStorage.getItem("expiracyToken");
         var isTokenAlive = checkTokenDate(Number(expiracyDate));
-        if(!isTokenAlive) router.push("/Admin");
-    }, []);
+        if (!isTokenAlive) router.push("/Admin");
+    }, []); */
 
     const Reports = () => {
         const [salesOfTheDayObtained, setSalesOfTheDayObtained] = useState([]);
@@ -168,12 +169,6 @@ export default function MainAdmin() {
     const PaymentMethods = () => {
         return <>
             Soy métodos de pago
-        </>
-    }
-
-    const Products = () => {
-        return <>
-            Soy productos
         </>
     }
 
