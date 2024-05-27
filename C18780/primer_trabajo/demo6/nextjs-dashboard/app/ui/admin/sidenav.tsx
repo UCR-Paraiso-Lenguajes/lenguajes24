@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartLine, faCartFlatbed, faPowerOff, faHome, faBars } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
+import { deleteCookie } from "cookies-next";
 
 const SideNav = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(true);
@@ -48,14 +49,12 @@ const SideNav = () => {
                 </Link>
             </ul>
             <ul className='close'>
-                <Link href="/admin">
-                    <li className="nav">
-                        <FontAwesomeIcon icon={faPowerOff} className="fa-icon me-2" />
-                        <span className={`text-hidden ${isMenuOpen ? '' : 'hidden'}`}>
-                            Logout
-                        </span>
-                    </li>
-                </Link>
+                <li className="nav">
+                    <FontAwesomeIcon icon={faPowerOff} className="fa-icon me-2" />
+                    <span className={`text-hidden ${isMenuOpen ? '' : 'hidden'}`} onClick={() => { deleteCookie('token') }}>
+                        Logout
+                    </span>
+                </li>
             </ul>
         </div>
     );

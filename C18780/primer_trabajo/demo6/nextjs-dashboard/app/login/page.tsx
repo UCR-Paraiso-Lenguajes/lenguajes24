@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { LoginModel, login } from '../api/http.auth';
 import '../ui/styles/login.css';
 import 'bootstrap/dist/css/bootstrap.min.css';

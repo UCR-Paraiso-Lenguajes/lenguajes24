@@ -1,5 +1,3 @@
-// lib/authService.ts
-
 export interface LoginModel {
     UserName: string;
     Password: string;
