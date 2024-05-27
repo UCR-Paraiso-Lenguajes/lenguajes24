@@ -8,15 +8,17 @@ import Link from 'next/link';
 import Button from 'react-bootstrap/Button';
 import { useRouter } from 'next/navigation';
 
-
 //Interfaces
+import { UserAccountAPI } from '../src/models-data/UserAccountAPI';
 
 //Recursos
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './../src/css/login.css'
 import './../src/css/fonts_awesome/css/all.min.css'
 import { mock } from 'node:test';
+
 //Funciones
+import { validateUserAndGetToken } from '../src/api/get-post-api';
 
 export default function Login(){
 	const router = useRouter();       
@@ -28,7 +30,7 @@ export default function Login(){
 		formValidations()		
     };
 
-	function formValidations(){
+	async function formValidations(){
 
 		const isEmailValid = email && email.trim();
 		const isPassValid = password && password.trim();
@@ -36,8 +38,20 @@ export default function Login(){
 			setFormStatus(false)			
 		}else{
 			setFormStatus(true)
-			sessionStorage.setItem("loginToken","loginToken");
-			router.push("/admin/init/sales_report")
+			// Creación de un objeto de tipo UserAPI
+			let userData: UserAccountAPI = {
+				userName: "ejemploUsuario",
+				userPassword: "ejemploContraseña"
+			};
+			let userToken = await validateUserAndGetToken(userData);
+
+			if(userToken !== null && userToken !== undefined){
+
+				sessionStorage.setItem("userToken",userToken);
+				router.push("/admin/init/sales_report")
+				// sessionStorage.setItem("loginToken","loginToken");
+				// router.push("/admin/init/sales_report")
+			}						
 		}		
 	}
 

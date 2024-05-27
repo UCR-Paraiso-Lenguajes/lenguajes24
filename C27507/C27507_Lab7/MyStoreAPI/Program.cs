@@ -1,6 +1,14 @@
 using MyStoreAPI;
-//para la variable de ambiente
 using Microsoft.Extensions.Configuration;
+//para OpenApiSecurityScheme, OpenApiSecurityRequirement, etc. (de swagger)
+using Microsoft.OpenApi.Models; 
+//para Encoding
+using System.Text;
+//para la variable de ambiente
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +18,36 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
+//Plugin de Swagger para usarlo con Tokens:
+builder.Services.AddSwaggerGen(setup =>
+{
+    // Include 'SecurityScheme' to use JWT Authentication
+    var jwtSecurityScheme = new OpenApiSecurityScheme
+    {
+        BearerFormat = "JWT",
+        Name = "JWT Authentication",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+
+    setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+    setup.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, Array.Empty<string>() }
+    });
+
+});
+
 
 //Configure CORS
 builder.Services.AddCors(options =>
@@ -22,6 +59,43 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader();
     });
 });
+
+
+//Agregar seguridad y autentificaciones con "Manage JWTs in development" y "JSON Web Tokens "
+// string API_value = Environment.GetEnvironmentVariable("DB");
+// if (!String.IsNullOrEmpty(API_value) ){
+
+    //Obtener la IP y el puerto de la variable de ambiente dada:
+    //docker run -d --name api -e DB="server=192.168.18.8;user=root;password=123456;database=MyStoreApi" -e ASPNETCORE_ENVIRONMENT=Development -p 8080:8080 api
+    // var enviromentVariableParts = enviromentVariableParts.Split(';')
+    //     .Select(part => part.Split('='))
+    //     .ToDictionary(split => split[0], split => split[1]);
+
+    // string server = enviromentVariableParts["server"];
+    // var serverParts = server.Split(':');
+    // string ip = serverParts[0];
+    
+//}else{
+    //tomamos el local host de appsettings.json
+//}
+
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+        options =>
+    {
+        //Creamos el token y se le indica que parámetros queremos crearle (todos se deben validar después)
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "https://localhost:7161",
+            ValidAudience = "https://localhost:7161",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
+        };
+    });
 
 var app = builder.Build();
 

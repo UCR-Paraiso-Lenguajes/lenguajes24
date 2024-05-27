@@ -5,6 +5,10 @@ using MyStoreAPI.Business;
 using MyStoreAPI.DB;
 using MyStoreAPI.Models;
 using Core;
+
+//JWT Authentication
+using Microsoft.AspNetCore.Authorization;
+
 namespace MyStoreAPI.Controllers
 
 {
@@ -14,6 +18,7 @@ namespace MyStoreAPI.Controllers
     public class CartController : ControllerBase{                
 
         [HttpPost]
+        [AllowAnonymous]
         [Consumes("application/json")]
         public async Task<IActionResult> CreateCartAsync([FromBody] Cart cart){                        
             
