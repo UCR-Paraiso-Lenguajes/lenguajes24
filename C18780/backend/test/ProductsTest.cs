@@ -74,21 +74,33 @@ namespace StoreApiTests
         }
 
         [Test]
-        public async Task DeleteProductAsync()
-        {
-            
-        }
-
-        [Test]
         public async Task UpdateProductAsync()
         {
-
+            var product = new Product
+            {
+                Uuid = Guid.Parse("1547f3c3-54e6-4e7d-bf8f-f26daa15c843"),
+                Name = "Test New Product",
+                ImageUrl = "test_new_image.jpg",
+                Price = 50001,
+                Description = "Test new description",
+                Category = Guid.Parse("4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18")
+            };
+            var result = await _productRepository.UpdateProductAsync(product);
+            Assert.NotZero(result);
         }
 
         [Test]
         public async Task GetProductListAsync()
         {
+            var result = await _productRepository.GetProductListAsync();
+            Assert.NotNull(result);
+        }
 
+        [Test]
+        public async Task DeleteProductAsync()
+        {
+            var result = await _productRepository.DeleteProductAsync(Guid.Parse("1547f3c3-54e6-4e7d-bf8f-f26daa15c843"));
+            Assert.NotZero(result);
         }
     }
 }
