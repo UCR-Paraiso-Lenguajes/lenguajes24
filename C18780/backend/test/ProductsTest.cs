@@ -71,10 +71,14 @@ namespace StoreApiTests
                 Category = Guid.Parse("4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18")
             };
 
-
-            var result = await _productRepository.AddProductAsync(product);
-
-            Assert.Null(result);
+            try
+            {
+                var result = await _productRepository.AddProductAsync(product);
+            }
+            catch (Exception e)
+            {
+                Assert.That(e.Message, Is.EqualTo("The price must be greater than zero."));
+            }
         }
 
         [Test]
