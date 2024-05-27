@@ -41,7 +41,7 @@ namespace StoreApiTests
             var existingPurchaseNumber = "123456";
             var result = await _salesRepository.GetSalesByPurchaseNumberAsync(existingPurchaseNumber);
             Assert.NotNull(result);
-            Assert.AreEqual(existingPurchaseNumber, result.PurchaseNumber);
+            Assert.That(result.PurchaseNumber, Is.EqualTo(existingPurchaseNumber));
         }
     }
 }
