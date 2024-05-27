@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -24,6 +25,9 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> LoginAsync([FromBody] LoginModel user)
     {
+        Console.WriteLine(user.UserName);
+        Console.WriteLine(user.Password);
+
         if (user is null)
         {
             return BadRequest("Invalid client request");
@@ -33,11 +37,11 @@ public class AuthController : ControllerBase
         if (hostEnvironment.IsDevelopment())
         {
 
-            if (user.UserName == "jean" && user.Password == "123456")
+            if (user.UserName == "jean@gmail.com" && user.Password == "123456")
             {
                 var claims = new List<Claim>
                         {
-                            new Claim(ClaimTypes.Name, "jean"),
+                            new Claim(ClaimTypes.Name, "jean@gmail.com"),
                             new Claim(ClaimTypes.Role, "Operator"),
                             new Claim(ClaimTypes.Role, "Admin"),
                             new Claim(ClaimTypes.Role, "Customer")
@@ -53,7 +57,7 @@ public class AuthController : ControllerBase
                 );
 
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-
+                Console.WriteLine(tokenString);
                 return Ok(new AuthenticatedResponse { Token = tokenString });
             }
 
