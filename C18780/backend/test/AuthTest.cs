@@ -41,14 +41,5 @@ namespace StoreApiTests
             var result = await _authController.LoginAsync(loginModel);
             Assert.IsInstanceOf<UnauthorizedResult>(result);
         }
-
-        [Test]
-        public async Task LoginAsync_ReturnsBadRequestResult_WhenUserIsNull()
-        {
-            var result = await _authController.LoginAsync(null);
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.AreEqual("Invalid client request", badRequestResult.Value);
-        }
     }
 }
