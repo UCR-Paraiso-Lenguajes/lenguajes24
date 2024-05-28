@@ -11,6 +11,12 @@ export default function Products() {
     const [isErrorShowing, setIsErrorShowing] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
+    const [price, setPrice] = useState("");
+    const [category, setCategory] = useState("");
+
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
     const categoriesArePresent = categories !== undefined && categories.length > 0;
@@ -45,7 +51,32 @@ export default function Products() {
         },
     ];
 
-    const handleAddProduct = () => {
+    const handleAddProduct = async () => {
+        const newProduct = {
+            name: name,
+            description: description,
+            imageUrl: imageUrl,
+            price: price,
+            category: category
+        };
+        var token = sessionStorage.getItem("sessionToken");
+        try {
+            const res = await fetch('https://localhost:7151/api/product', {
+                method: 'POST',
+                body: JSON.stringify(newProduct),
+                headers: {
+                    'content-type': 'application/json',
+                    'authorization': `Bearer ${token}`
+                },
+            })
+            if (res.ok) {
+                var createdProduct = await res.json();
+                console.log(createdProduct);
+            }
+            else { setErrorMessage("Error al realizar la compra"); }
+        } catch (error) {
+            setErrorMessage(error);
+        }
         setShow(false);
     };
 
@@ -113,23 +144,47 @@ export default function Products() {
                     <Form>
                         <Form.Group className="mb-3" controlId="name">
                             <Form.Label>Nombre:</Form.Label>
-                            <Form.Control type="text" placeholder="Nombre del producto" />
+                            <Form.Control
+                                type="text"
+                                placeholder="Nombre del producto"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="description">
+                        <Form.Group className="mb3" controlId="description">
                             <Form.Label>Descripción:</Form.Label>
-                            <Form.Control as="textarea" rows={3} />
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            />
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="imageUrl">
+                        <Form.Group className="mb3" controlId="imageUrl">
                             <Form.Label>Link de imagen:</Form.Label>
-                            <Form.Control type="text" placeholder="Imagen del producto" />
+                            <Form.Control
+                                type="text"
+                                placeholder="Imagen del producto"
+                                value={imageUrl}
+                                onChange={(e) => setImageUrl(e.target.value)}
+                            />
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="price">
+                        <Form.Group className="mb3" controlId="price">
                             <Form.Label>Precio:</Form.Label>
-                            <Form.Control type="numeric" placeholder="Precio del producto" />
+                            <Form.Control
+                                type="number"
+                                placeholder="Precio del producto"
+                                value={price}
+                                onChange={(e) => setPrice(e.target.value)}
+                            />
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="imageUrl">
+                        <Form.Group className="mb-3" controlId="category">
                             <Form.Label>Categoría:</Form.Label>
-                            <Form.Select aria-label="Default select example">
+                            <Form.Select
+                                aria-label="Default select example"
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                            >
                                 {categories.map(category => (
                                     <option key={category.id} value={category.id}>{category.name}</option>
                                 ))}
@@ -141,11 +196,11 @@ export default function Products() {
                     <Button variant="secondary" onClick={handleClose}>
                         Cancelar
                     </Button>
-                    <Button variant="primary" onClick={handleAddProduct} disabled={(categoriesArePresent) ? false : true}>
+                    <Button variant="primary" onClick={handleAddProduct} disabled={!categories.length}>
                         Agregar
                     </Button>
                 </Modal.Footer>
-            </Modal >
+            </Modal>
             {
                 isErrorShowing ?
                     <div
