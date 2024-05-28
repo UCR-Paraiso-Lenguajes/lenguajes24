@@ -8,7 +8,7 @@ import Link from 'next/link';
 import ProductItem from '../product';
 import { useEffect, useState } from 'react';
 import useFetchInitialStore from '@/app/api/http.initialStore';
-import {findProductsDuplicates, getProductQuantity} from '../../lib/utils';
+import { findProductsDuplicates, getProductQuantity } from '../../lib/utils';
 
 const ProductCart = ({ product, quantity, onRemove }: { product: Product, quantity: number, onRemove: any }) => {
     return (
@@ -128,7 +128,7 @@ const InterestingProducts = ({ products, onAdd }: { products: Product[] | null, 
     const randomIndex = Math.floor(Math.random() * products.length);
 
     useEffect(() => {
-        setRandomProduct(products[randomIndex]);
+        setRandomProduct(products[5]);
     }, [randomIndex]);
 
     return (
@@ -148,11 +148,14 @@ const InterestingProducts = ({ products, onAdd }: { products: Product[] | null, 
 }
 
 export default function MyCart() {
-    const category = "All";
+    const category: string[] = ["All"];
     const search = "none";
-    const initialStore = useFetchInitialStore({category,search});
-    const initialCart = getInitialCartLocalStorage();
-    
+    const initialStore = useFetchInitialStore({ category, search });
+    const [initialCart, setInitialCart] = useState<Cart>();
+    useEffect(() => {
+        const cartFromLocalStorage = getInitialCartLocalStorage();
+        setInitialCart(cartFromLocalStorage);
+    }, []);
     const handleAddToCart = ({ product }: { product: Product }) => {
         if (initialCart) {
             initialCart.cart.products.push(product);
@@ -179,7 +182,7 @@ export default function MyCart() {
                     <div className="col-md-9">
                         <div className="ibox">
                             <div className="ibox-title">
-                                <span className="pull-right">(<strong>{initialCart?.cart.products ? initialCart?.cart.products.length : 0}</strong>) items</span>
+                                <span className="pull-right">{initialCart ? initialCart.cart.products.length : 0} items</span>
                                 <h5>Items in your cart</h5>
                             </div>
 

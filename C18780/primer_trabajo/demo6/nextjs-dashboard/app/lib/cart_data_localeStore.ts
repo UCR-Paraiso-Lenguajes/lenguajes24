@@ -10,20 +10,22 @@ export function deleteCartLocalStorage(): void {
 }
 
 export function getInitialCartLocalStorage(): Cart {
-  const dataAsString = localStorage.getItem('initialCart');
-  if (dataAsString) {
-    return JSON.parse(dataAsString);
-  } else {
-    const cart: Cart = {
-      cart: {
-        products: [],
-        subtotal: 0,
-        taxPercentage: 0,
-        total: 0,
-        deliveryAddress: "",
-        methodPayment: null
-      },
+  if (typeof localStorage !== 'undefined') {
+    const dataAsString = localStorage.getItem('initialCart');
+    if (dataAsString) {
+      return JSON.parse(dataAsString);
     }
-     return cart;
   }
+  const cart: Cart = {
+    cart: {
+      products: [],
+      subtotal: 0,
+      taxPercentage: 0,
+      total: 0,
+      deliveryAddress: "",
+      methodPayment: null
+    },
+  }
+  return cart;
 }
+
