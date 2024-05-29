@@ -15,6 +15,7 @@ export default function Payment() {
   const [address, setAddress] = useState('');
   const [total, setTotal] = useState('');
   const [purchaseNumber, setpurchaseNumber] = useState('');
+  const URL = process.env.NEXT_PUBLIC_API;
 
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem('cart')) || { products: {} };
@@ -49,7 +50,7 @@ export default function Payment() {
         Total: total
       };
 
-      const response = await fetch('https://localhost:7067/api/cart', {
+      const response = await fetch(URL + 'api/cart', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

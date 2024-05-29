@@ -10,6 +10,7 @@ export default function Init() {
     const [selectedDay, setSelectedDay] = useState(new Date());
     const [weeklySalesData, setWeeklySalesData] = useState([['Day', 'Total']]);
     const [dailySalesData, setDailySalesData] = useState([['Purchase Date', 'Purchase Number', 'Total']]);
+    const URL = process.env.NEXT_PUBLIC_API;
 
     useEffect(() => {
         fetchData();
@@ -18,7 +19,7 @@ export default function Init() {
     const fetchData = async () => {
         try {
             const formattedDate = selectedDay.toISOString().split('T')[0];
-            const response = await fetch(`https://localhost:7067/api/sale?date=${formattedDate}`);
+            const response = await fetch(URL + `api/sale?date=${formattedDate}`);
 
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
