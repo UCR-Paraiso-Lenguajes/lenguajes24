@@ -64,3 +64,5 @@ jobs:
           echo "${{ secrets.DOCKERHUBPASSC12599  }}" | docker login -u "marianoda20027@gmail.com" --password-stdin
           docker image build -t marianoda2002/react:latest .
           docker push marianoda2002/react:latest
+
+    
