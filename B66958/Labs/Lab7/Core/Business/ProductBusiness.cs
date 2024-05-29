@@ -13,6 +13,7 @@ public class ProductBusiness
     OnNewProduct onNewProduct = (product) =>
     {
         Products.Instance.AddNewProduct(product);
+        Store.Instance.ProductsInStore.Add(product);
     };
 
     public async Task<Product> AddProduct(ProductDTO product)
