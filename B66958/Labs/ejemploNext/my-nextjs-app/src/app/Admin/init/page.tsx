@@ -34,11 +34,11 @@ export default function MainAdmin() {
         setShowProducts(false);
     }
 
-    useEffect(() => {
+    function checkTokenStatus() {
         var expiracyDate = sessionStorage.getItem("expiracyToken");
         var isTokenAlive = checkTokenDate(Number(expiracyDate));
-        if(!isTokenAlive) router.push("/Admin");
-    }, []);
+        if (!isTokenAlive) router.push("/Admin");
+    }
 
     const Reports = () => {
         const [salesOfTheDayObtained, setSalesOfTheDayObtained] = useState([]);
@@ -84,6 +84,7 @@ export default function MainAdmin() {
         }
 
         useEffect(() => {
+            checkTokenStatus();
             const fetchData = async () => {
                 try {
                     const result = await getData();
