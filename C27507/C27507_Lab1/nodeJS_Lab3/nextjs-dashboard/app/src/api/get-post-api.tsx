@@ -80,6 +80,7 @@ import { UserAccountAPI } from "../models-data/UserAccountAPI";
         let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
 
         let directionAPI = `${urlByReactEnviroment}/api/Sale`;
+        const loginToken = sessionStorage.getItem("loginToken");
 
         //Especificacion POST
         let postConfig = {
@@ -87,7 +88,8 @@ import { UserAccountAPI } from "../models-data/UserAccountAPI";
             //pasamos un objeto como atributo de otro
             headers: {
                 "Accept": "application/json",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${loginToken}`
             },
             body: JSON.stringify(data)
         }

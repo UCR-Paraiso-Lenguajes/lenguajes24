@@ -47,16 +47,12 @@ export default function Login(){
 			};
 			let loginToken = await validateUserAndGetToken(userData);
 
-			if(loginToken !== null && loginToken !== undefined){
-				console.log(loginToken);
+			if(loginToken !== null && loginToken !== undefined){				
 				sessionStorage.setItem("loginToken",loginToken);
-				router.push("/admin/init/sales_report")
-				// sessionStorage.setItem("loginToken","loginToken");
-				// router.push("/admin/init/sales_report")
+				router.push("/admin/init/sales_report")				
 			}			
 		} catch (error) {
-			//Desplegar errores de formulario
-			console.log("Error no autorizado");
+			//Desplegar errores de formulario			
 			setFormStatus(false);
 		}
 	}

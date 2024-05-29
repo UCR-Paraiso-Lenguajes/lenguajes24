@@ -14,9 +14,8 @@ namespace MyStoreAPI.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    public class SaleController: ControllerBase{        
-        [HttpPost]
-        [HttpGet, Authorize(Roles = "Admin")]
+    public class SaleController: ControllerBase{
+        [HttpPost, Authorize(Roles = "Admin")]
         [Consumes("application/json")]
         public async Task<IActionResult> GetSaleAsync([FromBody] DateTime dateFormat){
             try{                                

@@ -60,26 +60,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-
-//Agregar seguridad y autentificaciones con "Manage JWTs in development" y "JSON Web Tokens "
-// string API_value = Environment.GetEnvironmentVariable("DB");
-// if (!String.IsNullOrEmpty(API_value) ){
-
-    //Obtener la IP y el puerto de la variable de ambiente dada:
-    //docker run -d --name api -e DB="server=192.168.18.8;user=root;password=123456;database=MyStoreApi" -e ASPNETCORE_ENVIRONMENT=Development -p 8080:8080 api
-    // var enviromentVariableParts = enviromentVariableParts.Split(';')
-    //     .Select(part => part.Split('='))
-    //     .ToDictionary(split => split[0], split => split[1]);
-
-    // string server = enviromentVariableParts["server"];
-    // var serverParts = server.Split(':');
-    // string ip = serverParts[0];
-    
-//}else{
-    //tomamos el local host de appsettings.json
-//}
-
-
+// Configure JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
         options =>
@@ -99,16 +80,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
-
-    //Configurar para usar appsettings.json t appsettings.{Environment}.json
-    //Alternativa de "builder.Configuration.AddJsonFile("appsettings.json", optional: false,reloadOnChange: true);"
-// builder.Configuration
-//     .SetBasePath(Directory.GetCurrentDirectory())
-//     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-//     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-//     .AddEnvironmentVariables();
-
-// Configure the HTTP request pipeline.
+    
+// Configurar para usar appsettings.json y appsettings.{Environment}.json
 builder.Configuration.AddJsonFile("appsettings.json", optional: false,reloadOnChange: true);
 if (app.Environment.IsDevelopment()){    
         
@@ -139,8 +112,10 @@ if (app.Environment.IsDevelopment()){
 
 app.UseHttpsRedirection();
 
+//Para el token
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
- app.UseCors(); //builder.Services.AddCors() ya agrega CORS
+app.UseCors(); //builder.Services.AddCors() ya agrega CORS
 app.Run();

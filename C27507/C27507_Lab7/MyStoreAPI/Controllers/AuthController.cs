@@ -33,10 +33,7 @@ namespace MyStoreAPI.Controllers{
             
             // Accediendo a las propiedades de userDataFromUI
             var userName = userDataFromUI.userName;
-            var userPassword = userDataFromUI.userPassword;
-
-            Console.WriteLine(userName);
-            Console.WriteLine(userPassword);            
+            var userPassword = userDataFromUI.userPassword;     
 
             if (userDataFromUI is null) return BadRequest("Invalid client request");
             if (userName is null || string.IsNullOrEmpty(userName) ) return BadRequest("Invalid client request");            
@@ -74,12 +71,11 @@ namespace MyStoreAPI.Controllers{
                         issuer: "https://localhost:7161",
                         audience: "https://localhost:7161",
                         claims: claims,
-                        expires: DateTime.Now.AddMinutes(30),
+                        expires: DateTime.Now.AddMinutes(1),
                         signingCredentials: signinCredentials
                     );
 
-                    var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-                    Console.WriteLine(tokenString);
+                    var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);                    
                     return Ok(new AuthenticatedResponse { Token = tokenString });
                 }
             }
