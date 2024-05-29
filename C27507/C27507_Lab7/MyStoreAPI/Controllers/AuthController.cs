@@ -4,6 +4,7 @@ using MyStoreAPI.Models;
 using Core;
 
 //JWT Authentication
+using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -21,10 +22,23 @@ namespace MyStoreAPI.Controllers{
     public class authController : ControllerBase{
 
         private readonly IHostEnvironment hostEnvironment;
+        //Para poder leer desde appsettings.Development.json
+        private readonly IConfiguration configurationApp;
+
+        //lista con los usuarios y sus password (se llena dependiendo del constructor)
+        private readonly IEnumerable<LoginModel> listOfAllUsers;
 
         public authController(IHostEnvironment hostEnvironment){
             this.hostEnvironment = hostEnvironment;
         }
+
+        //Constructor para los Test
+        // public authController(IHostEnvironment hostEnvironment,IConfiguration configurationApp, int tagNumber){
+
+        //     if(tagNumber != 0) throw new ArgumentException("A");
+        //     this.hostEnvironment = hostEnvironment;
+        //     this.configurationApp = configurationApp;
+        // }
 
         [HttpPost]
         [AllowAnonymous]
@@ -40,7 +54,7 @@ namespace MyStoreAPI.Controllers{
             if (userPassword is null || string.IsNullOrEmpty(userPassword) ) return BadRequest("Invalid client request");            
 
             if (hostEnvironment.IsDevelopment()){
-                this.mockDataUsers();
+                this.mockDataUsers();//para llenar la lista estatica de Usuarios en caso de no usar los de appsettings.Development.json
 
                 //revisamos la lista de usuarios estatica y btenemos sus roles
                 //bool isUserValid = User.allUsersData.FirstOrDefault(u => u.userName == loginUser.userName && u.userPassword == loginUser.userPassword);
