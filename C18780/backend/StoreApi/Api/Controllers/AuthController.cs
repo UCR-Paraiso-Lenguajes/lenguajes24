@@ -25,9 +25,6 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> LoginAsync([FromBody] LoginModel user)
     {
-        Console.WriteLine(user.UserName);
-        Console.WriteLine(user.Password);
-
         if (user is null)
         {
             return BadRequest("Invalid client request");
@@ -57,7 +54,6 @@ public class AuthController : ControllerBase
                 );
 
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-                Console.WriteLine(tokenString);
                 return Ok(new AuthenticatedResponse { Token = tokenString });
             }
 
