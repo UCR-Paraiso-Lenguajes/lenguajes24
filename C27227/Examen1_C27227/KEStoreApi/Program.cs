@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Core;
 using KEStoreApi.Data;
 
@@ -5,7 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -18,17 +18,27 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader();
     });
 });
-var app = builder.Build();
-
-builder.Configuration.AddJsonFile("appsettings.json", optional:false, reloadOnChange:true);
-string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
-DatabaseConfiguration.Init(connection);
-// Add CORS
 
 // Configure the HTTP request pipeline.
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+    string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value;
+    string DB_Value = Environment.GetEnvironmentVariable("DB");
+
+    if (!string.IsNullOrEmpty(DB_Value))
+    {
+        connection = DB_Value;
+    }
+    DatabaseConfiguration.Init(connection);
+    DatabaseStore.Store_MySql();
+}
+
+// Build the application
+var app = builder.Build();
+
 if (app.Environment.IsDevelopment())
 {
-    DatabaseStore.Store_MySql();
     app.UseSwagger();
     app.UseSwaggerUI();
 }

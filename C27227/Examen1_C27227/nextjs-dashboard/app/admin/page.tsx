@@ -4,6 +4,8 @@ import Link from 'next/link';
 import "bootstrap/dist/css/bootstrap.min.css";
 import '@/app/ui/styles/login.css';
 
+
+
 const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +26,7 @@ const LoginForm = () => {
       }, 2000);
       return;
     }
-    if (password.trim() === '') {
+    if (password.trim() === '') {c
       setWarningPassword(true);
       setTimeout(() => {
         setWarningPassword(false);
