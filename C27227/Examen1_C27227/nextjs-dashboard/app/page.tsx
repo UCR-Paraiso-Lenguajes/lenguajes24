@@ -97,7 +97,7 @@ const Page = () => {
       throw new Error('Failed to fetch data: ' + error.message);
     }
   };
-
+  //Busca por barra de busqueda
   const fetchProductsBySearch = async (productName, categoryIds) => {
     try {
       const url = new URL('http://localhost:5072/api/store/search');
