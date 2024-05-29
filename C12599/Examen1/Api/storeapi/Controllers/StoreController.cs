@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using storeapi.Models;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace storeapi.Controllers
 {
@@ -10,6 +11,7 @@ namespace storeapi.Controllers
     public class storeController : ControllerBase
     {
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetStore()
         {
             // Obtener la instancia de la tienda

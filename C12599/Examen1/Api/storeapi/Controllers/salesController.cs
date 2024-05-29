@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using storeapi.Database;
 using storeapi.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace storeapi.Controllers
 {
@@ -11,7 +12,7 @@ namespace storeapi.Controllers
     [ApiController]
     public class SalesController : ControllerBase
     {
-        [HttpGet("transactions")]
+        [HttpGet("transactions"), Authorize(Roles ="Admin")]
         public async Task<IActionResult> GetTransactions([FromQuery] string date)
         {
            if (string.IsNullOrWhiteSpace(date))

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Microsoft.AspNetCore.Authorization;
 using storeapi.Models;
 
 namespace storeapi.Controllers
@@ -8,17 +8,23 @@ namespace storeapi.Controllers
     [ApiController]
     public class PaymentController : ControllerBase
     {
+        private readonly Payment _paymentInstance;
+
+        public PaymentController()
+        {
+            _paymentInstance = Payment.Instance;
+        }
+
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetPayment()
         {
-            var paymentInstance = Payment.Instance;
-
-            if (paymentInstance == null)
+            if (_paymentInstance == null)
             {
                 return StatusCode(500, "La instancia de Payment no está disponible.");
             }
 
-            return Ok(paymentInstance);
+            return Ok(_paymentInstance);
         }
     }
 }
