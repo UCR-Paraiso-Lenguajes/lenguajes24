@@ -38,19 +38,16 @@ namespace UT{
         public void SetUp(){
 
             mockHostEnvironment = new Mock<IHostEnvironment>();
+            mockHostEnvironment.Setup(e => e.EnvironmentName).Returns("Development");
             authController = new authController(mockHostEnvironment.Object);
             
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.Development.json")
                 .Build();
-
-            // var configuration = new ConfigurationBuilder()
-            // .SetBasePath(Directory.GetCurrentDirectory())
-            // .AddJsonFile("appsettings.Development.json")
-            // .Build();
-
+            
             var testUsers = configuration.GetSection("TestUsers").Get<List<TestUser>>();
 
+            //Reemplaza a mockdataUsers, ahora usamos los usuarios de appsettings.Development.json
             foreach (var user in testUsers){
                 new UserAccount(user.UserName, user.UserPassword, user.UserRoles.Select(role => new Claim(ClaimTypes.Role, role)).ToList());
             }
@@ -75,7 +72,7 @@ namespace UT{
         public async Task InvalidPassWord(){
             
             var userData = new LoginModel("varo", "123456");
-            var response = await authController.LoginAsync(userData);            
+            var response = await authController.LoginAsync(userData);
             Assert.NotNull(response);
             Assert.IsInstanceOf<UnauthorizedResult>(response);
         }
