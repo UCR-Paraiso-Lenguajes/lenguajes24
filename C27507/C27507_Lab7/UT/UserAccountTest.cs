@@ -71,7 +71,7 @@ namespace UT{
         [Test]
         public async Task InvalidPassWord(){
             
-            var userData = new LoginModel("varo", "123456");
+            var userData = new LoginModel("varo", "aaa");
             var response = await authController.LoginAsync(userData);
             Assert.NotNull(response);
             Assert.IsInstanceOf<UnauthorizedResult>(response);
