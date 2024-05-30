@@ -57,6 +57,8 @@ jobs:
         cd C27227/Examen1_C27227
         docker image build -t kensc/lenguajes2024api:latest .
         docker image build -t kensc/lenguajes2024api:0.0.1 .
+        echo "-------------------------------------------------------------------------------------------------------------------"
+        echo "${{ secrets.DOCKERHUBPASSC27227  }}"
         echo "${{ secrets.DOCKERHUBPASSC27227  }}" | docker login -u "ks7269281@gmail.com" --password-stdin
         docker push kensc/lenguajes2024api:latest
         docker push kensc/lenguajes2024api:0.0.1
