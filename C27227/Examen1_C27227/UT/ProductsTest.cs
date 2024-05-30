@@ -44,7 +44,7 @@ namespace Tests
             var products = await _productsInstance.GetProductsByCategory(categoryIds);
             Assert.IsNotNull(products);
             Assert.IsInstanceOf<List<Product>>(products);
-            Assert.AreEqual(8, products.Count); // Debe devolver 6 productos
+            Assert.AreEqual(6, products.Count); // Debe devolver 6 productos
         }
 
         [Test]
