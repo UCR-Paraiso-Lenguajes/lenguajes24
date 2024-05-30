@@ -33,7 +33,7 @@ public class Db
             "IF EXISTS (SELECT 1 FROM sys.databases WHERE name = 'andromeda_store') DROP DATABASE andromeda_store;",
             "CREATE DATABASE andromeda_store;",
             "USE andromeda_store;",
-            "CREATE TABLE products (id CHAR(36) PRIMARY KEY, name VARCHAR(100), description VARCHAR(100), "
+            "CREATE TABLE products (id CHAR(36) PRIMARY KEY, name VARCHAR(100), description VARCHAR(255), "
                 + "image_Url VARCHAR(MAX), price DECIMAL(10, 2), category INT);",
             "CREATE TABLE payment_method (id INT PRIMARY KEY, name VARCHAR(20), description VARCHAR(100), enabled BIT)",
             "CREATE TABLE sales (id INT PRIMARY KEY IDENTITY(1,1), address VARCHAR(100), "
