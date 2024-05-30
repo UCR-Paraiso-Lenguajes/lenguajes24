@@ -45,13 +45,27 @@ jobs:
         run: |
           cd B66291/Devops/lab_10_b66291
           dotnet test --no-build --verbosity normal
-  publish:
+  publish-Api:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Build & Push Image
-        run: |
-          cd clases/apicsharp/Lab7
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+          cd B66291/Devops/lab_10_b66291
           echo "${{ secrets.DOCKERHUBPASSB66291 }}" | docker login -u "jaziel.rojas@ucr.ac.cr" --password-stdin
           docker image build -t jazielrs1/len2024:latest .
+          docker image build -t jazielrs1/len2024:0.0.1 .
           docker push jazielrs1/len2024:latest
+          docker push jazielrs1/len2024:0.0.1 
+  publish-UI:   
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+          cd B66291/Devops/UI/local
+          echo "${{ secrets.DOCKERHUBPASSB66291 }}" | docker login -u "jaziel.rojas@ucr.ac.c" --password-stdin
+          docker image build -t jazielrs1/len2024ui:latest . 
+          docker image build -t jazielrs1/len2024ui:0.0.1 . 
+          docker push jazielrs1/len2024ui:latest
+          docker push jazielrs1/len2024ui:0.0.1  
