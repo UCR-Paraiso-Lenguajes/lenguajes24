@@ -37,76 +37,76 @@ public sealed class StoreDB
 
             // Create the products table if it does not exist
             string createTableQuery = @"
-        DROP DATABASE IF EXISTS store;
-        CREATE DATABASE store;
-        USE store;
+                DROP DATABASE IF EXISTS store;
+                CREATE DATABASE store;
+                USE store;
 
-        CREATE TABLE IF NOT EXISTS paymentMethods (
-            paymentId INT PRIMARY KEY,
-            paymentName VARCHAR(30) NOT NULL
-        );
+                CREATE TABLE IF NOT EXISTS paymentMethods (
+                    paymentId INT PRIMARY KEY,
+                    paymentName VARCHAR(30) NOT NULL
+                );
 
-        CREATE TABLE IF NOT EXISTS products (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            imageURL VARCHAR(200) NOT NULL,
-            name VARCHAR(100) NOT NULL,
-            price DECIMAL(10, 2) NOT NULL,
-            description VARCHAR(200) NOT NULL,
-            category INT NOT NULL
-        );
+                CREATE TABLE IF NOT EXISTS products (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    imageURL VARCHAR(200) NOT NULL,
+                    name VARCHAR(100) NOT NULL,
+                    price DECIMAL(10, 2) NOT NULL,
+                    description VARCHAR(200) NOT NULL,
+                    category INT NOT NULL
+                );
 
-        CREATE TABLE IF NOT EXISTS sales (
-            Id INT AUTO_INCREMENT PRIMARY KEY,
-            purchase_date DATETIME NOT NULL,
-            total DECIMAL(10, 2) NOT NULL,
-            payment_method INT NOT NULL,
-            purchase_number VARCHAR(50) NOT NULL,
-            INDEX idx_purchase_number (purchase_number),
-            FOREIGN KEY (payment_method) REFERENCES paymentMethods(paymentId)
-        );
+                CREATE TABLE IF NOT EXISTS sales (
+                    Id INT AUTO_INCREMENT PRIMARY KEY,
+                    purchase_date DATETIME NOT NULL,
+                    total DECIMAL(10, 2) NOT NULL,
+                    payment_method INT NOT NULL,
+                    purchase_number VARCHAR(50) NOT NULL,
+                    INDEX idx_purchase_number (purchase_number),
+                    FOREIGN KEY (payment_method) REFERENCES paymentMethods(paymentId)
+                );
 
-        CREATE TABLE IF NOT EXISTS saleLines (
-            productId INT,
-            purchaseNumber VARCHAR(50),
-            price DECIMAL(10,2) NOT NULL,
-            PRIMARY KEY (productId, purchaseNumber),
-            FOREIGN KEY (productId) REFERENCES products(id),
-            CONSTRAINT fk_purchaseNumber FOREIGN KEY (purchaseNumber) REFERENCES sales(purchase_number)
-        );";
+                CREATE TABLE IF NOT EXISTS saleLines (
+                    productId INT,
+                    purchaseNumber VARCHAR(50),
+                    price DECIMAL(10,2) NOT NULL,
+                    PRIMARY KEY (productId, purchaseNumber),
+                    FOREIGN KEY (productId) REFERENCES products(id),
+                    CONSTRAINT fk_purchaseNumber FOREIGN KEY (purchaseNumber) REFERENCES sales(purchase_number)
+                );";
 
-        string insertDataQuery = @"
-        USE store;
+            string insertDataQuery = @"
+                USE store;
 
-        INSERT INTO paymentMethods (paymentId, paymentName)
-        VALUES 
-            (0, 'Cash'),
-            (1, 'Sinpe');
+                INSERT INTO paymentMethods (paymentId, paymentName)
+                VALUES 
+                    (0, 'Cash'),
+                    (1, 'Sinpe');
 
-        INSERT INTO sales (purchase_date, total, payment_method, purchase_number) 
-        VALUES
-            ('2024-04-27 08:00:00', 50.00, 1, 'A123456789'),
-            ('2024-04-27 12:30:00', 35.75, 0, 'B987654321'),
-            ('2024-04-28 10:15:00', 75.20, 1, 'C246813579'),
-            ('2024-04-28 14:45:00', 20.50, 0, 'D135792468'),
-            ('2024-04-29 09:20:00', 45.60, 0, 'E987654321'),
-            ('2024-04-29 16:00:00', 90.00, 1, 'F123456789'),
-            ('2024-04-30 11:45:00', 60.30, 0, 'G246813579'),
-            ('2024-04-30 13:20:00', 25.75, 1, 'H135792468'),
-            ('2024-05-01 08:30:00', 55.00, 0, 'I987654321'),
-            ('2024-05-01 15:10:00', 70.25, 1, 'J123456789');
+                INSERT INTO sales (purchase_date, total, payment_method, purchase_number) 
+                VALUES
+                    ('2024-04-27 08:00:00', 50.00, 1, 'A123456789'),
+                    ('2024-04-27 12:30:00', 35.75, 0, 'B987654321'),
+                    ('2024-04-28 10:15:00', 75.20, 1, 'C246813579'),
+                    ('2024-04-28 14:45:00', 20.50, 0, 'D135792468'),
+                    ('2024-04-29 09:20:00', 45.60, 0, 'E987654321'),
+                    ('2024-04-29 16:00:00', 90.00, 1, 'F123456789'),
+                    ('2024-04-30 11:45:00', 60.30, 0, 'G246813579'),
+                    ('2024-04-30 13:20:00', 25.75, 1, 'H135792468'),
+                    ('2024-05-01 08:30:00', 55.00, 0, 'I987654321'),
+                    ('2024-05-01 15:10:00', 70.25, 1, 'J123456789');
 
-        INSERT INTO sales (purchase_date, total, payment_method, purchase_number) 
-        VALUES
-            ('2024-04-18 09:00:00', 40.00, 1, 'X123456789'),
-            ('2024-04-18 14:30:00', 55.25, 0, 'Y987654321'),
-            ('2024-04-19 11:45:00', 70.80, 1, 'Z246813579'),
-            ('2024-04-19 16:15:00', 30.50, 0, 'W135792468'),
-            ('2024-04-20 08:20:00', 65.40, 0, 'V987654321'),
-            ('2024-04-20 12:00:00', 80.00, 1, 'U123456789'),
-            ('2024-04-21 10:30:00', 50.70, 0, 'T246813579'),
-            ('2024-04-21 13:45:00', 35.25, 1, 'S135792468'),
-            ('2024-04-22 09:15:00', 60.00, 0, 'R987654321'),
-            ('2024-04-22 15:40:00', 75.25, 1, 'Q123456789');";
+                INSERT INTO sales (purchase_date, total, payment_method, purchase_number) 
+                VALUES
+                    ('2024-04-18 09:00:00', 40.00, 1, 'X123456789'),
+                    ('2024-04-18 14:30:00', 55.25, 0, 'Y987654321'),
+                    ('2024-04-19 11:45:00', 70.80, 1, 'Z246813579'),
+                    ('2024-04-19 16:15:00', 30.50, 0, 'W135792468'),
+                    ('2024-04-20 08:20:00', 65.40, 0, 'V987654321'),
+                    ('2024-04-20 12:00:00', 80.00, 1, 'U123456789'),
+                    ('2024-04-21 10:30:00', 50.70, 0, 'T246813579'),
+                    ('2024-04-21 13:45:00', 35.25, 1, 'S135792468'),
+                    ('2024-04-22 09:15:00', 60.00, 0, 'R987654321'),
+                    ('2024-04-22 15:40:00', 75.25, 1, 'Q123456789');";
 
             // Ejecutar la consulta para crear la base de datos y las tablas
             using (var command = new MySqlCommand(createTableQuery, connection))
