@@ -60,8 +60,7 @@ public sealed class StoreDB
                     purchase_date DATETIME NOT NULL,
                     total DECIMAL(10, 2) NOT NULL,
                     payment_method INT NOT NULL,
-                    purchase_number VARCHAR(50) NOT NULL,
-                    INDEX idx_purchase_number (purchase_number),
+                    purchase_number VARCHAR(50) NOT NULL UNIQUE,
                     FOREIGN KEY (payment_method) REFERENCES paymentMethods(paymentId)
                 );
 
