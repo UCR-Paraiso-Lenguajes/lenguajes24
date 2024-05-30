@@ -11,9 +11,7 @@ import { UserAccountAPI } from "../models-data/UserAccountAPI";
         //let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV;
         let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
         let directionAPI = `${urlByReactEnviroment}/api/Store`;
-
-        console.log("Direccion: " + directionAPI);
-        
+                
         try {
 
             const response = await fetch(directionAPI)
@@ -162,8 +160,7 @@ import { UserAccountAPI } from "../models-data/UserAccountAPI";
                 const errorMessage = await responsePost.text();                
                 return errorMessage;
             }        
-            const userToken = await responsePost.json();                      
-            console.log(userToken);
+            const userToken = await responsePost.json();                                  
             return userToken;
             
         } catch (error) {            
