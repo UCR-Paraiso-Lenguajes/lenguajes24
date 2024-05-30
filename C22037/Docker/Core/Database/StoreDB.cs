@@ -71,7 +71,7 @@ public sealed class StoreDB
                     price DECIMAL(10,2) NOT NULL,
                     PRIMARY KEY (productId, purchaseNumber),
                     FOREIGN KEY (productId) REFERENCES products(id),
-                    CONSTRAINT fk_purchaseNumber FOREIGN KEY (purchaseNumber) REFERENCES sales(purchase_number)
+                    CONSTRAINT fk_purchaseNumber1 FOREIGN KEY (purchaseNumber) REFERENCES store.sales(purchase_number)
                 );";
 
             string insertDataQuery = @"
