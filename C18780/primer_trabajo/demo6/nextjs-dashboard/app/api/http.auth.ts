@@ -17,7 +17,6 @@ export async function login(user: LoginModel): Promise<AuthenticatedResponse> {
     });
 
     if (!response.ok) {
-        console.log("Fallo login");
         throw new Error('Failed to login');
     }
 

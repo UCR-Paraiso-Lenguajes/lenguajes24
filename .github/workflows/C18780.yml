@@ -2,9 +2,9 @@ name: C18780
 
 on:
   push:
-    branches: [ "DevOps_C18780" ]
+    branches: [ "C18780" ]
   pull_request:
-    branches: [ "DevOps_C18780" ]
+    branches: [ "C18780" ]
 
 jobs:
   build:

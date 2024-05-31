@@ -9,7 +9,7 @@ namespace StoreApiTests
         private IConfiguration _configuration;
         private IProductRepository _productRepository;
         private ISalesRepository _salesRepository;
-        [SetUp]
+        [OneTimeSetUp]
         public async Task Setup()
         {
             _configuration = new ConfigurationBuilder()

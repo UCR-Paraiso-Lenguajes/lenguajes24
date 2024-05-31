@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { LoginModel, login } from '../api/http.auth';
 import '../ui/styles/login.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { jwtDecode } from 'jwt-decode';
 
 export default function Page() {
     const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     const router = useRouter();
 
@@ -20,14 +22,15 @@ export default function Page() {
 
         try {
             const response = await login(user);
+            const decodedToken = jwtDecode(response.token);
+            const expirationTime = decodedToken.exp ? decodedToken.exp : 0;
+            const time = Math.floor(Date.now() / 1000);
+            const cookieMaxTime = expirationTime - time;
+            document.cookie = `token=${response.token}; max-age=${cookieMaxTime}; path=/`
 
-            document.cookie = `token=${response.token}; max-age=${60 * 5}; path=/`
-
-            // Redirecciona al dashboard o a la página principal
-            router.push('/admin');
+            router.push('/admin/init');
         } catch (error) {
-            console.error('Error logging in:', error);
-            alert('Invalid username or password');
+            setShowModal(true);
         } finally {
             setIsLoading(false);
         }
@@ -45,9 +48,19 @@ export default function Page() {
                             <div className="container">
                                 <div className="row">
                                     <div className="col-lg-10 col-xl-7 mx-auto">
+                                        {showModal &&
+                                            <><div className="alert alert-danger d-flex align-items-center" role="alert">
+                                                <svg className="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                                                    <use xlinkHref="#exclamation-triangle-fill" />
+                                                </svg>
+                                                <div>
+                                                    Incorrect mail or password                                                </div>
+                                            </div></>
+                                        }
                                         <h3 className="display-4">Abacaxi</h3>
                                         <p className="text-muted mb-4">The best online store!.</p>
                                         <form onSubmit={handleSubmit}>
+
                                             <div className="form-group mb-3">
                                                 <input id="inputEmail" type="email" placeholder="Email address" required autoFocus className="form-control rounded-pill border-0 shadow-sm px-4" onChange={(e) => setUserName(e.target.value)} />
                                             </div>
@@ -59,7 +72,6 @@ export default function Page() {
                                                 <label htmlFor="customCheck1" className="custom-control-label">Remember password</label>
                                             </div>
 
-                                            {/* Inputs y demás elementos del formulario */}
                                             <button type="submit" className="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm">
                                                 {isLoading ? 'Loading...' : 'Sign in'}
                                             </button>

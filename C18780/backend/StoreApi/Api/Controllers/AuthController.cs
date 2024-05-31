@@ -30,7 +30,6 @@ public class AuthController : ControllerBase
             return BadRequest("Invalid client request");
         }
 
-
         if (hostEnvironment.IsDevelopment())
         {
 
@@ -38,7 +37,7 @@ public class AuthController : ControllerBase
             {
                 var claims = new List<Claim>
                         {
-                            new Claim(ClaimTypes.Name, "jean@gmail.com"),
+                            new Claim(ClaimTypes.Name, "jean@gmail.com"),//appseting 
                             new Claim(ClaimTypes.Role, "Operator"),
                             new Claim(ClaimTypes.Role, "Admin"),
                             new Claim(ClaimTypes.Role, "Customer")
