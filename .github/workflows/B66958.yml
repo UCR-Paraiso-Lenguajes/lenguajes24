@@ -2,9 +2,9 @@ name: B66958
 
 on:
   push:
-    branches: [ "Lab12_B66958" ]
+    branches: [ "B66958" ]
   pull_request:
-    branches: [ "Lab12_B66958" ]
+    branches: [ "B66958" ]
 
 jobs:
   test:
