@@ -5,9 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace TodoApi.Controllers
 {
@@ -30,33 +32,30 @@ namespace TodoApi.Controllers
             if (user == null) return BadRequest("Invalid client request.");
             if (user.User == null || user.Password == null) return BadRequest("Invalid client request.");
 
-            if (hostEnvironment.IsDevelopment())
+            var existingUser = Account.UsersData.FirstOrDefault(userD =>
+                userD.User == user.User && userD.Password == user.Password);
+
+            if (existingUser != null)
             {
-                var existingUser = Account.UsersData.FirstOrDefault(userD => 
-                    userD.User == user.User && userD.Password == user.Password);
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, existingUser.User)
+        };
+                claims.AddRange(existingUser.Claims);
 
-                if (existingUser != null)
-                {
-                    var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, existingUser.User)
-                    };
-                    claims.AddRange(existingUser.Claims);
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
+                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
-                    var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
-                    var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+                var tokenOptions = new JwtSecurityToken(
+                    issuer: "https://localhost:7067",
+                    audience: "https://localhost:7067",
+                    claims: claims,
+                    expires: DateTime.Now.AddMinutes(2),
+                    signingCredentials: signinCredentials
+                );
 
-                    var tokenOptions = new JwtSecurityToken(
-                        issuer: "https://localhost:7067",
-                        audience: "https://localhost:7067",
-                        claims: claims,
-                        expires: DateTime.Now.AddMinutes(2),
-                        signingCredentials: signinCredentials
-                    );
-
-                    var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-                    return Ok(new AuthenticatedResponse { Token = tokenString });
-                }
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+                return Ok(new AuthenticatedResponse { Token = tokenString });
             }
 
             return Unauthorized();

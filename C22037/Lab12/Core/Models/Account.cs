@@ -26,11 +26,10 @@ namespace TodoApi
 
         public static void CreateMockUsers()
         {
-            new Account("aaron@gmail.com", "123456", new List<Claim> { new Claim(ClaimTypes.Name, "aaron@gmail.com"), new Claim(ClaimTypes.Role, "Admin") });
-            new Account("aaron.chacon@gmal.com", "111111", new List<Claim> { new Claim(ClaimTypes.Name, "aaron.chacon@gmal.com"), new Claim(ClaimTypes.Role, "User") });
-            new Account("alonso.chacon@gmail.com", "333333", new List<Claim> { new Claim(ClaimTypes.Name, "alonso.chacon@gmail.com"), new Claim(ClaimTypes.Role, "Admin") });
-            new Account("chacon.aaron@gmail.com", "444444", new List<Claim> { new Claim(ClaimTypes.Name, "chacon.aaron@gmail.com"), new Claim(ClaimTypes.Role, "Admin") });
+            Users.Add(new Account("aaron@gmail.com", "123456", new List<Claim> { new Claim(ClaimTypes.Name, "aaron@gmail.com"), new Claim(ClaimTypes.Role, "Admin") }));
+            Users.Add(new Account("aaron.chacon@gmal.com", "111111", new List<Claim> { new Claim(ClaimTypes.Name, "aaron.chacon@gmal.com"), new Claim(ClaimTypes.Role, "User") }));
+            Users.Add(new Account("alonso.chacon@gmail.com", "333333", new List<Claim> { new Claim(ClaimTypes.Name, "alonso.chacon@gmail.com"), new Claim(ClaimTypes.Role, "Admin") }));
+            Users.Add(new Account("chacon.aaron@gmail.com", "444444", new List<Claim> { new Claim(ClaimTypes.Name, "chacon.aaron@gmail.com"), new Claim(ClaimTypes.Role, "Admin") }));
         }
-
     }
 }
