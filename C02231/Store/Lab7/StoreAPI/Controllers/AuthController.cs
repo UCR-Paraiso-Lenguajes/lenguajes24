@@ -76,7 +76,6 @@ namespace StoreAPI;
                     );
 
                     var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-                    Console.WriteLine(tokenString);
                     return Ok(new AuthenticatedResponse { Token = tokenString });
                 }
             }
