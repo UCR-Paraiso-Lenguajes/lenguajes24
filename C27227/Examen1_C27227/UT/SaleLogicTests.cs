@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using KEStoreApi;
 using Core;
 using static KEStoreApi.SaleLogic;
+using KEStoreApi.Data;
 
 namespace UnitTests
 {
@@ -16,6 +17,9 @@ namespace UnitTests
         public void Setup()
         
         {
+             var dbTest = "Server=localhost;Database=mysql;Uid=root;Pwd=123456;";
+            DatabaseConfiguration.Init(dbTest);
+            DatabaseStore.Store_MySql();
              string connectionString = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
             DatabaseConfiguration.Init(connectionString);
 

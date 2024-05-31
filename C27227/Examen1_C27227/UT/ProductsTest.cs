@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core;
 using KEStoreApi;
+using KEStoreApi.Data;
 
 namespace Tests
 {
@@ -27,7 +28,10 @@ namespace Tests
             };
 
             _productsInstance = Products.InitializeFromMemory(_productsList);
-            var dbTest = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
+            var dbTest = "Server=localhost;Database=mysql;Uid=root;Pwd=123456;";
+            DatabaseConfiguration.Init(dbTest);
+            DatabaseStore.Store_MySql();
+            dbTest = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
             DatabaseConfiguration.Init(dbTest);
             products = await Products.InitializeAsync();
         }
@@ -40,7 +44,7 @@ namespace Tests
             var products = await _productsInstance.GetProductsByCategory(categoryIds);
             Assert.IsNotNull(products);
             Assert.IsInstanceOf<List<Product>>(products);
-            Assert.AreEqual(8, products.Count); // Debe devolver 6 productos
+            Assert.AreEqual(6, products.Count); // Debe devolver 6 productos
         }
 
         [Test]
