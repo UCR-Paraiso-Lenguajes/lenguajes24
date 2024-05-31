@@ -1,5 +1,8 @@
 using Core.Models;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Tests
 {
@@ -9,19 +12,19 @@ namespace Tests
         [Test]
         public void TestGetCategoryById()
         {
-            var expectedCategory = new ProductCategoryStruct(1, "Electrónica");
+            var expectedCategory = new Category(1, "Electrónica");
             bool categoryFound = false;
 
-            ProductCategoryStruct resultCategory;
+            Category resultCategory;
             try
             {
-                resultCategory = Category.GetCategoryById(1);
+                resultCategory = Categories.GetCategoryById(1);
                 categoryFound = true;
             }
             catch (Exception ex)
             {
                 Assert.Fail($"Unexpected exception: {ex.Message}");
-                resultCategory = default; 
+                resultCategory = default;
             }
 
             Assert.IsTrue(categoryFound, "Category should have been found");
@@ -32,24 +35,18 @@ namespace Tests
         [Test]
         public void TestGetCategories()
         {
-            var category = Category.Instance;
-            var expectedCategories = new ProductCategoryStruct[]
+            var expectedCategories = new Category[]
             {
-                new ProductCategoryStruct(1, "Electrónica"),
-                new ProductCategoryStruct(2, "Moda"),
-                new ProductCategoryStruct(3, "Hogar y jardín"),
-                new ProductCategoryStruct(4, "Deportes y actividades al aire libre"),
-                new ProductCategoryStruct(5, "Belleza y cuidado personal"),
-                new ProductCategoryStruct(6, "Alimentación y bebidas"),
-                new ProductCategoryStruct(7, "Libros y entretenimiento"),
-                new ProductCategoryStruct(8, "Tecnología"),
-                new ProductCategoryStruct(9, "Deportes")
+                new Category(1, "Electrónica"),
+                new Category(2, "Hogar y oficina"),
+                new Category(3, "Entretenimiento"),
+                new Category(4, "Tecnología"),
             };
 
-            IEnumerable<ProductCategoryStruct> resultCategories = null;
+            IEnumerable<Category> resultCategories = null;
             try
             {
-                resultCategories = Category.GetCategories();
+                resultCategories = Categories.GetCategories();
             }
             catch (Exception ex)
             {

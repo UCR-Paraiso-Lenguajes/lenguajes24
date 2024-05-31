@@ -1,3 +1,4 @@
+using Store_API.Database;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -20,9 +21,20 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    string connectionString = "server=localhost;user=root;password=123456;database=Store_API";
+    DB_API dbApi= new DB_API(connectionString);
+    string DB_value = Environment.GetEnvironmentVariable("DB");
+    if (!String.IsNullOrEmpty(DB_value))
+    {
+        Console.WriteLine("varible is not empty", connectionString);
+        connectionString = DB_value;
+    }
+
+    dbApi.ConnectDB(connectionString);
     app.UseSwagger();
     app.UseSwaggerUI();
 }
