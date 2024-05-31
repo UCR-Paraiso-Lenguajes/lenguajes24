@@ -20,9 +20,12 @@ import { mock } from 'node:test';
 //Funciones
 import { validateUserAndGetToken } from '../src/api/get-post-api';
 
+//Para manejar tokens JWT
+const { default: jwt_decode } = require("jwt-decode");
+
 export default function Login(){
 
-	const router = useRouter();       
+	const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 	const [formStatus, setFormStatus] = useState(true);	
@@ -38,6 +41,17 @@ export default function Login(){
 		}		
     };
 
+	//Para verificar si recibimos un token o un mensaje de error del fetch
+	function validTokenFormat(token: string): boolean {		
+		const parts = token.split('.');
+		
+		// Verificar si tiene tres partes
+		if (parts.length === 3) {
+			return true;
+		}
+		return false;		
+	}
+
 	async function getLoginCredentials(){
 		
 		try {			
@@ -47,10 +61,12 @@ export default function Login(){
 			};
 			let loginToken = await validateUserAndGetToken(userData);
 
-			if(loginToken !== null && loginToken !== undefined){				
-				sessionStorage.setItem("loginToken",loginToken);
-				router.push("/admin/init/sales_report")				
-			}			
+			if(loginToken !== null && loginToken !== undefined){
+				if (validTokenFormat(loginToken)) {				
+					sessionStorage.setItem("loginToken", loginToken);
+					router.push("/admin/init/sales_report");
+				}
+			}
 		} catch (error) {
 			//Desplegar errores de formulario			
 			setFormStatus(false);

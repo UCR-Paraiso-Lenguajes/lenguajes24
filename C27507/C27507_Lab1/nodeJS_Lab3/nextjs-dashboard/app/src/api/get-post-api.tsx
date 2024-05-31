@@ -5,6 +5,12 @@ import { RegisteredSaleAPI } from "../models-data/RegisteredSale";
 import { RegisteredSaleReport } from "../models-data/RegisteredSaleReport";
 import { RegisteredSaleWeek } from "../models-data/RegisteredSaleWeek";
 import { UserAccountAPI } from "../models-data/UserAccountAPI";
+import { useRouter } from 'next/navigation';
+
+import { jwtDecode } from 'jwt-decode';
+
+
+const { default: jwt_decode } = require("jwt-decode");
 
 
     export async function getAllProductsFromAPI():Promise<string | { productsFromStore: ProductAPI[], categoriesFromStore: CategoryAPI[] } | null> {
@@ -74,11 +80,24 @@ import { UserAccountAPI } from "../models-data/UserAccountAPI";
 
 
     export async function getRegisteredSalesFromAPI(data: any): Promise<string | RegisteredSaleReport | null> {
-        
+        //const router = useRouter();       
         let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
 
         let directionAPI = `${urlByReactEnviroment}/api/Sale`;
-        const loginToken = sessionStorage.getItem("loginToken");
+
+
+        //Validamos si el token ha expirado
+        let loginToken = sessionStorage.getItem("loginToken");
+        if (!loginToken) {            
+            window.location.reload();
+            return "Default Error";
+        }
+        let tokenFormat = jwtDecode(loginToken);
+        console.log(tokenFormat);
+
+        let todayDate = Date.now() / 1000;
+        let tokenLifeTime = tokenFormat.exp;
+        if (tokenLifeTime && tokenLifeTime < todayDate) window.location.reload();        
 
         //Especificacion POST
         let postConfig = {
@@ -95,10 +114,10 @@ import { UserAccountAPI } from "../models-data/UserAccountAPI";
         try {         
             let responsePost = await fetch(directionAPI,postConfig);
             if(!responsePost.ok){                
-                const errorMessage = await responsePost.text();                
+                const errorMessage = await responsePost.text();                                
                 return errorMessage;
             }        
-            const jsonRegisteredSales = await responsePost.json();            
+            let jsonRegisteredSales = await responsePost.json();            
 
             return jsonRegisteredSales.specificListOfRegisteredSales;
             
@@ -160,8 +179,9 @@ import { UserAccountAPI } from "../models-data/UserAccountAPI";
                 const errorMessage = await responsePost.text();                
                 return errorMessage;
             }        
-            const userToken = await responsePost.json();                                  
-            return userToken;
+            const userToken = await responsePost.json();
+            const tokenValue = userToken.token;            
+            return tokenValue;
             
         } catch (error) {            
             throw new Error('Failed to POST data: '+ error);
