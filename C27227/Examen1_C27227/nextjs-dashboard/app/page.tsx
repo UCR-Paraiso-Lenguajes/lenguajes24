@@ -1,4 +1,4 @@
-"use client"
+'use client';
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/app/ui/components/header';
 import Product from '@/app/ui/components/product';
@@ -8,6 +8,8 @@ import LoginForm from './admin/page';
 import "bootstrap/dist/css/bootstrap.min.css";
 import '@/app/ui/styles/app.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { decodeToken, checkTokenDate } from './hooks/jwtHooks';
+import { useRouter } from 'next/navigation';
 
 const Page = () => {
   const initialState = {
@@ -37,10 +39,26 @@ const Page = () => {
   const [currentView, setCurrentView] = useState('products');
   const [categories, setCategories] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const URLConection = process.env.NEXT_PUBLIC_API;
+  const router = useRouter();
+
   const [searchParams, setSearchParams] = useState({
     productName: '',
     categoryIds: []
   });
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("sessionToken");
+    if (token) {
+      const decodedToken = decodeToken(token);
+      const isTokenAlive = checkTokenDate(decodedToken?.exp);
+      if (!isTokenAlive) {
+        sessionStorage.removeItem("sessionToken");
+        sessionStorage.removeItem("expiracyToken");
+        router.push("/admin");
+      }
+    }
+  }, [router]);
 
   const handleShowLoginForm = () => {
     setCurrentView('login');
@@ -61,7 +79,7 @@ const Page = () => {
         return;
       }
 
-      const url = new URL('http://localhost:5072/api/Store/Products');
+      const url = new URL(URLConection + '/api/store/products');
       categoryIds.forEach(id => url.searchParams.append('categoryIds', id));
 
       const response = await fetch(url);
@@ -81,7 +99,7 @@ const Page = () => {
 
   const fetchAllProducts = async () => {
     try {
-      const response = await fetch('http://localhost:5072/api/Store');
+      const response = await fetch(URLConection + '/api/store');
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -97,10 +115,10 @@ const Page = () => {
       throw new Error('Failed to fetch data: ' + error.message);
     }
   };
-  //Busca por barra de busqueda
+
   const fetchProductsBySearch = async (productName, categoryIds) => {
     try {
-      const url = new URL('http://localhost:5072/api/store/search');
+      const url = new URL(URLConection + '/api/store/search');
       if (categoryIds) {
         categoryIds.forEach(id => url.searchParams.append('categoryIds', id));
       }
@@ -218,9 +236,11 @@ const Page = () => {
           </div>
         </div>
       ) : (
-        <div className='container'>
-          <div>No hay productos que coincidan con los criterios de búsqueda.</div>
-        </div>
+        currentView === 'products' && (
+          <div className='container'>
+            <div>No hay productos que coincidan con los criterios de búsqueda.</div>
+          </div>
+        )
       )}
       <div className='AddFromCarousel'>
         {currentView === 'products' && <button className="btn btn-primary" onClick={handleAddToCart}>Add to cart</button>}

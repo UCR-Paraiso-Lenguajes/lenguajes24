@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/address.css';
 import PaymentMethods from './payment_method';
+import { decodeToken, checkTokenDate } from '../../hooks/jwtHooks';
+import { useRouter } from 'next/navigation';
 
 const AddressForm = ({ onSubmit }) => {
   const [address, setAddress] = useState('');
   const [showPaymentMethod, setShowPaymentMethod] = useState(false);
   const [warning, setWarning] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("sessionToken");
+    if (token) {
+      const decodedToken = decodeToken(token);
+      const isTokenAlive = checkTokenDate(decodedToken?.exp);
+      if (!isTokenAlive) {
+        sessionStorage.removeItem("sessionToken");
+        sessionStorage.removeItem("expiracyToken");
+        router.push("/admin");
+      }
+    }
+  }, [router]);
 
   const handleInputChange = (event) => {
     if (!event || !event.target) {

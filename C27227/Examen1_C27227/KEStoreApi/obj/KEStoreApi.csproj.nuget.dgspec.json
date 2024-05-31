@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\LabC\\lenguajes24\\C27227\\Examen1_C27227\\KEStoreApi\\KEStoreApi.csproj": {}
+    "D:\\Devops\\lenguajes24\\C27227\\Examen1_C27227\\KEStoreApi\\KEStoreApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\LabC\\lenguajes24\\C27227\\Examen1_C27227\\Core\\Core.csproj": {
+    "D:\\Devops\\lenguajes24\\C27227\\Examen1_C27227\\Core\\Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\LabC\\lenguajes24\\C27227\\Examen1_C27227\\Core\\Core.csproj",
+        "projectUniqueName": "D:\\Devops\\lenguajes24\\C27227\\Examen1_C27227\\Core\\Core.csproj",
         "projectName": "Core",
-        "projectPath": "C:\\Users\\LabC\\lenguajes24\\C27227\\Examen1_C27227\\Core\\Core.csproj",
-        "packagesPath": "C:\\Users\\LabC\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\LabC\\lenguajes24\\C27227\\Examen1_C27227\\Core\\obj\\",
+        "projectPath": "D:\\Devops\\lenguajes24\\C27227\\Examen1_C27227\\Core\\Core.csproj",
+        "packagesPath": "C:\\Users\\Kendall\\.nuget\\packages\\",
+        "outputPath": "D:\\Devops\\lenguajes24\\C27227\\Examen1_C27227\\Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\LabC\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\Kendall\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -45,6 +43,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.4, )"
+            },
             "MySqlConnector": {
               "target": "Package",
               "version": "[2.3.6, )"
@@ -66,36 +68,34 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\LabC\\lenguajes24\\C27227\\Examen1_C27227\\KEStoreApi\\KEStoreApi.csproj": {
+    "D:\\Devops\\lenguajes24\\C27227\\Examen1_C27227\\KEStoreApi\\KEStoreApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\LabC\\lenguajes24\\C27227\\Examen1_C27227\\KEStoreApi\\KEStoreApi.csproj",
+        "projectUniqueName": "D:\\Devops\\lenguajes24\\C27227\\Examen1_C27227\\KEStoreApi\\KEStoreApi.csproj",
         "projectName": "KEStoreApi",
-        "projectPath": "C:\\Users\\LabC\\lenguajes24\\C27227\\Examen1_C27227\\KEStoreApi\\KEStoreApi.csproj",
-        "packagesPath": "C:\\Users\\LabC\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\LabC\\lenguajes24\\C27227\\Examen1_C27227\\KEStoreApi\\obj\\",
+        "projectPath": "D:\\Devops\\lenguajes24\\C27227\\Examen1_C27227\\KEStoreApi\\KEStoreApi.csproj",
+        "packagesPath": "C:\\Users\\Kendall\\.nuget\\packages\\",
+        "outputPath": "D:\\Devops\\lenguajes24\\C27227\\Examen1_C27227\\KEStoreApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\LabC\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\Kendall\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\LabC\\lenguajes24\\C27227\\Examen1_C27227\\Core\\Core.csproj": {
-                "projectPath": "C:\\Users\\LabC\\lenguajes24\\C27227\\Examen1_C27227\\Core\\Core.csproj"
+              "D:\\Devops\\lenguajes24\\C27227\\Examen1_C27227\\Core\\Core.csproj": {
+                "projectPath": "D:\\Devops\\lenguajes24\\C27227\\Examen1_C27227\\Core\\Core.csproj"
               }
             }
           }
@@ -115,9 +115,17 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.4, )"
+            },
             "Microsoft.EntityFrameworkCore.InMemory": {
               "target": "Package",
               "version": "[8.0.3, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.70, )"
             },
             "MySqlConnector": {
               "target": "Package",
@@ -147,7 +155,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

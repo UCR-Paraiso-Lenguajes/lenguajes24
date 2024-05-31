@@ -1,11 +1,19 @@
 {
   "version": 2,
-  "dgSpecHash": "tpRZPfzFgWDfpu9b4BWzKNVJsHhwpkBbyAdmD53w3dBNBGvQ4sHEYhE8njBE8D0XqX69y12m8aWhrn4lbZh4VA==",
+  "dgSpecHash": "Etv2K8bFSlI=",
   "success": true,
-  "projectFilePath": "C:\\Users\\LabC\\lenguajes24\\C27227\\Examen1_C27227\\Core\\Core.csproj",
+  "projectFilePath": "D:\\Devops\\lenguajes24\\C27227\\Examen1_C27227\\Core\\Core.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\LabC\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\7.0.1\\microsoft.extensions.logging.abstractions.7.0.1.nupkg.sha512",
-    "C:\\Users\\LabC\\.nuget\\packages\\mysqlconnector\\2.3.6\\mysqlconnector.2.3.6.nupkg.sha512"
+    "C:\\Users\\Kendall\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.4\\microsoft.aspnetcore.authentication.jwtbearer.8.0.4.nupkg.sha512",
+    "C:\\Users\\Kendall\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\7.0.1\\microsoft.extensions.logging.abstractions.7.0.1.nupkg.sha512",
+    "C:\\Users\\Kendall\\.nuget\\packages\\microsoft.identitymodel.abstractions\\7.1.2\\microsoft.identitymodel.abstractions.7.1.2.nupkg.sha512",
+    "C:\\Users\\Kendall\\.nuget\\packages\\microsoft.identitymodel.jsonwebtokens\\7.1.2\\microsoft.identitymodel.jsonwebtokens.7.1.2.nupkg.sha512",
+    "C:\\Users\\Kendall\\.nuget\\packages\\microsoft.identitymodel.logging\\7.1.2\\microsoft.identitymodel.logging.7.1.2.nupkg.sha512",
+    "C:\\Users\\Kendall\\.nuget\\packages\\microsoft.identitymodel.protocols\\7.1.2\\microsoft.identitymodel.protocols.7.1.2.nupkg.sha512",
+    "C:\\Users\\Kendall\\.nuget\\packages\\microsoft.identitymodel.protocols.openidconnect\\7.1.2\\microsoft.identitymodel.protocols.openidconnect.7.1.2.nupkg.sha512",
+    "C:\\Users\\Kendall\\.nuget\\packages\\microsoft.identitymodel.tokens\\7.1.2\\microsoft.identitymodel.tokens.7.1.2.nupkg.sha512",
+    "C:\\Users\\Kendall\\.nuget\\packages\\mysqlconnector\\2.3.6\\mysqlconnector.2.3.6.nupkg.sha512",
+    "C:\\Users\\Kendall\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.1.2\\system.identitymodel.tokens.jwt.7.1.2.nupkg.sha512"
   ],
   "logs": []
 }

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/paymentMethods.css';
+import { decodeToken, checkTokenDate } from '../../hooks/jwtHooks';
+import { useRouter } from 'next/navigation';
 
 const PaymentMethods = () => {
   const [paymentmethod, setpaymentmethod] = useState('');
@@ -10,6 +12,21 @@ const PaymentMethods = () => {
   const [purchaseNumber, setPurchaseNumber] = useState('');
   const tiendaPago = localStorage.getItem('tienda');
   const tiendaLocal = JSON.parse(tiendaPago);
+  const URLConection = process.env.NEXT_PUBLIC_API;
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("sessionToken");
+    if (token) {
+      const decodedToken = decodeToken(token);
+      const isTokenAlive = checkTokenDate(decodedToken?.exp);
+      if (!isTokenAlive) {
+        sessionStorage.removeItem("sessionToken");
+        sessionStorage.removeItem("expiracyToken");
+        router.push("/admin");
+      }
+    }
+  }, [router]);
 
   const handlePaymentCodeChange = (event) => {
     if (event && event.target && typeof event.target.value === 'string') {
@@ -53,7 +70,6 @@ const PaymentMethods = () => {
 
       const paymentMethodValue = tiendaLocal.cart.metodoPago === 'sinpe' ? 1 : 0;
 
-      // Construir el cuerpo de la solicitud
       const dataToSend = {
         product: productQuantities,
         address: tiendaLocal.cart.direccionEntrega,
@@ -61,7 +77,7 @@ const PaymentMethods = () => {
       };
 
       try {
-        const response = await fetch('http://localhost:5072/api/Cart', {
+        const response = await fetch(URLConection+'api/cart', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
