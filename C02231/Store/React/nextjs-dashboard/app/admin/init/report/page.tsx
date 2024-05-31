@@ -5,39 +5,67 @@ import '/app/ui/global.css';
 import Link from 'next/link';
 import { Chart } from 'react-google-charts';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css'
-import { format } from 'date-fns';
+import 'react-datepicker/dist/react-datepicker.css';
+import {jwtDecode} from 'jwt-decode';
+import router, { useRouter } from 'next/router';
 
 export default function ReportPage() {
 
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [weeklySalesData, setWeeklySalesData] = useState([['Day', 'Total']]);
     const [dailySalesData, setDailySalesData] = useState([['Day', 'Total']]);
-
-
+    const URL = process.env.NEXT_PUBLIC_NODE_ENV;
+    //const URL = "http://localhost:5207";
+    
     useEffect(() => {
         fetchData();
     }, [selectedDate]);
 
-
+    const isTokenExpired = (token: string) => {
+        try {
+            const decodedToken = jwtDecode<{ exp: number }>(token);
+            const currentTime = Math.floor(Date.now() / 1000);
+            return decodedToken.exp < currentTime;
+        } catch (error) {
+            throw new Error('Error decoding token:');
+        }
+    };
     const fetchData = async () => {
         try {
+            //debugger
+            const token = sessionStorage.getItem('authToken');
+            console.log(token);
+            if (!token) {
+                throw new Error('No se encontró el token en el session storage');
+            }
+
+           /* if (isTokenExpired(token)) {
+                sessionStorage.clear();
+                router.push('/admin');
+                return;
+            }*/
+
             //const formattedDate = selectedDate.toISOString().split('T')[0]; //fecha en formato ISO 8601 sin la hora
             const year = selectedDate.getFullYear();
             const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
             const day = String(selectedDate.getDate()).padStart(2, '0');
-
-            // Formatear la fecha en formato ISO 8601 sin la hora
             const formattedDate = `${year}-${month}-${day}`;
-            const response = await fetch(`http://localhost:5207/api/Sale?date=${formattedDate}`);
+           // const response = await fetch(`http://localhost:5207/api/Sale?date=${formattedDate}`);
+            const url = URL+'/api/Sale?date=${formattedDate}'
+
+            const response = await fetch(URL + `/api/Sale?date=${formattedDate}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
 
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
             const data = await response.json();
-
-            console.log("Datos de fetch:", data);
 
             const weeklyData = [['Day', 'Total']];
             const dailyData = [['Purcharse Date', 'Purcharse Number', 'Quantity', 'Total', 'Products']];
@@ -56,7 +84,12 @@ export default function ReportPage() {
             setWeeklySalesData(weeklyData);
 
         } catch (error) {
-            throw new Error('Error to send data');
+            if (error.message.includes('token')) {
+                sessionStorage.clear();
+                await router.push('/admin');
+            } else {
+                throw new Error('Error al obtener los datos');
+            }
         }
     };
 
