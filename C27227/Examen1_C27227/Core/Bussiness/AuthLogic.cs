@@ -24,51 +24,29 @@ public class AuthLogic
         { "user", (_configuration["TestCredentials:user:Password"], _configuration["TestCredentials:user:Role"]) }
     };
     }
-    public bool ValidateUser(UserAuth user, out List<Claim> claims)
+public bool ValidateUser(UserAuth user, out List<Claim> claims)
+{
+    claims = null;
+
+    if (_hostEnvironment.EnvironmentName == Environments.Development && _developmentCredentials != null)
     {
-        claims = null;
-
-        Console.WriteLine("Starting validation for user: " + user.Name);
-
-        if (_hostEnvironment.EnvironmentName == Environments.Development && _developmentCredentials != null)
+        if (_developmentCredentials.TryGetValue(user.Name, out var credential))
         {
-            Console.WriteLine("Environment is Development and _developmentCredentials is not null.");
-
-            if (_developmentCredentials.TryGetValue(user.Name, out var credential))
+            if (credential.Password == user.Password)
             {
-                Console.WriteLine("Credentials found for user: " + user.Name);
-
-                if (credential.Password == user.Password)
-                {
-                    Console.WriteLine("Password matches for user: " + user.Name);
-
-                    claims = new List<Claim>
+                claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.Name),
                     new Claim(ClaimTypes.Role, credential.Role)
                 };
-
-                    Console.WriteLine("Claims created for user: " + user.Name);
-                    return true;
-                }
-                else
-                {
-                    Console.WriteLine("Password does not match for user: " + user.Name);
-                }
-            }
-            else
-            {
-                Console.WriteLine("Credentials not found for user: " + user.Name);
+                return true;
             }
         }
-        else
-        {
-            Console.WriteLine("Environment is not Development or _developmentCredentials is null.");
-        }
-
-        Console.WriteLine("Validation failed for user: " + user.Name);
-        return false;
     }
+
+    return false;
+}
+
 
 
     public string CreateToken(List<Claim> claims)
