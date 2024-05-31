@@ -8,6 +8,8 @@ import "chartjs-plugin-datalabels";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-datepicker/dist/react-datepicker.css";
 import '@/app/ui/styles/SalesReport.css';
+import { checkTokenDate } from '../../hooks/jwtHooks';
+import { useRouter } from 'next/navigation';
 
 const TableWithPaginationAndChart = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -17,6 +19,20 @@ const TableWithPaginationAndChart = () => {
   const [weeklySales, setWeeklySales] = useState([]);
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
   const pieChartRef = useRef<Chart | null>(null);
+  const URLConection = process.env.NEXT_PUBLIC_API;
+  const router = useRouter();
+
+  const checkTokenStatus = () => {
+    const expiracyDate = sessionStorage.getItem("expiracyToken");
+    const isTokenAlive = checkTokenDate(Number(expiracyDate));
+    if (!isTokenAlive) {
+      router.push("/admin"); 
+    }
+  };
+
+  useEffect(() => {
+    checkTokenStatus();
+  }, []);
 
   useEffect(() => {
     fetchData(selectedDate);
@@ -24,34 +40,41 @@ const TableWithPaginationAndChart = () => {
 
   const fetchData = async (date) => {
     try {
-        if (!date) {
-            throw new Error('La fecha es requerida.');
+      if (!date) {
+        throw new Error('La fecha es requerida.');
+      }
+
+      const formattedDate = selectedDate.toLocaleDateString('en-GB');
+      const sessionToken = sessionStorage.getItem('sessionToken');
+      if (!sessionToken) {
+        throw new Error('Token de sesión no encontrado.');
+      }
+
+      const url = new URL(`${URLConection}/api/sale?date=${formattedDate}`);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionToken}`
         }
-        
-        const formattedDate = selectedDate.toLocaleDateString('en-GB');
-        const response = await fetch(`http://localhost:5072/api/sale?date=${formattedDate}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+      });
 
-        if (!response.ok) {
-            throw new Error('Error en la solicitud: ' + response.statusText);
-        }
+      if (!response.ok) {
+        throw new Error('Error en la solicitud: ' + response.statusText);
+      }
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (!data || !data.sales || !data.salesByWeek) {
-            throw new Error('Los datos recibidos no son válidos.');
-        }
+      if (!data || !data.sales || !data.salesByWeek) {
+        throw new Error('Los datos recibidos no son válidos.');
+      }
 
-        setDailySales(data.sales);
-        setWeeklySales(data.salesByWeek);
+      setDailySales(data.sales);
+      setWeeklySales(data.salesByWeek);
     } catch (error) {
-        throw new Error('Error al enviar datos: ' + error.message);
+      throw new Error('Error al enviar datos:');
     }
-};
+  };
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -87,7 +110,7 @@ const TableWithPaginationAndChart = () => {
     }
   }, [weeklySales]);
 
-  const pieOptions: ChartOptions = {
+  const pieOptions: Chart.ChartOptions = {
     plugins: {
       datalabels: {
         anchor: "center",

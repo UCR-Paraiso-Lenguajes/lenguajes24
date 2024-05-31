@@ -1,7 +1,9 @@
 using Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace KEStoreApi.Controllers
 {
@@ -10,12 +12,15 @@ namespace KEStoreApi.Controllers
     public class StoreController : ControllerBase
     {
         [HttpGet("store")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetStoreAsync()
         {
             var store = await Store.Instance;
             return Ok(new { Products = store.ProductsList, TaxPercentage = store.TaxPercentage, Categorias = store.CategoriasLista });
         }
+
         [HttpGet("store/products")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetProductsByCategoryAsync([FromQuery] IEnumerable<int> categoryIds)
         {
             if (categoryIds == null)
@@ -36,6 +41,7 @@ namespace KEStoreApi.Controllers
         }
 
         [HttpGet("store/search")]
+        [AllowAnonymous]
         public async Task<IActionResult> SearchProductsAsync([FromQuery] string productName, [FromQuery] IEnumerable<int> categoryIds)
         {
             if (string.IsNullOrWhiteSpace(productName))
