@@ -18,7 +18,7 @@ namespace storeapi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+         [AllowAnonymous]
         public async Task<IActionResult> CreateCart([FromBody] Cart cart)
         {
             ValidateCart(cart);

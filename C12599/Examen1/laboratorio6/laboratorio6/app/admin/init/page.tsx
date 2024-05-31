@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Menu, X, ShoppingCart } from 'react-feather';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navbar, Nav } from 'react-bootstrap';
+import VerifyComponent from '@/app/components/VerifyToken';
 
 interface CustomAccordionItemProps {
   title: string;
@@ -32,14 +33,14 @@ const CustomAccordionItem: React.FC<CustomAccordionItemProps> = ({ title, href, 
       {isOpen && (
         <div className="p-3">
           <div className="mb-2">
-            <Link href="/ventas">
+            <Link href={href || '#'}>
               <button className="btn btn-secondary btn-sm btn-block">
                 Ir a Ventas
               </button>
             </Link>
           </div>
           <div>
-            <Link href="/tienda">
+            <Link href={href || '#'}>
               <button className="btn btn-secondary btn-sm btn-block">
                 Ir a Productos
               </button>
@@ -59,20 +60,22 @@ const Init: React.FC = () => {
   };
 
   return (
-    <div className="container-fluid">
-      <Navbar bg="light" expand="lg">
-        <Navbar.Toggle onClick={toggleMenu} aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav" className={isOpen ? 'show' : ''}>
-          <Nav className="flex-column mt-4">
-            <CustomAccordionItem
-              title="Panel Administracion"
-              href="/ventas"
-              icon={<ShoppingCart />}
-            />
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
-    </div>
+    <VerifyComponent>
+      <div className="container-fluid">
+        <Navbar bg="light" expand="lg">
+          <Navbar.Toggle onClick={toggleMenu} aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav" className={isOpen ? 'show' : ''}>
+            <Nav className="flex-column mt-4">
+              <CustomAccordionItem
+                title="Panel Administracion"
+                href="/ventas"
+                icon={<ShoppingCart />}
+              />
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
+      </div>
+    </VerifyComponent>
   );
 };
 

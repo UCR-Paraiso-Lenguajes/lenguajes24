@@ -24,19 +24,19 @@ namespace storeapi.Controllers
 
             // Obtener todas las categorías
             Categories categories = new Categories();
-            
 
-           
+
+
             List<object> categoryList = new List<object>();
-            
+
             foreach (Category category in categories.ListCategories)
             {
-                categoryList.Add(new { Id = category.Id, Name = category.Name});
+                categoryList.Add(new { Id = category.Id, Name = category.Name });
             }
             var response = new
             {
                 Products = storeInstance.Products,
-                Categories = categoryList  
+                Categories = categoryList
             };
 
             return Ok(response);

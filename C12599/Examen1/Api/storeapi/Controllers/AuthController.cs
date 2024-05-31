@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +22,7 @@ namespace storeapi.Controllers
         public AuthController(IWebHostEnvironment hostEnvironment)
         {
             this.hostEnvironment = hostEnvironment;
+            UserAccountSeeder.SeedUsers();
         }
 
         [HttpPost("login")]
@@ -35,16 +36,17 @@ namespace storeapi.Controllers
 
             if (hostEnvironment.IsDevelopment())
             {
-                // Verificar las credenciales del usuario "mariano"
-                if (user.userName == "mariano" && user.userPassword == "123456")
+                var existingUser = UserAccount.AllUsersData.FirstOrDefault(u => 
+                    u.UserName == user.userName && u.UserPassword == user.userPassword);
+
+                if (existingUser != null)
                 {
                     // Crear las reclamaciones del usuario
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimTypes.Name, "mariano"),
-                        new Claim(ClaimTypes.Role, "Operator"),
-                        new Claim(ClaimTypes.Role, "Admin")
+                        new Claim(ClaimTypes.Name, existingUser.UserName)
                     };
+                    claims.AddRange(existingUser.UserRoles);
 
                     // Generar la clave secreta y las credenciales de inicio de sesión
                     var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
@@ -55,7 +57,7 @@ namespace storeapi.Controllers
                         issuer: "https://localhost:7043",
                         audience: "https://localhost:7043",
                         claims: claims,
-                        expires: DateTime.Now.AddMinutes(30),
+                        expires: DateTime.Now.AddMinutes(1),
                         signingCredentials: signinCredentials
                     );
 

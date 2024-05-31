@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState } from 'react';
 import '../ui/globals.css';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -11,14 +11,20 @@ const Admin: React.FC = () => {
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    if (!e || !e.target || typeof e.target.name !== 'string' || typeof e.target.value !== 'string') {
+      throw new Error('Los argumentos son inválidos.');
+    }    const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    if (!e || !e.preventDefault || !e.currentTarget || typeof e.currentTarget.checkValidity !== 'function') {
+      throw new Error('Los argumentos son inválidos.');
+    }
+      
     e.preventDefault();
     const { username, password } = formData;
 
@@ -30,10 +36,27 @@ const Admin: React.FC = () => {
         errorMessage: ''
       });
 
-      
-      
-        window.location.href = '/admin/init'; 
+      const response = await fetch('https://localhost:7043/api/Auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userName: username, userPassword: password })
+      });
 
+      if (response.ok) {
+        const data = await response.json();
+        // Guarda el token en sessionStorage
+        sessionStorage.setItem('authToken', data.token);
+        // Redirigir al usuario a la página de administración
+        window.location.href = '/admin/init';
+      } else {
+        const errorData = await response.json();
+        setFormData({
+          ...formData,
+          errorMessage: errorData.message || 'Error en la autenticación'
+        });
+      }
     } else {
       setFormData({
         ...formData,

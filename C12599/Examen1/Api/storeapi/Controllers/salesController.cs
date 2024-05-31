@@ -38,7 +38,6 @@ namespace storeapi.Controllers
         await TransactionManager.LoadTransactionsFromDayAsync(taskTransactionDay.Result);
     IEnumerable<TransactionManager.TransactionRecord> transactionsWeeks =
         await TransactionManager.LoadTransactionsFromWeekAsync(taskTransactionWeek.Result);
-        Console.WriteLine(transactionsDays);
        
 
     var response = new Dictionary<string, IEnumerable<object>>
