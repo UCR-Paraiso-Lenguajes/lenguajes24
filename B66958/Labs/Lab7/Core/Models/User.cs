@@ -30,7 +30,7 @@ public class UserAuth
 
 public class CredentialOptions
 {
-    public IEnumerable<UserAuth> Development { get; private set; }
+    public IEnumerable<UserAuth> Development { get; set; }
 
     public CredentialOptions() { }
 
