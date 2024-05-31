@@ -19,7 +19,7 @@ export default function PaymentPage() {
     const cartData = cartDataString ? JSON.parse(cartDataString) : {};
     const orderNumber = cartData.numeroCompra || 'No disponible';
     const [paymentConfirmed, setPaymentConfirmed] = useState(false);
-    const URL = process.env.NEXT_PUBLIC_API;
+    const URL = process.env.NEXT_PUBLIC_API_URL;
 
     const [cart, setCart] = useState({
         products: [],

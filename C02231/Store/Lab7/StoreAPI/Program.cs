@@ -71,23 +71,20 @@ builder.Services.AddCors(options =>
     });
 });
 
-string connection = null;
 var app = builder.Build();
 
 
 if (app.Environment.IsDevelopment())
 {
     builder.Configuration.AddJsonFile("C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Store/Lab7/StoreAPI/appsettings.json", optional: true, reloadOnChange: true);
-    connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
-    var value = Environment.GetEnvironmentVariable("DB");
+    string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
+   // var value = Environment.GetEnvironmentVariable("DB");
 
-    string DB_value = Environment.GetEnvironmentVariable("DB");
+    var DB_value = Environment.GetEnvironmentVariable("DB");
     if (!String.IsNullOrEmpty(DB_value))
     {
-        Console.WriteLine("varible is not empty", connection);
         connection = DB_value;
     }
-    Console.WriteLine("connection", connection);
     Storage.Init(connection);
 
     app.UseSwagger();
@@ -100,14 +97,10 @@ if (app.Environment.IsDevelopment())
 }
 
 
-Storage.Init(connection);
-StoreDB.CreateMysql();
-app.UseCors();
 app.UseHttpsRedirection();
 app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapControllers();
-
-
+app.UseCors();
 app.Run();

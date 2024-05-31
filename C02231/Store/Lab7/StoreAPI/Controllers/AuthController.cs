@@ -43,8 +43,7 @@ namespace StoreAPI;
             if (hostEnvironment.IsDevelopment()){
                 this.mockDataUsers();
 
-                //revisamos la lista de usuarios estatica y btenemos sus roles
-                //bool isUserValid = User.allUsersData.FirstOrDefault(u => u.userName == loginUser.userName && u.userPassword == loginUser.userPassword);
+                
                 var isUserValid = false;
                 var claimsRoleFromUser = new List<Claim>();
                 foreach (var thisUser in UserAccount.allUsersData){
@@ -72,7 +71,7 @@ namespace StoreAPI;
                         issuer: "http://localhost:5207",
                         audience: "http://localhost:5207",
                         claims: claims,
-                        expires: DateTime.Now.AddMinutes(1),
+                        expires: DateTime.Now.AddMinutes(20),
                         signingCredentials: signinCredentials
                     );
 
@@ -123,4 +122,3 @@ namespace StoreAPI;
     public class AuthenticatedResponse{
         public string? Token { get; set; }
     }
-

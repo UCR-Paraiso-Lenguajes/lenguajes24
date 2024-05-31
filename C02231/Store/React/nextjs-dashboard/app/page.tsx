@@ -16,10 +16,9 @@ export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
-  const URL = process.env.NEXT_PUBLIC_NODE_ENV;
-  //const URL = "http://localhost:5207";
+  const URL = process.env.NEXT_PUBLIC_API_URL;
   if (!URL) {
-    throw new Error('NEXT_PUBLIC_NODE_ENV is not defined');
+    throw new Error('NEXT_PUBLIC_API_URL is not defined');
   }
 
   const createQueryString = useCallback(
@@ -37,7 +36,6 @@ export default function Home() {
     const loadData = async () => {
       try {
 
-        //const response = await fetch(process.env.NEXT_PUBLIC_API + '/api/Store');
         const response = await fetch(URL + '/api/Store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');

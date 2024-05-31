@@ -5,55 +5,65 @@ import '/app/ui/global.css';
 import Link from 'next/link';
 import { Chart } from 'react-google-charts';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import {jwtDecode} from 'jwt-decode';
-import router, { useRouter } from 'next/router';
+import 'react-datepicker/dist/react-datepicker.css'
+import { format } from 'date-fns';
+import { jwtDecode } from 'jwt-decode';
+import { useRouter } from 'next/navigation';
 
 export default function ReportPage() {
 
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [weeklySalesData, setWeeklySalesData] = useState([['Day', 'Total']]);
     const [dailySalesData, setDailySalesData] = useState([['Day', 'Total']]);
-    const URL = process.env.NEXT_PUBLIC_NODE_ENV;
-    //const URL = "http://localhost:5207";
-    
+    const router = useRouter();
+
+    const URL = process.env.NEXT_PUBLIC_API_URL;
+    if (!URL) {
+        throw new Error('NEXT_PUBLIC_API_URL is not defined');
+    }
+
     useEffect(() => {
         fetchData();
     }, [selectedDate]);
 
-    const isTokenExpired = (token: string) => {
-        try {
-            const decodedToken = jwtDecode<{ exp: number }>(token);
-            const currentTime = Math.floor(Date.now() / 1000);
-            return decodedToken.exp < currentTime;
-        } catch (error) {
-            throw new Error('Error decoding token:');
+    const checkAuthToken = async () => {
+        const loginToken = sessionStorage.getItem("authToken");
+
+        if (!loginToken) {
+            router.push("/../admin");
+            return false;
         }
+
+        const tokenFormat = jwtDecode(loginToken);
+        const todayDate = Date.now() / 1000;
+
+        if (tokenFormat.exp && tokenFormat.exp < todayDate) {
+            sessionStorage.removeItem("authToken");
+            router.push("/../admin");
+            return false;
+        }
+
+        return true;
     };
+
     const fetchData = async () => {
+        // debugger
         try {
-            //debugger
+
             const token = sessionStorage.getItem('authToken');
-            console.log(token);
-            if (!token) {
-                throw new Error('No se encontró el token en el session storage');
+            const isTokenValid = await checkAuthToken();
+
+            if (!isTokenValid) {
+                throw new Error('Token de autenticación inválido');
             }
 
-           /* if (isTokenExpired(token)) {
-                sessionStorage.clear();
-                router.push('/admin');
-                return;
-            }*/
-
-            //const formattedDate = selectedDate.toISOString().split('T')[0]; //fecha en formato ISO 8601 sin la hora
             const year = selectedDate.getFullYear();
             const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
             const day = String(selectedDate.getDate()).padStart(2, '0');
             const formattedDate = `${year}-${month}-${day}`;
-           // const response = await fetch(`http://localhost:5207/api/Sale?date=${formattedDate}`);
-            const url = URL+'/api/Sale?date=${formattedDate}'
 
-            const response = await fetch(URL + `/api/Sale?date=${formattedDate}`, {
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/Sale?date=${formattedDate}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -84,12 +94,7 @@ export default function ReportPage() {
             setWeeklySalesData(weeklyData);
 
         } catch (error) {
-            if (error.message.includes('token')) {
-                sessionStorage.clear();
-                await router.push('/admin');
-            } else {
-                throw new Error('Error al obtener los datos');
-            }
+            throw new Error('Error to send data');
         }
     };
 

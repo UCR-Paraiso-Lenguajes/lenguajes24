@@ -6,8 +6,7 @@ import Link from 'next/link';
 import router, { useRouter } from 'next/router';
 
 export default function LoginPage() {
-    const URL = process.env.NEXT_PUBLIC_NODE_ENV;
-    //const URL = "http://localhost:5207";
+    const URL = process.env.NEXT_PUBLIC_API_URL;
     const [formData, setFormData] = useState({
         username: '',
         password: '',
@@ -47,7 +46,6 @@ export default function LoginPage() {
                     const data = await response.json();
                     // Guarda el token en sessionStorage
                     sessionStorage.setItem('authToken', data.token);
-                    console.log('Login successful:', data);
                     // Redirigir al usuario a la página de administración
                     window.location.href = '/admin/init';  //ver si funciona con el router
                     //router.push('/admin/init');
@@ -129,7 +127,7 @@ export default function LoginPage() {
                                             onChange={handleInputChange} />
                                     </div>
                                     <div className="center-button">
-                                        <button className="btn btn-succesfuly my-4" type="submit">
+                                        <button className="btn btn-success my-4" type="submit">
                                             Iniciar Sesión
                                         </button>
                                     </div>
