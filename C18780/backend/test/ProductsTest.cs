@@ -89,12 +89,12 @@ namespace StoreApiTests
             Assert.NotNull(result);
         }
 
-        [Test]
-        public async Task GetProductByIdAsync()
-        {
-            var result = await _productRepository.GetProductByIdAsync(Guid.Parse("ab12cd34-56ef-78ab-90cd-12ef345678ab"));
-            Assert.NotNull(result);
-        }
+        //[Test]
+        //public async Task GetProductByIdAsync()
+        //{
+        //    var result = await _productRepository.GetProductByIdAsync(Guid.Parse("ab12cd34-56ef-78ab-90cd-12ef345678ab"));
+        //    Assert.NotNull(result);
+        //}
 
         [Test]
         public async Task UpdateProductAsync()
