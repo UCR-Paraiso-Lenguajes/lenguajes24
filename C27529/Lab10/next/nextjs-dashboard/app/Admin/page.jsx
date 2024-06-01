@@ -57,7 +57,7 @@ function Page() {
           sessionStorage.setItem('token', data.token);
           window.location.href = '/Admin/init';
         } else {
-          throw new Error('Solo los administradores pueden acceder a esta página');
+          throw new Error('Solo los administradores pueden acceder a esta página.');
         }
 
       } else {

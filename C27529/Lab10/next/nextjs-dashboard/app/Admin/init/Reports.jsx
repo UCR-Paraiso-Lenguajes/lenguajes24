@@ -16,8 +16,6 @@ function Reports() {
   const [weekDate, setweekDate] = useState(new Date());
   const [dailyDate, setDailyDate] = useState(new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())));
 
-
-
   const [weekSaleData, setWeekSaleData] = useState([]);
   const [dailySaleData, setDailySaleData] = useState([['Purchase Number', 'Total']]);
 
@@ -74,7 +72,7 @@ function Reports() {
   };
 
 
-  // config pie chart
+  // config pie charts
   const data = {
     labels: weekSaleData.map(item => item.day),
     datasets: [{

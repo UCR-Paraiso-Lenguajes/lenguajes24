@@ -79,7 +79,7 @@ namespace TodoApi
                 issuer: "https://localhost:7280",
                 audience: "https://localhost:7280",
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(30), 
+                expires: DateTime.Now.AddMinutes(1), 
                 signingCredentials: signinCredentials
             );
             var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);

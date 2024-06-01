@@ -39,10 +39,6 @@ namespace TodoApi.Models
                 var token = authorizationHeader.Substring("Bearer ".Length).Trim();
             }
 
-
-
-
-
             if (dateString.WeekDate == DateTime.MinValue || dateString.DailyDate == DateTime.MinValue)
             {
                 return BadRequest("Invalid date format.");
