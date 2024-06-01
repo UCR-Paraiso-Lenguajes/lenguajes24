@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Chart } from 'react-google-charts';
 import "react-datepicker/dist/react-datepicker.css";
+import VerifyToken from '@/app/components/verify_token';
 
 const Graphic = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -62,69 +63,75 @@ const Graphic = () => {
   };
 
   return (
-    <div className="container">
-      <h2>Sales Reports</h2>
-      <div className="row">
-        <div className="col-md-6">
-          <label htmlFor="datepicker">Select Date:</label>
-          <input
-            type="date"
-            value={selectedDate.toISOString().split('T')[0]}
-            onChange={e => setSelectedDate(new Date(e.target.value))}
-          />
-          <br />
-          <br />
-          <h3>Daily Sales</h3>
-          {loading && <p>Loading...</p>}
-          {error && <p>{error}</p>}
-          {!loading && !error && (
-            dailySales.length > 0 ? (
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Sale ID</th>
-                    <th>Purchase Number</th>
-                    <th>Total</th>
-                    <th>Purchase Date</th>
-                    <th>Product</th>
-                    <th>Sale By Day</th>
-                    <th>Sale Counter</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dailySales.map(({ id, purchaseNumber, total, purchaseDate, product, dailySale, saleCounter }, index) => (
-                    <tr key={index}>
-                      <td>{id}</td>
-                      <td>{purchaseNumber}</td>
-                      <td>{total}</td>
-                      <td>{purchaseDate}</td>
-                      <td>{product}</td>
-                      <td>{dailySale}</td>
-                      <td>{saleCounter}</td>
+    <VerifyToken>
+
+      <div className="container">
+        <h2>Sales Reports</h2>
+        <div className="row">
+          <div className="col-md-6">
+            <label htmlFor="datepicker">Select Date:</label>
+            <input
+              type="date"
+              value={selectedDate.toISOString().split('T')[0]}
+              onChange={e => setSelectedDate(new Date(e.target.value))}
+            />
+            <br />
+            <br />
+            <h3>Daily Sales</h3>
+            {loading && <p>Loading...</p>}
+            {error && <p>{error}</p>}
+            {!loading && !error && (
+              dailySales.length > 0 ? (
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Sale ID</th>
+                      <th>Purchase Number</th>
+                      <th>Total</th>
+                      <th>Purchase Date</th>
+                      <th>Product</th>
+                      <th>Sale By Day</th>
+                      <th>Sale Counter</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p>No daily sales data available</p>
-            )
-          )}
-        </div>
-        <div className="col-md-6">
-          <h3>Weekly Sales</h3>
-          <Chart
-            width={'100%'}
-            height={'400px'}
-            chartType="PieChart"
-            loader={<div>Loading Chart</div>}
-            data={weeklySales}
-            options={{
-              title: 'Weekly Sales',
-            }}
-          />
+                  </thead>
+                  <tbody>
+                    {dailySales.map(({ id, purchaseNumber, total, purchaseDate, product, dailySale, saleCounter }, index) => (
+                      <tr key={index}>
+                        <td>{id}</td>
+                        <td>{purchaseNumber}</td>
+                        <td>{total}</td>
+                        <td>{purchaseDate}</td>
+                        <td>{product}</td>
+                        <td>{dailySale}</td>
+                        <td>{saleCounter}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p>No daily sales data available</p>
+              )
+            )}
+          </div>
+          <div className="col-md-6">
+            <h3>Weekly Sales</h3>
+            <Chart
+              width={'100%'}
+              height={'400px'}
+              chartType="PieChart"
+              loader={<div>Loading Chart</div>}
+              data={weeklySales}
+              options={{
+                title: 'Weekly Sales',
+              }}
+            />
+          </div>
         </div>
       </div>
-    </div>
+
+
+    </VerifyToken>
+
   );
 };
 
