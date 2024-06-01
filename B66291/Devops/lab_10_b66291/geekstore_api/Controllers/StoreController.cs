@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using core.Models;
 using core.DataBase;
 using core.Business;
+using Microsoft.AspNetCore.Authorization;
 
 namespace geekstore_api.Controllers
 {
@@ -13,12 +14,14 @@ namespace geekstore_api.Controllers
     {
         private readonly ProductCache productCache = new ProductCache();
         [HttpGet("store")]
+        [AllowAnonymous]
         public Store GetStore()
         {
             return Store.Instance;
         }
 
         [HttpGet("store/products")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetSales(int idCat)
         {
             if (idCat < 1)
@@ -41,6 +44,7 @@ namespace geekstore_api.Controllers
 
 
         [HttpGet("store/products/categories")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetCategories(string idSearch, string idSearchCat)
         {
             if (string.IsNullOrWhiteSpace(idSearchCat))

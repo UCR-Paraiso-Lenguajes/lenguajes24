@@ -2,30 +2,30 @@ using Microsoft.AspNetCore.Mvc;
 using core.Business;
 using core.DataBase;
 using core.Models;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace geekstore_api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/")]
     [ApiController]
     public class CartController : ControllerBase
     {
-         private StoreLogic store = new StoreLogic(); 
+        private StoreLogic store = new StoreLogic();
 
-        [HttpPost]
+        [HttpPost("cart")]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateCart([FromBody] Cart cart)
         {
-            try
-        {
-            var sale = await store.PurchaseAsync(cart); 
-            var numeroCompra = sale.PurchaseNumber; 
-            var response = new { numeroCompra }; 
+            if (cart == null)
+            {
+                throw new ArgumentNullException("El carrito no se no existe", nameof(cart));
+            }
+
+            var sale = await store.PurchaseAsync(cart);
+            var numeroCompra = sale.PurchaseNumber;
+            var response = new { numeroCompra };
             return Ok(response);
         }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
     }
 }

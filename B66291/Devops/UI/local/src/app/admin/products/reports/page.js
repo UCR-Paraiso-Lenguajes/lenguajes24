@@ -18,13 +18,35 @@ const Reports = () => {
    const datePickerRef = useRef(undefined);
 
    useEffect(() => {
+    
+    const verificarFechaExpiracion = () => {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        window.location.href = "/admin";
+        return;
+      }
+
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      const expirationDate = new Date(decodedToken.exp * 1000);
+
+      if (new Date() > expirationDate) {
+        sessionStorage.removeItem("token");
+        window.location.href = "/admin";
+      }
+    };
+
+    verificarFechaExpiracion();
+    const intervalId = setInterval(verificarFechaExpiracion, 2 * 60 * 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+   useEffect(() => {
      $(datePickerRef.current).datepicker({
        format: 'yyyy-mm-dd', 
        autoclose: true
      }).on('changeDate', handleDateChange);
    }, []);
 
- 
   const formatDataForChart = (sales) => {
     return [
       ['PurchaseNumber', 'PurchaseDate', 'Total', 'Cantidad'],
@@ -43,8 +65,16 @@ const Reports = () => {
    const handleDateChange = async (event) => {
     const selectedDate = event.date;
     const formattedDate = selectedDate.toISOString().slice(0, 10);
-      try {
-      const response = await fetch(`https://localhost:7013/api/report?date=${formattedDate}`);
+    try {
+      const token = sessionStorage.getItem("token");
+      const response = await fetch(`https://localhost:7013/api/report?date=${formattedDate}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`, 
+          'Content-Type': 'application/json'
+        }
+      });
+  
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -55,7 +85,7 @@ const Reports = () => {
       setDailySalesList(reports[0]);
       setWeeklySalesList(reports[1]);
     } catch (error) {
-        throw error;
+      throw new Error('Error al solicitar reportes ' + error.message);
     }
   };
 
