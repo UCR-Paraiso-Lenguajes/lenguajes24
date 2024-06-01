@@ -89,19 +89,19 @@ namespace StoreApiTests
             Assert.NotNull(result);
         }
 
-        //[Test]
-        //public async Task GetProductByIdAsync()
-        //{
-        //    var result = await _productRepository.GetProductByIdAsync(Guid.Parse("ab12cd34-56ef-78ab-90cd-12ef345678ab"));
-        //    Assert.NotNull(result);
-        //}
+        [Test]
+        public async Task GetProductByIdAsync()
+        {
+            var result = await _productRepository.GetProductByIdAsync(Guid.Parse("1547f3c3-54e6-4e7d-bf8f-f26daa15c843"));
+            Assert.NotNull(result);
+        }
 
         [Test]
         public async Task UpdateProductAsync()
         {
             var product = new Product
             {
-                Uuid = Guid.Parse("ab12cd34-56ef-78ab-90cd-12ef345678ab"),
+                Uuid = Guid.Parse("1547f3c3-54e6-4e7d-bf8f-f26daa15c843"),
                 Name = "Test New Product",
                 ImageUrl = "test_new_image.jpg",
                 Price = 50001,
@@ -122,7 +122,7 @@ namespace StoreApiTests
         [Test]
         public async Task DeleteProductAsync()
         {
-            var result = await _productRepository.DeleteProductAsync(Guid.Parse("ab12cd34-56ef-78ab-90cd-12ef345678ab"));
+            var result = await _productRepository.DeleteProductAsync(Guid.Parse("1547f3c3-54e6-4e7d-bf8f-f26daa15c843"));
             Assert.NotZero(result);
         }
     }
