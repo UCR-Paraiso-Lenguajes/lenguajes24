@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using StoreApi.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,7 +15,7 @@ public class AuthController : ControllerBase
 {
     private readonly IConfiguration configuration;
     private readonly IHostEnvironment hostEnvironment;
-
+    private readonly IEnumerable<Credentials> credentials;
     public AuthController(IConfiguration configuration, IHostEnvironment hostEnvironment)
     {
         this.configuration = configuration;
@@ -32,15 +33,18 @@ public class AuthController : ControllerBase
 
         if (hostEnvironment.IsDevelopment())
         {
+            var validUser = credentials
+                                .ToList()
+                                .FirstOrDefault(cred =>
+                                    cred.UserName == user.UserName && cred.Password == user.Password
+                                );
 
-            if (user.UserName == "jean@gmail.com" && user.Password == "123456")
+            if (validUser is not null)
             {
                 var claims = new List<Claim>
                         {
-                            new Claim(ClaimTypes.Name, "jean@gmail.com"),//appseting 
-                            new Claim(ClaimTypes.Role, "Operator"),
-                            new Claim(ClaimTypes.Role, "Admin"),
-                            new Claim(ClaimTypes.Role, "Customer")
+                            new Claim(ClaimTypes.Name, validUser.UserName),
+                            new Claim(ClaimTypes.Role, validUser.Rol),
                         };
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
