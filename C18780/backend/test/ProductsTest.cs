@@ -13,7 +13,7 @@ namespace StoreApiTests
         public void Setup()
         {
             _configuration = new ConfigurationBuilder()
-                       .AddJsonFile("appsettings.json")
+                       .AddJsonFile("server=localhost;port=3306;database=mysql;user=root;password=123456;")
                        .Build();
             _productRepository = new ProductRepository(_configuration);
             _categoryRepository = new CategoryRepository(_configuration);
