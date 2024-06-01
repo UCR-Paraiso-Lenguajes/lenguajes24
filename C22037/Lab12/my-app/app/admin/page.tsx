@@ -1,9 +1,10 @@
 "use client"; // Para utilizar el cliente en lugar del servidor
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import "@/public/styles.css";
 import Link from 'next/link';
 import { jwtDecode } from 'jwt-decode';
+import { Alert } from 'react-bootstrap';
 
 export default function Admin() {
     const router = useRouter();
@@ -11,6 +12,7 @@ export default function Admin() {
         email: '',
         password: ''
     });
+    const [errorMessage, setErrorMessage] = useState(null);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -26,31 +28,35 @@ export default function Admin() {
         const { email, password } = formData;
     
         if (!email || !password) {
-            alert("Please enter the email and password.");
+            setErrorMessage('Please enter the email and password.');
             return;
         }
     
-        const response = await fetch('https://localhost:7067/api/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ User: email, Password: password })
-        });
+        try {
+            const response = await fetch('https://localhost:7067/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ User: email, Password: password })
+            });
     
-        if (response.ok) {
-            const data = await response.json();
-            const decodedToken = jwtDecode(data.token);
-            const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-            
-            if (userRole === "Admin") {
-                sessionStorage.setItem('token', data.token);
-                router.push("/admin/init");
+            if (response.ok) {
+                const data = await response.json();
+                const decodedToken = jwtDecode(data.token);
+                const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+                
+                if (userRole === "Admin") {
+                    sessionStorage.setItem('token', data.token);
+                    router.push("/admin/init");
+                } else {
+                    setErrorMessage('Access Denied: Only admins can log in here.');
+                }
             } else {
-                alert('Access Denied: Only admins can log in here.');
+                setErrorMessage('Login failed');
             }
-        } else {
-            alert('Login failed');
+        } catch (error) {
+            setErrorMessage('An error occurred during login');
         }
     };
 
@@ -64,6 +70,7 @@ export default function Admin() {
 
             <div className="body">
                 <h2>Log In</h2>
+                {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
                 <form onSubmit={handleSubmit}>
                     <div>
                         <label htmlFor="email">Email:</label>
