@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace geekstore_api.Controllers
+namespace geekstore_api.Controllers.AuthController
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -14,10 +14,16 @@ namespace geekstore_api.Controllers
         private readonly IConfiguration configuration;
         private readonly IHostEnvironment hostEnvironment;
 
-        public AuthController(IConfiguration configuration, IHostEnvironment hostEnvironment)
+        public AuthController(IHostEnvironment hostEnvironment)
         {
-            this.configuration = configuration;
             this.hostEnvironment = hostEnvironment;
+        }
+
+        public class TestUser
+        {
+            public string UserName { get; set; }
+            public string UserPassword { get; set; }
+            public List<string> UserRoles { get; set; }
         }
 
         [HttpPost("login")]
@@ -29,27 +35,26 @@ namespace geekstore_api.Controllers
                 throw new ArgumentNullException(nameof(user), "El usuario no se encuentra definido");
             }
 
-            var username = configuration["TestUser:Username"];
-            var password = configuration["TestUser:Password"];
+            var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.Development.json")
+            .Build();
 
-            if (hostEnvironment.IsDevelopment())
+            var testUsers = configuration.GetSection("TestUsers").Get<List<TestUser>>();
+
+            foreach (var testUser in testUsers)
             {
-                if (user.UserName == username && user.Password == password)
+                if (user.UserName == testUser.UserName && user.Password == testUser.UserPassword)
                 {
-                    var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Name, "jaziel"),
-                            new Claim(ClaimTypes.Role, "Operator"),
-                            new Claim(ClaimTypes.Role, "Admin"),
-                            new Claim(ClaimTypes.Role, "Customer")
-                        };
+                    var claims = testUser.UserRoles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
+                    claims.Add(new Claim(ClaimTypes.Name, testUser.UserName));
+
                     var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
                     var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
                     var tokeOptions = new JwtSecurityToken(
                         issuer: "https://localhost:5001",
                         audience: "https://localhost:5001",
                         claims: claims,
-                        expires: DateTime.Now.AddMinutes(2),
+                        expires: DateTime.Now.AddMinutes(1),
                         signingCredentials: signinCredentials
                     );
 
@@ -61,12 +66,20 @@ namespace geekstore_api.Controllers
 
             return Unauthorized();
         }
-    }
 
+
+
+    }
     public class LoginModel
     {
         public string? UserName { get; set; }
         public string? Password { get; set; }
+
+        public LoginModel(string username, string password)
+        {
+            this.UserName = username;
+            this.Password = password;
+        }
     }
 
     public class AuthenticatedResponse
