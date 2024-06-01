@@ -93,7 +93,6 @@ const { default: jwt_decode } = require("jwt-decode");
             return "Default Error";
         }
         let tokenFormat = jwtDecode(loginToken);
-        console.log(tokenFormat);
 
         let todayDate = Date.now() / 1000;
         let tokenLifeTime = tokenFormat.exp;
