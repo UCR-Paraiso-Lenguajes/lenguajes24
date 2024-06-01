@@ -16,6 +16,10 @@ export default function MainAdmin() {
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
 
+    useEffect(() => {
+        checkTokenStatus();
+    }, []);
+
     function handleShowProducts() {
         setShowProducts(true);
         setShowReports(false);
@@ -35,9 +39,11 @@ export default function MainAdmin() {
     }
 
     function checkTokenStatus() {
+        var token = sessionStorage.getItem("sessionToken");
         var expiracyDate = sessionStorage.getItem("expiracyToken");
         var isTokenAlive = checkTokenDate(Number(expiracyDate));
-        if (!isTokenAlive) router.push("/Admin");
+        if (!isTokenAlive || token == null) router.push("/Admin");
+        else return true;
     }
 
     const Reports = () => {
@@ -66,12 +72,14 @@ export default function MainAdmin() {
         }
 
         async function getData() {
+            var token = sessionStorage.getItem("sessionToken");
             try {
-                const res = await fetch(`https://localhost:7151/api/sales?dateToFind=${selectedDate.toISOString().split('T')[0]}`,
+                const res = await fetch(`https://localhost:7151/api/sale/sales?dateToFind=${selectedDate.toISOString().split('T')[0]}`,
                     {
                         method: 'GET',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'authorization': `Bearer ${token}`
                         }
                     })
                 if (!res.ok) {
@@ -84,17 +92,18 @@ export default function MainAdmin() {
         }
 
         useEffect(() => {
-            checkTokenStatus();
-            const fetchData = async () => {
-                try {
-                    const result = await getData();
-                    setSalesOfTheDayObtained(result.salesOfTheDay);
-                    setSalesOfTheWeekObtained(result.salesOfTheWeek);
-                } catch (error: any) {
-                    setErrorMessage(error)
-                }
-            };
-            fetchData();
+            if (checkTokenStatus()){
+                const fetchData = async () => {
+                    try {
+                        const result = await getData();
+                        setSalesOfTheDayObtained(result.salesOfTheDay);
+                        setSalesOfTheWeekObtained(result.salesOfTheWeek);
+                    } catch (error: any) {
+                        setErrorMessage(error)
+                    }
+                };
+                fetchData();
+            }
         }, [selectedDate]);
 
         function parseDate(dateString: string) {
