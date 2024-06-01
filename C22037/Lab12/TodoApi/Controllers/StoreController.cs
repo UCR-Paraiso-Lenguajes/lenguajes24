@@ -49,7 +49,7 @@ namespace TodoApi.Models
 
             if (string.IsNullOrEmpty(categories) || categories.ToLower() == "null")
             {
-                products = await categoryLogic.GetProductsBySearchAsync(search, null);
+                products = await categoryLogic.GetProductsBySearchAsync(search);
             }
             else
             {

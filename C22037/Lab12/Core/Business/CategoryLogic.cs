@@ -56,6 +56,7 @@ namespace TodoApi.Business
         public async Task<IEnumerable<Product>> GetProductsBySearchAsync(string search, string categories)
         {
             if (string.IsNullOrEmpty(search)) throw new ArgumentNullException("Search term cannot be null or empty.");
+            if (string.IsNullOrEmpty(categories)) throw new ArgumentNullException("Categories cannot be null or empty.");
 
             List<Product> matchingProducts = new List<Product>();
             List<int> categoryIdsList = categories?.Split(',').Select(int.Parse).ToList();
@@ -75,6 +76,23 @@ namespace TodoApi.Business
                     {
                         matchingProducts.AddRange(SearchProducts(categoryProducts, search));
                     }
+                }
+            }
+
+            return matchingProducts;
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsBySearchAsync(string search)
+        {
+            if (string.IsNullOrEmpty(search)) throw new ArgumentNullException("Search cannot be null or empty.");
+
+            List<Product> matchingProducts = new List<Product>();
+
+            foreach (var categoryId in productsByCategoryId.Keys)
+            {
+                if (productsByCategoryId.TryGetValue(categoryId, out List<Product> categoryProducts))
+                {
+                    matchingProducts.AddRange(SearchProducts(categoryProducts, search));
                 }
             }
 
