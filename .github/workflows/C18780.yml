@@ -35,6 +35,23 @@ jobs:
         done
         echo "MySQL is healthy."
 
+    - name: Create sys database and tables
+      run: |
+        docker exec $(docker ps -q --filter ancestor=mysql:latest) \
+        mysql -u root -p123456 -e "
+        CREATE DATABASE IF NOT EXISTS sys;
+        USE sys;
+        "
+
+    - name: Insert initial data into Category and Product tables
+      run: |
+        docker exec $(docker ps -q --filter ancestor=mysql:latest) \
+        mysql -u root -p123456 -e "
+        USE sys;
+        INSERT INTO Category (uuid, name) VALUES ('4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18', 'Categoría 1');
+        INSERT INTO Product (uuid, name, imageUrl, price, description, category) VALUES ('1547f3c3-54e6-4e7d-bf8f-f26daa15c843', 'Producto 1', 'example', 1, 'description', '4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18');
+        "
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
