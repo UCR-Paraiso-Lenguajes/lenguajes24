@@ -1,9 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace geekstore_api.Controllers.AuthController
 {
@@ -19,11 +24,17 @@ namespace geekstore_api.Controllers.AuthController
             this.hostEnvironment = hostEnvironment;
         }
 
+        public enum UserRole
+        {
+            Admin,
+            User
+        }
+
         public class TestUser
         {
             public string UserName { get; set; }
             public string UserPassword { get; set; }
-            public List<string> UserRoles { get; set; }
+            public UserRole UserRoles { get; private set; }
         }
 
         [HttpPost("login")]
@@ -35,22 +46,21 @@ namespace geekstore_api.Controllers.AuthController
                 throw new ArgumentNullException(nameof(user), "El usuario no se encuentra definido");
             }
 
-            var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.Development.json")
-            .Build();
-
             var testUsers = configuration.GetSection("TestUsers").Get<List<TestUser>>();
 
             foreach (var testUser in testUsers)
             {
                 if (user.UserName == testUser.UserName && user.Password == testUser.UserPassword)
                 {
-                    var claims = testUser.UserRoles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
-                    claims.Add(new Claim(ClaimTypes.Name, testUser.UserName));
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, testUser.UserName),
+                        new Claim(ClaimTypes.Role, testUser.UserRoles.ToString()) // Convert enum to string
+                    };
 
-                    var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
+                    var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]));
                     var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-                    var tokeOptions = new JwtSecurityToken(
+                    var tokenOptions = new JwtSecurityToken(
                         issuer: "https://localhost:5001",
                         audience: "https://localhost:5001",
                         claims: claims,
@@ -58,7 +68,7 @@ namespace geekstore_api.Controllers.AuthController
                         signingCredentials: signinCredentials
                     );
 
-                    var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+                    var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
                     return Ok(new AuthenticatedResponse { Token = tokenString });
                 }
@@ -66,14 +76,12 @@ namespace geekstore_api.Controllers.AuthController
 
             return Unauthorized();
         }
-
-
-
     }
+
     public class LoginModel
     {
-        public string? UserName { get; set; }
-        public string? Password { get; set; }
+        public string UserName { get; set; }
+        public string Password { get; set; }
 
         public LoginModel(string username, string password)
         {
@@ -84,6 +92,6 @@ namespace geekstore_api.Controllers.AuthController
 
     public class AuthenticatedResponse
     {
-        public string? Token { get; set; }
+        public string Token { get; set; }
     }
 }
