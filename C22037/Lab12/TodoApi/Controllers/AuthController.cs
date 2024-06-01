@@ -38,9 +38,9 @@ namespace TodoApi.Controllers
             if (existingUser != null)
             {
                 var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, existingUser.User)
-        };
+                {
+                    new Claim(ClaimTypes.Name, existingUser.User)
+                };
                 claims.AddRange(existingUser.Claims);
 
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
@@ -50,7 +50,7 @@ namespace TodoApi.Controllers
                     issuer: "https://localhost:7067",
                     audience: "https://localhost:7067",
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(2),
+                    expires: DateTime.Now.AddMinutes(1),
                     signingCredentials: signinCredentials
                 );
 

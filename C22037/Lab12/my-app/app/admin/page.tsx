@@ -14,9 +14,6 @@ export default function Admin() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        if (!name || !value) {
-            throw new Error("Error, name and value are required.");
-        }
         setFormData({
             ...formData,
             [name]: value
@@ -26,11 +23,11 @@ export default function Admin() {
     const handleSubmit = async (e) => {
         e.preventDefault();
     
-        const email = formData.email;
-        const password = formData.password;
+        const { email, password } = formData;
     
         if (!email || !password) {
-            throw new Error("Please enter the email and password.");
+            alert("Please enter the email and password.");
+            return;
         }
     
         const response = await fetch('https://localhost:7067/api/auth/login', {
@@ -43,33 +40,19 @@ export default function Admin() {
     
         if (response.ok) {
             const data = await response.json();
-            sessionStorage.setItem('token', data.token);
-            router.push("/admin/init");
+            const decodedToken = jwtDecode(data.token);
+            const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+            
+            if (userRole === "Admin") {
+                sessionStorage.setItem('token', data.token);
+                router.push("/admin/init");
+            } else {
+                alert('Access Denied: Only admins can log in here.');
+            }
         } else {
             alert('Login failed');
         }
-    };    
-
-    useEffect(() => {
-        const checkTokenValidity = () => {
-            const token = sessionStorage.getItem('token');
-            if (token) {
-                const decodedToken = jwtDecode(token);
-                const exp = decodedToken.exp * 1000;
-                if (Date.now() >= exp) {
-                    sessionStorage.removeItem('token');
-                    router.push('/admin');
-                }
-            } else {
-                router.push('/admin');
-            }
-        };
-
-        checkTokenValidity();
-        const interval = setInterval(checkTokenValidity, 60000);
-
-        return () => clearInterval(interval);
-    }, [router]);
+    };
 
     return (
         <div>
