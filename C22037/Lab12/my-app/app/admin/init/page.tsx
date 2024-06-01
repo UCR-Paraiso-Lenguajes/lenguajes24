@@ -14,21 +14,22 @@ export default function Init() {
     const [weeklySalesData, setWeeklySalesData] = useState([['Day', 'Total']]);
     const [dailySalesData, setDailySalesData] = useState([['Purchase Date', 'Purchase Number', 'Total']]);
 
-    const token = sessionStorage.getItem('token');
-    const decodedToken = jwtDecode(token) as any;
-    const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
+    let userRole = null;
+    if (token) {
+        const decodedToken = jwtDecode(token);
+        userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    }
     
     useEffect(() => {
         fetchData();
     }, [selectedDay]);
 
     const checkTokenValidity = () => {
-        const token = sessionStorage.getItem('token');
         if (token) {
             const decodedToken = jwtDecode(token);
             const exp = decodedToken.exp * 1000;
-            const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-    
+
             if (Date.now() >= exp || userRole !== "Admin") {
                 sessionStorage.removeItem('token');
                 router.push('/admin');
@@ -47,7 +48,7 @@ export default function Init() {
 
     const fetchData = async () => {
         if (token) {
-            if (userRole == "Admin") {
+            if (userRole === "Admin") {
                 try {
                     const formattedDate = selectedDay.toISOString().split('T')[0];
                     const response = await fetch(`https://localhost:7067/api/sale?date=${formattedDate}`, {
@@ -74,7 +75,7 @@ export default function Init() {
                     }
                     setDailySalesData(newDailyData);
                 } catch (error) {
-                    throw new Error("Error loading data.");
+                    console.error("Error loading data.", error);
                 }
             } else {
                 router.push('/admin');
