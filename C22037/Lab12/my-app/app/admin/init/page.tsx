@@ -13,75 +13,71 @@ export default function Init() {
     const [selectedDay, setSelectedDay] = useState(new Date());
     const [weeklySalesData, setWeeklySalesData] = useState([['Day', 'Total']]);
     const [dailySalesData, setDailySalesData] = useState([['Purchase Date', 'Purchase Number', 'Total']]);
+    const [isVerified, setIsVerified] = useState(false);
 
-    const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
-    let userRole = null;
-    if (token) {
-        const decodedToken = jwtDecode(token);
-        userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-    }
-    
     useEffect(() => {
-        fetchData();
-    }, [selectedDay]);
+        const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
 
-    const checkTokenValidity = () => {
-        if (token) {
-            const decodedToken = jwtDecode(token);
-            const exp = decodedToken.exp * 1000;
-
-            if (Date.now() >= exp || userRole !== "Admin") {
-                sessionStorage.removeItem('token');
-                router.push('/admin');
-            }
-        } else {
+        if (!token) {
             router.push('/admin');
+            return;
         }
-    };
-    
-    useEffect(() => {
-        checkTokenValidity();
-        const interval = setInterval(checkTokenValidity, 10000);
-    
-        return () => clearInterval(interval);
+
+        const decodedToken = jwtDecode(token);
+        const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+        const exp = decodedToken.exp * 1000;
+
+        if (Date.now() >= exp || userRole !== "Admin") {
+            sessionStorage.removeItem('token');
+            router.push('/admin');
+        } else {
+            setIsVerified(true);
+        }
     }, []);
 
+    useEffect(() => {
+        if (isVerified) {
+            fetchData();
+        }
+    }, [selectedDay, isVerified]);
+
     const fetchData = async () => {
-        if (token) {
-            if (userRole === "Admin") {
-                try {
-                    const formattedDate = selectedDay.toISOString().split('T')[0];
-                    const response = await fetch(`https://localhost:7067/api/sale?date=${formattedDate}`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
+        const token = sessionStorage.getItem('token');
+        const decodedToken = jwtDecode(token);
+        const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch data');
-                    }
-
-                    const data = await response.json();
-
-                    const newWeeklyData = [['Day', 'Total']];
-                    for (const item of data.weeklyReport) {
-                        newWeeklyData.push([item.day, item.total]);
-                    }
-                    setWeeklySalesData(newWeeklyData);
-
-                    const newDailyData = [['Purchase Date', 'Purchase Number', 'Total']];
-                    for (const item of data.dailyReport) {
-                        newDailyData.push([item.purchaseDate, item.purchaseNumber, item.total]);
-                    }
-                    setDailySalesData(newDailyData);
-                } catch (error) {
-                    throw new Error("Error loading data.");
-                }
-            } else {
-                router.push('/admin');
-            }
-        } else {
+        if (!token || userRole !== "Admin") {
             router.push('/admin');
+            return;
+        }
+
+        try {
+            const formattedDate = selectedDay.toISOString().split('T')[0];
+            const response = await fetch(`https://localhost:7067/api/sale?date=${formattedDate}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+
+            const data = await response.json();
+
+            const newWeeklyData = [['Day', 'Total']];
+            for (const item of data.weeklyReport) {
+                newWeeklyData.push([item.day, item.total]);
+            }
+            setWeeklySalesData(newWeeklyData);
+
+            const newDailyData = [['Purchase Date', 'Purchase Number', 'Total']];
+            for (const item of data.dailyReport) {
+                newDailyData.push([item.purchaseDate, item.purchaseNumber, item.total]);
+            }
+            setDailySalesData(newDailyData);
+        } catch (error) {
+            throw new Error("Error loading data.");
         }
     };
 
@@ -92,6 +88,10 @@ export default function Init() {
         const adjustedDay = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
         setSelectedDay(adjustedDay);
     };
+
+    if (!isVerified) {
+        return null;
+    }
 
     return (
         <div>

@@ -28,7 +28,7 @@ export default function Admin() {
         const { email, password } = formData;
     
         if (!email || !password) {
-            setErrorMessage('Please enter the email and password.');
+            setErrorMessage("Please enter the email and password.");
             return;
         }
     
@@ -50,13 +50,13 @@ export default function Admin() {
                     sessionStorage.setItem('token', data.token);
                     router.push("/admin/init");
                 } else {
-                    setErrorMessage('Access Denied: Only admins can log in here.');
+                    setErrorMessage("Access Denied: Only admins can log in here.");
                 }
             } else {
-                setErrorMessage('Login failed');
+                setErrorMessage("Login failed");
             }
         } catch (error) {
-            setErrorMessage('An error occurred during login');
+            setErrorMessage("An error occurred during login.");
         }
     };
 
