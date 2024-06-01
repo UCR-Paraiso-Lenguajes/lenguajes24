@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { jwtDecode } from 'jwt-decode'; // Asegúrate de que estás importando jwt-decode correctamente
+import { jwtDecode } from 'jwt-decode'; 
 
 function Page() {
   const [username, setUsername] = useState('');
@@ -13,12 +13,12 @@ function Page() {
     const token = sessionStorage.getItem('token');
     if (token) {
       const decodedToken = jwtDecode(token);
-      const tokenExpiration = decodedToken.exp * 1000; // Convertir a milisegundos 
-      const timeout = tokenExpiration - Date.now(); // Tiempo hasta la expiración 
+      const tokenExpiration = decodedToken.exp * 1000;  
+      const timeout = tokenExpiration - Date.now(); 
 
       if (timeout < 0) {
         sessionStorage.removeItem('token');
-        setError('La sesión ha expirado, por favor inicie sesión nuevamente.');
+        throw new Error('La sesión ha expirado, por favor inicie sesión nuevamente.');
         window.location.href = '/Admin';
       } else {
         setTimeout(() => {
@@ -57,15 +57,14 @@ function Page() {
           sessionStorage.setItem('token', data.token);
           window.location.href = '/Admin/init';
         } else {
-          setError('Solo los administradores pueden acceder a esta página');
+          throw new Error('Solo los administradores pueden acceder a esta página');
         }
 
       } else {
-        setError('Nombre de usuario o contraseña incorrectos');
+        throw new Error('Nombre de usuario o contraseña incorrectos');
       }
     } catch (error) {
-      console.error('Error al intentar iniciar sesión', error);
-      setError('Error al intentar iniciar sesión');
+      throw new Error('Error al intentar iniciar sesión');
     }
   };
 

@@ -74,7 +74,7 @@ function Reports() {
   };
 
 
-  // config pie
+  // config pie chart
   const data = {
     labels: weekSaleData.map(item => item.day),
     datasets: [{
@@ -83,13 +83,9 @@ function Reports() {
     }]
   };
 
-
-
   const opciones = {
     responsive: true
   }
-
-
 
   useEffect(() => {
     fetchData();

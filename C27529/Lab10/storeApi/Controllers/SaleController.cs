@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks; // Asegúrate de importar este namespace
+using System.Threading.Tasks;
 using storeApi.Database;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+
 
 namespace TodoApi.Models
 {
@@ -19,60 +22,49 @@ namespace TodoApi.Models
 
         private class CombinedSalesData
         {
-            public Dictionary<string, decimal> WeekSales { get; set; }
-            public Dictionary<string, decimal> DailySales { get; set; }
+            public required Dictionary<string, decimal> WeekSales { get; set; }
+            public required Dictionary<string, decimal> DailySales { get; set; }
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+        
         public async Task<IActionResult> GetSale([FromBody] WeekDailyDate dateString)
         {
+            var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
 
-            try
+
+            if (authorizationHeader != null && authorizationHeader.StartsWith("Bearer "))
             {
-
-                if (dateString.WeekDate == DateTime.MinValue)
-                {
-                    return BadRequest("Invalid start date format");
-                }
-
-                if (dateString.DailyDate == DateTime.MinValue)
-                {
-                    return BadRequest("Invalid today date.");
-                }
-
-
-                SaleDB saleDB = new SaleDB();
-
-                Task<Dictionary<string, decimal>> weekSalesTask = saleDB.getWeekSalesAsync(dateString.WeekDate);
-                Task<Dictionary<string, decimal>> dailySalesTask = saleDB.getDailySales(dateString.DailyDate);
-
-                await Task.WhenAll(weekSalesTask, dailySalesTask);
-               
-                Dictionary<string, decimal> weekSales = await weekSalesTask;
-                Dictionary<string, decimal> dailySales = await dailySalesTask;
-
-                CombinedSalesData combinedSales = new CombinedSalesData
-                {
-                    WeekSales = weekSales,
-                    DailySales = dailySales
-                };
-
-                 
-
-                return Ok(combinedSales);
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return BadRequest(ex.Message);
+                var token = authorizationHeader.Substring("Bearer ".Length).Trim();
             }
 
 
 
 
 
+            if (dateString.WeekDate == DateTime.MinValue || dateString.DailyDate == DateTime.MinValue)
+            {
+                return BadRequest("Invalid date format.");
+            }
 
 
+            SaleDB saleDB = new SaleDB();
+            var weekSalesTask = saleDB.getWeekSalesAsync(dateString.WeekDate);
+            var dailySalesTask = saleDB.getDailySales(dateString.DailyDate);
+
+
+            await Task.WhenAll(weekSalesTask, dailySalesTask);
+
+            var combinedSales = new CombinedSalesData
+            {
+                WeekSales = await weekSalesTask,
+                DailySales = await dailySalesTask
+            };
+
+
+            return Ok(combinedSales);
         }
+
     }
 }

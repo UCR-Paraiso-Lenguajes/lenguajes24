@@ -82,7 +82,6 @@ namespace TodoApi
                 expires: DateTime.Now.AddMinutes(30), 
                 signingCredentials: signinCredentials
             );
-
             var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
             return Ok(new AuthenticatedResponse { Token = tokenString });
