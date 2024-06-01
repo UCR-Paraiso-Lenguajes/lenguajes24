@@ -15,16 +15,20 @@ export default function Init() {
     const [dailySalesData, setDailySalesData] = useState([['Purchase Date', 'Purchase Number', 'Total']]);
     const [isVerified, setIsVerified] = useState(false);
 
-    useEffect(() => {
-        const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
+    const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
+    let userRole = null;
+    if (token) {
+        const decodedToken = jwtDecode(token);
+        userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+    }
 
+    const checkTokenValidity = () => {
         if (!token) {
             router.push('/admin');
             return;
         }
 
         const decodedToken = jwtDecode(token);
-        const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
         const exp = decodedToken.exp * 1000;
 
         if (Date.now() >= exp || userRole !== "Admin") {
@@ -33,19 +37,20 @@ export default function Init() {
         } else {
             setIsVerified(true);
         }
-    }, []);
+    };
 
     useEffect(() => {
-        if (isVerified) {
-            fetchData();
-        }
-    }, [selectedDay, isVerified]);
+        checkTokenValidity();
+        const interval = setInterval(checkTokenValidity, 10000);
+    
+        return () => clearInterval(interval);
+    }, [token]);
+
+    useEffect(() => {
+        fetchData();
+    }, [selectedDay]);
 
     const fetchData = async () => {
-        const token = sessionStorage.getItem('token');
-        const decodedToken = jwtDecode(token);
-        const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-
         if (!token || userRole !== "Admin") {
             router.push('/admin');
             return;
@@ -60,7 +65,7 @@ export default function Init() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to fetch data');
+                throw new Error('Failed to fetch data.');
             }
 
             const data = await response.json();
@@ -83,7 +88,7 @@ export default function Init() {
 
     const handleDayChange = (date) => {
         if (!date || !(date instanceof Date)) {
-            throw new Error("Invalid date argument");
+            throw new Error("Invalid date argument.");
         }
         const adjustedDay = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
         setSelectedDay(adjustedDay);
