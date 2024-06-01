@@ -1,5 +1,6 @@
-'use client'
-import { useState } from 'react';
+'use client';
+// pages/admin/init.tsx
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, ShoppingCart } from 'react-feather';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -54,27 +55,41 @@ const CustomAccordionItem: React.FC<CustomAccordionItemProps> = ({ title, href, 
 
 const Init: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasToken, setHasToken] = useState(true);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('authToken');
+    if (!token) {
+      setHasToken(false);
+      window.location.href = '/admin';
+    }
+  }, []);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
+  if (!hasToken) {
+    return null; // Render nothing if there's no token
+  }
+
   return (
     <VerifyComponent>
-      <div className="container-fluid">
-        <Navbar bg="light" expand="lg">
-          <Navbar.Toggle onClick={toggleMenu} aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav" className={isOpen ? 'show' : ''}>
-            <Nav className="flex-column mt-4">
-              <CustomAccordionItem
-                title="Panel Administracion"
-                href="/ventas"
-                icon={<ShoppingCart />}
-              />
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
-      </div>
+    
+    <div className="container-fluid">
+      <Navbar bg="light" expand="lg">
+        <Navbar.Toggle onClick={toggleMenu} aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav" className={isOpen ? 'show' : ''}>
+          <Nav className="flex-column mt-4">
+            <CustomAccordionItem
+              title="Panel Administracion"
+              href="/ventas"
+              icon={<ShoppingCart />}
+            />
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+    </div>
     </VerifyComponent>
   );
 };
