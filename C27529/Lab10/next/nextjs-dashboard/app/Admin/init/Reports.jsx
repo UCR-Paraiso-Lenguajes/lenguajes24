@@ -111,7 +111,7 @@ function Reports() {
           />
         </div>
         <div className="chartContainer">
-          <h6 className="centered">Ventas Semanales</h6>
+          <h6 className="centered">Ventas Semanales:</h6>
           <Pie data={data} options={opciones} />
         </div>
       </div>

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using storeApi.Models;
 using System.Threading.Tasks;
 using System;
+using storeApi.Database;
+using System.Net.Http;
 
 
 namespace UT
@@ -14,7 +16,7 @@ namespace UT
     public class SecurityTest
     {
         private SaleController _controller;
-        private Mock<HttpContext> _mockHttpContext;
+        private Mock<HttpContent> _mockHttpContext;
         private Mock<SaleDB> _mockSaleDB;
 
 
@@ -121,6 +123,10 @@ namespace UT
             // Assert
             Assert.IsInstanceOf<UnauthorizedResult>(result);
         }
+    }
+
+    internal class SaleController
+    {
     }
 }
 

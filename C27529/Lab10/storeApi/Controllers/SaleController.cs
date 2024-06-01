@@ -32,8 +32,6 @@ namespace TodoApi.Models
         public async Task<IActionResult> GetSale([FromBody] WeekDailyDate dateString)
         {
             var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-
-
             if (authorizationHeader != null && authorizationHeader.StartsWith("Bearer "))
             {
                 var token = authorizationHeader.Substring("Bearer ".Length).Trim();
