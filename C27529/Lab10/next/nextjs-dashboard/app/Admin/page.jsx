@@ -1,7 +1,7 @@
-"use client"
-import React, { useState } from 'react';
+'use client'
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-
+import { jwtDecode } from 'jwt-decode'; // Asegúrate de que estás importando jwt-decode correctamente
 
 function Page() {
   const [username, setUsername] = useState('');
@@ -9,27 +9,71 @@ function Page() {
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      const tokenExpiration = decodedToken.exp * 1000; // Convertir a milisegundos 
+      const timeout = tokenExpiration - Date.now(); // Tiempo hasta la expiración 
 
-  const handleSubmit = (e) => {
-    if (username === 'usu' && password === '1234') {
-      if (username != undefined && password != undefined) {
-        e.preventDefault();
-        setIsModalOpen(false);
-        window.location.href = '/Admin/init'; //aqui se entra como admin        
+      if (timeout < 0) {
+        sessionStorage.removeItem('token');
+        setError('La sesión ha expirado, por favor inicie sesión nuevamente.');
+        window.location.href = '/Admin';
+      } else {
+        setTimeout(() => {
+          sessionStorage.removeItem('token');
+          window.location.href = '/Admin';
+        }, timeout);
       }
-    } else {
-      setError('Nombre de usuario o contraseña incorrectos');
+    }
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const loginData = {
+      UserName: username,
+      Password: password
+    };
+
+    try {
+      const response = await fetch('https://localhost:7280/api/Auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginData)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const token = data.token;
+        
+        const decodedToken = jwtDecode(token); 
+        const roleKey = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+
+        if (decodedToken[roleKey] && decodedToken[roleKey] === 'Admin') {
+          sessionStorage.setItem('token', data.token);
+          window.location.href = '/Admin/init';
+        } else {
+          setError('Solo los administradores pueden acceder a esta página');
+        }
+
+      } else {
+        setError('Nombre de usuario o contraseña incorrectos');
+      }
+    } catch (error) {
+      console.error('Error al intentar iniciar sesión', error);
+      setError('Error al intentar iniciar sesión');
     }
   };
-
-
 
   return (
     <div>
       <button onClick={() => setIsModalOpen(true)}>Iniciar Sesión</button>
       <Modal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
         <div className="login-container">
-
           {error && <p className="error-message">{error}</p>}
           <form onSubmit={handleSubmit}>
             <div>

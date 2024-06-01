@@ -1,3 +1,4 @@
+"use client"
 import React from 'react'
 import { useState, useEffect } from 'react';
 import DatePicker from "react-datepicker";
@@ -5,6 +6,7 @@ import 'chart.js/auto';
 import { Pie } from 'react-chartjs-2';
 import "react-datepicker/dist/react-datepicker.css";
 import { Chart } from 'react-google-charts';
+import { useHref } from 'react-router-dom';
 
 
 
@@ -13,28 +15,40 @@ function Reports() {
 
   const [weekDate, setweekDate] = useState(new Date());
   const [dailyDate, setDailyDate] = useState(new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())));
-  
+
 
 
   const [weekSaleData, setWeekSaleData] = useState([]);
-  const [dailySaleData, setDailySaleData] = useState([[ 'Purchase Number', 'Total']]);
+  const [dailySaleData, setDailySaleData] = useState([['Purchase Number', 'Total']]);
 
   const fetchData = async () => {
-    try {
+  const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
+     
 
-      const datesPayload = {
-        weekDate: weekDate,
-        dailyDate: dailyDate
-      };
-      const response = await fetch(`https://localhost:7280/api/Sale`, {
+    if (!token) {
+      window.location.href = '/Admin';
+      throw new Error('No token available');
+      return; 
+    }
+
+    const datesPayload = {
+      weekDate: weekDate,
+      dailyDate: dailyDate
+    };
+
+    try {
+      const response = await fetch('https://localhost:7280/api/Sale', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
+
         body: JSON.stringify(datesPayload)
       });
+
       if (!response.ok) {
-        throw new Error('Failed to fetch data');
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
 
@@ -44,7 +58,7 @@ function Reports() {
         setWeekSaleData(newDataWeek);
 
         //Daily
-        const dailySalesArray = [['Purchase Number', 'Total']]; 
+        const dailySalesArray = [['Purchase Number', 'Total']];
         for (const day in data.dailySales) {
           if (Object.hasOwnProperty.call(data.dailySales, day)) {
             dailySalesArray.push([day, data.dailySales[day]]);
@@ -84,30 +98,30 @@ function Reports() {
 
   return (
     <div className="product-list-container">
-  <h2>Reports</h2>
-  <div>
-    Seleccionar Fecha:
-    <DatePicker selected={weekDate} onChange={(date) => setweekDate(date)} />
-  </div>
-  <div style={{ display: "flex", justifyContent: "space-between" }}>
-    <div>
-      <Chart
-        width={"100%"}
-        height={"300px"}
-        chartType="Table"
-        loader={<div>Loading Chart</div>}
-        data={dailySaleData}
-        options={{
-          title: "Weekly Sales",
-        }}
-      />
+      <h2>Reports</h2>
+      <div>
+        Seleccionar Fecha:
+        <DatePicker selected={weekDate} onChange={(date) => setweekDate(date)} />
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div>
+          <Chart
+            width={"100%"}
+            height={"300px"}
+            chartType="Table"
+            loader={<div>Loading Chart</div>}
+            data={dailySaleData}
+            options={{
+              title: "Weekly Sales",
+            }}
+          />
+        </div>
+        <div className="chartContainer">
+          <h6 className="centered">Ventas Semanales</h6>
+          <Pie data={data} options={opciones} />
+        </div>
+      </div>
     </div>
-    <div className="chartContainer">
-      <h6 className="centered">Ventas Semanales</h6>
-      <Pie data={data} options={opciones} />
-    </div>
-  </div>
-</div>
 
 
 
