@@ -55,7 +55,7 @@ namespace Store_API.Controllers
                         issuer: "https://localhost:7165",
                         audience: "https://localhost:7165",
                         claims: claims,
-                        expires: DateTime.Now.AddMinutes(5),
+                        expires: DateTime.Now.AddMinutes(1),
                         signingCredentials: signinCredentials
                     );
 

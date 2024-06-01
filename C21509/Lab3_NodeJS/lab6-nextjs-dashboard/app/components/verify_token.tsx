@@ -13,8 +13,7 @@ export default function  VerifyToken({children,}: {children: React.ReactNode}) {
         }
 
         try {            
-            const tokenFormat = jwtDecode(loginToken); 
-            console.log(tokenFormat);           
+            const tokenFormat = jwtDecode(loginToken);           
             const todayDate = Date.now() / 1000;            
             if(tokenFormat.exp && tokenFormat.exp < todayDate){
                 router.push("/../admin");
