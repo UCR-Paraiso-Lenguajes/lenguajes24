@@ -14,9 +14,9 @@ namespace TodoApi
 
         public Account(string user, string password, List<Claim> claims)
         {
-            if (user == null) throw new ArgumentNullException("User cannot be null.");
-            if (password == null) throw new ArgumentNullException("Password cannot be null.");
-            if (claims == null) throw new ArgumentNullException("Claims cannot be null.");
+            if (user == null) throw new ArgumentNullException(nameof(user), "User cannot be null.");
+            if (password == null) throw new ArgumentNullException(nameof(password), "Password cannot be null.");
+            if (claims == null || claims.Count == 0) throw new ArgumentException("Claims cannot be null or empty.", nameof(claims));
 
             User = user;
             Password = password;
