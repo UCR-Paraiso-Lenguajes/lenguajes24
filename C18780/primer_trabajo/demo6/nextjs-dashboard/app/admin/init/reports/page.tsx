@@ -5,16 +5,30 @@ import Pie from '../../pie';
 import MyCalendar from '../../calendar';
 import { useEffect, useState } from 'react';
 import { useFetchReports } from '@/app/api/http.reports';
+import { useRouter } from 'next/navigation';
+import { getCookie } from 'cookies-next';
 
 export default function Reports() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dataWeeklySales, setDataWeeklySales] = useState<(string | number)[][]>([]);
   const [dataDailySales, setDataDailySales] = useState<(string | number)[][]>([]);
+  const router = useRouter();
+
+  //useEffect(() => {
+  //  if (!token) {
+  //    router.push('/login');
+  //  }
+  //}, [token])
 
   const { dailyReports, weeklyReports } = useFetchReports(selectedDate);
 
   const handleOnDay = (selectedDay: Date) => {
-    setSelectedDate(selectedDay);
+    const token = getCookie('token');
+    if (!token) {
+      router.push('/login');
+    } else {
+      setSelectedDate(selectedDay);
+    }
   }
 
   useEffect(() => {

@@ -19,7 +19,7 @@ export default function Page() {
         setIsLoading(true);
 
         const user: LoginModel = { UserName: userName, Password: password };
-
+        
         try {
             const response = await login(user);
             const decodedToken = jwtDecode(response.token);

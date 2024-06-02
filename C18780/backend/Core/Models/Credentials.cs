@@ -1,4 +1,6 @@
 
+
+
 namespace StoreApi.Models
 {
     public sealed class Credentials

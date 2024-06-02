@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using StoreApi.Models;
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -20,6 +19,8 @@ public class AuthController : ControllerBase
     {
         this.configuration = configuration;
         this.hostEnvironment = hostEnvironment;
+        credentials = this.configuration.GetSection("Credentials:Staff").Get<List<Credentials>>();
+
     }
 
     [HttpPost("login")]
@@ -33,11 +34,8 @@ public class AuthController : ControllerBase
 
         if (hostEnvironment.IsDevelopment())
         {
-            var validUser = credentials
-                                .ToList()
-                                .FirstOrDefault(cred =>
-                                    cred.UserName == user.UserName && cred.Password == user.Password
-                                );
+
+            var validUser = credentials.Where(c => c.UserName == user.UserName && c.Password == user.Password).FirstOrDefault();
 
             if (validUser is not null)
             {
@@ -46,6 +44,7 @@ public class AuthController : ControllerBase
                             new Claim(ClaimTypes.Name, validUser.UserName),
                             new Claim(ClaimTypes.Role, validUser.Rol),
                         };
+
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
                 var tokeOptions = new JwtSecurityToken(

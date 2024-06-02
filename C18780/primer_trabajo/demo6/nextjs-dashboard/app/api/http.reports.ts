@@ -6,7 +6,6 @@ export function useFetchReports(dateTime: Date) {
     const [weeklyReports, setWeeklyReports] = useState([]);
     const token = getCookie('token');
 
-
     useEffect(() => {
         const getReportsSales = async () => {
             const formattedDate = dateTime.toISOString().slice(0, 10);
