@@ -29,7 +29,6 @@ jobs:
       run: |
         cd B66958/Labs
         dotnet test --no-build --verbosity normal
-
   publish-api:
     runs-on: ubuntu-latest
     steps:

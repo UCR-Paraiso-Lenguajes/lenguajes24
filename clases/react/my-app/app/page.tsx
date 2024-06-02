@@ -1,5 +1,6 @@
 import Image from "next/image";
 import '../ProductGrid.css'; // Archivo CSS para estilos
+import { Products } from '../app/components/Products.jsx';
 
 export default function Home() {
 // Lista de productos de ejemplo
