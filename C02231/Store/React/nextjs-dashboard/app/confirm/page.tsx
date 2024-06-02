@@ -6,7 +6,6 @@ import Link from 'next/link';
 
 export default function ConfirmPage() {
 
-    const cartDataString = localStorage.getItem('cartItem');
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
@@ -23,9 +22,7 @@ export default function ConfirmPage() {
 
 
     const handleConfirmation = async () => {
-        // Eliminar los datos del carrito del localStorage
         localStorage.removeItem('cartItem');
-        // Mostrar mensaje de confirmación
         setShowConfirmation(true);
         setIsButtonDisabled(true);
     };
