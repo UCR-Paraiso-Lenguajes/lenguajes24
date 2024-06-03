@@ -3,32 +3,85 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/global.css';
 import Link from 'next/link';
+import router, { useRouter } from 'next/router';
 
 export default function LoginPage() {
+    const URL = process.env.NEXT_PUBLIC_API_URL;
+    const [formData, setFormData] = useState({
+        username: '',
+        password: '',
+        errorMessage: ''
+    });
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [isFormValid, setIsFormValid] = useState(false);
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
 
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const { username, password } = formData;
 
-    const handleLogin = async () => {
-        if (email.trim() === '' || password.trim() === '') {
-            setError('Please, enter a valid email and password.');
-            return;
+        const validationResult = validateForm(username, password);
+
+        if (validationResult.isValid) {
+            setFormData({
+                ...formData,
+                errorMessage: ''
+            });
+
+            try {
+                const response = await fetch(URL + '/api/Auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userName: username, userPassword: password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // Guarda el token en sessionStorage
+                    sessionStorage.setItem('authToken', data.token);
+                    // Redirigir al usuario a la página de administración
+                    window.location.href = '/admin/init';  //ver si funciona con el router
+                    //router.push('/admin/init');
+                } else {
+                    const errorData = await response.json();
+                    setFormData({
+                        ...formData,
+                        errorMessage: errorData.message || 'Invalid password or user data'
+                    });
+                }
+            } catch (error) {
+                setFormData({
+                    ...formData,
+                    errorMessage: 'Error en la conexión con el servidor'
+                });
+            }
+        } else {
+            setFormData({
+                ...formData,
+                errorMessage: validationResult.errorMessage
+            });
         }
-
     };
 
-    const updateFormValidity = () => {
-        setIsFormValid(email.trim() !== '' && password.trim() !== '');
+    const validateForm = (username: string, password: string) => {
+        if (!username.trim() || !password.trim()) {
+            return {
+                isValid: false,
+                errorMessage: 'Please, fill all fields.'
+            };
+        }
+        return {
+            isValid: true,
+            errorMessage: ''
+        };
     };
-
-
-    useEffect(() => {
-        updateFormValidity();
-    }, [email, password]);
-
 
     return (
         <div >
@@ -49,49 +102,45 @@ export default function LoginPage() {
                 <div className="row justify-content-center align-items-center" style={{ height: '80vh' }}>
                     <div className="col-sm-4">
                         <div className="card">
-                            <div className="card-body">
-                                <h5 className="card-title text-center">Iniciar Sesión</h5>
-                                <form>
-                                    <div>
-                                        <div className="mb-3">
-                                            <label htmlFor="emailInputField" className="form-label">Email address</label>
-                                            <input type="email" className="form-control" id="emailInputField" aria-describedby="emailHelp" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                            <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="passwordInputField" className="form-label">Password</label>
-                                            <input type="password" className="form-control" id="passwordInputField" value={password} onChange={(e) => setPassword(e.target.value)} />
-                                        </div>
-                                        {error && <div className="alert alert-danger" role="alert">{error}</div>}
-                                        <div className="d-grid gap-2" >
-                                            {isFormValid ? (
-                                                <Link href="/admin/init">
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-success"
-                                                        onClick={handleLogin}
-                                                        style={{ width: '100%' }}>
-                                                        Iniciar sesión
-                                                    </button>
-                                                </Link>
-                                            ) : (
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-success"
-                                                    onClick={handleLogin}
-                                                    style={{ width: '100%' }}>
-                                                    Iniciar sesión
-                                                </button>
-                                            )}
-
-                                        </div>
+                            <h5 className="card-title text-center">Iniciar Sesión</h5>
+                            <form onSubmit={handleSubmit}>
+                                <div>
+                                    <div className="mb-3">
+                                        <label htmlFor="username" className="form-label">User name</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            id="username"
+                                            name="username"
+                                            value={formData.username}
+                                            onChange={handleInputChange}
+                                        />
                                     </div>
-                                </form>
-                            </div>
+                                    <div className="mb-3">
+                                        <label htmlFor="password" className="form-label">Password</label>
+                                        <input
+                                            type="password"
+                                            className="form-control"
+                                            id="password"
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleInputChange} />
+                                        {formData.errorMessage && (
+                                            <p style={{ color: 'red' }}>{formData.errorMessage}</p>
+                                        )}
+                                    </div>
+                                    <div className="center-button">
+                                        <button className="btn btn-success my-4" type="submit">
+                                            Iniciar Sesión
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-            </div>
+
+            </div >
 
             <footer className='footer' style={{ position: 'fixed', bottom: '0', width: '100%', zIndex: '9999' }}>
                 <div className="text-center p-3">

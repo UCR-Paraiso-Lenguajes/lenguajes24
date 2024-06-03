@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StoreAPI.Business;
 using StoreAPI.Database;
@@ -15,7 +16,8 @@ namespace StoreAPI.Controllers
     public class SaleController : ControllerBase
     {
 
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "Admin")]
+        //[Authorize(Roles ="Admin")]
         public async Task<IActionResult> GetSaleAsync([FromQuery] DateTime date)
         {
             try

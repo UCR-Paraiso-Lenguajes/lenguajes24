@@ -7,37 +7,99 @@ import { Chart } from 'react-google-charts';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'
 import { format } from 'date-fns';
+import { jwtDecode } from 'jwt-decode';
+import { useRouter } from 'next/navigation';
 
 export default function ReportPage() {
 
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [weeklySalesData, setWeeklySalesData] = useState([['Day', 'Total']]);
     const [dailySalesData, setDailySalesData] = useState([['Day', 'Total']]);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const router = useRouter();
+    const storage = sessionStorage.getItem("authToken");
 
+    const URL = process.env.NEXT_PUBLIC_API_URL;
+    if (!URL) {
+        throw new Error('NEXT_PUBLIC_API_URL is not defined');
+    }
 
     useEffect(() => {
         fetchData();
     }, [selectedDate]);
 
+    const checkAuthToken = async () => {
+        const loginToken = sessionStorage.getItem("authToken");
+
+        if (!loginToken) {
+            return false;
+        }
+
+        try {
+            const tokenFormat = jwtDecode(loginToken);
+            const todayDate = Date.now() / 1000;
+
+            if (tokenFormat.exp && tokenFormat.exp < todayDate) {
+                sessionStorage.removeItem("authToken");
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            return false;
+        }
+    };
+
+    useEffect(() => {
+        const verifyToken = async () => {
+            const isValid = await checkAuthToken();
+            if (!isValid) {
+                router.push("/../admin");
+            } else {
+                setIsAuthenticated(true);
+            }
+        };
+
+        verifyToken();
+    }, [router]);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchData();
+        }
+    }, [isAuthenticated, selectedDate]);
+
 
     const fetchData = async () => {
         try {
-            //const formattedDate = selectedDate.toISOString().split('T')[0]; //fecha en formato ISO 8601 sin la hora
+
+            const token = sessionStorage.getItem('authToken');
+            const isTokenValid = await checkAuthToken();
+
+            if (!isTokenValid) {
+                router.push("/../admin");
+                return;
+            }
+
             const year = selectedDate.getFullYear();
             const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
             const day = String(selectedDate.getDate()).padStart(2, '0');
-
-            // Formatear la fecha en formato ISO 8601 sin la hora
             const formattedDate = `${year}-${month}-${day}`;
-            const response = await fetch(`http://localhost:5207/api/Sale?date=${formattedDate}`);
+
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/Sale?date=${formattedDate}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
 
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
             const data = await response.json();
-
-            console.log("Datos de fetch:", data);
 
             const weeklyData = [['Day', 'Total']];
             const dailyData = [['Purcharse Date', 'Purcharse Number', 'Quantity', 'Total', 'Products']];
@@ -56,7 +118,8 @@ export default function ReportPage() {
             setWeeklySalesData(weeklyData);
 
         } catch (error) {
-            throw new Error('Error to send data');
+            
+            router.push("/../admin");
         }
     };
 
@@ -69,6 +132,9 @@ export default function ReportPage() {
         }
     };
 
+    if (!isAuthenticated) {
+        return null;
+    }
 
     return (
         <div>
@@ -113,7 +179,7 @@ export default function ReportPage() {
                                             headerRow: 'chart-header-row',
                                             tableCell: 'chart-cell',
                                         },
-                                        allowHtml: true, // Allows HTML content in cells
+                                        allowHtml: true, 
                                         pageSize: 20,
                                     }}
                                 />

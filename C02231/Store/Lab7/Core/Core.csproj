@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
- <ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MYSqlConnector" Version="2.3.6" />
   </ItemGroup>
 
