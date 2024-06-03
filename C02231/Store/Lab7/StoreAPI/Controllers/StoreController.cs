@@ -1,7 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StoreAPI.models;
 using System;
 using System.Collections.Generic;
+using Core;
+using StoreAPI.Business;
+using StoreAPI.Database;
+using StoreAPI;
 
 namespace StoreAPI.Controllers
 {
@@ -11,6 +16,7 @@ namespace StoreAPI.Controllers
     {
 
         [HttpGet]
+        //[Authorize(Roles ="Admin")]
         public async Task<Store> GetStoreAsync()
         {
             var storeInstance = await Store.Instance.Value;

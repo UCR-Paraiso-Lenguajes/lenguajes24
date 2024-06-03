@@ -71,7 +71,7 @@ namespace StoreAPI;
                         issuer: "http://localhost:5207",
                         audience: "http://localhost:5207",
                         claims: claims,
-                        expires: DateTime.Now.AddMinutes(20),
+                        expires: DateTime.Now.AddMinutes(1),
                         signingCredentials: signinCredentials
                     );
 

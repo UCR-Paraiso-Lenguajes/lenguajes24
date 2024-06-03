@@ -125,6 +125,9 @@ export default function LoginPage() {
                                             name="password"
                                             value={formData.password}
                                             onChange={handleInputChange} />
+                                        {formData.errorMessage && (
+                                            <p style={{ color: 'red' }}>{formData.errorMessage}</p>
+                                        )}
                                     </div>
                                     <div className="center-button">
                                         <button className="btn btn-success my-4" type="submit">
@@ -136,9 +139,7 @@ export default function LoginPage() {
                         </div>
                     </div>
                 </div>
-                {formData.errorMessage && (
-                    <p style={{ color: 'red' }}>{formData.errorMessage}</p>
-                )}
+
             </div >
 
             <footer className='footer' style={{ position: 'fixed', bottom: '0', width: '100%', zIndex: '9999' }}>

@@ -15,7 +15,9 @@ export default function ReportPage() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [weeklySalesData, setWeeklySalesData] = useState([['Day', 'Total']]);
     const [dailySalesData, setDailySalesData] = useState([['Day', 'Total']]);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const router = useRouter();
+    const storage = sessionStorage.getItem("authToken");
 
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
@@ -30,31 +32,53 @@ export default function ReportPage() {
         const loginToken = sessionStorage.getItem("authToken");
 
         if (!loginToken) {
-            router.push("/../admin");
             return false;
         }
 
-        const tokenFormat = jwtDecode(loginToken);
-        const todayDate = Date.now() / 1000;
+        try {
+            const tokenFormat = jwtDecode(loginToken);
+            const todayDate = Date.now() / 1000;
 
-        if (tokenFormat.exp && tokenFormat.exp < todayDate) {
-            sessionStorage.removeItem("authToken");
-            router.push("/../admin");
+            if (tokenFormat.exp && tokenFormat.exp < todayDate) {
+                sessionStorage.removeItem("authToken");
+                return false;
+            }
+
+            return true;
+        } catch (error) {
             return false;
         }
-
-        return true;
     };
 
+    useEffect(() => {
+        const verifyToken = async () => {
+            const isValid = await checkAuthToken();
+            if (!isValid) {
+                router.push("/../admin");
+            } else {
+                setIsAuthenticated(true);
+            }
+        };
+
+        verifyToken();
+    }, [router]);
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchData();
+        }
+    }, [isAuthenticated, selectedDate]);
+
+
     const fetchData = async () => {
-        // debugger
         try {
 
             const token = sessionStorage.getItem('authToken');
             const isTokenValid = await checkAuthToken();
 
             if (!isTokenValid) {
-                throw new Error('Token de autenticación inválido');
+                router.push("/../admin");
+                return;
             }
 
             const year = selectedDate.getFullYear();
@@ -94,7 +118,8 @@ export default function ReportPage() {
             setWeeklySalesData(weeklyData);
 
         } catch (error) {
-            throw new Error('Error to send data');
+            
+            router.push("/../admin");
         }
     };
 
@@ -107,6 +132,9 @@ export default function ReportPage() {
         }
     };
 
+    if (!isAuthenticated) {
+        return null;
+    }
 
     return (
         <div>
@@ -151,7 +179,7 @@ export default function ReportPage() {
                                             headerRow: 'chart-header-row',
                                             tableCell: 'chart-cell',
                                         },
-                                        allowHtml: true, // Allows HTML content in cells
+                                        allowHtml: true, 
                                         pageSize: 20,
                                     }}
                                 />
