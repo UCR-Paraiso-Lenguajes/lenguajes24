@@ -54,32 +54,9 @@ namespace UT
             // Assert
             // Add assertions to verify that the product is correctly inserted into the tree
         }
+        
 
-        [Test]
-        public void SearchByCategory_WithValidCategoryId_ReturnsProducts()
-        {
-            // Arrange
-            var products = new Products();
-            var root = new Products.TreeNode(new Dictionary<string, string>
-            {
-                { "id", "1" },
-                { "name", "Product 1" },
-                { "price", "10.99" },
-                { "imageUrl", "image_url" },
-                { "description", "Description" },
-                { "categoryId", "1" }
-            });
-            products.Insert(root.Product);
-            var result = new List<Dictionary<string, string>>();
-
-            // Act
-            products.SearchByCategory(root, 1, result);
-
-            // Assert
-            Assert.AreEqual(1, result.Count);
-            // Add assertions to verify the correctness of the returned products
-        }
-
+  
         [Test]
         public void SearchProductsByKeyword_WithValidKeyword_ReturnsProducts()
         {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
 using storeapi.Bussisnes;
+using Microsoft.AspNetCore.Authorization;
 using storeapi.Models;
 
 namespace storeapi.Controllers
@@ -12,37 +12,23 @@ namespace storeapi.Controllers
     {
         private readonly StoreLogic _storeLogic;
 
-        public CartController()
+        public CartController(StoreLogic storeLogic)
         {
-            _storeLogic = new StoreLogic();
+            _storeLogic = storeLogic ?? throw new ArgumentNullException(nameof(storeLogic));
         }
 
         [HttpPost]
+         [AllowAnonymous]
         public async Task<IActionResult> CreateCart([FromBody] Cart cart)
         {
-            try
-            {
-                ValidateCart(cart);
+            ValidateCart(cart);
 
-                var sale = await _storeLogic.PurchaseAsync(cart);
+            var sale = await _storeLogic.PurchaseAsync(cart);
 
-                string purchaseNumber = _storeLogic.PurchaseNumber;
+            string purchaseNumber = _storeLogic.PurchaseNumber;
 
-                var response = new { purchaseNumberResponse = purchaseNumber };
-                return Ok(response);
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
-            }
+            var response = new { purchaseNumberResponse = purchaseNumber };
+            return Ok(response);
         }
 
         private void ValidateCart(Cart cart)
