@@ -176,13 +176,19 @@ const { default: jwt_decode } = require("jwt-decode");
             const userToken = await responsePost.json();
             const tokenValue = userToken.token;            
             return tokenValue;
+        } catch (error) {            
+            throw new Error('Failed to POST data: '+ error);
+        }        
+    }
     
     export async function getProductsBySearchTextAndCategory(searchText:string,categoryIds: number[]): Promise<string | ProductAPI[] | null> {
         
+        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
         const searchTextToUrl = encodeURIComponent(searchText);        
         //se construye manualmente, ya que es por GET
         const categoryIdsToUrl = categoryIds.map(id => `categoryIds=${encodeURIComponent(id.toString())}`).join("&");        
-        const directionAPI = `https://localhost:7161/store/products/product/search?searchText=${searchTextToUrl}&${categoryIdsToUrl}`;
+        const directionAPI = `${urlByReactEnviroment}/store/products/product/search?searchText=${searchTextToUrl}&${categoryIdsToUrl}`;
+                        
         //Especificacion POST
         let getConfig = {
             method: "GET"            

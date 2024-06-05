@@ -21,8 +21,7 @@ import './src/css/demoCSS.css'
 import './src/css/fonts_awesome/css/all.min.css'
 //Funciones
 import { getCartShopStorage } from './src/storage/cart-storage';
-import { getAllProductsFromAPI, getProductsByCategory } from './src/api/get-post-api';
-import { getProductsByCategory, getProductsBySearchTextAndCategory } from './src/api/get-post-api';
+import { getAllProductsFromAPI, getProductsByCategory,getProductsBySearchTextAndCategory } from './src/api/get-post-api';
 import { CategoryAPI } from './src/models-data/CategoryAPI';
 
 
@@ -43,7 +42,7 @@ function Page() {
 
                 if (typeof dataFromStore  === "object" && dataFromStore !== null){
                     setProducts(dataFromStore.productsFromStore);
-                    setCategoryList(dataFromStore.categoriesFromStore);
+                    setCategoryListFromStore(dataFromStore.categoriesFromStore);
                 }   
             } catch (error) {                
                 throw new Error('Failed to fetch data:' + error);
@@ -101,8 +100,7 @@ function Page() {
                 if (typeof filteredProducts  === "object" && filteredProducts !== null) {                    
                     setProducts(filteredProducts)
                 }
-            } catch (error) {
-                callAlertShop("Error","Error al obtener datos","Al parecer los datos no pueden ser mostrados. Por favor intentalo de nuevo");
+            } catch (error) {                
             }            
         };    
         if (productCategory) fetchProductsByCategory();
@@ -150,8 +148,7 @@ function Page() {
                 // Cambiar la URL sin recargar la página
                 window.history.pushState({ filteredProducts }, '', newUrl);
             }
-        } catch (error) {
-            callAlertShop("Error","Error al obtener datos","Al parecer los datos no pueden ser mostrados. Por favor intentalo de nuevo");
+        } catch (error) {            
         }                    
     }
 
