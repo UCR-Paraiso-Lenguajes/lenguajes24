@@ -5,7 +5,10 @@ import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 
 export default function  VerifyComponent({children,}: {children: React.ReactNode}) {
-    const router = useRouter();       
+    const router = useRouter();  
+    
+    
+
     useEffect(()=>{        
 
         //Verificamos si existe un item en el localStorage

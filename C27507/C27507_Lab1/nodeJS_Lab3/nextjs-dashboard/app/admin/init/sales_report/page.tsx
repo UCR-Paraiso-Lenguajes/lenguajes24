@@ -16,7 +16,7 @@ import { RegisteredSaleAPI } from '@/app/src/models-data/RegisteredSale'
 import { RegisteredSaleReport } from '@/app/src/models-data/RegisteredSaleReport';
 import { AlertShop } from '@/app/global-components/generic_overlay';
 
-export default function SalesReport(){
+export default function SalesReport(){   
     
     const [eventDate, setEventDate] = useState<string | null>(null);
     const [dataForTable, setDataForTable] = useState<any[]>([]);
@@ -95,6 +95,7 @@ export default function SalesReport(){
 
     //Funcion base de todo
     const selectDateResetTable = (e: { target: { value: any; }; }) =>{
+        debugger
         var selectedDate = e.target.value;
         const dateParts = selectedDate.split('-');
         const year = parseInt(dateParts[0], 10);

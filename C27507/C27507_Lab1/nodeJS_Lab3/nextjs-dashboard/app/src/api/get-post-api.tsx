@@ -85,7 +85,7 @@ const { default: jwt_decode } = require("jwt-decode");
 
         let directionAPI = `${urlByReactEnviroment}/api/Sale`;
 
-
+        //debugger
         //Validamos si el token ha expirado
         let loginToken = sessionStorage.getItem("loginToken");
         if (!loginToken) {            
@@ -98,20 +98,17 @@ const { default: jwt_decode } = require("jwt-decode");
         let tokenLifeTime = tokenFormat.exp;
         if (tokenLifeTime && tokenLifeTime < todayDate) window.location.reload();        
 
-        //Especificacion POST
-        let postConfig = {
-            method: "POST",
-            //pasamos un objeto como atributo de otro
+        let getConfig = {
+            method: "GET",
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
                 'Authorization': `Bearer ${loginToken}`
-            },
-            body: JSON.stringify(data)
-        }
+            }
+        };
     
         try {         
-            let responsePost = await fetch(directionAPI,postConfig);
+            let responsePost = await fetch(directionAPI,getConfig);
             if(!responsePost.ok){                
                 const errorMessage = await responsePost.text();                                
                 return errorMessage;
