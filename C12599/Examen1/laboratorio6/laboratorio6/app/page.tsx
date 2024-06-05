@@ -4,6 +4,8 @@ import { Carousel } from 'react-bootstrap';
 import Link from 'next/link';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { url } from 'inspector';
+const URL = process.env.NEXT_PUBLIC_API;
 
 const Page = () => {
   const [state, setState] = useState({
@@ -18,7 +20,7 @@ const Page = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch('https://localhost:7043/api/Store');
+      const response = await fetch(URL + 'https://localhost:7043/api/Store');
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -147,7 +149,7 @@ const Page = () => {
     const { selectedCategories } = state;
 
     // Construimos la URL con las categorías seleccionadas y la búsqueda
-    let url = 'https://localhost:7043/api/Products';
+    let url = URL + 'api/Products';
     const queryParams = [];
 
     // Agregamos las categorías seleccionadas a los parámetros de la URL
@@ -232,7 +234,7 @@ const Page = () => {
           <div className="card-body">
             <h5 className="card-title">{product.name}</h5>
             <p className="card-text">{product.description}</p>
-            <p className="card-text">Precio: ${product.price}</p>
+            <p className="card-text">${product.price}</p>
 
             <button className="btn btn-primary" onClick={() => handleAddToCart(product)}>
               Comprar
@@ -263,7 +265,7 @@ const Page = () => {
               <div className="mt-3 text-center">
                 <h3>{product.name}</h3>
                 <p>{product.description}</p>
-                <p>Precio: ${product.price}</p>
+                <p>${product.price}</p>
 
                 <button className="btn btn-primary" onClick={() => handleAddToCart(product)}>
                   Comprar

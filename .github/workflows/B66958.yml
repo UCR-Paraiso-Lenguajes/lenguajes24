@@ -2,9 +2,9 @@ name: B66958
 
 on:
   push:
-    branches: [ "B66958_DevOps" ]
+    branches: [ "B66958" ]
   pull_request:
-    branches: [ "B66958_DevOps" ]
+    branches: [ "B66958" ]
 
 jobs:
   test:
@@ -29,7 +29,6 @@ jobs:
       run: |
         cd B66958/Labs
         dotnet test --no-build --verbosity normal
-
   publish-api:
     runs-on: ubuntu-latest
     steps:
