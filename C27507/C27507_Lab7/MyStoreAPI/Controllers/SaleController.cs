@@ -15,8 +15,8 @@ namespace MyStoreAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class SaleController: ControllerBase{
-        [HttpGet, Authorize(Roles = "Admin")]        
-        public async Task<IActionResult> GetSaleAsync( DateTime dateFormat){
+        [HttpPost, Authorize(Roles = "Admin")]        
+        public async Task<IActionResult> GetSaleAsync([FromBody] DateTime dateFormat){
             try{                                
                 SaleLogic saleLogic = new SaleLogic();
                 RegisteredSaleReport specificListOfRegisteredSales = await saleLogic.getSalesByDayAndWeekAsync(dateFormat);                

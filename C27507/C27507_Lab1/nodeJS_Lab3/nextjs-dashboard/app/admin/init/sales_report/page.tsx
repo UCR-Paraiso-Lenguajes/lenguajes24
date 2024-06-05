@@ -95,7 +95,6 @@ export default function SalesReport(){
 
     //Funcion base de todo
     const selectDateResetTable = (e: { target: { value: any; }; }) =>{
-        debugger
         var selectedDate = e.target.value;
         const dateParts = selectedDate.split('-');
         const year = parseInt(dateParts[0], 10);
@@ -110,6 +109,7 @@ export default function SalesReport(){
     useEffect(() => {
         const fetchData = async () => {
             try {
+                console.log(eventDate);
                 const registeredSalesReport = await getRegisteredSalesFromAPI(eventDate);
 
                 //Validar el tipo de informacion recibida (string = error 504/501...etc)
