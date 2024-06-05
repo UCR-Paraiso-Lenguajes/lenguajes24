@@ -19,3 +19,7 @@ cristianguillenmendez@Cristians-MacBook-Pro TodoApi % dotnet --version
 cristianguillenmendez@Cristians-MacBook-Pro TodoApi % npm -version
 10.2.4
 cristianguillenmendez@Cristians-MacBook-Pro TodoApi % 
+
+
+podman build -t api .
+podman run --name api -d  -e ASPNETCORE_ENVIRONMENT=Development -e DB="Server=192.168.100.81;Database=mysql;Uid=root;Pwd=123456;" -p 8080:8080  api

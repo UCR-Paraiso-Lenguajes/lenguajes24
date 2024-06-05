@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks; // Asegúrate de importar este namespace
+using System.Threading.Tasks;
 using storeApi.Database;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+
 
 namespace TodoApi.Models
 {
@@ -18,40 +22,43 @@ namespace TodoApi.Models
 
         private class CombinedSalesData
         {
-            public Dictionary<string, decimal> WeekSales { get; set; }
-            public List<(string purchaseNumber, decimal total)> DailySales { get; set; }
+            public required Dictionary<string, decimal> WeekSales { get; set; }
+            public required Dictionary<string, decimal> DailySales { get; set; }
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+        
         public async Task<IActionResult> GetSale([FromBody] WeekDailyDate dateString)
         {
-            if (dateString.WeekDate == DateTime.MinValue)
+            var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            if (authorizationHeader != null && authorizationHeader.StartsWith("Bearer "))
             {
-                return BadRequest("Invalid start date format");
+                var token = authorizationHeader.Substring("Bearer ".Length).Trim();
             }
 
-            if (dateString.DailyDate == DateTime.MinValue)
+            if (dateString.WeekDate == DateTime.MinValue || dateString.DailyDate == DateTime.MinValue)
             {
-                return BadRequest("Invalid today date.");
+                return BadRequest("Invalid date format.");
             }
+
 
             SaleDB saleDB = new SaleDB();
-            
-            Task<Dictionary<string, decimal>> weekSalesTask = saleDB.getWeekSalesAsync(dateString.WeekDate);
-            Task<List<(string purchaseNumber, decimal total)>> dailySalesTask = saleDB.getDailySales(dateString.DailyDate);
-            
+            var weekSalesTask = saleDB.getWeekSalesAsync(dateString.WeekDate);
+            var dailySalesTask = saleDB.getDailySales(dateString.DailyDate);
+
+
             await Task.WhenAll(weekSalesTask, dailySalesTask);
 
-            Dictionary<string, decimal> weekSales = await weekSalesTask;
-            List<(string purchaseNumber, decimal total)> dailySales = await dailySalesTask;
-
-            CombinedSalesData combinedSales = new CombinedSalesData
+            var combinedSales = new CombinedSalesData
             {
-                WeekSales = weekSales,
-                DailySales = dailySales
+                WeekSales = await weekSalesTask,
+                DailySales = await dailySalesTask
             };
+
 
             return Ok(combinedSales);
         }
+
     }
 }

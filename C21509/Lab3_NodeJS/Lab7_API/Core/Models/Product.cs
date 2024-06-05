@@ -1,3 +1,5 @@
+using Core.Models;
+
 namespace Store_API.Models;
 
 public class Product : ICloneable
@@ -6,8 +8,9 @@ public class Product : ICloneable
     public string ImageURL { get; set; }
     public decimal Price { get; set; }
     public int Id { get; set; }
+    public Category Categoria {get; set;}
 
-        // Implementation of the ICloneable interface
+    // Implementation of the ICloneable interface
     public object Clone()
     {
         return new Product
@@ -16,6 +19,7 @@ public class Product : ICloneable
             Name = this.Name,
             ImageURL = this.ImageURL,
             Price = this.Price,
+            Categoria  = this.Categoria 
         };
     }
 }

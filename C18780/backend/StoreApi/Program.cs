@@ -75,6 +75,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+var value = Environment.GetEnvironmentVariable("DB");
+
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

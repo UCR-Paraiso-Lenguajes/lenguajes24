@@ -5,11 +5,11 @@ namespace Store_API.Business
 {
     public class SaleReportLogic
     {
-        private readonly DB_API _dbApi;
+        private readonly DB_API dbApi;
 
         public SaleReportLogic()
         {
-            
+            dbApi = new DB_API();
         }
 
         public async Task<SalesReport> GenerateSalesReportAsync(DateTime date)
@@ -24,8 +24,8 @@ namespace Store_API.Business
                 throw new ArgumentOutOfRangeException(nameof(date), "The date cannot be later than the current date.");
             }
 
-            var dailySalesTask = _dbApi.ObtainDailySalesAsync(date);
-            var weeklySalesTask = _dbApi.ObtainWeeklySalesAsync(date);
+            var dailySalesTask = dbApi.ObtainDailySalesAsync(date);
+            var weeklySalesTask = dbApi.ObtainWeeklySalesAsync(date);
 
             await Task.WhenAll(dailySalesTask, weeklySalesTask);
 

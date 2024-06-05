@@ -24,7 +24,7 @@ public readonly struct Category
 public class Categories
 {
     private static Categories instance;
-    private List<Category> categoryList;
+    private List<Category> categories;
 
     public static Categories Instance
     {
@@ -41,7 +41,7 @@ public class Categories
 
     private Categories()
     {
-        categoryList = new List<Category>();
+        categories = new List<Category>();
     }
 
     private void BuildCategories()
@@ -52,24 +52,24 @@ public class Categories
         AddCategory(4, "Música");
         AddCategory(5, "Cuidado personal");
 
-        categoryList.Sort((category1, category2) => string.Compare(category1.Name, category2.Name));
+        categories.Sort((category1, category2) => string.Compare(category1.Name, category2.Name));
     }
 
     private void AddCategory(int id, string name)
     {
         Category newCategory = Category.Build(id, name);
-        categoryList.Add(newCategory);
+        categories.Add(newCategory);
     }
 
     public IEnumerable<Category> GetCategories()
     {
-        return categoryList;
+        return categories;
     }
 
     public Category GetCategoryById(int id)
     {
         if (id < 1)
             throw new ArgumentException("A category must have an ID, and it should be above 0");
-        return categoryList.FirstOrDefault(category => category.Id == id);
+        return categories.FirstOrDefault(category => category.Id == id);
     }
 }
