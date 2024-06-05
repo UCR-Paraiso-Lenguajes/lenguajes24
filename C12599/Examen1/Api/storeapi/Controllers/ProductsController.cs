@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using storeapi.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace storeapi.Controllers
 {
@@ -9,6 +10,7 @@ namespace storeapi.Controllers
     public class ProductsController : ControllerBase
     {
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetProducts([FromQuery] List<string> categoryIDs, string search)
         {
             var categoryIDsParsed = new List<int>();
@@ -23,7 +25,6 @@ namespace storeapi.Controllers
             }
 
             Products products = new Products();
-
             IEnumerable<Dictionary<string, string>> filteredProducts = products.LoadProductsFromDatabase(categoryIDsParsed, search);
 
             return Ok(filteredProducts);

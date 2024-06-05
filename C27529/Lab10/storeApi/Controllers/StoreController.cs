@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
-using storeApi.Models;
-using storeApi.Database;
-using storeApi.Business;
+using System.Linq;
+using System.Threading.Tasks;
+using storeApi;
 
 namespace storeApi.Controllers
 {
@@ -17,23 +16,44 @@ namespace storeApi.Controllers
         {
             return await Task.FromResult(Store.Instance);
         }
-
         [HttpGet("products")]
-        public async Task<IActionResult> GetCategories(int category)
+        public async Task<IActionResult> GetCategories([FromQuery] string categoriesString, [FromQuery] string searchText)
         {
-            if (category < 1) throw new ArgumentException("Invalid category ID");
-
             var store = Store.Instance;
-            var products = await store.GetFilteredProductsAsync(category);
+            if (string.IsNullOrEmpty(categoriesString) || categoriesString == "0")
+            {
+                categoriesString = null; 
+            }
 
-            return Ok(new { products });
+            if (searchText == "@")
+            {
+                searchText = null; 
+            }
+
+            if (categoriesString == null && searchText == null)
+            {
+                return BadRequest("No categories or search text provided.");
+            }
+
+            if (categoriesString != null && searchText != null)
+            {
+                var categoryIds = categoriesString.Split(',').Select(int.Parse).ToList();
+                var filteredStore = await store.GetFilteredProductsAsync(categoryIds);
+                var filteredProducts = filteredStore.Products.Where(p => p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) || p.Description.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList();
+                return Ok(new { products = filteredProducts });
+            }
+            else if (categoriesString != null)
+            {
+                var categoryIds = categoriesString.Split(',').Select(int.Parse).ToList();
+                var filteredStore = await store.GetFilteredProductsAsync(categoryIds);
+                return Ok(new { products = filteredStore.Products });
+            }
+            else if (searchText != null)
+            {
+                var filteredProducts = store.GetFilteredTextProducts(searchText);
+                return Ok(new { products = filteredProducts });
+            }
+            return BadRequest("Invalid search parameters.");
         }
-
-        
-
-
-
-
     }
-
 }

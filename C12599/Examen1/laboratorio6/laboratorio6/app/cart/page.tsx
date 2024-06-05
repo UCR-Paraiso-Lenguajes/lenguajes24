@@ -4,16 +4,32 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
 import Link from 'next/link';
 
+type CartItem = {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+};
+
+type Cart = {
+  productos: CartItem[];
+  subtotal: number;
+  total: number;
+};
+
 const EjemploPage: React.FC = () => {
-  const [carrito, setCarrito] = useState({
-    productos: [], 
+  const [carrito, setCarrito] = useState<Cart>({
+    productos: [],
     subtotal: 0,
     total: 0
   });
 
   useEffect(() => {
     const cartData = JSON.parse(localStorage.getItem('cartData') || '{}');
-    setCarrito(cartData);
+    if (cartData.productos) {
+      setCarrito(cartData);
+    }
   }, []);
 
   useEffect(() => {
@@ -30,16 +46,13 @@ const EjemploPage: React.FC = () => {
   }, [carrito.productos]);
 
   const handleClearCart = () => {
-    localStorage.setItem('cartData', JSON.stringify({
+    const emptyCart = {
       productos: [],
       subtotal: 0,
       total: 0
-    }));
-    setCarrito({
-      productos: [],
-      subtotal: 0,
-      total: 0
-    });
+    };
+    localStorage.setItem('cartData', JSON.stringify(emptyCart));
+    setCarrito(emptyCart);
   };
 
   const handleContinueToPayment = () => {

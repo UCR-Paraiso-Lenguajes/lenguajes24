@@ -3,30 +3,30 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
 
-const ConfirmacionSinpePage = () => {
+const ConfirmacionSinpePage: React.FC = () => {
     const [formState, setFormState] = useState({
         comprobante: '',
         confirmado: false,
     });
 
-   const handleComprobanteChange = (e) => {
-    if (!e || !e.target || typeof e.target.value === 'undefined' || e.target.value === null) {
-        throw new Error("Evento inválido o faltan propiedades necesarias.");
-    }
+    const handleComprobanteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        if (!e || !e.target || typeof e.target.value === 'undefined' || e.target.value === null) {
+            throw new Error("Evento inválido o faltan propiedades necesarias.");
+        }
 
-    const { target } = e;
-    const newValue = target.value.trim();
+        const { target } = e;
+        const newValue = target.value.trim();
 
-    if (newValue.length === 0) {
-        throw new Error("El valor del comprobante está vacío.");
-    }
+        if (newValue.length === 0) {
+            throw new Error("El valor del comprobante está vacío.");
+        }
 
-    setFormState((prevState) => ({
-        ...prevState,
-        comprobante: newValue,
-    }));
-};
-    
+        setFormState((prevState) => ({
+            ...prevState,
+            comprobante: newValue,
+        }));
+    };
+
     const handleConfirmar = () => {
         const cartDataString = localStorage.getItem('cartData');
         if (!cartDataString) {

@@ -11,14 +11,15 @@ namespace StoreAPI.Business
         private SaleBD saleDB = new SaleBD();
 
         public async Task<Sale> PurchaseAsync(Cart cart)
-        { 
+        {
             if (cart == null || cart.ProductIds == null || cart.ProductIds.Count == 0) throw new ArgumentException("The cart cannot be empty.");
             if (cart.ProductIds.Count == 0) throw new ArgumentException("Cart must contain at least one product.");
             if (string.IsNullOrWhiteSpace(cart.Address)) throw new ArgumentException("Address must be provided.");
-           
 
-            var products = Store.Instance.Products;
-            var taxPercentage = Store.Instance.TaxPercentage;
+
+            var storeInstance = await Store.Instance.Value;
+            var products = storeInstance.Products;
+            var taxPercentage = storeInstance.TaxPercentage;
 
             // Find matching products based on the product IDs in the cart
             IEnumerable<Product> matchingProducts = products.Where(p => cart.ProductIds.Contains(p.Id.ToString())).ToList();

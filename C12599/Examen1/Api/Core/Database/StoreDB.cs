@@ -14,23 +14,9 @@ namespace storeapi.Database
             var products = new List<Product>();
             Random random = new Random();
 
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
                 connection.Open();
-
-
-
-                string countProductsQuery = "SELECT COUNT(*) FROM products";
-
-                using (var countProductsCommand = new MySqlCommand(countProductsQuery, connection))
-                {
-                    int currentProductCount = Convert.ToInt32(countProductsCommand.ExecuteScalar());
-
-                    if (currentProductCount >= 14)
-                    {
-                        throw new InvalidOperationException("No se pueden insertar más productos. Ya se han insertado 12 productos.");
-                    }
-                }
 
                 // Continuar con la creación de la tabla y la inserción de productos
                 string createTableQuery = @"
@@ -47,6 +33,7 @@ namespace storeapi.Database
                 {
                     createTableCommand.ExecuteNonQuery();
                 }
+
                 string[] randomWords = { "amazing", "awesome", "fantastic", "incredible", "superb", "excellent", "wonderful", "marvelous", "brilliant", "fabulous" };
                 string[] productNames = { "Gizmo", "Widget", "Contraption", "Gadget", "Appliance", "Device", "Tool", "Instrument", "Machine", "Equipment" };
 
@@ -77,6 +64,7 @@ namespace storeapi.Database
                         Category = randomCategory
                     });
                 }
+
                 if (products.Count == 0)
                 {
                     throw new ArgumentException("La lista de productos no puede estar vacía.", nameof(products));
@@ -119,7 +107,7 @@ namespace storeapi.Database
         public static List<string[]> RetrieveDatabaseInfo()
         {
             List<string[]> databaseInfo = new List<string[]>();
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
                 connection.Open();
 
@@ -163,10 +151,8 @@ namespace storeapi.Database
             Random random = new Random();
             int index = random.Next(0, categoryList.Count);
 
-
             return categoryList[index];
         }
-
 
         private static void ValidateProductForInsert(Product product)
         {
@@ -184,8 +170,7 @@ namespace storeapi.Database
             {
                 throw new ArgumentException("El precio del producto no puede ser negativo.", nameof(product.Price));
             }
-
         }
     }
-
 }
+
