@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiLab7.Controllers
 {
@@ -9,12 +10,14 @@ namespace ApiLab7.Controllers
     public class StoreController : ControllerBase
     {
         [HttpGet]
+        [AllowAnonymous]
         public Store GetStore()
         {
             return Store.Instance;
         }
 
         [HttpGet("products")]
+        [AllowAnonymous]
         public IEnumerable<Product> GetProductsCategories(
             [FromQuery(Name = "categories")] List<int> categories = null,
             [FromQuery(Name = "query")] string query = null

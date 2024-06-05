@@ -1,5 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiLab7.Controllers
 {
@@ -7,7 +8,7 @@ namespace ApiLab7.Controllers
     [ApiController]
     public class SaleController : ControllerBase
     {
-        [HttpGet("sales")]
+        [HttpGet("sales"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetSalesAsync(DateTime dateToFind)
         {
             ValidateDate(dateToFind);
