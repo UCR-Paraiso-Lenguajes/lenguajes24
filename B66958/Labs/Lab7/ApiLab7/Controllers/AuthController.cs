@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -35,9 +31,11 @@ namespace ApiLab7.Controllers
             UserAuth.IsPresent(user);
             if (hostEnvironment.IsDevelopment())
             {
-                var validUser = credentials.Development.FirstOrDefault(cred =>
-                    cred.Name == user.Name && cred.Password == user.Password
-                );
+                var validUser = credentials
+                    .Development.ToList()
+                    .FirstOrDefault(cred =>
+                        cred.Name == user.Name && cred.Password == user.Password
+                    );
 
                 if (validUser == null)
                     return Unauthorized();

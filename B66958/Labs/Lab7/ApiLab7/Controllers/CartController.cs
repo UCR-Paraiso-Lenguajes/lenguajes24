@@ -9,7 +9,7 @@ namespace ApiLab7.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        [HttpPost("cart")]
+        [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> CreateCartAsync([FromBody] Cart cart)
         {
