@@ -1,6 +1,14 @@
 using MyStoreAPI;
-//para la variable de ambiente
 using Microsoft.Extensions.Configuration;
+//para OpenApiSecurityScheme, OpenApiSecurityRequirement, etc. (de swagger)
+using Microsoft.OpenApi.Models; 
+//para Encoding
+using System.Text;
+//para la variable de ambiente
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +18,36 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
+//Plugin de Swagger para usarlo con Tokens:
+builder.Services.AddSwaggerGen(setup =>
+{
+    // Include 'SecurityScheme' to use JWT Authentication
+    var jwtSecurityScheme = new OpenApiSecurityScheme
+    {
+        BearerFormat = "JWT",
+        Name = "JWT Authentication",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+
+    setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+    setup.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, Array.Empty<string>() }
+    });
+
+});
+
 
 //Configure CORS
 builder.Services.AddCors(options =>
@@ -23,18 +60,28 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Configure JWT Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+        options =>
+    {
+        //Creamos el token y se le indica que parámetros queremos crearle (todos se deben validar después)
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "https://localhost:7161",
+            ValidAudience = "https://localhost:7161",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
+        };
+    });
+
 var app = builder.Build();
 
-
-    //Configurar para usar appsettings.json t appsettings.{Environment}.json
-    //Alternativa de "builder.Configuration.AddJsonFile("appsettings.json", optional: false,reloadOnChange: true);"
-// builder.Configuration
-//     .SetBasePath(Directory.GetCurrentDirectory())
-//     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-//     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-//     .AddEnvironmentVariables();
-
-// Configure the HTTP request pipeline.
+    
+// Configurar para usar appsettings.json y appsettings.{Environment}.json
 builder.Configuration.AddJsonFile("appsettings.json", optional: false,reloadOnChange: true);
 if (app.Environment.IsDevelopment()){    
         
@@ -65,8 +112,10 @@ if (app.Environment.IsDevelopment()){
 
 app.UseHttpsRedirection();
 
+//Para el token
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
- app.UseCors(); //builder.Services.AddCors() ya agrega CORS
+app.UseCors(); //builder.Services.AddCors() ya agrega CORS
 app.Run();

@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 //API
 using MyStoreAPI.Business;
 using MyStoreAPI.Models;
+
+//JWT Authentication
+using Microsoft.AspNetCore.Authorization;
+
 namespace MyStoreAPI.Controllers
 {
 
@@ -11,9 +15,8 @@ namespace MyStoreAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class SaleController: ControllerBase{
-        [HttpPost]
-        [Consumes("application/json")]
-        public async Task<IActionResult> GetSaleAsync([FromBody] DateTime dateFormat){
+        [HttpGet, Authorize(Roles = "Admin")]        
+        public async Task<IActionResult> GetSaleAsync( DateTime dateFormat){
             try{                                
                 SaleLogic saleLogic = new SaleLogic();
                 RegisteredSaleReport specificListOfRegisteredSales = await saleLogic.getSalesByDayAndWeekAsync(dateFormat);                
