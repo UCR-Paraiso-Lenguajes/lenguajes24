@@ -1,7 +1,7 @@
-/*
 using NUnit.Framework;
 using Store_API.Business;
 using Store_API.Models;
+using Store_API.Database;
 
 namespace UnitTests
 {
@@ -18,53 +18,35 @@ namespace UnitTests
         [Test]
         public void Purchase_WithEmptyCart_ThrowsArgumentException()
         {
-            Cart cart = new Cart
-            {
-                ProductIds = new List<int>(),
-                Address = "123 Main St",
-                PaymentMethod = PaymentMethods.Type.SINPE
-            };
-
+            List<int> productIds = new List<int>();
+            string address = "123 Main St";
+            PaymentMethods.Type paymentMethod = PaymentMethods.Type.SINPE;
+            Cart cart = new Cart(productIds, address, paymentMethod, 0, 0);
             Assert.Throws<ArgumentException>(() => storeLogic.PurchaseAsync(cart));
         }
 
         [Test]
-        public void Purchase_WithMissingAddress_ThrowsArgumentException()
+        public async Task Purchase_HappyPath()
         {
-            Cart cart = new Cart
-            {
-                ProductIds = new List<int> { 1, 2 },
-                Address = "",
-                PaymentMethod = PaymentMethods.Type.CASH
-            };
-
-            Assert.Throws<ArgumentException>(() => storeLogic.PurchaseAsync(cart));
-        }
-
-        [Test]
-        public void Purchase_HappyPath()
-        {
-            Cart cart = new Cart
-            {
-                ProductIds = new List<int> { 3, 4 },
-                Address = "San José, Costa Rica",
-                PaymentMethod = PaymentMethods.Type.CASH
-            };
+            Cart cart = new Cart(
+             new List<int> { 3, 4 }, 
+             "San José, Costa Rica",
+             PaymentMethods.Type.CASH, 
+             50, 
+             100 
+            );
 
             string mockPurchaseNumber = "FGH678";
-            DB_API mockDB = new DB_API();
-            mockDB.InsertSale = sale =>
+            Func<Sale, Task<string>> insertSaleAsync = async sale =>
             {
                 sale.PurchaseNumber = mockPurchaseNumber;
                 return mockPurchaseNumber;
             };
 
-            storeLogic.dbAPI = mockDB;
-
-            string purchaseNumber = storeLogic.PurchaseAsync(cart);
+            string purchaseNumber = await storeLogic.PurchaseAsync(cart);
 
             Assert.AreEqual(mockPurchaseNumber, purchaseNumber);
         }
     }
 }
-*/
+

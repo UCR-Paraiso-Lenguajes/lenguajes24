@@ -6,8 +6,9 @@ public class Product : ICloneable
     public decimal Price { get; set; }
     public required string Description { get; set; }
     public Guid Uuid { get; set; }
+    public int CategoriaId { get; internal set; }
 
-        // Implementation of the ICloneable interface
+    // Implementation of the ICloneable interface
     public object Clone()
     {
         return new Product

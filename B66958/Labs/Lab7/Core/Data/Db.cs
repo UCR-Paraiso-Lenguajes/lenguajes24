@@ -103,71 +103,28 @@ public class Db
 
     public static void FillProducts()
     {
-        List<int> categories = Categories
-            .Instance.GetCategories()
-            .Select(category => category.Id)
-            .ToList();
-
-        Random rand = new Random();
-
-        var productsData = new[]
-        {
-            new
-            {
-                name = "Producto",
-                description = "Gaming Mouse",
-                imageUrl = "https://cdn.mos.cms.futurecdn.net/rfphfWvEc3PL2wfPJvZGiP.jpg",
-                price = 75.0
-            },
-            new
-            {
-                name = "Producto",
-                description = "Monitor",
-                imageUrl = "https://images.samsung.com/is/image/samsung/assets/nz/members/article-assets/gaming-monitors/img-kv-2.jpg?$ORIGIN_JPG$",
-                price = 700.0
-            },
-            new
-            {
-                name = "Producto",
-                description = "Mousepad",
-                imageUrl = "https://media.steelseriescdn.com/blog/posts/how-to-choose-your-mousepad/38569118cb1443abb9b88cf9b3f10da0.jpg",
-                price = 30.0
-            },
-            new
-            {
-                name = "Producto",
-                description = "Gaming keyboard",
-                imageUrl = "https://png.pngtree.com/png-vector/20220728/ourmid/pngtree-gaming-keyboard-rgb-effect-png-image_6087818.png",
-                price = 30.0
-            }
-        };
-
+        List<Product> products = Products.Instance.GetProducts().ToList();
         string insertQuery =
             @"USE andromeda_store;
             INSERT INTO dbo.products (id, name, description, image_Url, price, category) 
             VALUES (@id, @name, @description, @imageUrl, @price, @category)";
 
-        for (int i = 1; i <= 40; i++)
+        for (int i = 0; i < products.Count(); i++)
         {
-            var productData = productsData[(i - 1) % productsData.Length];
-
-            int randomIndex = rand.Next(categories.Count);
-
             using (SqlConnection connection = new SqlConnection(Db.Instance.DbConnectionString))
             {
                 connection.Open();
-
                 using (SqlCommand command = new SqlCommand(insertQuery, connection))
                 {
-                    command.Parameters.AddWithValue("@id", Guid.NewGuid());
-                    command.Parameters.AddWithValue("@name", $"Producto {i}");
-                    command.Parameters.AddWithValue("@description", productData.description);
-                    command.Parameters.AddWithValue("@imageUrl", productData.imageUrl);
+                    command.Parameters.AddWithValue("@id", products.ElementAt(i).Uuid);
+                    command.Parameters.AddWithValue("@name", products.ElementAt(i).Name);
+                    command.Parameters.AddWithValue("@description", products.ElementAt(i).Description);
+                    command.Parameters.AddWithValue("@imageUrl", products.ElementAt(i).ImageUrl);
                     command.Parameters.AddWithValue(
                         "@price",
-                        Convert.ToDecimal(productData.price) * i
+                        products.ElementAt(i).Price * i
                     );
-                    command.Parameters.AddWithValue("@category", categories.ElementAt(randomIndex));
+                    command.Parameters.AddWithValue("@category", products.ElementAt(i).Category.Id);
 
                     command.ExecuteNonQuery();
                 }

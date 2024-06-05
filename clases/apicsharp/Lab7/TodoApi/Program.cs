@@ -60,24 +60,36 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = "https://localhost:5001",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
         };
-    })
-;
+    });
+
+    var app = builder.Build();
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        builder.Configuration.AddJsonFile("TodoApi/appsettings.json", optional: true, reloadOnChange: true);
+        string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
+
+        string DB_value = Environment.GetEnvironmentVariable("DB");
+        if (! String.IsNullOrEmpty(DB_value) )
+        {
+            Console.WriteLine("varible is not empty", connection);
+            connection = DB_value;
+        }
+        Console.WriteLine("connection", connection);
+        Storage.Init(connection) ;
+
+        app.UseSwagger();
+        app.UseSwaggerUI();
+
+        StoreDB.CreateMysql();
+
+        Storage.Init(connection) ;      
+
+    }
 
 
-var app = builder.Build();
-builder.Configuration.AddJsonFile("TodoApi/appsettings.json", optional: false, reloadOnChange: true);
-string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
-Storage.Init(connection) ;
-
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    StoreDB.CreateMysql();
-    
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+ 
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

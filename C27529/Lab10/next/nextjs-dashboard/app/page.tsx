@@ -1,14 +1,13 @@
 "use client"
-import { Route, Routes, BrowserRouter as Router } from 'react-router-dom';
+import { Route, Routes, BrowserRouter as Router, useNavigate, useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/header';
 import { Products } from './components/products';
 import { Cart } from './components/Cart';
 import { Address } from './components/Address';
 import { Payment } from './components/Payment';
-import Page from './Admin/page';
 
-export default function page() {
+export default function Page() {
   const tiendaGuardado = {
     carrito: {
       subtotal: 0,
@@ -34,41 +33,29 @@ export default function page() {
 
   }, [store]);
 
-
-
-
   return (
     <main className="flex min-h-screen flex-col p-6">
       <Router>
         <Routes>
-          <Route path='/' element={<Home />} />
-         
+          <Route path='/' element={<Home/>} />
         </Routes>
-         
       </Router>
-
-
-
     </main>
   );
 }
 
 function Home() {
-
   const [Actualpage, setPage] = useState(0);
-
   const goToPage = (pageNumber: React.SetStateAction<number>) => {
     setPage(pageNumber);
   };
-  
+
 
   return (
-    <div>
+    <div style={{ width: 'auto', height: 'auto' }}>
 
       <Header goToPage={goToPage} />
-
       {Actualpage === 0 ? (
-
         <Products />
       ) : Actualpage === 1 ? (
         <Cart goToPage={goToPage} />
@@ -77,7 +64,7 @@ function Home() {
       ) : (
         <Payment />
       )}
-   
+      
     </div>
   );
 }

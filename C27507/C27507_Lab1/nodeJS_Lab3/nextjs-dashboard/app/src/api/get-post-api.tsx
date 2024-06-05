@@ -122,11 +122,11 @@ const { default: jwt_decode } = require("jwt-decode");
         }        
     }
 
-
     export async function getProductsByCategory(idCategory: number): Promise<string | ProductAPI[] | null> {        
         let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
         
         let directionAPI = `${urlByReactEnviroment}/api/products/store/product?category=${encodeURIComponent(idCategory)}`;
+
         //Especificacion POST
         let getConfig = {
             method: "GET",
@@ -150,8 +150,6 @@ const { default: jwt_decode } = require("jwt-decode");
             throw new Error('Failed to POST data: '+ error);
         }        
     }
-
-
 
     export async function validateUserAndGetToken(userData: UserAccountAPI): Promise<string | null> {
         let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
@@ -178,7 +176,26 @@ const { default: jwt_decode } = require("jwt-decode");
             const userToken = await responsePost.json();
             const tokenValue = userToken.token;            
             return tokenValue;
-            
+    
+    export async function getProductsBySearchTextAndCategory(searchText:string,categoryIds: number[]): Promise<string | ProductAPI[] | null> {
+        
+        const searchTextToUrl = encodeURIComponent(searchText);        
+        //se construye manualmente, ya que es por GET
+        const categoryIdsToUrl = categoryIds.map(id => `categoryIds=${encodeURIComponent(id.toString())}`).join("&");        
+        const directionAPI = `https://localhost:7161/store/products/product/search?searchText=${searchTextToUrl}&${categoryIdsToUrl}`;
+        //Especificacion POST
+        let getConfig = {
+            method: "GET"            
+        }
+    
+        try {         
+            let responsePost = await fetch(directionAPI,getConfig);            
+            if(!responsePost.ok){                                
+                const errorMessage = await responsePost.text();                                
+                return errorMessage;
+            }        
+            const productsFilteredFromAPI = await responsePost.json();                      
+            return productsFilteredFromAPI;          
         } catch (error) {            
             throw new Error('Failed to POST data: '+ error);
         }        

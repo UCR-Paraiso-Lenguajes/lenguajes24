@@ -1,0 +1,87 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+article{
+    width: 60%;
+    margin: auto;
+    justify-content: space-between;
+}
+.cartBox img{
+    width: 50px;
+    height: 50px;
+}
+.cart_Img{
+    display: flex;
+    width: 400px;
+}
+.cart_Img p {
+    font-weight: bold;
+    margin-left: 10px;
+}
+.cartBox{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    border-bottom: 2px solid skyblue;
+    padding-bottom: 5px;
+}
+.cartBox div:nth-child(2) button{
+    padding: 5px 10px;
+    font-weight: bold;
+    margin-right: 5px;
+}
+.cartBox div:nth-child(3) button{
+    padding: 5px 10px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    border:none;
+    outline: none;
+    color: white;
+    background-color: skyblue;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.cartBox div:nth-child(3) button:hover{
+    background-color: darkseagreen;
+}
+.cartBox div:nth-child(3) span{
+    background-color: lightgreen;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+.Factura{
+    text-align: right;
+}
+.Factura span:nth-child(1){
+    font-size: 2rem;
+    color: rgb(0, 4, 5);
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+.Factura span:nth-child(2){
+    font-size: 2rem;
+    color: rgb(0, 7, 0);
+    font-weight: bold; 
+}
+.withoutTax{
+    text-align: right;
+}
+.withTax {
+    text-align: right;
+}
+.BuyProduct{
+    text-align: right;
+}
+.BtnBuy {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+

@@ -6,7 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 const Graphic = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dailySales, setDailySales] = useState([]);
-  const [weeklySales, setWeeklySales] = useState<[string, number][]>([]);
+  const [weeklySales, setWeeklySales] = useState<[string, string][]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -18,39 +18,40 @@ const Graphic = () => {
     setLoading(true);
     try {
       const formattedDate = selectedDate.toISOString().split('T')[0];
-      const response = await fetch(`https://localhost:7165/api/SaleReport/${formattedDate}`);
+      const response = await fetch(`https://localhost:7165/api/SalesReport?date=${formattedDate}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch sales data');
       }
-      
+
       const data = await response.json();
-      
+
       if (!data || !data.DailySales || !data.WeeklySales) {
         throw new Error('Sales data is empty or missing');
       }
 
       const formattedDailySales = data.DailySales.map((sale: any) => ({
-        id: sale.SaleId,
-        purchaseNumber: sale.PurchaseNumber,
-        total: sale.Total,
-        purchaseDate: new Date(sale.PurchaseDate).toLocaleDateString(),
-        product: sale.Product,
-        saleByDay: sale.SaleByDay,
-        saleCounter: sale.SaleCounter
+        id: sale.saleId,
+        purchaseNumber: sale.purchaseNumber,
+        total: sale.total,
+        purchaseDate: new Date(sale.purchaseDate).toLocaleDateString(),
+        product: sale.product,
+        dailySale: sale.dailySale,
+        saleCounter: sale.saleCounter
       }));
 
       setDailySales(formattedDailySales);
 
-      const formattedWeeklySales: [string, number][] = [
-        ['Day', 'Total Sales'],
-        ...data.WeeklySales.map((week: any) => [
-          week.DayOfWeek,
-          week.Total
-        ])
-      ];
+      const weeklySalesData: [string, string][] = data.WeeklySales.reduce((acc: any[], current: any) => {
+        if (current.dailySale && current.total) {
+          acc.push([current.dailySale, current.total]);
+        }
+        return acc;
+      }, []);
 
-      setWeeklySales(formattedWeeklySales);
+      weeklySalesData.unshift(['Day', 'Total Sales']);
+
+      setWeeklySales(weeklySalesData);
 
       setError('');
     } catch (error) {
@@ -91,14 +92,14 @@ const Graphic = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dailySales.map(({ id, purchaseNumber, total, purchaseDate, product, saleByDay, saleCounter }, index) => (
+                  {dailySales.map(({ id, purchaseNumber, total, purchaseDate, product, dailySale, saleCounter }, index) => (
                     <tr key={index}>
                       <td>{id}</td>
                       <td>{purchaseNumber}</td>
                       <td>{total}</td>
                       <td>{purchaseDate}</td>
                       <td>{product}</td>
-                      <td>{saleByDay}</td>
+                      <td>{dailySale}</td>
                       <td>{saleCounter}</td>
                     </tr>
                   ))}

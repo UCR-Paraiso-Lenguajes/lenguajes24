@@ -12,11 +12,11 @@ public class CategoriesTest
     private StoreDB storeDB;
     private Categories categories;
     private Store store;
-    private Products products1;
+
 
 
     [SetUp]
-    public void Setup()
+    public async Task Setup()
     {
         string connectionString = "Server=localhost;Database=store;Port=3306;Uid=root;Pwd=123456;";
         Storage.Init(connectionString);
@@ -24,37 +24,35 @@ public class CategoriesTest
 
         // Inicializar las instancias necesarias para las pruebas
         storeDB = new StoreDB();
-        store = Store.Instance; // Aquí obtienes la instancia existente de Store
-        products1 = Products.Instance;
-        categories = Categories.Instance;
+        store = await Store.Instance.Value; // Aquí obtienes la instancia existente de Store
+        categories = new Categories();
     }
 
     [Test]
-    public void CategoryProducts_ReturnsCorrectProducts()
+    public void GetCategories_ReturnsCategories()
     {
         // Arrange
-        int categoryId = 3; // Categoría de ciencia ficción en este ejemplo
-
+        var expectedCategories = new List<Category>
+            {
+                new(1, "Fantasy"),
+                new (2, "Romance"),
+                new (3, "Science Fiction"),
+                new (4, "Young Adult"),
+                new (5, "Mystery"),
+                new (6, "NonFiction"),
+                new (7, "Fiction"),
+                new (8, "Adventure"),
+                new (9, "Dystopian"),
+                new (10, "Gift")
+            };
+        
         // Act
-        IEnumerable<Product> products = products1.GetProductsCategory(categoryId);
+        var result = categories.GetCategories();
 
         // Assert
-        Assert.IsNotNull(products);
-        Assert.IsTrue(products.Any()); // Verificar que haya al menos un producto
-        Assert.IsTrue(products.All(p => p.ProductCategory.IdCategory == categoryId)); // Verificar que todos los productos sean de la categoría especificada
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expectedCategories.Count, result.Count());
     }
-
-    [Test]
-    public void CategoryProducts_ThrowsArgumentException_WhenNegativeCategoryId()
-    {
-        // Arrange
-        int categoryId = -1;
-
-        // Act & Assert
-        Assert.Throws<ArgumentException>(() =>products1.GetProductsCategory(categoryId));
-
-    }
-
 
 
     [Test]

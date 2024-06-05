@@ -2,10 +2,11 @@ namespace ApiLab7;
 
 public sealed class Store
 {
-    public List<Product> Products { get; private set; }
+    public List<Product> ProductsInStore { get; private set; }
     public int TaxPercentage { get; private set; }
     public List<PaymentMethods> paymentMethods { get; private set; }
-    public IEnumerable<Category> CategoriesList { get; private set; }
+    public IEnumerable<Category> CategoriesInStore { get; private set; }
+    public static int CurrentTaxPercentage = 13;
     private static Db db;
 
     private Store(
@@ -15,19 +16,35 @@ public sealed class Store
         IEnumerable<Category> categories
     )
     {
-        this.Products = products;
+        this.ProductsInStore = products;
         this.TaxPercentage = TaxPercentage;
         this.paymentMethods = paymentMethods;
-        this.CategoriesList = categories;
+        this.CategoriesInStore = categories;
     }
 
     public static readonly Store Instance;
 
-    public IEnumerable<Product> ProductsByCategory(int category)
+    public IEnumerable<Product> ProductsByCategoryAndQuery(List<int> categories, string query)
     {
-        if (category < 1)
-            throw new ArgumentException("A category must have an ID, and it should be above 0");
-        return Instance.Products.Where(product => product.Category.Id == category);
+        if (categories == null || categories.Count() == 0)
+            throw new ArgumentException("The categories list should not be null");
+        if (string.IsNullOrWhiteSpace(query))
+            throw new ArgumentException("The query should not be null");
+        return Products.Instance.GetProductsByCategoryAndQuery(categories, query);
+    }
+
+    public IEnumerable<Product> ProductsByCategory(List<int> categories)
+    {
+        if (categories == null || categories.Count() == 0)
+            throw new ArgumentException("The categories list should not be null");
+        return Products.Instance.GetProductsByCategory(categories);
+    }
+
+    public IEnumerable<Product> ProductsByQuery(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+            throw new ArgumentException("The query should not be null");
+        return Products.Instance.GetProductsByQuery(query);
     }
 
     static Store()
@@ -37,6 +54,11 @@ public sealed class Store
         List<PaymentMethods> paymentMethods = db.GetPaymentMethods();
         IEnumerable<Category> categories = Categories.Instance.GetCategories();
 
-        Store.Instance = new Store(products, 13, paymentMethods, categories);
+        Store.Instance = new Store(
+            products,
+            Store.CurrentTaxPercentage,
+            paymentMethods,
+            categories
+        );
     }
 }

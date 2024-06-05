@@ -5,7 +5,7 @@ namespace Store_API.Business
 {
     public sealed class StoreLogic
     {
-        private DB_API dbAPI = new DB_API();
+        public DB_API dbAPI = new DB_API();
 
         public async Task<string> PurchaseAsync(Cart cart)
         {
