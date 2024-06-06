@@ -1,4 +1,4 @@
-# Course README
+# Course README 5/6/24
 
 ## Objective
 The objective of this course is for students to develop an online store using React and Next.js for the frontend, and ASP.NET Core for the REST API.
