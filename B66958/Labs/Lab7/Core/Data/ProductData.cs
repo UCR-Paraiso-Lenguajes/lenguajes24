@@ -4,12 +4,13 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 
 namespace ApiLab7;
 
 public class ProductData
 {
-    internal async Task<Product> InsertProductAsync(Product product, ProductBusiness.OnNewProduct onNewProduct)
+    internal async Task<Product> InsertProductAsync(Product product, ProductBusiness.OnNewProduct onNewProduct = null)
     {
         string insertProductQuery =
             @"USE andromeda_store;
@@ -23,13 +24,13 @@ public class ProductData
             {
                 command.Parameters.AddWithValue("@id", product.Uuid);
                 command.Parameters.AddWithValue("@name", product.Name);
-                command.Parameters.AddWithValue("@description", product.Description);
+                command.Parameters.AddWithValue("@description", Encoding.UTF8.GetBytes(product.Description));
                 command.Parameters.AddWithValue("@imageUrl", product.ImageUrl);
                 command.Parameters.AddWithValue("@price",product.Price);
                 command.Parameters.AddWithValue("@category", product.Category.Id);
 
                 await command.ExecuteNonQueryAsync();
-                onNewProduct(product);
+                onNewProduct?.Invoke(product);
                 return product;
             }
         }
