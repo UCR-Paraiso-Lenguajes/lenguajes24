@@ -5,29 +5,13 @@ name: C27507
 
 on:
   push:
-    branches: [ "DevOps_C27507" ]
+    branches: [ "C27507" ]
   pull_request:
-    branches: [ "DevOps_C27507" ]
+    branches: [ "C27507" ]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:latest
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
-        env:
-          MYSQL_ROOT_PASSWORD: 123456
-          MYSQL_DATABASE: MyStoreApi
-          MYSQL_USER: root
-          MYSQL_PASSWORD: 123456                    
+    runs-on: ubuntu-latest    
     steps:
     - uses: actions/checkout@v4
     - name: Wait for MySQL to be healthy
