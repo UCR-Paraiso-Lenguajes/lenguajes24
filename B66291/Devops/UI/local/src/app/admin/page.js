@@ -1,31 +1,70 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../styles/login.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "../../components/Navbar";
 
 const Login = () => {
-  const storedData = localStorage.getItem("tienda");
-  const dataObject = JSON.parse(storedData);
+
+  //manejo de existencia de local storage (navbar)
+
+  const initialState = {  
+    productosCarrusel: [],
+    impVentas: 13,
+    cart: { productos: [], subtotal: 0, total: 0, direccionEntrega: '', metodosPago : 0, ordenCompra : 0},
+    necesitaVerificacion: false,
+  };
+
+  const [tienda, setTienda] = useState(() => {
+    const storedTienda = localStorage.getItem("tienda");
+    return storedTienda ? JSON.parse(storedTienda) : initialState;
+  });
+
+  useEffect(() => {
+    if (!localStorage.getItem("tienda")) {
+      setTienda(initialState);
+    }
+  }, []);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-
-  const procesarForm = (e) => {
+  const procesarForm = async (e) => {
     e.preventDefault();
     if (!username || !password) {
-      setError("complete la informacion por favor");
+      setError("Complete la información por favor");
     } else {
-       window.location.href = "/admin/products";
+      try {
+        const response = await fetch("https://localhost:7013/api/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const token = data.token;
+          await sessionStorage.setItem("token", token);
+          window.location.href = "/admin/products";
+        } else {
+          setError("Credenciales incorrectas");
+        }
+      } catch (error) {
+        setError("Ocurrió un error al procesar la solicitud");
+      }
     }
   };
 
   return (
     <article>
       <div>
-        <Navbar cantidad_Productos={dataObject.cart.productos.length} />
+        <Navbar cantidad_Productos={tienda.cart.productos.length} />
       </div>
       <div className="form_login">
         <form onSubmit={procesarForm}>
@@ -35,7 +74,7 @@ const Login = () => {
               type="text"
               name="username"
               className="form-control"
-              placeholder="Ingresa tu correo"
+              placeholder="Ingresa tu usuario"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />

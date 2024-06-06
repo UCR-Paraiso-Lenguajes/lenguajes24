@@ -5,10 +5,8 @@ name: B66291
 
 on:
   push:
-    branches: [ "B66291" ]
-  pull_request:
-    branches: [ "B66291" ]
-
+    branches: [ "devops_b66291" ]
+    
 jobs:
   Test:
     runs-on: ubuntu-latest
