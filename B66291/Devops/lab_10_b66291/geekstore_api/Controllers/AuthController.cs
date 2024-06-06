@@ -38,7 +38,7 @@ namespace geekstore_api.Controllers.AuthController
 
             var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.Development.json")
-            .Build();
+            .Build(); 
 
             var testUsers = configuration.GetSection("TestUsers").Get<List<TestUser>>();
 
