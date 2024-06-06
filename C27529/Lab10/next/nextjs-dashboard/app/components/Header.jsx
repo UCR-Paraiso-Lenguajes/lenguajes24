@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css"; // Importar CSS de Bootstrap
+import { useState, useEffect } from 'react';
+
 
 export const Header = ({ goToPage }) => {
     const [active, setActive] = useState(false);
@@ -35,12 +37,16 @@ export const Header = ({ goToPage }) => {
 
     };
 
-	useEffect(() => {
-        const contadorProductos = document.getElementById('contador-productos');
-        if (contadorProductos) {
-            contadorProductos.textContent = store.productos.length;
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            const contadorProductos = document.getElementById('contador-productos');
+            if (contadorProductos) {
+                contadorProductos.textContent = store.productos.length;
+            }
         }
-    }, [store.productos]); 
+    }, [store.productos]);
+    
+    
 
     return (
         <header>

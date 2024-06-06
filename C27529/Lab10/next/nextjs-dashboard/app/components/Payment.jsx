@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 
 export const Payment = () => {
@@ -30,7 +31,7 @@ export const Payment = () => {
                 },
                 body: JSON.stringify(data)
             };
-            const response = await fetch('https://localhost:7280/api/cart', requestOptions);
+            const response = await fetch('https://localhost:7280/api/Cart', requestOptions);
             if (!response.ok) {
                 throw new Error('Failed to post data');
             } else {
@@ -38,9 +39,9 @@ export const Payment = () => {
                 setpurchaseNumber(purchaseNumberApp.purchaseNumberResponse);
             }
 
-            
+
         } catch (error) {
-            throw new Exception("Error creating the database");
+            throw new Error("Error creating the database");
         }
     };
 
@@ -70,7 +71,6 @@ export const Payment = () => {
         localStorage.setItem("tienda", JSON.stringify(updatedStore));
         setStore(updatedStore);
         postData();
-        onCleanCart();
     }
     useEffect(() => {
         setPage(store.carrito.metodoDePago === 'Efectivo' ? 0 : 1);

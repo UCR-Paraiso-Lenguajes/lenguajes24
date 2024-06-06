@@ -1,8 +1,9 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css"; // Importar CSS de Bootstrap
 
 export const Address = ({
-  goToPage,
+ goToPage
 }) => {
   const [deliveryAddress, setDeliveryAddress] = useState('');
 

@@ -18,12 +18,19 @@ namespace storeApi
             this.Products = products;
         }
         public readonly static Store Instance;
+        public List<Product> mockProducts;
+
         static Store()
         {
             Task<IEnumerable<Product>> productsTask = productsFromDB();
             Store.Instance = new Store(productsTask.Result);
             var category = new Category();
             Store.Instance.CategoriesNames = category.GetCategoryNames();
+        }
+
+        public Store(List<Product> mockProducts)
+        {
+            this.mockProducts = mockProducts;
         }
 
         private static async Task<IEnumerable<Product>> productsFromDB()

@@ -68,6 +68,7 @@ function Page() {
     }
   };
 
+  
   return (
     <div>
       <button onClick={() => setIsModalOpen(true)}>Iniciar Sesión</button>

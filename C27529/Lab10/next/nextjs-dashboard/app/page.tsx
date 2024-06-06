@@ -1,11 +1,11 @@
 "use client"
 import { Route, Routes, BrowserRouter as Router, useNavigate, useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { Header } from './components/header';
-import { Products } from './components/products';
-import { Cart } from './components/Cart';
-import { Address } from './components/Address';
-import { Payment } from './components/Payment';
+import { Cart } from '../app/components/Cart';
+import { Address } from '../app/components/Address';
+import { Payment } from '../app/components/Payment';
+import {Products} from './components/Products';
+import {Header} from './components/Header';
 
 export default function Page() {
   const tiendaGuardado = {

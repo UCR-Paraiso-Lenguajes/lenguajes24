@@ -14,7 +14,7 @@ namespace storeApi.Business
         public async Task<Sale> PurchaseAsync(Cart cart) //UT
         {
             if (cart.ProductIds.Count == 0) throw new ArgumentException("Cart must contain at least one product.");
-            if ((cart.Address) == "") throw new ArgumentException("Address must be provided.");
+            if (cart.Address == "") throw new ArgumentException("Address must be provided.");
 
             var products = Store.Instance.Products;
            // var taxPercentage = Store.Instance.TaxPercentage;

@@ -22,6 +22,7 @@ namespace TodoApi
 
         public LoginDataAccount(string userName, string password, List<Claim> claims)
         {
+            
             UserName = userName;
             Password = password;
             Claims = claims;

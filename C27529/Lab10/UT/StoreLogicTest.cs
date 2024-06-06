@@ -36,5 +36,7 @@ public class StoreLogicTest
         Assert.That(exception.Message, Is.EqualTo("Address must be provided."));
     }
 
+    
+
 
 }
