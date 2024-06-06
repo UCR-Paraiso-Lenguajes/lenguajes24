@@ -6,7 +6,7 @@ name: B66291
 on:
   push:
     branches: [ "devops_b66291" ]
-
+    
 jobs:
   Test:
     runs-on: ubuntu-latest
