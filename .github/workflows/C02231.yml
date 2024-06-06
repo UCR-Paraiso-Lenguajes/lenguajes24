@@ -34,15 +34,15 @@ jobs:
         dotnet-version: 8.0.x
     - name: Restore dependencies
       run: |
-        cd C02231
+        cd C02231/Api
         dotnet restore
     - name: Build
       run: |
-        cd C02231
+        cd C02231/Api
         dotnet build --no-restore
     - name: Test
       run: |
-        cd C02231
+        cd C02231/Api
         dotnet test --no-build --verbosity normal
   publish-Api:
     runs-on: ubuntu-latest
@@ -50,7 +50,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build & Push Image
       run: |
-        cd  C02231
+        cd  C02231/Api
         docker image build -t lani06/storeapi:latest .
         docker image build -t lani06/storeapi:0.0.1 .
         echo "${{ secrets.DOCKERHUBPASSC02231  }}" | docker login -u "pchavesr29@gmail.com" --password-stdin
