@@ -62,6 +62,7 @@ jobs:
         echo "${{ secrets.C27529_PASSWORDDOCKER  }}" | docker login -u "j14solano23@gmail.com" --password-stdin
         docker push jjj23/api:latest
         docker push jjj23/api:0.0.1
+        echo "fin Api"
   publish-UI:   
     runs-on: ubuntu-latest
     steps:
@@ -74,4 +75,5 @@ jobs:
         echo "${{ secrets.C27529_PASSWORDDOCKER  }}" | docker login -u "j14solano23@gmail.com" --password-stdin
         docker push jjj23/ui:latest
         docker push jjj23/ui:0.0.1
+        echo "fin UI"
 
