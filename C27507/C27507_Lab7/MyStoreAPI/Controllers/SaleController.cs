@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 //API
 using MyStoreAPI.Business;
 using MyStoreAPI.Models;
+
+//JWT Authentication
+using Microsoft.AspNetCore.Authorization;
+
 namespace MyStoreAPI.Controllers
 {
 
@@ -11,8 +15,7 @@ namespace MyStoreAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class SaleController: ControllerBase{
-        [HttpPost]
-        [Consumes("application/json")]
+        [HttpPost, Authorize(Roles = "Admin")]        
         public async Task<IActionResult> GetSaleAsync([FromBody] DateTime dateFormat){
             try{                                
                 SaleLogic saleLogic = new SaleLogic();
