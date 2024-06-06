@@ -21,7 +21,7 @@ import './src/css/demoCSS.css'
 import './src/css/fonts_awesome/css/all.min.css'
 //Funciones
 import { getCartShopStorage } from './src/storage/cart-storage';
-import { getProductsByCategory, getProductsBySearchTextAndCategory } from './src/api/get-post-api';
+import { getAllProductsFromAPI, getProductsByCategory,getProductsBySearchTextAndCategory } from './src/api/get-post-api';
 import { CategoryAPI } from './src/models-data/CategoryAPI';
 
 
@@ -38,23 +38,12 @@ function Page() {
     useEffect(() => {
         const loadDataProductAPI = async ()=>{
             try{            
-                const response = await fetch('https://localhost:7161/api/Store')
-                if (!response.ok){
-                    throw new Error('Failed to fetch data');                
-                }
-                const json = await response.json();            
+                let dataFromStore = await getAllProductsFromAPI();
 
-                //Como ahora Store desde la API se devuelve dentro de un objeto Action
-                //hacemos una validacion para saber si trae datos dentro de su metodo
-                if(json.hasOwnProperty('value')){
-                    setProducts(json.valeu.products); 
-                    setCategoryListFromStore(json.allProductCategories);
-                }else{
-                    //si el dato no viene dentro de un ActionResult se guarda normal
-                    setProducts(json.products);
-                    setCategoryListFromStore(json.allProductCategories);
-                }                  
-                return json;
+                if (typeof dataFromStore  === "object" && dataFromStore !== null){
+                    setProducts(dataFromStore.productsFromStore);
+                    setCategoryListFromStore(dataFromStore.categoriesFromStore);
+                }   
             } catch (error) {                
                 throw new Error('Failed to fetch data:' + error);
             }
@@ -111,8 +100,7 @@ function Page() {
                 if (typeof filteredProducts  === "object" && filteredProducts !== null) {                    
                     setProducts(filteredProducts)
                 }
-            } catch (error) {
-                callAlertShop("Error","Error al obtener datos","Al parecer los datos no pueden ser mostrados. Por favor intentalo de nuevo");
+            } catch (error) {                
             }            
         };    
         if (productCategory) fetchProductsByCategory();
@@ -160,8 +148,7 @@ function Page() {
                 // Cambiar la URL sin recargar la página
                 window.history.pushState({ filteredProducts }, '', newUrl);
             }
-        } catch (error) {
-            callAlertShop("Error","Error al obtener datos","Al parecer los datos no pueden ser mostrados. Por favor intentalo de nuevo");
+        } catch (error) {            
         }                    
     }
 
