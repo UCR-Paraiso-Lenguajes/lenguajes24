@@ -1,17 +1,34 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../styles/login.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "../../components/Navbar";
 
 const Login = () => {
-  const storedData = localStorage.getItem("tienda");
-  const dataObject = JSON.parse(storedData);
+
+  //manejo de existencia de local storage (navbar)
+
+  const initialState = {  
+    productosCarrusel: [],
+    impVentas: 13,
+    cart: { productos: [], subtotal: 0, total: 0, direccionEntrega: '', metodosPago : 0, ordenCompra : 0},
+    necesitaVerificacion: false,
+  };
+
+  const [tienda, setTienda] = useState(() => {
+    const storedTienda = localStorage.getItem("tienda");
+    return storedTienda ? JSON.parse(storedTienda) : initialState;
+  });
+
+  useEffect(() => {
+    if (!localStorage.getItem("tienda")) {
+      setTienda(initialState);
+    }
+  }, []);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
 
   const procesarForm = async (e) => {
     e.preventDefault();
@@ -47,7 +64,7 @@ const Login = () => {
   return (
     <article>
       <div>
-        <Navbar cantidad_Productos={dataObject.cart.productos.length} />
+        <Navbar cantidad_Productos={tienda.cart.productos.length} />
       </div>
       <div className="form_login">
         <form onSubmit={procesarForm}>

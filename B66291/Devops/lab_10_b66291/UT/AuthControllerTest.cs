@@ -1,4 +1,4 @@
-﻿using core;
+﻿﻿using core;
 using geekstore_api.Controllers.AuthController;
 namespace UT;
 using Moq;
@@ -80,5 +80,5 @@ public class UserAccountTest
         Assert.NotNull(response);
         Assert.AreEqual(401, response.StatusCode);
     }
-    
+
 }

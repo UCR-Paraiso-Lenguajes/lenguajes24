@@ -204,6 +204,8 @@ public sealed class StoreDb
                 Categories cat = new Categories();
                 CartDb cart = new CartDb();
 
+                //creo la primer venta
+
                 Product product1 = new Product
                 {
                     id = 1,
@@ -228,16 +230,16 @@ public sealed class StoreDb
                 );
 
                 insertCommand.CommandText = @"
-            INSERT INTO sales (purchase_date, total, payment_type, purchase_number)
-            VALUES (@purchase_date, @total, @payment_type, @purchase_number);";
+                INSERT INTO sales (purchase_date, total, payment_type, purchase_number)
+                VALUES (@purchase_date, @total, @payment_type, @purchase_number);";
 
                 insertCommand.Parameters.AddWithValue("@purchase_number", sale.PurchaseNumber);
-                insertCommand.Parameters.AddWithValue("@purchase_date", new DateTime(2024, 5, 1)); //cambio fecha por 01/05/24 
+                insertCommand.Parameters.AddWithValue("@purchase_date", new DateTime(2024, 6, 3)); //cambio fecha 
                 insertCommand.Parameters.AddWithValue("@total", sale.Amount);
                 insertCommand.Parameters.AddWithValue("@payment_type", (int)sale.PaymentMethod);
                 insertCommand.ExecuteNonQuery();
 
-                insertCommand.Parameters.Clear(); //limpio parametros para reutilizar
+                insertCommand.Parameters.Clear(); 
 
                 //inserta linea de venta1
                 insertCommand.CommandText = @"
@@ -252,6 +254,8 @@ public sealed class StoreDb
                     insertCommand.Parameters.AddWithValue("@price", product.price);
                     insertCommand.ExecuteNonQuery();
                 }
+
+                //creo la segunda venta
 
                 Product product2 = new Product
                 {
@@ -279,16 +283,16 @@ public sealed class StoreDb
                 insertCommand.Parameters.Clear(); //limpio parametros para reutilizar
 
                 insertCommand.CommandText = @"
-            INSERT INTO sales (purchase_date, total, payment_type, purchase_number)
-            VALUES (@purchase_date, @total, @payment_type, @purchase_number);";
+                INSERT INTO sales (purchase_date, total, payment_type, purchase_number)
+                VALUES (@purchase_date, @total, @payment_type, @purchase_number);";
 
                 insertCommand.Parameters.AddWithValue("@purchase_number", sale.PurchaseNumber);
-                insertCommand.Parameters.AddWithValue("@purchase_date", new DateTime(2024, 5, 2)); //cambio fecha por 01/05/24 
+                insertCommand.Parameters.AddWithValue("@purchase_date", new DateTime(2024, 6, 4)); 
                 insertCommand.Parameters.AddWithValue("@total", sale.Amount);
                 insertCommand.Parameters.AddWithValue("@payment_type", (int)sale.PaymentMethod);
                 insertCommand.ExecuteNonQuery();
 
-                //inserta lineaVenta2
+                //inserta linea venta 2
 
                 insertCommand.Parameters.Clear(); //limpio parametros para reutilizar
 
@@ -304,6 +308,58 @@ public sealed class StoreDb
                     insertCommand.Parameters.AddWithValue("@price", product.price);
                     insertCommand.ExecuteNonQuery();
                 }//final de la segunda venta
+
+                Product product3 = new Product
+                {
+                    id = 2,
+                    name = "Portatil",
+                    description = "Portatiles para todo tipo de usuario y necesidad",
+                    price = 625,
+                    imageUrl = "https://sitechcr.com/wp-content/uploads/2016/06/A15_i781T3GSW10s4.jpg",
+                    pcant = 0,
+                    category = cat.obtenerCategoria(2),
+                };
+
+                products = new List<Product> { product3 };
+
+                purchaseNumber = Sale.generarNumeroCompra();
+
+                sale = new Sale(
+                    products,
+                    "Cartago, Paraiso",
+                    705.19m,
+                    PaymentMethods.Type.SINPE,
+                    purchaseNumber
+                );
+
+                insertCommand.Parameters.Clear(); //limpio parametros para reutilizar
+
+                insertCommand.CommandText = @"
+                INSERT INTO sales (purchase_date, total, payment_type, purchase_number)
+                VALUES (@purchase_date, @total, @payment_type, @purchase_number);";
+
+                insertCommand.Parameters.AddWithValue("@purchase_number", sale.PurchaseNumber);
+                insertCommand.Parameters.AddWithValue("@purchase_date", new DateTime(2024, 6, 4)); 
+                insertCommand.Parameters.AddWithValue("@total", sale.Amount);
+                insertCommand.Parameters.AddWithValue("@payment_type", (int)sale.PaymentMethod);
+                insertCommand.ExecuteNonQuery();
+
+                //inserta linea venta 3
+
+                insertCommand.Parameters.Clear(); //limpio parametros para reutilizar
+
+                insertCommand.CommandText = @"
+                INSERT INTO salesLine (purchase_id,  product_id, quantity, price)
+                VALUES (@purchase_id, @product_id, @quantity, @price);";
+
+                foreach (var product in sale.Products)
+                {
+                    insertCommand.Parameters.AddWithValue("@purchase_id", sale.PurchaseNumber);
+                    insertCommand.Parameters.AddWithValue("@product_id", product.id);
+                    insertCommand.Parameters.AddWithValue("@quantity", product.pcant);
+                    insertCommand.Parameters.AddWithValue("@price", product.price);
+                    insertCommand.ExecuteNonQuery();
+                }//final de la tercera venta
             }
         }
     }
