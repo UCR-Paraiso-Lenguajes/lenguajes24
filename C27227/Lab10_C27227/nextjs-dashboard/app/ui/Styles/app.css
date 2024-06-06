@@ -1,0 +1,17 @@
+.alert-container {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+  }
+  
+  .alert {
+    height: 60px;
+    width: 250px;
+    background-color: rgb(210, 91, 91);
+    font-size: 1.1rem;
+    color: white;
+    font-family: cursive;
+    padding: 5px;
+    border-radius: 5px;
+  }
+  

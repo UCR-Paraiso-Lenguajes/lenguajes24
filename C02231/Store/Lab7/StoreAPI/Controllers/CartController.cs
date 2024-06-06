@@ -14,13 +14,21 @@ namespace StoreAPI.Controllers
         private StoreLogic storeLogic = new StoreLogic();
 
         [HttpPost]
-        public IActionResult CreateCart([FromBody] Cart cart)
+        public async Task<IActionResult> CreateCart([FromBody] Cart cart)
         {
+            try
+            {
+                if (cart == null || cart.ProductIds == null || cart.ProductIds.Count == 0) return BadRequest("The cart cannot be empty.");
 
-            var sale = storeLogic.Purchase(cart);
+                var sale = await storeLogic.PurchaseAsync(cart);
 
-            var response = new { purchaseNumber = sale.NumberOrder };
-            return Ok(response);
+                var response = new { purchaseNumber = sale.NumberOrder };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
     }
 

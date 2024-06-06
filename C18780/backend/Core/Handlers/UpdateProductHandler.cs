@@ -4,12 +4,16 @@ using StoreApi.Repositories;
 
 namespace StoreApi.Handler
 {
-    public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, int>
+    public sealed class UpdateProductHandler : IRequestHandler<UpdateProductCommand, int>
     {
         private readonly IProductRepository _productRepository;
 
         public UpdateProductHandler(IProductRepository productRepository)
         {
+            if (productRepository == null)
+            {
+                throw new ArgumentException("Illegal action, productRepository is invalid.");
+            }
             _productRepository = productRepository;
         }
         public async Task<int> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
@@ -22,6 +26,7 @@ namespace StoreApi.Handler
             product.Name = command.Name;
             product.Description = command.Description;
             product.ImageUrl = command.ImageUrl;
+            product.Category = command.Category;
 
 
             return await _productRepository.UpdateProductAsync(product);
@@ -47,6 +52,10 @@ namespace StoreApi.Handler
             if (command.Uuid == Guid.Empty)
             {
                 throw new ArgumentException("The uuid cannot be empty.");
+            }
+            if (command.Category == Guid.Empty)
+            {
+                throw new ArgumentException("The category cannot be empty.");
             }
         }
     }

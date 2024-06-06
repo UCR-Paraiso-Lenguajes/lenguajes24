@@ -1,0 +1,6 @@
+@KEStoreApi_HostAddress = http://localhost:5072
+
+GET {{KEStoreApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

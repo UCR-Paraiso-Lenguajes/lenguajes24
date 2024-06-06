@@ -7,19 +7,24 @@ using MySqlConnector;
 
 namespace MyStoreAPI{
     //Todo estatico para no estar creando instancias por todo lado    
-    public static class DB_Connection
-    {        
-        private static string connectionDB = "server=localhost;user=root;password=123456;database=MyStoreApi";
+    public static class DB_Connection{        
+                
+        private static string connectionDB;
+        
+        public static void SET_CONFIG_DB(string connectionStrings){
+            connectionDB = connectionStrings;
+        }
 
         public static string INIT_CONNECTION_DB(){
             return connectionDB;
         }
         
         //iniciamos la conexion con la BD
-        public static void ConnectDB(){
-            bool connectionStatus = false;
+        public static void ConnectDB(){            
             MySqlConnection connectionWithDB = null;
             MySqlTransaction transaction = null;
+
+            Console.WriteLine(INIT_CONNECTION_DB());
 
             try{
                 connectionWithDB = new MySqlConnection(INIT_CONNECTION_DB());
@@ -47,7 +52,8 @@ namespace MyStoreAPI{
                         ImageUrl VARCHAR(255),
                         Price DECIMAL(10, 2) NOT NULL,
                         Quantity INT NOT NULL,
-                        Description TEXT
+                        Description TEXT,
+                        Category INT
                     );";
                 using (MySqlCommand command = new MySqlCommand(createTableProducts, connectionWithDB))
                 {
@@ -55,6 +61,7 @@ namespace MyStoreAPI{
                     command.ExecuteNonQuery();
                     Console.WriteLine("Exito al crear Tablas Products");
                 }
+
 
                 string createTableSales = @"
                     CREATE TABLE IF NOT EXISTS Sales (
@@ -92,14 +99,13 @@ namespace MyStoreAPI{
                     command.ExecuteNonQuery();
                     Console.WriteLine("Exito al crear Tablas SalesLines");
                 }
-
                 //se guardan los cambios realizados en la BD
                 transaction.Commit();
-                //connectionStatus = true;
             }
             catch (Exception ex)
             {   
-                Console.WriteLine("Error desde DB_Connection:" + ex);                
+                Console.WriteLine("Error desde DB_Connection:" + ex);  
+                Console.WriteLine(ex.StackTrace);              
                 transaction.Rollback();                
                 throw ex;             
             }

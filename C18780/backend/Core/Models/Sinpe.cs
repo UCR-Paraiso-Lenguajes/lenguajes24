@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StoreApi.Models
 {
-    public class Sinpe
+    public sealed class Sinpe
     {
         [Key]
         public Guid Uuid { get; set; }

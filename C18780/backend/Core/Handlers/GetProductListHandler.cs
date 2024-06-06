@@ -5,12 +5,16 @@ using StoreApi.Repositories;
 
 namespace StoreApi.Handler
 {
-    public class GetProductListHandler :  IRequestHandler<GetProductListQuery, List<Product>>
+    public sealed class GetProductListHandler : IRequestHandler<GetProductListQuery, List<Product>>
     {
         private readonly IProductRepository _productRepository;
 
         public GetProductListHandler(IProductRepository productRepository)
         {
+            if (productRepository == null)
+            {
+                throw new ArgumentException("Illegal action, productRepository is invalid.");
+            }
             _productRepository = productRepository;
         }
 

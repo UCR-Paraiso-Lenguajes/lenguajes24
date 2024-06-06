@@ -7,6 +7,7 @@ namespace MyStoreAPI.Business
 
         //Planeo reutilizar este codigo mas adelante.
 
+
         //Validar el status de la tienda antes de enviar su informacion por la API
         // public bool validateStatusStore(List<Product> productForCart){
             

@@ -11,5 +11,6 @@ namespace MyStoreAPI.Models
             new PaymentMethod(PaymentMethodNumber.SINPE, true)
             //... futuros nuevos metodos de pago
         };        
+        
     }
 }

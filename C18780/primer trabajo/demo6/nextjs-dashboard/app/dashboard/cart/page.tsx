@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { Cart, Product } from '../../lib/products-data-definitions';
+import { Cart, Product } from '../../lib/data-definitions';
 import Image from 'next/image';
 import { getInitialCartLocalStorage, saveInitialCartLocalStorage } from '../../lib/cart_data_localeStore';
 import { ShoppingCartIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
@@ -55,6 +55,7 @@ const ProductCart = ({ product, quantity, onRemove }: { product: Product, quanti
         </div>
     );
 };
+
 const ProductsCart = ({ productCart, onRemove }: { productCart: Product[] | null, onRemove: any }) => {
     let filteredCart: Product[] = [];
     if (productCart) {
@@ -73,6 +74,7 @@ const ProductsCart = ({ productCart, onRemove }: { productCart: Product[] | null
         </div>
     );
 };
+
 const CartSummary = ({ initialCart }: { initialCart: Cart | null }) => {
     if (!initialCart) {
         return (<></>);
@@ -100,6 +102,7 @@ const CartSummary = ({ initialCart }: { initialCart: Cart | null }) => {
         </div>
     );
 };
+
 const Support = () => {
     return (
         <div className="ibox">
@@ -115,6 +118,7 @@ const Support = () => {
         </div>
     );
 };
+
 const InterestingProducts = ({ products, onAdd }: { products: Product[] | null, onAdd: any }) => {
     if (!products) {
         return (<></>);
@@ -142,9 +146,13 @@ const InterestingProducts = ({ products, onAdd }: { products: Product[] | null, 
         </div>
     );
 }
+
 export default function MyCart() {
-    const initialStore = useFetchInitialStore();
+    const category = "All";
+    const search = "none";
+    const initialStore = useFetchInitialStore({category,search});
     const initialCart = getInitialCartLocalStorage();
+    
     const handleAddToCart = ({ product }: { product: Product }) => {
         if (initialCart) {
             initialCart.cart.products.push(product);

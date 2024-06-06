@@ -30,7 +30,7 @@ public sealed class StoreDB
                 Uuid = Guid.NewGuid()
             });
         }
-
+        Console.WriteLine(Storage.Instance.ConnectionString);
         using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
         {
             connection.Open();
@@ -120,16 +120,6 @@ public sealed class StoreDB
                    ";
                 createProcedureCommand.ExecuteNonQuery();
                 Console.WriteLine("Stored procedure InsertSales created successfully.");
-            }
-
-            using (MySqlCommand createViewCommand = connection.CreateCommand())
-            {
-                createViewCommand.CommandText = @"
-                    CREATE VIEW AllSales AS
-                    SELECT * FROM sales inner;
-                ";
-                createViewCommand.ExecuteNonQuery();
-                Console.WriteLine("View AllSales created successfully.");
             }
         
         }

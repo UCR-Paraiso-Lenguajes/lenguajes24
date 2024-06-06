@@ -8,5 +8,6 @@ namespace MyStoreAPI.Models
         public decimal Total {get;set;}
         public string Direction {get;set;}
         public PaymentMethod PaymentMethod { get; set; }
+        
     }
 }

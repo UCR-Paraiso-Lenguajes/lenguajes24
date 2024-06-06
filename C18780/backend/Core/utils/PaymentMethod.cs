@@ -18,7 +18,7 @@ namespace StoreApi.utils
 
         }
 
-        public static Object? Find(PaymentMethods.Type type)
+        public static Type Find(Type type)
         {
             switch (type)
             {

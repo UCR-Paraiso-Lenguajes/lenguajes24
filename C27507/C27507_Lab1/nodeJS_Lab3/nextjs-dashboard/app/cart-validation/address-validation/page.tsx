@@ -10,7 +10,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { AlertShop } from '@/app/global-components/generic_overlay';
-import { sendDataAPI } from '@/app/src/api/get-post-api';
+import { sendCartDataToAPI } from '@/app/src/api/get-post-api';
 
 //Funciones
 import {getCartShopStorage, setCartShopStorage, deleteAllProduct } from '@/app/src/storage/cart-storage';
@@ -134,7 +134,7 @@ export default function ModalDirection() {
         
         if(Object.keys(newErrors).length === 0){                        
             console.log(form);            
-            const purchaseNum = await sendDataAPI("https://localhost:7580/api/Cart", myCartInStorage);        
+            const purchaseNum = await sendCartDataToAPI(myCartInStorage);
             resetModal();//setteamos el modal o mandamos el resumen a la pagina            
             callAlertShop("success","Compra finalizada","El codigo de su compra es: " + purchaseNum);   
         }else{

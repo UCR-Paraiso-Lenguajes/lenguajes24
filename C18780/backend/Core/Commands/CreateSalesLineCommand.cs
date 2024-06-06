@@ -3,7 +3,7 @@ using StoreApi.Models;
 
 namespace StoreApi.Commands
 {
-    public class CreateSalesLineCommand : IRequest<SalesLine>
+    public sealed class CreateSalesLineCommand : IRequest<SalesLine>
     {
         public int Quantity {get; set; }
         public decimal Subtotal {get; set;}

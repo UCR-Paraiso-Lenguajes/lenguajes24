@@ -5,12 +5,16 @@ using StoreApi.Repositories;
 
 namespace StoreApi.Handler
 {
-    public class CreateProductHandler : IRequestHandler<CreateProductCommand, Product>
+    public sealed class CreateProductHandler : IRequestHandler<CreateProductCommand, Product>
     {
         private readonly IProductRepository _productRepository;
 
         public CreateProductHandler(IProductRepository productRepository)
         {
+            if (productRepository == null)
+            {
+                throw new ArgumentException("Illegal action, productRepository is invalid.");
+            }
             _productRepository = productRepository;
         }
 
@@ -23,7 +27,8 @@ namespace StoreApi.Handler
                 Name = command.Name,
                 Description = command.Description,
                 Price = command.Price,
-                ImageUrl = command.ImageUrl
+                ImageUrl = command.ImageUrl,
+                Category = command.Category
             };
 
             return await _productRepository.AddProductAsync(product);
@@ -46,6 +51,10 @@ namespace StoreApi.Handler
             if (command.Price <= 0)
             {
                 throw new ArgumentException("The price must be greater than zero.");
+            }
+            if (command.Category == Guid.Empty)
+            {
+                throw new ArgumentException("The uuid category cannot be empty.");
             }
         }
     }

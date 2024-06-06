@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { Cart, Product } from '../../lib/products-data-definitions';
+import { Cart, Product } from '../../lib/data-definitions';
 import Link from 'next/link';
 import Modal from '../modal';
 import ModalInput from '../modalInput';
@@ -91,6 +91,7 @@ const BillingInfo = ({ onAddress }: { onAddress: any }) => {
         const newAddress = e.target.value;
         onAddress(newAddress);
     };
+    
     return (
         <div className="feed-item-list">
             <div>
