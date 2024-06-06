@@ -71,7 +71,7 @@ export default function Products() {
             })
             if (res.ok) {
                 var createdProduct = await res.json();
-                console.log(createdProduct);
+                setErrorMessage(`Producto ${createdProduct.name} creado`);
             }
             else { setErrorMessage("Error al realizar la compra"); }
         } catch (error) {
