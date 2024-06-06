@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoreAPI", "StoreAPI.csproj", "{2649F0E1-92AD-45EE-ACD9-FA814EFBA445}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2649F0E1-92AD-45EE-ACD9-FA814EFBA445}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2649F0E1-92AD-45EE-ACD9-FA814EFBA445}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2649F0E1-92AD-45EE-ACD9-FA814EFBA445}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2649F0E1-92AD-45EE-ACD9-FA814EFBA445}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2CCCA6A7-C40C-4D18-BBF0-2B3A14E82B64}
+	EndGlobalSection
+EndGlobal

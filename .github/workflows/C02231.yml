@@ -2,9 +2,7 @@ name: C02231
 
 on:
   push:
-    branches: [ "DevOps_C02231" ]
-  pull_request:
-    branches: [ "DevOps_C02231" ]
+    branches: [ "C02231" ]
 
 jobs:
   unitTest:
