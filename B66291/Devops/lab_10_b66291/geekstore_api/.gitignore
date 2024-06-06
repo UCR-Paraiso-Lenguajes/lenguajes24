@@ -1,5 +1,6 @@
 appsettings.Development.json
-geekstore_api.http
 Properties
 /**/obj/
+obj
 /**/bin/
+bin
