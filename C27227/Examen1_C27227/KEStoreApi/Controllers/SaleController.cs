@@ -1,33 +1,47 @@
 ﻿using Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using KEStoreApi.Bussiness;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using static KEStoreApi.SaleLogic;
-using System.Globalization;
-
 namespace KEStoreApi
 {
     [Route("api/")]
     [ApiController]
     public class SaleController : ControllerBase
     {
-        private SaleLogic saleLogic = new(); 
+        private readonly SaleLogic _saleLogic;
 
-        [HttpGet("sale")] 
-        public async Task<IActionResult> GetSaleAsync(String date)
-       
+        public SaleController(SaleLogic saleLogic)
         {
-                DateTime selectDate = DateTime.ParseExact(date, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            _saleLogic = saleLogic ?? throw new ArgumentNullException(nameof(saleLogic));
+        }
 
-            if (selectDate== default(DateTime)) 
+        [HttpGet("sale")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetSaleAsync([FromQuery] string date)
+        {
+            if (string.IsNullOrWhiteSpace(date))
             {
                 return BadRequest("Se requiere una fecha válida en el cuerpo de la solicitud.");
             }
 
-            ReportSales report = await saleLogic.GetReportSalesAsync(selectDate);
-            
-            return Ok(report);
+            if (!DateTime.TryParseExact(date, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime selectDate))
+            {
+                return BadRequest("Formato de fecha inválido. Utilice el formato dd/MM/yyyy.");
+            }
+
+            try
+            {
+                ReportSales report = await _saleLogic.GetReportSalesAsync(selectDate);
+                return Ok(report);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Se produjo un error al procesar la solicitud: {ex.Message}");
+            }
         }
     }
 }

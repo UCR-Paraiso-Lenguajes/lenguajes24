@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KEStoreApi", "KEStoreApi.csproj", "{4026A5D3-E792-4CC5-97B8-6DE86F8D180F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KEStoreApi", "KEStoreApi/KEStoreApi.csproj", "{4026A5D3-E792-4CC5-97B8-6DE86F8D180F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\Core\Core.csproj", "{9C49ED19-2EB5-4CEE-9BF7-E43B629E0CB4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core/Core.csproj ", "{9C49ED19-2EB5-4CEE-9BF7-E43B629E0CB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UT", "..\UT\UT.csproj", "{B61891FF-EEDE-4309-8341-5E4D58CE19D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UT", "UT/UT.csproj", "{B61891FF-EEDE-4309-8341-5E4D58CE19D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

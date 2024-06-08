@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
 using KEStoreApi.Bussiness;
-
+using Microsoft.AspNetCore.Authorization;
 namespace KEStoreApi.Controllers
 {
     [Route("api/")]
@@ -11,7 +9,8 @@ namespace KEStoreApi.Controllers
     {
         private StoreLogic storeLogic = new StoreLogic();
 
-        [HttpPost]
+        [HttpPost("cart")]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateCartAsync([FromBody] Cart cart)
         {
 

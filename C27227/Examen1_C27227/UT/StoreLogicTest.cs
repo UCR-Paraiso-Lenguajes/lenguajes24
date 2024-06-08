@@ -7,6 +7,7 @@ using KEStoreApi;
 using static KEStoreApi.Product;
 using Core;
 using Microsoft.VisualBasic;
+using KEStoreApi.Data;
 
 namespace UnitTests
 {
@@ -17,6 +18,9 @@ namespace UnitTests
         [SetUp]
         public void Setup()
         {
+             var dbTest = "Server=localhost;Database=mysql;Uid=root;Pwd=123456;";
+            DatabaseConfiguration.Init(dbTest);
+            DatabaseStore.Store_MySql();
             string connectionString = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
             DatabaseConfiguration.Init(connectionString);
             _storeLogic = new StoreLogic();
