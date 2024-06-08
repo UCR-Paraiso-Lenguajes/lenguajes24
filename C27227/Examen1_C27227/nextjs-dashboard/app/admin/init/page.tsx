@@ -16,16 +16,25 @@ const Sidebar = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const token = sessionStorage.getItem("sessionToken");
-    if (token) {
-      const decodedToken = decodeToken(token);
-      const isTokenAlive = checkTokenDate(decodedToken?.exp);
-      if (!isTokenAlive) {
-        sessionStorage.removeItem("sessionToken");
-        sessionStorage.removeItem("expiracyToken");
-        setErrorMessage('La sesión ha expirado, por favor inicie sesión nuevamente.');
+    try {
+      const token = sessionStorage.getItem("sessionToken");
+      if (token) {
+        const decodedToken = decodeToken(token);
+        const isTokenAlive = checkTokenDate(decodedToken?.exp);
+        if (!isTokenAlive) {
+          sessionStorage.removeItem("sessionToken");
+          sessionStorage.removeItem("expiracyToken");
+          setErrorMessage('La sesión ha expirado, por favor inicie sesión nuevamente.');
+          router.push("/admin");
+        }
+      } else {
+        setErrorMessage('No se encontró el token, por favor inicie sesión.');
         router.push("/admin");
       }
+    } catch (error) {
+      console.error("Error validating token:", error);
+      setErrorMessage('Ocurrió un error al validar la sesión, por favor inicie sesión nuevamente.');
+      router.push("/admin");
     }
   }, [router]);
 

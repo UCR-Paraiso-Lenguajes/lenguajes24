@@ -27,14 +27,13 @@ const TableWithPaginationAndChart = () => {
     const isTokenAlive = checkTokenDate(Number(expiracyDate));
     if (!isTokenAlive) {
       router.push("/admin"); 
+      return false;
     }
+    return true;
   };
 
   useEffect(() => {
-    checkTokenStatus();
-  }, []);
-
-  useEffect(() => {
+    if (!checkTokenStatus()) return;
     fetchData(selectedDate);
   }, [selectedDate]);
 
@@ -44,7 +43,7 @@ const TableWithPaginationAndChart = () => {
         throw new Error('La fecha es requerida.');
       }
 
-      const formattedDate = selectedDate.toLocaleDateString('en-GB');
+      const formattedDate = date.toLocaleDateString('en-GB');
       const sessionToken = sessionStorage.getItem('sessionToken');
       if (!sessionToken) {
         throw new Error('Token de sesión no encontrado.');
@@ -72,7 +71,7 @@ const TableWithPaginationAndChart = () => {
       setDailySales(data.sales);
       setWeeklySales(data.salesByWeek);
     } catch (error) {
-      throw new Error('Error al enviar datos:');
+      setErrorMessage('Error al enviar datos: ' + error.message);
     }
   };
 
@@ -81,7 +80,7 @@ const TableWithPaginationAndChart = () => {
     setCurrentPage(1);
   };
 
-  const drawPieChart = (pieOptions: Chart.ChartOptions) => {
+  const drawPieChart = (pieOptions) => {
     const pieCtx = document.getElementById('myPieGraph')?.getContext('2d');
   
     if (!pieCtx) return;
@@ -110,7 +109,7 @@ const TableWithPaginationAndChart = () => {
     }
   }, [weeklySales]);
 
-  const pieOptions: Chart.ChartOptions = {
+  const pieOptions = {
     plugins: {
       datalabels: {
         anchor: "center",
