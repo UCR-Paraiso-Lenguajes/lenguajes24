@@ -9,6 +9,7 @@ namespace MyStoreAPI.DB
 {
     public class DB_Product{
 
+        public DB_Product(){}
 
 
         //Funciones CRUD
@@ -111,6 +112,44 @@ namespace MyStoreAPI.DB
             catch (Exception ex){                
                 throw;
             }
-        }        
+        }
+
+        public async Task<Product> InsertProductInDBAsync(Product newProduct){
+
+            if(newProduct == null) throw new ArgumentException($"{nameof(newProduct)} no puede ser nulo");
+
+            MySqlConnection connectionWithDB = null;
+            MySqlTransaction transaction = null;
+            try{
+                connectionWithDB = new MySqlConnection(DB_Connection.INIT_CONNECTION_DB());                
+                await connectionWithDB.OpenAsync();
+                transaction = await connectionWithDB.BeginTransactionAsync();
+
+                string insertQuery = @"
+                    INSERT INTO Products (Name, ImageUrl, Price, Quantity, Description, Category)
+                    VALUES (@name, @imageUrl, @price, @quantity, @description, @idCategory);
+                ";
+
+                using (MySqlCommand command = new MySqlCommand(insertQuery, connectionWithDB)){
+                    command.Transaction = transaction;
+
+                    command.Parameters.AddWithValue("@name", newProduct.name);
+                    command.Parameters.AddWithValue("@imageUrl", newProduct.imageUrl);
+                    command.Parameters.AddWithValue("@price", newProduct.price);
+                    command.Parameters.AddWithValue("@quantity", newProduct.quantity);
+                    command.Parameters.AddWithValue("@description", newProduct.description);
+                    command.Parameters.AddWithValue("@idCategory", newProduct.category.id);                    
+                    await command.ExecuteNonQueryAsync();
+                }
+                await transaction.CommitAsync();            
+            }catch (Exception ex){ 
+                await transaction.RollbackAsync();
+                throw;
+            }finally{                
+                await connectionWithDB.CloseAsync();
+            }
+            //Se validará antes de agregarlo a Store.Instance.Products
+            return newProduct;            
+        }
     }
 }

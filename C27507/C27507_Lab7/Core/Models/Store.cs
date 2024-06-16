@@ -12,7 +12,7 @@ namespace MyStoreAPI.Models
         public IEnumerable<Product> Products { get; private set; } 
         public IEnumerable<Category> AllProductCategories {get; private set;}
         public int TaxPercentage { get; private set; }
-        public bool StoreConnectedWithDB {get; private set;}
+        public bool StoreConnectedWithDB {get; private set;}                
 
         private Store(){            
             this.TaxPercentage = 13;
@@ -41,6 +41,16 @@ namespace MyStoreAPI.Models
             //unica instancia de Store (con los productos y la conexion a la DB)            
             Store.Instance = new Store();                                    
         }
+
+
+        //Actualizar la lista en memoria de Store, justo despues de actualizar la DB con el nuevo producto
+        public void addNewProductInStore(Product newProduct){
+        var productList = Products.ToList();
+        productList.Add(newProduct);
+        Products = productList;
+    }
+
+
                 
         //Generamos productos en caso de que por alguna razon la tabla este vacia     
         public List<Product> createStoreProducts(){
