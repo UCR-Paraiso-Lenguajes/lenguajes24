@@ -7,6 +7,7 @@ import Alert from 'react-bootstrap/Alert';
 import Carousel from 'react-bootstrap/Carousel';
 import { Dropdown } from "react-bootstrap";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import DOMPurify from 'dompurify';
 
 export default function Home() {
 
@@ -223,6 +224,7 @@ export default function Home() {
 
   const Product = ({ product, handleAddToCart }) => {
     const { uuid, name, description, imageUrl, price } = product;
+    const sanitizedDescription = DOMPurify.sanitize(description);
     return (
       <div className="card" style={{ width: '20rem' }}>
         <div className="col">
@@ -232,7 +234,7 @@ export default function Home() {
               width="500" height="110" />
             <h5>{name}</h5>
             <p>Precio: ${price}</p>
-            <p>Descripción: {description}</p>
+            <p>Descripción: <span dangerouslySetInnerHTML={{ __html: sanitizedDescription }} /></p>
             <button type="button" className="btn btn-light" onClick={() => handleAddToCart({ product })}>Comprar</button>
           </div>
         </div>
@@ -294,7 +296,6 @@ export default function Home() {
             <Carousel.Caption>
               <h3>{product.name}</h3>
               <p>${product.price}</p>
-              <p>{product.description}</p>
               <button type="button" className="btn btn-light" onClick={() => handleAddToCart({ product })}>Comprar</button>
             </Carousel.Caption>
           </Carousel.Item>)}
