@@ -26,7 +26,7 @@ const DisplayItem = ({ item }) => {
 
 export default function Page() {
   console.log("----------------------")
-  console.log(process.env.NEXT_PUBLIC_DB)
+  console.log(process.env.NEXT_PUBLIC_API)
   const [item, setItem] = useState({ count: 0 });
   return (
     <>

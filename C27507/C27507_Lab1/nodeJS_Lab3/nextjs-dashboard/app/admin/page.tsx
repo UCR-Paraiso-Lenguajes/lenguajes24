@@ -8,37 +8,69 @@ import Link from 'next/link';
 import Button from 'react-bootstrap/Button';
 import { useRouter } from 'next/navigation';
 
-
 //Interfaces
+import { UserAccountAPI } from '../src/models-data/UserAccountAPI';
 
 //Recursos
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './../src/css/login.css'
 import './../src/css/fonts_awesome/css/all.min.css'
 import { mock } from 'node:test';
+
 //Funciones
+import { validateUserAndGetToken } from '../src/api/get-post-api';
+
+//Para manejar tokens JWT
+const { default: jwt_decode } = require("jwt-decode");
 
 export default function Login(){
-	const router = useRouter();       
+
+	const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 	const [formStatus, setFormStatus] = useState(true);	
 
-	const submitForm = () => {        		
-		formValidations()		
+	const submitForm = () => {
+		const emailValid = email && email.trim();
+		const passValid = password && password.trim();
+		if(emailValid && passValid){
+			getLoginCredentials();
+		}else{
+			//Desplegar errores de formulario			
+			setFormStatus(false)				
+		}		
     };
 
-	function formValidations(){
+	//Para verificar si recibimos un token o un mensaje de error del fetch
+	function validTokenFormat(token: string): boolean {		
+		const parts = token.split('.');
+		
+		// Verificar si tiene tres partes
+		if (parts.length === 3) {
+			return true;
+		}
+		return false;		
+	}
 
-		const isEmailValid = email && email.trim();
-		const isPassValid = password && password.trim();
-		if(!isEmailValid || !isPassValid){			
-			setFormStatus(false)			
-		}else{
-			setFormStatus(true)
-			sessionStorage.setItem("loginToken","loginToken");
-			router.push("/admin/init/sales_report")
-		}		
+	async function getLoginCredentials(){
+		
+		try {			
+			let userData: UserAccountAPI = {
+				userName: email,
+				userPassword: password
+			};
+			let loginToken = await validateUserAndGetToken(userData);
+
+			if(loginToken !== null && loginToken !== undefined){
+				if (validTokenFormat(loginToken)) {				
+					sessionStorage.setItem("loginToken", loginToken);
+					router.push("/admin/init/sales_report");
+				}
+			}
+		} catch (error) {
+			//Desplegar errores de formulario			
+			setFormStatus(false);
+		}
 	}
 
 	return(		

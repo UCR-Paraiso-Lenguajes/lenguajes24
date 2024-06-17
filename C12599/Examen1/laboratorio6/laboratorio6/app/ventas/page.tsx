@@ -127,7 +127,7 @@ const Ventas = () => {
             throw new Error('La fecha seleccionada no es válida.');
         }
         const adjustedDate = new Date(date);
-        adjustedDate.setDate(adjustedDate.getDate() - 1);
+        adjustedDate.setDate(adjustedDate.getDate());
         setState(prevState => ({
             ...prevState,
             selectedDate: adjustedDate,
@@ -135,7 +135,7 @@ const Ventas = () => {
     };
 
     const formattedDisplayDate = new Date(selectedDate);
-    formattedDisplayDate.setDate(formattedDisplayDate.getDate() + 1);
+    formattedDisplayDate.setDate(formattedDisplayDate.getDate());
 
     if (!isVerified) {
         return null;

@@ -2,6 +2,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
 import { Card, CardBody, Container, Form, Row, Alert } from "react-bootstrap";
+import { checkTokenDate, decodeToken } from "../hooks/jwtHooks";
 
 export default function LogIn() {
 
@@ -17,13 +18,46 @@ export default function LogIn() {
         setPassword(e.target.value);
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!username || !password) {
             setError('Ingrese un nombre de usuario y contraseña válidos');
             return;
         }
-        window.location.href = "/Admin/init";
+        await authenticateUser();
+    }
+
+    async function authenticateUser(){
+        try {
+            const response = await fetch('https://localhost:7151/api/auth/login', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  name: username,
+                  password: password,
+                }),
+              })
+        
+            if (!response.ok) setError('Inicio de sesión incorrecto')
+            else{
+                var tokenString = await response.json();
+                var token = tokenString.token
+                sessionStorage.removeItem("sessionToken");
+                sessionStorage.removeItem("expiracyToken");
+
+                sessionStorage.setItem("sessionToken", token);
+                var decodedToken = decodeToken(token);
+                var expiracyDate = decodedToken?.exp;
+                sessionStorage.setItem("expiracyToken", String(expiracyDate));
+                
+                window.location.href = "/Admin/init";
+            }
+        } catch (error) {
+            setError(error);
+        } finally {
+        }
     }
 
     return <>
