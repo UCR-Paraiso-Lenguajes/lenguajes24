@@ -114,12 +114,13 @@ namespace MyStoreAPI.DB
             }
         }
 
-        public async Task<Product> InsertProductInDBAsync(Product newProduct){
-
+        public async Task<bool> InsertProductInDBAsync(Product newProduct){
+            
             if(newProduct == null) throw new ArgumentException($"{nameof(newProduct)} no puede ser nulo");
 
             MySqlConnection connectionWithDB = null;
             MySqlTransaction transaction = null;
+
             try{
                 connectionWithDB = new MySqlConnection(DB_Connection.INIT_CONNECTION_DB());                
                 await connectionWithDB.OpenAsync();
@@ -138,18 +139,18 @@ namespace MyStoreAPI.DB
                     command.Parameters.AddWithValue("@price", newProduct.price);
                     command.Parameters.AddWithValue("@quantity", newProduct.quantity);
                     command.Parameters.AddWithValue("@description", newProduct.description);
-                    command.Parameters.AddWithValue("@idCategory", newProduct.category.id);                    
+                    command.Parameters.AddWithValue("@idCategory", newProduct.category.id);
                     await command.ExecuteNonQueryAsync();
                 }
-                await transaction.CommitAsync();            
+                await transaction.CommitAsync();                
             }catch (Exception ex){ 
                 await transaction.RollbackAsync();
-                throw;
+                throw;                
             }finally{                
                 await connectionWithDB.CloseAsync();
             }
-            //Se validará antes de agregarlo a Store.Instance.Products
-            return newProduct;            
+            //Siempre será true, a menos que la inserción en la db falle
+            return true;
         }
     }
 }

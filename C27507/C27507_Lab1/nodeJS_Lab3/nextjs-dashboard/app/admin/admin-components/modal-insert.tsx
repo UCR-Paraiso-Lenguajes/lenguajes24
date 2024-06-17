@@ -15,6 +15,8 @@ import '../../src/css/fonts_awesome/css/all.min.css'
 import { mock } from 'node:test';
 import { ProductAPI } from '@/app/src/models-data/ProductAPI';
 import { CategoryAPI } from '@/app/src/models-data/CategoryAPI';
+import { insertNewProductInDBAsync } from '@/app/src/api/get-post-api';
+import { AlertShop } from '@/app/global-components/generic_overlay';
 
 
 
@@ -31,55 +33,115 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
     categoryListFromStore
 }) => {
     
-    const deleteNewProductInfo = () => {
-        setProductName('');
-        setDescription('');
-        setSelectedCategory('');
-        setImages([]);
-        setError('');
-    }
+    //Atributos del producto nuevo
     const [productName, setProductName] = useState('');
+    const [productPrice, setProductPrice] = useState('');
     const [description, setDescription] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [images, setImages] = useState<File[]>([]);
+    const [images, setImages] = useState<File | string | null>(null);
     const [error, setError] = useState('');
+
+    //gestionamiento para los alert de boostrap
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertInfo,setAlertInfo] = useState("");
+    const [alertTitle,setAlertTitle] = useState("");
+    const [alertType,setAlertType] = useState("");
+    
+    function closeAlertShop(): void {
+        setShowAlert(false);     
+    }
+
+    //Variable global para la url img
+    let defaultImage: string;
+        
+    const deleteNewProductInfo = () => {
+        setProductName('');
+        setProductPrice('')
+        setDescription('');
+        setSelectedCategory('');
+        setImages(null);
+        setError('');
+    }
+
+    //Obtener la url de la imagen seleccionada (opcional)
+    const getImageURL = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newImage = e.target.files?.[0];
+        if (newImage) {
+            //leemos la imagen
+            const reader = new FileReader();
+            //leemos su url
+            reader.readAsDataURL(newImage);
+            //se debe cargar en cache para manipular la imagen
+            reader.onload = () => {
+                const imageURL = reader.result as string                
+                defaultImage = imageURL;                
+            };
+        }
+    };
+
 
   const isValidInput = (input: string): boolean => {
     return input.trim() !== '';
   };
 
-  const insertNewProduct = () => {
+  const insertNewProduct = async () => {
     if (!isValidInput(productName)) {
       setError('Por favor ingrese un nombre de producto válido');
       return;
     }
+
+    let validProductPrice = parseInt(productPrice);
+    if ( isNaN(validProductPrice) || validProductPrice <= 0) {
+        setError('Por favor ingrese un precio de producto válido');
+        return;
+    }
+
     if (!isValidInput(description)) {
       setError('Por favor ingrese una descripción válida');
       return;
     }
-    if (selectedCategory === '') {
+    if (selectedCategory === '' || !selectedCategory) {
       setError('Por favor seleccione una categoría');
       return;
     }
+    
+    if (defaultImage === '' || !defaultImage) {
+        //Si no se asigna una imagen (es nulo), se usa una por defect
+        defaultImage = "./img/not_found_img.jpg";
+    }
+            
+    const newProduct : ProductAPI = {
 
-    var defaultImage = "./img/not_found_img.jpg";
-    
-    
-    console.log(productName);
-    console.log(description);
-    console.log(selectedCategory);
-    console.log(images);
+            id: 0,
+            name: productName,
+            imageUrl: defaultImage,
+            price: validProductPrice,
+            quantity: 0,
+            description: description,
+            category: categoryListFromStore.find(category => category.id === parseInt(selectedCategory)) || undefined
+    }
+   
     deleteNewProductInfo();
+        
+    try{
+        console.log(newProduct);
+        let dataFromStore = await insertNewProductInDBAsync(newProduct);
+
+        if (typeof dataFromStore  === "boolean" && dataFromStore !== null){
+            callAlertShop("success","Inserción Exitosa","El producto " + newProduct.name  + "fue agregado con éxito a la base de datos");
+        
+        }else{
+            callAlertShop("danger","Inserción Fallida","El producto " + newProduct.name  + "no pudo ser agregado")
+        
+        }
+    } catch (error) {                
+        throw new Error('Failed to fetch data:' + error);
+    }
+
+    //Cerramos el modal y borramos todo
     handleClose();
   };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-        //convertimos la lista de archivos (img) en un array, para evitar el error de tipo de lista
-        setImages(Array.from(files));
-    }
-  };
+ 
 
   return (
     <>
@@ -106,6 +168,15 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
                     </label>
 
                     <label>
+                        Precio del producto:
+                        <input
+                            type="number"
+                            value={productPrice}
+                            onChange={(e) => setProductPrice(e.target.value)}
+                        />
+                    </label>
+
+                    <label>
                         Descripción:
                         <textarea
                             value={description}
@@ -128,7 +199,7 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
                     </label>
                     <label>
                         Imágenes:
-                        <input type="file" multiple onChange={handleImageChange} />
+                        <input type="file" onChange={getImageURL} />
                     </label>
                 </form>
             </Modal.Body>
@@ -146,6 +217,12 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
             </Button>
             </Modal.Footer>
         </Modal>
+
+        <AlertShop alertTitle={alertTitle} alertInfo={alertInfo} alertType={alertType} showAlert={showAlert} onClose={closeAlertShop}/>
     </>
   );
 };
+
+function callAlertShop(arg0: string, arg1: string, arg2: string) {
+    throw new Error('Function not implemented.');
+}

@@ -80,6 +80,7 @@ export default function ProductsInfo(){
                     </tr>
                     <tr>
                         <th>Code</th>
+                        <th>Producto Name</th>
                         <th>Description</th>
                         <th>Category</th>
                         <th>Price</th>                
@@ -90,10 +91,11 @@ export default function ProductsInfo(){
                     {products.map((product,index) => (
                         <tr key={product.id} className="crud-product-info">
                             <td>{product.id}</td>
+                            <td>{product.name}</td>
                             <td>
                                 {htmlToReactParser.parse(product.description)}
-                            </td>
-                            <td>ssdsd</td>
+                            </td>                            
+                            <td>{product.category && product.category.name}</td>
                             <td>{product.price}</td>
                             <td>sdsds</td>                
                             <td className="crud-actions-container">
