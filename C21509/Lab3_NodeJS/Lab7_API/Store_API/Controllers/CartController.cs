@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Store_API.Models;
 using Store_API.Business;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Store_API.Controllers
 {
@@ -12,6 +13,7 @@ namespace Store_API.Controllers
         private StoreLogic storeLogic = new StoreLogic();
 
         [HttpPost]
+        [AllowAnonymous]
         [Consumes("application/json")]
         public async Task<IActionResult> CreateCart([FromBody] Cart cart)
         {
