@@ -1,9 +1,10 @@
-﻿
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using storeapi.Database;
 using storeapi.Models;
+using core;
+using MySqlConnector;
 
 namespace storeapi.Business
 {
@@ -11,11 +12,11 @@ namespace storeapi.Business
     {
         private readonly IMemoryCache _cache;
      
+        public delegate void InsertProductDelegate(Product product, MySqlConnection connection, MySqlTransaction transaction);
+
         private readonly InsertProductDelegate _insertProductDelegate;
 
-        public  delegate void InsertProductDelegate(Product product, List<Product> products);
-
-        public  InsertProductsLogic(IMemoryCache cache, InsertProductDelegate insertProductDelegate)
+        public InsertProductsLogic(IMemoryCache cache, InsertProductDelegate insertProductDelegate)
         {
             _cache = cache;
             _insertProductDelegate = insertProductDelegate;
@@ -31,13 +32,26 @@ namespace storeapi.Business
                 _cache.Set("Products", products);
             }
 
-            _insertProductDelegate(product, products);
-            _cache.Set("Products", products);
+            using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        _insertProductDelegate(product, connection, transaction);
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new Exception($"Error inserting product into database: {ex.Message}");
+                    }
+                }
+            }
 
-          
-            
-                StoreDB.InsertProducts(products);
-            
+            products.Add(product);
+            _cache.Set("Products", products);
 
             return products;
         }
@@ -52,4 +66,3 @@ namespace storeapi.Business
         }
     }
 }
-
