@@ -23,5 +23,10 @@ namespace MyStoreAPI.Business
                 return false;
             }
         }
+
+        public async Task<bool> insertProductAsyncUT(Product newProduct){            
+            onProductInserted?.Invoke(newProduct);
+            return true;
+        }
     }
 }
