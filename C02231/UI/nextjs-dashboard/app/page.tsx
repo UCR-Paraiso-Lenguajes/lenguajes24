@@ -115,7 +115,7 @@ export default function Home() {
       let productsForCategory = [];
 
       if (updatedSelectedCategories.includes("0")) {
-        const response = await fetch(URL +'/api/Store');
+        const response = await fetch(URL + '/api/Store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -140,7 +140,7 @@ export default function Home() {
 
   const handleSearchSubmit = async (event) => {
     event.preventDefault();
-    
+
     try {
       if (!searchQuery.trim()) {
         return;
@@ -151,7 +151,7 @@ export default function Home() {
       const params = categories.map(id => `categories=${id}`).join('&');
       const query = `keywords=${encodeURIComponent(keywords)}&${params}`;
 
-      const response = await fetch(URL +`/api/Store/search?${query}`);
+      const response = await fetch(URL + `/api/Store/search?${query}`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -171,7 +171,7 @@ export default function Home() {
     setSearchQuery(e.target.value);
   };
 
- 
+
   return (
 
     <main className="flex min-h-screen flex-col p-6" style={{ backgroundColor: 'silver' }}>
@@ -184,7 +184,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="col-sm-8 d-flex justify-content-center align-items-center">
+          <div className="col-sm-6 d-flex justify-content-center align-items-center">
             <form className="d-flex justify-content-center" onSubmit={handleSearchSubmit}>
               <input
                 type="search"
@@ -227,6 +227,16 @@ export default function Home() {
               </Dropdown.Menu>
             </Dropdown>
           </div>
+
+          <div className="col-sm-2 d-flex justify-content-center align-items-center">
+            <Link href="/admin">
+              <button className="btn btn-success">
+                Admin
+              </button>
+            </Link>
+          </div>
+
+
 
           <div className="col-sm-2 d-flex justify-content-end align-items-center">
             <div style={{ position: 'relative', display: 'inline-block' }}>

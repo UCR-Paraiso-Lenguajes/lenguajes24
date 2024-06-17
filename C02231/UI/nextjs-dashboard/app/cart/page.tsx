@@ -33,8 +33,12 @@ export default function CartPage() {
 
     // Define handleQuantityChange outside of handlePrice
     const handleQuantityChange = (id, cant) => {
-        if (cant == undefined || id == undefined) { throw new Error('The arguments to calculated the price cant be null.'); }
-        if (cant < 1) { return; }
+        if (cant == undefined || id == undefined) {
+            throw new Error('Los argumentos para calcular el precio no pueden ser nulos.');
+        }
+        if (cant < 1) { 
+            return; // Evita que la cantidad sea menor que 1
+        }
         const updatedProducts = cartData.products.map((item) => {
             if (item.id === id) {
                 return { ...item, cant };

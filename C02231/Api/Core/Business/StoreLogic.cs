@@ -12,9 +12,11 @@ namespace StoreAPI.Business
 
         public async Task<Sale> PurchaseAsync(Cart cart)
         {
-            if (cart == null || cart.ProductIds == null || cart.ProductIds.Count == 0) throw new ArgumentException("The cart cannot be empty.");
-            if (cart.ProductIds.Count == 0) throw new ArgumentException("Cart must contain at least one product.");
-            if (string.IsNullOrWhiteSpace(cart.Address)) throw new ArgumentException("Address must be provided.");
+            var productIdsIsEmpty = cart == null || cart.ProductIds == null || cart.ProductIds.Count() == 0;
+            var addressIsNullOrWhiteSpace = string.IsNullOrWhiteSpace(cart.Address);
+            if (productIdsIsEmpty) throw new ArgumentException($"Variable {nameof(cart)}must contain at least one product.");
+            if (addressIsNullOrWhiteSpace) throw new ArgumentException("Address must be provided.");
+            if (cart == null || cart.ProductIds == null) throw new ArgumentException("The cart cannot be empty.");
 
 
             var storeInstance = await Store.Instance.Value;
@@ -22,17 +24,25 @@ namespace StoreAPI.Business
             var taxPercentage = storeInstance.TaxPercentage;
 
             // Find matching products based on the product IDs in the cart
-            IEnumerable<Product> matchingProducts = products.Where(p => cart.ProductIds.Contains(p.Id.ToString())).ToList();
+            IEnumerable<Product> matchingProducts = products.Where(p => cart.ProductIds.Any(pq => pq.ProductId == p.Id.ToString())).ToList();
 
             // Create shadow copies of the matching products
-            IEnumerable<Product> shadowCopyProducts = matchingProducts.Select(p => (Product)p.Clone()).ToList();
+            IEnumerable<Product> shadowCopyProductss = matchingProducts.Select(p => (Product)p.Clone()).ToList();
 
+            IEnumerable<Product> shadowCopyProducts = matchingProducts
+                          .Select(p =>
+                          {
+                              var productQuantity = cart.ProductIds.FirstOrDefault(pq => pq.ProductId == p.Id.ToString());
+                              var clonedProduct = (Product)p.Clone();
+                              clonedProduct.Quantity = productQuantity?.Quantity ?? 0; // Asignar la cantidad correspondiente
+                              return clonedProduct;
+                          }).ToList();
             // Calculate purchase amount by multiplying each product's price with the store's tax percentage
             decimal purchaseAmount = 0;
             foreach (var product in shadowCopyProducts)
             {
-                product.Price *= (1 + (decimal)taxPercentage / 100);
-                purchaseAmount += product.Price;
+                product.Price *= (1 + taxPercentage / 100);
+                purchaseAmount += product.Price * product.Quantity;
             }
 
             string purchaseNumber = GenerateNextPurchaseNumber();

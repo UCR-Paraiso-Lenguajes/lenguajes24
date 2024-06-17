@@ -51,8 +51,8 @@ public class Categories
 
 public struct Category
 {
-    public int IdCategory { get; }
-    public string Name { get; }
+    public int IdCategory { get; set;}
+    public string Name { get; set;}
     public Category(int idCategory, string name)
     {
         if (idCategory <= -1) throw new ArgumentException($"A Category {nameof(idCategory)} is required");
