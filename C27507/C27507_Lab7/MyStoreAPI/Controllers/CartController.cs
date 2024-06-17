@@ -27,6 +27,7 @@ namespace MyStoreAPI.Controllers
                 Sale saleConfirmed = await saleLogic.createSaleAsync(cart);
                 var purchaseNum = saleConfirmed.purchaseNum;
 
+                Console.WriteLine("Prblemas");
                 Console.WriteLine("Antes de mandar la respuesta post - Valor de saleConfirmed.purchaseNum: " + saleConfirmed.purchaseNum);
                 return Ok(new { purchaseNum });                        
                  }

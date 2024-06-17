@@ -4,6 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using MyStoreAPI.Business;
 using MyStoreAPI.DB;
 using MyStoreAPI.Models;
+
+//JWT Authentication
+using Microsoft.AspNetCore.Authorization;
+
+
 namespace MyStoreAPI.Controllers
 {
     [Route("store/[controller]")]
@@ -12,14 +17,14 @@ namespace MyStoreAPI.Controllers
 
         [HttpPost("product/insert")]
         [Authorize(Roles = "Admin, Operator")]
-        public IActionResult InsertNewProductInStore([FromBody] Product newProduct){
+        public async Task<IActionResult> InsertNewProductInStoreAsync([FromBody] Product newProduct){
             try{
                 ProductManagementLogic productManagementLogic = new ProductManagementLogic();
                 //Hacemos que al delegate se le asigne la funcion de actualizar la lista en memoria
-                productsLogic.OnProductInserted = Store.Instance.addNewProductInStore;
+                productManagementLogic.onProductInserted = Store.Instance.addNewProductInStore;
                 //Dentro de insertProductAsync() se ejecutaria el OnProductInserted
-                bool insertedProductStatus = productManagementLogic.insertProductAsync(newProduct);
-                return Ok(insertedProductStatus);
+                Product insertedProductStatus = await productManagementLogic.insertProductAsync(newProduct);                
+                return Ok( new {insertedProductStatus});
                 
             //501 son para NotImplemented o Excepciones Propias
             }catch (BussinessException ex){                                

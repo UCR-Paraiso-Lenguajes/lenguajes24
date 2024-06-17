@@ -133,8 +133,9 @@ export default function ModalDirection() {
         setErrors(newErrors);
         
         if(Object.keys(newErrors).length === 0){                        
-            console.log(form);            
             const purchaseNum = await sendCartDataToAPI(myCartInStorage);
+            console.log("Como envio el carrito con los productos ");
+            console.log(myCartInStorage);
             resetModal();//setteamos el modal o mandamos el resumen a la pagina            
             callAlertShop("success","Compra finalizada","El codigo de su compra es: " + purchaseNum);   
         }else{

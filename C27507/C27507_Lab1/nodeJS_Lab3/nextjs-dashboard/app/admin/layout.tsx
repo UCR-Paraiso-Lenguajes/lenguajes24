@@ -24,7 +24,8 @@ import VerifyComponent from '../global-components/verify_component';
     return (
       <html lang="en">        
         <body>
-            <VerifyComponent>{children}</VerifyComponent>
+            {/* <VerifyComponent>{children}</VerifyComponent> */}
+            {children}
             
         </body>
       </html>

@@ -1,7 +1,7 @@
 ﻿namespace MyStoreAPI.Models
 {
 
-    public struct Category{
+    public class Category{
 
         public int id {get; private set;}
         public string name {get; private set;}
