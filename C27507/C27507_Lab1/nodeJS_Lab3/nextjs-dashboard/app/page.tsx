@@ -51,9 +51,6 @@ function Page() {
         loadDataProductAPI();
     }, []);
 
-    console.log("Como recibo los productos desde la API: ");
-    console.log(products);    
-    console.log(categoryListFromStore);
 
     function getSearchParamsFromUrl(){
         const params = new URLSearchParams(window.location.search);

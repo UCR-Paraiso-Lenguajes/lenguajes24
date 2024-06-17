@@ -22,7 +22,6 @@ namespace MyStoreAPI.Models
                 price = this.price,
                 quantity = this.quantity,                
                 description = this.description,
-                category = this.category
             };
         }
     }

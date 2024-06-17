@@ -9,6 +9,8 @@ import { useRouter } from 'next/navigation';
 
 import { jwtDecode } from 'jwt-decode';
 import { CartShopAPI } from "../models-data/CartShopAPI";
+import { ProductWithoutCategoryAPI } from "../models-data/ProductWithoutCategoryAPI";
+import { CartShopWithoutCategoryAPI } from "../models-data/CartShopWithoutCategoryAPI";
 
 
 const { default: jwt_decode } = require("jwt-decode");
@@ -40,22 +42,11 @@ const { default: jwt_decode } = require("jwt-decode");
     }
 
     //POST Sale
-    export async function sendCartDataToAPI(data:CartShopAPI): Promise<string | null> {
-
+    export async function sendCartDataToAPI(data:any): Promise<string | null> {
+                
         let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
 
         let directionAPI = `${urlByReactEnviroment}/api/Cart`;
-
-        data.allProduct.forEach(product => {
-            delete product.category;
-        });
-
-        // console.log("En el fetch de comprar: ");
-        // console.log(data);
-        // console.log("JSON: ");
-        // console.log(JSON.stringify(data));        
-        
-
         //Especificacion POST
         let postConfig = {
             method: "POST",
@@ -87,8 +78,7 @@ const { default: jwt_decode } = require("jwt-decode");
         } catch (error) {
             throw new Error('Failed to POST data: '+ error);
         }        
-    }
-
+    }    
 
     export async function getRegisteredSalesFromAPI(data: any): Promise<string | RegisteredSaleReport | null> {
         //const router = useRouter();       
