@@ -28,7 +28,6 @@ import { ModalInsert } from '../../admin-components/modal-insert';
 
 // @ts-ignore
 const htmlToReactParser = new Parser();
-//const htmlToReactParser: { parse: (html: any) => any } = new Parser();
 
 
 export default function ProductsInfo(){

@@ -37,8 +37,7 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
     const [productName, setProductName] = useState('');
     const [productPrice, setProductPrice] = useState('');
     const [description, setDescription] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('');
-    //const [images, setImages] = useState<File | string | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState('');    
     const [defaultImage, setDefaultImage] = useState<string>("");
 
     const [error, setError] = useState('');
@@ -100,8 +99,7 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
     
     if (defaultImage === ''|| !defaultImage) {
         //Si no se asigna una imagen (es nulo), se usa una por defect
-        setDefaultImage("./img/not_found_img.jpg");        
-        console.log(defaultImage);
+        setDefaultImage("./img/not_found_img.jpg");                
     }
             
     const newProduct : ProductAPI = {
@@ -117,8 +115,7 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
    
     deleteNewProductInfo();
         
-    try{
-        console.log(newProduct);
+    try{        
         let dataFromStore = await insertNewProductInDBAsync(newProduct);
 
         if (typeof dataFromStore  === "boolean" && dataFromStore !== null){

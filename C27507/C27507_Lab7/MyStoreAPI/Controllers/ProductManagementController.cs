@@ -16,7 +16,7 @@ namespace MyStoreAPI.Controllers
     public class ProductManagementController : ControllerBase{
 
         [HttpPost("product/insert")]
-        // [Authorize(Roles = "Admin, Operator")]
+        [Authorize(Roles = "Admin, Operator")]
         public async Task<IActionResult> InsertNewProductInStoreAsync([FromBody] Product newProduct){
             try{
                 Console.WriteLine(newProduct.id);

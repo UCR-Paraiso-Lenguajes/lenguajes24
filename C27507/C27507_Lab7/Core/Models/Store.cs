@@ -160,9 +160,12 @@ namespace MyStoreAPI.Models
                 return products;
         }
 
+
+        //Esta funcion es solo para generar ventas automaticas a lo largo de 2 semanas
+        //por si se necesitan pruebas de algo. Por eso esta comentada mas arriba
         public void mockDataAsync(IEnumerable<Product> productsFromDB){
 
-            //Generamos productos
+            //Generamos ventas
             //var productsFromDB = Store.Products;            
             Random rand = new Random();            
             SaleLogic saleLogic = new SaleLogic();           
