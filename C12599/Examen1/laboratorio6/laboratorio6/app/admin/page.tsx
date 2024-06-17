@@ -54,7 +54,11 @@ const Admin: React.FC = () => {
         const decodedToken: any = jwtDecode(data.token);
         const roles = decodedToken?.roles || [];
 
+<<<<<<< HEAD
         if (roles.includes('Admin')) {
+=======
+        if (!roles.includes('Admin')) {
+>>>>>>> 05be98cb1201a9092cb811e9868223b63e1937f6
           setFormData({
             ...formData,
             errorMessage: 'Los usuarios sin el rol Admin no pueden iniciar sesión.'

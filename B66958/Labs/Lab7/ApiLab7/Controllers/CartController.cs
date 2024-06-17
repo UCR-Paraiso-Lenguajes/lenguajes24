@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiLab7.Controllers
 {
@@ -8,7 +9,8 @@ namespace ApiLab7.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        [HttpPost("cart")]
+        [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateCartAsync([FromBody] Cart cart)
         {
             if (!ModelState.IsValid)

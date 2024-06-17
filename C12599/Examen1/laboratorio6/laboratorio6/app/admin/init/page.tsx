@@ -1,4 +1,8 @@
 'use client';
+<<<<<<< HEAD
+=======
+// pages/admin/init.tsx
+>>>>>>> 05be98cb1201a9092cb811e9868223b63e1937f6
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, ShoppingCart } from 'react-feather';
@@ -74,20 +78,21 @@ const Init: React.FC = () => {
 
   return (
     <VerifyComponent>
-      <div className="container-fluid">
-        <Navbar bg="light" expand="lg">
-          <Navbar.Toggle onClick={toggleMenu} aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav" className={isOpen ? 'show' : ''}>
-            <Nav className="flex-column mt-4">
-              <CustomAccordionItem
-                title="Panel Administracion"
-                href="/ventas"
-                icon={<ShoppingCart />}
-              />
-            </Nav>
-          </Navbar.Collapse>
-        </Navbar>
-      </div>
+    
+    <div className="container-fluid">
+      <Navbar bg="light" expand="lg">
+        <Navbar.Toggle onClick={toggleMenu} aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav" className={isOpen ? 'show' : ''}>
+          <Nav className="flex-column mt-4">
+            <CustomAccordionItem
+              title="Panel Administracion"
+              href="/ventas"
+              icon={<ShoppingCart />}
+            />
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+    </div>
     </VerifyComponent>
   );
 };

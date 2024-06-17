@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using MyStoreAPI.Business;
 using MyStoreAPI.DB;
 using MyStoreAPI.Models;
+
+//JWT Authentication
+using Microsoft.AspNetCore.Authorization;
 namespace MyStoreAPI.Controllers
 {
 
@@ -14,9 +17,10 @@ namespace MyStoreAPI.Controllers
     public class StoreController : ControllerBase{
 
         private StoreLogic storeLogic = new StoreLogic();
-        
-        //Enviar la tienda
+                
+        //[HttpGet, Authorize(Roles = "Customer,Admin")]
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult getStore(){                        
             return Ok(Store.Instance);            
         }                
