@@ -39,8 +39,9 @@ public class WebSocketService
         }
     }
 
-    public void SendMessage(string message)
+    public void SendMessage<T>(T message)
     {
-        BroadcastMessage(message);
+        var jsonMessage = JsonSerializer.Serialize(message);
+        BroadcastMessage(jsonMessage);
     }
 }
