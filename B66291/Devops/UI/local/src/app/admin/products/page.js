@@ -129,7 +129,6 @@ const Products = () => {
                 variant="dark"
                 size="sm"
                 style={{ backgroundColor: "black", color: "white" }}
-                onClick={eliminarProducto}
               >
                 Eliminar Productos
               </Button>
