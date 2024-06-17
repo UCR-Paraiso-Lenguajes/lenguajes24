@@ -4,7 +4,6 @@ import { Carousel } from 'react-bootstrap';
 import Link from 'next/link';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { url } from 'inspector';
 const URL = process.env.NEXT_PUBLIC_API;
 
 const Page = () => {
@@ -20,7 +19,7 @@ const Page = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(URL + 'https://localhost:7043/api/Store');
+      const response = await fetch('https://localhost:7043/api/store');
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -69,76 +68,76 @@ const Page = () => {
     if (!Array.isArray(selectedCategories)) {
       throw new Error('selectedCategories debe ser un array');
     }
-  
+
     const baseUrl = 'https://localhost:7043/api/Products';
     const queryParams = selectedCategories.map(id => `categoryIDs=${id}`).join('&');
     return `${baseUrl}?${queryParams}&search=null`;
   };
-  
+
   const handleCategoryChange = async (categoryId) => {
     const { selectedCategories } = state;
-  
+
     let updatedCategories = [];
-  
+
     // Verificamos si la categoría es la de "Todos Productos"
     if (categoryId === 'all') {
-        // Si es "Todos Productos" y ya estaba seleccionada, la deseleccionamos
-        if (selectedCategories.length === state.categories.length) {
-            updatedCategories = [];
-        } else {
-            // Si no estaba seleccionada, la seleccionamos junto con todas las demás categorías
-            updatedCategories = state.categories.map(category => category.id);
-        }
+      // Si es "Todos Productos" y ya estaba seleccionada, la deseleccionamos
+      if (selectedCategories.length === state.categories.length) {
+        updatedCategories = [];
+      } else {
+        // Si no estaba seleccionada, la seleccionamos junto con todas las demás categorías
+        updatedCategories = state.categories.map(category => category.id);
+      }
     } else {
-        // Si no es "Todos Productos", manejamos la selección de categorías normalmente
-        const index = selectedCategories.indexOf(categoryId);
-        if (index === -1) {
-            updatedCategories = [...selectedCategories, categoryId];
-        } else {
-            updatedCategories = selectedCategories.filter(id => id !== categoryId);
-        }
+      // Si no es "Todos Productos", manejamos la selección de categorías normalmente
+      const index = selectedCategories.indexOf(categoryId);
+      if (index === -1) {
+        updatedCategories = [...selectedCategories, categoryId];
+      } else {
+        updatedCategories = selectedCategories.filter(id => id !== categoryId);
+      }
     }
-  
+
     // Actualizamos el estado con las categorías seleccionadas
     setState({
-        ...state,
-        selectedCategories: updatedCategories,
+      ...state,
+      selectedCategories: updatedCategories,
     });
-  
+
     // Construimos la URL con todas las categorías seleccionadas
     const url = buildUrl(updatedCategories);
-  
+
     // Realizamos el fetch solo si hay categorías seleccionadas
     if (updatedCategories.length > 0) {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error('Failed to fetch products');
-        }
-        const json = await response.json();
-        const productList = json || [];
-  
-        // Actualizamos el estado con la lista de productos y las categorías seleccionadas
-        setState({
-            ...state,
-            productList,
-            selectedCategories: updatedCategories,
-        });
-        
-        // Actualizar la URL del navegador para reflejar la búsqueda
-        const searchParams = new URLSearchParams({ categoryIDs: updatedCategories.join(',') });
-        window.history.pushState(null, '', `${window.location.pathname}?${searchParams.toString()}`);
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      const json = await response.json();
+      const productList = json || [];
+
+      // Actualizamos el estado con la lista de productos y las categorías seleccionadas
+      setState({
+        ...state,
+        productList,
+        selectedCategories: updatedCategories,
+      });
+
+      // Actualizar la URL del navegador para reflejar la búsqueda
+      const searchParams = new URLSearchParams({ categoryIDs: updatedCategories.join(',') });
+      window.history.pushState(null, '', `${window.location.pathname}?${searchParams.toString()}`);
     } else {
-        // Si no hay categorías seleccionadas, limpiamos la lista de productos
-        setState({
-            ...state,
-            productList: [],
-        });
-        // Si no hay categorías seleccionadas, limpiamos la URL
-        window.history.pushState(null, '', window.location.pathname);
+      // Si no hay categorías seleccionadas, limpiamos la lista de productos
+      setState({
+        ...state,
+        productList: [],
+      });
+      // Si no hay categorías seleccionadas, limpiamos la URL
+      window.history.pushState(null, '', window.location.pathname);
     }
-};
-  
-  
+  };
+
+
 
   const handleSearch = async (event) => {
     if (!event || typeof event !== 'object' || !event.hasOwnProperty('target') || typeof event.target !== 'object') {
@@ -149,7 +148,7 @@ const Page = () => {
     const { selectedCategories } = state;
 
     // Construimos la URL con las categorías seleccionadas y la búsqueda
-    let url = URL + 'api/Products';
+    let url = 'https://localhost:7043/api/Products';
     const queryParams = [];
 
     // Agregamos las categorías seleccionadas a los parámetros de la URL
@@ -176,52 +175,50 @@ const Page = () => {
     }
     const productList = await response.json();
 
-    // Actualizamos el estado con la lista de productos
     setState((prevState) => ({
       ...prevState,
       productList,
     }));
 
-    // Actualizar la URL del navegador para reflejar la búsqueda
     const searchParams = new URLSearchParams({ categoryIDs: selectedCategories.join(','), search: query || 'null' });
     window.history.pushState(null, '', `${window.location.pathname}?${searchParams.toString()}`);
   };
 
   const renderCategories = () => {
-  const { categories } = state;
+    const { categories } = state;
 
-  return (
-    <div>
-      {/* Checkbox para "Todos Productos" */}
-      <div key="all">
-        <input
-          type="checkbox"
-          id="all"
-          value="all"
-          onChange={() => handleCategoryChange('all')}
-          checked={state.selectedCategories.length === categories.length}
-          style={{ marginRight: '5px' }}
-        />
-        <label htmlFor="all" style={{ marginRight: '10px' }}>Todos Productos</label>
-      </div>
-
-      {/* Checkbox para cada categoría */}
-      {categories.map(category => (
-        <div key={category.id}>
+    return (
+      <div>
+        {/* Checkbox para "Todos Productos" */}
+        <div key="all">
           <input
             type="checkbox"
-            id={`category-${category.id}`}
-            value={category.id}
-            onChange={() => handleCategoryChange(category.id)}
-            checked={state.selectedCategories.includes(category.id)}
+            id="all"
+            value="all"
+            onChange={() => handleCategoryChange('all')}
+            checked={state.selectedCategories.length === categories.length}
             style={{ marginRight: '5px' }}
           />
-          <label htmlFor={`category-${category.id}`} style={{ marginRight: '10px' }}>{category.name}</label>
+          <label htmlFor="all" style={{ marginRight: '10px' }}>Todos Productos</label>
         </div>
-      ))}
-    </div>
-  );
-};
+
+        {/* Checkbox para cada categoría */}
+        {categories.map(category => (
+          <div key={category.id}>
+            <input
+              type="checkbox"
+              id={`category-${category.id}`}
+              value={category.id}
+              onChange={() => handleCategoryChange(category.id)}
+              checked={state.selectedCategories.includes(category.id)}
+              style={{ marginRight: '5px' }}
+            />
+            <label htmlFor={`category-${category.id}`} style={{ marginRight: '10px' }}>{category.name}</label>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
 
   const renderProducts = () => {

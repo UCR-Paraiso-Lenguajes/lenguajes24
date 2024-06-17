@@ -7,8 +7,8 @@ namespace storeapi.Models
     public struct Category
     {
 
-        private int _id;
-        private string _name;
+        public  int _id;
+        public  string _name;
 
         public Category(int id, string name)
         {

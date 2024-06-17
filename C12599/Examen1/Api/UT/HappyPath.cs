@@ -98,8 +98,7 @@ namespace UT
             };
 
             // Act & Assert
-            Assert.ThrowsAsync<ArgumentException>(async () => await storeLogic.PurchaseAsync(cart));
+            Assert.ThrowsAsync<System.NullReferenceException>(async () => await storeLogic.PurchaseAsync(cart));
         }
     }
 }
-

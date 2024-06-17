@@ -1,7 +1,9 @@
+// pages/admin/index.tsx (login page)
 'use client';
 import React, { useState } from 'react';
 import '../ui/globals.css';
 import 'bootstrap/dist/css/bootstrap.css';
+import { jwtDecode }from 'jwt-decode';
 
 const Admin: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +15,8 @@ const Admin: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e || !e.target || typeof e.target.name !== 'string' || typeof e.target.value !== 'string') {
       throw new Error('Los argumentos son inválidos.');
-    }    const { name, value } = e.target;
+    }
+    const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value
@@ -24,7 +27,7 @@ const Admin: React.FC = () => {
     if (!e || !e.preventDefault || !e.currentTarget || typeof e.currentTarget.checkValidity !== 'function') {
       throw new Error('Los argumentos son inválidos.');
     }
-      
+
     e.preventDefault();
     const { username, password } = formData;
 
@@ -46,15 +49,28 @@ const Admin: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        // Guarda el token en sessionStorage
-        sessionStorage.setItem('authToken', data.token);
-        // Redirigir al usuario a la página de administración
-        window.location.href = '/admin/init';
+
+        // Decode the token to extract roles
+        const decodedToken: any = jwtDecode(data.token);
+        const roles = decodedToken?.roles || [];
+
+        if (roles.includes('Admin')) {
+          setFormData({
+            ...formData,
+            errorMessage: 'Los usuarios sin el rol Admin no pueden iniciar sesión.'
+          });
+        } else {
+          // Store the token in sessionStorage
+          sessionStorage.setItem('authToken', data.token);
+
+          // Redirect the user to the admin page
+          window.location.href = '/admin/init';
+        }
       } else {
         const errorData = await response.json();
         setFormData({
           ...formData,
-          errorMessage: errorData.message || 'Error en la autenticación'
+          errorMessage: errorData.message || 'Usuario o contraseña incorrectos'
         });
       }
     } else {

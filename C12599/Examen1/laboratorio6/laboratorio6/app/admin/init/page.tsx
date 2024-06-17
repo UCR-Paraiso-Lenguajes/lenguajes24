@@ -1,5 +1,5 @@
-'use client'
-import { useState } from 'react';
+'use client';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, ShoppingCart } from 'react-feather';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -40,7 +40,7 @@ const CustomAccordionItem: React.FC<CustomAccordionItemProps> = ({ title, href, 
             </Link>
           </div>
           <div>
-            <Link href={href || '#'}>
+            <Link href="/products"> {/* Enlace a la página de productos */}
               <button className="btn btn-secondary btn-sm btn-block">
                 Ir a Productos
               </button>
@@ -54,10 +54,23 @@ const CustomAccordionItem: React.FC<CustomAccordionItemProps> = ({ title, href, 
 
 const Init: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasToken, setHasToken] = useState(true);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('authToken');
+    if (!token) {
+      setHasToken(false);
+      window.location.href = '/admin';
+    }
+  }, []);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+
+  if (!hasToken) {
+    return null; // Render nothing if there's no token
+  }
 
   return (
     <VerifyComponent>

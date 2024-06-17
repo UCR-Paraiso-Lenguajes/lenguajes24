@@ -25,46 +25,41 @@ namespace storeapi.Controllers
             UserAccountSeeder.SeedUsers();
         }
 
+        private bool IsDevelopmentEnvironment => hostEnvironment.EnvironmentName == "Development";
+
         [HttpPost("login")]
         [AllowAnonymous]
         public IActionResult Login([FromBody] LoginModel user)
         {
-            if (user == null)
-                return BadRequest("Invalid client request");
-            if (string.IsNullOrEmpty(user.userName) || string.IsNullOrEmpty(user.userPassword))
+            if (user == null || string.IsNullOrEmpty(user.userName) || string.IsNullOrEmpty(user.userPassword))
                 return BadRequest("Invalid client request");
 
-            if (hostEnvironment.IsDevelopment())
+            if (IsDevelopmentEnvironment)
             {
                 var existingUser = UserAccount.AllUsersData.FirstOrDefault(u => 
                     u.UserName == user.userName && u.UserPassword == user.userPassword);
 
                 if (existingUser != null)
                 {
-                    // Crear las reclamaciones del usuario
                     var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, existingUser.UserName)
                     };
                     claims.AddRange(existingUser.UserRoles);
 
-                    // Generar la clave secreta y las credenciales de inicio de sesión
                     var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
                     var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
-                    // Configurar las opciones del token JWT
                     var tokenOptions = new JwtSecurityToken(
                         issuer: "https://localhost:7043",
                         audience: "https://localhost:7043",
                         claims: claims,
-                        expires: DateTime.Now.AddMinutes(1),
+                        expires: DateTime.Now.AddDays(30),
                         signingCredentials: signinCredentials
                     );
 
-                    // Generar el token JWT
                     var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
-                    // Devolver el token como respuesta
                     return Ok(new AuthenticatedResponse { Token = tokenString });
                 }
             }

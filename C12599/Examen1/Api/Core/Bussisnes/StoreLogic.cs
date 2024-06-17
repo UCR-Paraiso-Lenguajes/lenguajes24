@@ -9,7 +9,7 @@ namespace storeapi.Bussisnes
 {
     public sealed class StoreLogic
     {
-       public StoreLogic()
+        public StoreLogic()
         {
         }
         private static Random random = new Random();
@@ -25,8 +25,8 @@ namespace storeapi.Bussisnes
             if (cart.ProductIds == null || cart.ProductIds.Count == 0)
                 throw new ArgumentException("Cart must contain at least one product.", nameof(cart.ProductIds));
 
-            if (string.IsNullOrWhiteSpace(cart.Address))
-                throw new ArgumentException("Address must be provided.", nameof(cart.Address));
+            AddressValidator addressValidator = new AddressValidator();
+            addressValidator.Validate(cart.Address);
 
             var products = Store.Instance.Products;
             var taxPercentage = Store.Instance.TaxPercentage;
@@ -34,6 +34,7 @@ namespace storeapi.Bussisnes
             IEnumerable<Product> matchingProducts = products.Where(p => cart.ProductIds.Contains(p.id.ToString())).ToList();
 
             List<Product> shadowCopyProducts = matchingProducts.Select(p => (Product)p.Clone()).ToList();
+            
 
             foreach (var product in shadowCopyProducts)
             {
@@ -53,7 +54,7 @@ namespace storeapi.Bussisnes
 
             var sale = new Sale(shadowCopyProducts, cart.Address, purchaseAmount, paymentMethodType);
 
-        
+
             CartSave cartSave = new CartSave();
             await cartSave.SaveSaleAndItemsToDatabaseAsync(sale);
 
