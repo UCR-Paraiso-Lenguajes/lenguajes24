@@ -44,6 +44,7 @@ public class Db
                 + "CONSTRAINT fkSale FOREIGN KEY (sale_id) REFERENCES sales(id));",
             "CREATE TABLE sinpe_confirmation_number (id INT PRIMARY KEY, confirmation_number VARCHAR(20), "
                 + "CONSTRAINT fkSinpeSaleid FOREIGN KEY (id) REFERENCES sales(id))",
+                "CREATE TABLE messages (id CHAR(36) PRIMARY KEY, message VARBINARY(MAX) NOT NULL)"
         };
 
         using (SqlConnection connection = new SqlConnection(Db.Instance.DbConnectionString))
