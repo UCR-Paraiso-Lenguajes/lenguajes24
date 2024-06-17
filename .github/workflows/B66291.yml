@@ -4,6 +4,10 @@ name: B66291
 
 on:
   push:
+    branches:  
+      "B66291" 
+      "lab13_b66291"
+  pull_request:
     branches: [ "B66291" ]
     
 jobs:
