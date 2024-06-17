@@ -79,6 +79,8 @@ builder.Services.Configure<ApiLab7.CredentialOptions>(
     builder.Configuration.GetSection("Credentials")
 );
 
+builder.Services.AddSingleton(new ApiLab7.WebSocketService("ws://0.0.0.0:8181"));
+
 var app = builder.Build();
 
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
