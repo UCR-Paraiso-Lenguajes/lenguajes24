@@ -6,22 +6,25 @@ import Navbar from "../../components/Navbar";
 
 const Login = () => {
 
-  //manejo de existencia de local storage (navbar)
-
-  const initialState = {  
+  const initialState = {
     productosCarrusel: [],
     impVentas: 13,
-    cart: { productos: [], subtotal: 0, total: 0, direccionEntrega: '', metodosPago : 0, ordenCompra : 0},
+    cart: { productos: [], subtotal: 0, total: 0, direccionEntrega: '', metodosPago: 0, ordenCompra: 0 },
     necesitaVerificacion: false,
   };
 
-  const [tienda, setTienda] = useState(() => {
-    const storedTienda = localStorage.getItem("tienda");
-    return storedTienda ? JSON.parse(storedTienda) : initialState;
-  });
+  const [tienda, setTienda] = useState(initialState);
 
   useEffect(() => {
-    if (!localStorage.getItem("tienda")) {
+    const storedTienda = localStorage.getItem("tienda");
+    if (storedTienda) {
+      try {
+        setTienda(JSON.parse(storedTienda));
+      } catch (error) {
+        console.error("Error parsing localStorage data:", error);
+        setTienda(initialState);
+      }
+    } else {
       setTienda(initialState);
     }
   }, []);
@@ -33,7 +36,7 @@ const Login = () => {
   const procesarForm = async (e) => {
     e.preventDefault();
     if (!username || !password) {
-      setError("Complete la información por favor");
+      setError('Complete la información por favor.');
     } else {
       try {
         const response = await fetch("https://localhost:7013/api/auth/login", {
@@ -50,13 +53,13 @@ const Login = () => {
         if (response.ok) {
           const data = await response.json();
           const token = data.token;
-          await sessionStorage.setItem("token", token);
+          sessionStorage.setItem("token", token);
           window.location.href = "/admin/products";
         } else {
-          setError("Credenciales incorrectas");
+          setError('Credenciales incorrectas ingresadas.');
         }
       } catch (error) {
-        setError("Ocurrió un error al procesar la solicitud");
+        setError('Ocurrió un error al procesar la solicitud.');
       }
     }
   };
@@ -68,28 +71,26 @@ const Login = () => {
       </div>
       <div className="form_login">
         <form onSubmit={procesarForm}>
-          <div>
-            <label htmlFor="email">Usuario:</label>
-            <input
-              type="text"
-              name="username"
-              className="form-control"
-              placeholder="Ingresa tu usuario"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div>
-            <label htmlFor="password">Contraseña:</label>
-            <input
-              type="password"
-              name="password"
-              className="form-control"
-              placeholder="Ingresa tu contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+          <label htmlFor="username-input">Nombre Usuario:</label>
+          <input
+            type="text"
+            id="username-input"
+            name="username"
+            className="form-control"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="username"
+          />
+          <label htmlFor="password-input">Contraseña:</label>
+          <input
+            type="password"
+            id="password-input"
+            name="password"
+            className="form-control"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+          />
           {error && <p className="error">{error}</p>}
           <div>
             <button className="btnAsignar" type="submit">

@@ -27,7 +27,7 @@ namespace core.Business
             var taxPercentage = Store.Instance.TaxPercentage;
 
             IEnumerable<Product> matchingProducts = products.Where(p => cart.ProductIds.Contains(p.id.ToString())).ToList();
-            List<Product> shadowCopyProducts = matchingProducts.Select(p => (Product)p.Clone()).ToList();
+            IEnumerable<Product> shadowCopyProducts = matchingProducts.Select(p => (Product)p.Clone()).ToList();
 
             decimal purchaseAmount = 0;
 

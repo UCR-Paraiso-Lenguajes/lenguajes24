@@ -6,7 +6,6 @@ using core.Models;
 using System.Security.Cryptography;
 namespace core.DataBase;
 
-
 public sealed class StoreDb
 {
     public static void CrearDatosSync()
@@ -36,7 +35,8 @@ public sealed class StoreDb
                 );
                 CREATE TABLE IF NOT EXISTS paymentMethod (
                     id INT PRIMARY KEY,
-                    payment_type VARCHAR(50)
+                    payment_type VARCHAR(50),
+                    estado INT
                 );
                 CREATE TABLE IF NOT EXISTS sales (
                     purchase_number VARCHAR(30) NOT NULL PRIMARY KEY,
@@ -60,9 +60,9 @@ public sealed class StoreDb
                         command.ExecuteNonQuery();
                     }
 
-                    _storeDb.agregarProductos(); //ya
-                    _storeDb.agregarMetodosPago(); //ya
-                    _storeDb.InsertarVentasPasadas(); //ya
+                    _storeDb.agregarProductos();
+                    _storeDb.agregarMetodosPago();
+                    _storeDb.InsertarVentasPasadas();
 
                     transaction.Commit();
                 }
@@ -106,8 +106,8 @@ public sealed class StoreDb
                     foreach (var product in products)
                     {
                         string insertQuery = @"
-                INSERT INTO products (name, description, price, imageURL, pcant, idCat) 
-                VALUES (@name, @description, @price, @imageURL, @pcant, @idCat)";
+                        INSERT INTO products (name, description, price, imageURL, pcant, idCat) 
+                        VALUES (@name, @description, @price, @imageURL, @pcant, @idCat)";
 
                         using (var command = new MySqlCommand(insertQuery, connection, transaction))
                         {
@@ -160,7 +160,6 @@ public sealed class StoreDb
                             pcant = reader.GetInt32(reader.GetOrdinal("pcant")),
                             category = cat.obtenerCategoria(reader.GetInt32(reader.GetOrdinal("idCat"))),
                         });
-
                     }
                 }
             }
@@ -169,7 +168,7 @@ public sealed class StoreDb
         return productList;
     }
 
-    internal void agregarMetodosPago()
+    internal void agregarMetodosPago() //debe tener un estado para habilitarse o desabilitars
     {
         using (var connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
         {
@@ -178,19 +177,33 @@ public sealed class StoreDb
             using (var insertCommand = connection.CreateCommand())
             {
                 insertCommand.CommandText = @"
-                INSERT INTO paymentMethod (id, payment_type)
-                VALUES (@id, @payment_type);";
+                INSERT INTO paymentMethod (id, payment_type, estado)
+                VALUES (@id, @payment_type, @estado);";
 
                 insertCommand.Parameters.AddWithValue("@id", 0);
                 insertCommand.Parameters.AddWithValue("@payment_type", "Cash");
+                insertCommand.Parameters.AddWithValue("@estado", 1);
                 insertCommand.ExecuteNonQuery();
 
                 insertCommand.Parameters.Clear();
                 insertCommand.Parameters.AddWithValue("@id", 1);
                 insertCommand.Parameters.AddWithValue("@payment_type", "Sinpe");
+                insertCommand.Parameters.AddWithValue("@estado", 1); 
                 insertCommand.ExecuteNonQuery();
             }
         }
+    }
+
+    public int ExtraerIDMax()
+    {
+        IEnumerable<Product> pList = ExtraerProductosDB();
+
+        if (pList != null && pList.Any())
+        {
+            int maxId = pList.Max(p => p.id);
+            return maxId + 1;
+        }
+        return 1;
     }
 
     internal void InsertarVentasPasadas()
@@ -239,7 +252,7 @@ public sealed class StoreDb
                 insertCommand.Parameters.AddWithValue("@payment_type", (int)sale.PaymentMethod);
                 insertCommand.ExecuteNonQuery();
 
-                insertCommand.Parameters.Clear(); 
+                insertCommand.Parameters.Clear();
 
                 //inserta linea de venta1
                 insertCommand.CommandText = @"
@@ -287,7 +300,7 @@ public sealed class StoreDb
                 VALUES (@purchase_date, @total, @payment_type, @purchase_number);";
 
                 insertCommand.Parameters.AddWithValue("@purchase_number", sale.PurchaseNumber);
-                insertCommand.Parameters.AddWithValue("@purchase_date", new DateTime(2024, 6, 4)); 
+                insertCommand.Parameters.AddWithValue("@purchase_date", new DateTime(2024, 6, 4));
                 insertCommand.Parameters.AddWithValue("@total", sale.Amount);
                 insertCommand.Parameters.AddWithValue("@payment_type", (int)sale.PaymentMethod);
                 insertCommand.ExecuteNonQuery();
@@ -339,7 +352,7 @@ public sealed class StoreDb
                 VALUES (@purchase_date, @total, @payment_type, @purchase_number);";
 
                 insertCommand.Parameters.AddWithValue("@purchase_number", sale.PurchaseNumber);
-                insertCommand.Parameters.AddWithValue("@purchase_date", new DateTime(2024, 6, 4)); 
+                insertCommand.Parameters.AddWithValue("@purchase_date", new DateTime(2024, 6, 4));
                 insertCommand.Parameters.AddWithValue("@total", sale.Amount);
                 insertCommand.Parameters.AddWithValue("@payment_type", (int)sale.PaymentMethod);
                 insertCommand.ExecuteNonQuery();

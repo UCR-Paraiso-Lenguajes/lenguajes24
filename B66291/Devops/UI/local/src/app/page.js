@@ -6,7 +6,7 @@ import Producs from '../components/Producs';
 import Carousel from 'react-bootstrap/Carousel';
 import { Dropdown } from 'react-bootstrap';
 
-export default function Home() {
+export default function Home() { 
 
   //cart
   const initialState = {
@@ -55,12 +55,8 @@ export default function Home() {
 
   const [selectedCategoryId, setSelectedCategoryId] = useState();
   const [previousCategoryId, setPreviousCategoryId] = useState();
-
   const [productList, setProductList] = useState([]);
-  const [tienda, setTienda] = useState(() => {
-    const storedTienda = localStorage.getItem('tienda');
-    return storedTienda ? JSON.parse(storedTienda) : initialState;
-  });
+  const [tienda, setTienda] = useState(initialState);
   const [index, setIndex] = useState(0);
 
   //use effect
@@ -77,6 +73,20 @@ export default function Home() {
   useEffect(() => {
     setPreviousCategoryId(selectedCategoryId);
   }, [selectedCategoryId]);
+
+  useEffect(() => {
+    if (typeof localStorage !== 'undefined') {
+      const storedData = localStorage.getItem('tienda');
+      if (storedData) {
+        try {
+          const parsedData = JSON.parse(storedData);
+          setTienda(parsedData);
+        } catch (error) {
+          console.error('Error al parsear datos de localStorage:', error);
+        }
+      }
+    }
+  }, []);
 
 
   const getCategoryName = (categoryId) => {
@@ -127,14 +137,13 @@ export default function Home() {
         throw new Error('Failed to fetch data');
       }
       const json = await response.json();
-      if(selectedCategoryId === undefined){ 
+      if (selectedCategoryId === undefined) { 
         setProductList(json); 
       }
     } catch (error) {
-      throw new error('Error while fetching data:', error);
+      throw new Error('Error while fetching data:', error);
     }
   };
-
   const ControlledCarousel = ({ productListApi, agregarProducto }) => {
 
     if(productListApi == undefined){

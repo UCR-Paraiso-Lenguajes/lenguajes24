@@ -21,7 +21,10 @@ namespace geekstore_api.Controllers
             {
                 throw new ArgumentNullException("El carrito no se no existe", nameof(cart));
             }
-
+            //validacion de direccion en API
+            if(cart.Address == null){
+                throw new ArgumentNullException("La direccion no se encuentra definida para la compra", nameof(cart));
+            }
             var sale = await store.PurchaseAsync(cart);
             var numeroCompra = sale.PurchaseNumber;
             var response = new { numeroCompra };

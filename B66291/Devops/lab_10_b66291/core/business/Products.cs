@@ -136,7 +136,7 @@ namespace core.Business
 
         public List<Product> ObtenerProductosFiltrados(int idCat)
         {
-            if (idCat < 1)
+            if (idCat <= 0)
             {
                 throw new ArgumentException("Id de categoría debe ser mayor que cero.");
             }

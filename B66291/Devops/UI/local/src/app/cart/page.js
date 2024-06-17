@@ -1,66 +1,72 @@
 "use client"
 import React, { useState, useEffect } from "react";
 import "../../styles/cart.css";
-import "bootstrap/dist/css/bootstrap.min.css"; 
+import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from '../../components/Navbar';
 
-const Cart = () => {//validaciones
+const Cart = () => {
 
-const [cartData, setCartData] = useState(undefined);
+  const [cartData, setCartData] = useState(undefined);
 
-useEffect(() => {
-    const storedData = localStorage.getItem('tienda');   
+  useEffect(() => {
+    const storedData = localStorage.getItem('tienda');
     const dataObject = JSON.parse(storedData);
     setCartData(dataObject);
-}, []);
+  }, []);
 
-useEffect(() => {
+  useEffect(() => {
     if (cartData) {
       localStorage.setItem('tienda', JSON.stringify(cartData));
     }
-}, [cartData]);
+  }, [cartData]);
 
-function borrarProducto(item){
+  function borrarProducto(item) {
+    if(item == null){
+      throw new Error("El objeto a comprar se encuentra vacio")
+    }
     const updatedProducts = cartData.cart.productos.filter(product => product.id !== item.id);
     const updatedCart = {
       ...cartData.cart,
       productos: updatedProducts,
-};
+    };
 
-let subtotalCalc = 0;
-let nuevoTotalCalc = 0;
+    let subtotalCalc = 0;
+    let nuevoTotalCalc = 0;
 
-updatedCart.productos.forEach((item) => {
-        subtotalCalc += item.price;
-});
+    updatedCart.productos.forEach((item) => {
+      if(item == null){
+        throw new Error("El objeto a comprar se encuentra vacio")
+      }
+      subtotalCalc += item.price;
+    });
 
-const nuevoSubtotal = subtotalCalc;
+    const nuevoSubtotal = subtotalCalc;
 
-updatedCart.productos.forEach(() => {
+    updatedCart.productos.forEach(() => {
       nuevoTotalCalc = nuevoSubtotal * (1 + cartData.impVentas / 100);
-});
+    });
 
-const updatedCartWithTotals = {
+    const updatedCartWithTotals = {
       ...updatedCart,
       subtotal: nuevoSubtotal,
       total: nuevoTotalCalc,
-};
+    };
 
-const updatedDataObject = { ...cartData, cart: updatedCartWithTotals };
+    const updatedDataObject = { ...cartData, cart: updatedCartWithTotals };
     setCartData(updatedDataObject);
-}
+  }
 
-const isCartEmpty = cartData ? cartData.cart.productos.length == 0 : true;
+  const isCartEmpty = cartData ? cartData.cart.productos.length == 0 : true;
 
- return (
+  return (
     <article>
       <div>
-        <Navbar cantidad_Productos={cartData ? cartData.cart.productos.length : 0}/>
+        <Navbar cantidad_Productos={cartData ? cartData.cart.productos.length : 0} />
       </div>
 
       {cartData && cartData.cart.productos.map((item) => (
         <div className="cart_box" key={item.id}>
-          
+
           <div className="cart_id">
             <span>{item.name}</span>
           </div>
@@ -80,39 +86,39 @@ const isCartEmpty = cartData ? cartData.cart.productos.length == 0 : true;
           </div>
           <button
             className="btn btn-danger mt-3"
-            onClick={() => borrarProducto(item)} 
+            onClick={() => borrarProducto(item)}
           >
             Eliminar producto
           </button>
         </div>
       ))}
-      
- {cartData && (
-    <div>
-        <div className="cart_box" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+
+      {cartData && (
+        <div>
+          <div className="cart_box" style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <div>
-                <span>Subtotal de la compra: {cartData.cart.subtotal}</span>
+              <span>Subtotal de la compra: {cartData.cart.subtotal}</span>
             </div>
+          </div>
         </div>
-    </div>
- )}
+      )}
 
- {cartData && (
-    <div>
-        <div className="cart_box" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      {cartData && (
+        <div>
+          <div className="cart_box" style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <div>
-                <span>Total de la compra: {(cartData.cart.total).toFixed(2)}</span>
+              <span>Total de la compra: {(cartData.cart.total).toFixed(2)}</span>
             </div>
+          </div>
         </div>
-    </div>
- )}
+      )}
 
 
- <div className="cart_box" style={{ flex: 1, justifyContent: 'flex-end' }}>
+      <div className="cart_box" style={{ flex: 1, justifyContent: 'flex-end' }}>
         <a
-          href="/direccion" 
+          href="/direccion"
           className="btn btn-info mt-3"
-          disabled={isCartEmpty} 
+          disabled={isCartEmpty}
         >
           Continuar con la compra
         </a>
@@ -122,5 +128,5 @@ const isCartEmpty = cartData ? cartData.cart.productos.length == 0 : true;
   );
 }
 
- export default Cart;
+export default Cart;
 

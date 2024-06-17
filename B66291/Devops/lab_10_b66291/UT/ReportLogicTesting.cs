@@ -25,12 +25,12 @@ namespace UT
             };
 
             var result = ReportLogic.TransformarDatos(sales);
-            Assert.AreEqual(2, result.Count());
+            Assert.That(result.Count(), Is.EqualTo(2));
         }
     
 
         [Test]
-        public void TransformarDatos_ArgumentosNulos()
+        public void TransformarDatos_ArgumentosVacios()
         {
             List<Report> sales = null;
             Assert.Throws<ArgumentNullException>(() => ReportLogic.TransformarDatos(sales));

@@ -53,7 +53,7 @@ public class ProductsTest
     }
 
     [Test]
-    public void FiltrarProductosCategoria_ValidInput_FilteredProductsAdded()
+    public void FiltrarProductosCategoria_FiltadoCorrectoCategoria()
     {
 
         int categoryId = 1;
@@ -70,7 +70,7 @@ public class ProductsTest
     }
 
     [Test]
-    public void ObtenerProductosFiltrados_ValidCategoryId_ReturnsFilteredProducts()
+    public void ObtenerProductosFiltrados_CategoriaCorrecta()
     {
 
         int categoryId = 1;
@@ -89,7 +89,7 @@ public class ProductsTest
     }
 
     [Test]
-    public void ObtenerProductosFiltrados_InvalidCategoryId_ThrowsArgumentException()
+    public void ObtenerProductosFiltrados_CategoriaIncorrecta()
     {
 
         int invalidCategoryId = -1;
@@ -98,7 +98,7 @@ public class ProductsTest
     }
 
     [Test]
-    public void FiltrarProductosBusqueda_ValidInput_ReturnsFilteredProducts()
+    public void FiltrarProductosBusqueda_BusquedaExitosa()
     {
         var categories = new Categories();
         var products = new List<Product>
@@ -121,7 +121,7 @@ public class ProductsTest
     }
 
     [Test]
-    public void FiltrarProductosBusqueda_NullIdCat_ThrowsArgumentException()
+    public void FiltrarProductosBusqueda_BusquedaFallida()
     {
         var products = new List<Product>();
         int[]? idCat = null;

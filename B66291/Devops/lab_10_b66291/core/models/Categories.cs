@@ -1,4 +1,4 @@
-﻿namespace core;
+﻿namespace core.Models;
 using System.Collections;
 //cambiar category struct en el nombre
 public class Categories{ 

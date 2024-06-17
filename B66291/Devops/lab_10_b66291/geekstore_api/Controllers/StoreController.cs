@@ -13,6 +13,7 @@ namespace geekstore_api.Controllers
     public class StoreController : ControllerBase
     {
         private readonly ProductCache productCache = new ProductCache();
+        
         [HttpGet("store")]
         [AllowAnonymous]
         public Store GetStore()
@@ -22,9 +23,9 @@ namespace geekstore_api.Controllers
 
         [HttpGet("store/products")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetSales(int idCat)
+        public IActionResult GetSales(int idCat)
         {
-            if (idCat < 1)
+            if (idCat <= 0)
             {
                 throw new ArgumentException("La categoria ingresada es invalida");
             }
@@ -45,7 +46,7 @@ namespace geekstore_api.Controllers
 
         [HttpGet("store/products/categories")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetCategories(string idSearch, string idSearchCat)
+        public IActionResult GetCategories(string idSearch, string idSearchCat)
         {
             if (string.IsNullOrWhiteSpace(idSearchCat))
             {
@@ -58,8 +59,7 @@ namespace geekstore_api.Controllers
             }
 
             int[] idSearchCatArray = idSearchCat.Split(',').Select(int.Parse).ToArray();
-
-            List<Product> filteredProductsList = productCache.ObtenerProductos(idSearchCatArray.GetHashCode());
+            List<Product> filteredProductsList = Store.Instance.generarCacheCategoria(idSearchCatArray.GetHashCode());
             Products prod = new Products();
             if (filteredProductsList == null)
             {
@@ -78,6 +78,23 @@ namespace geekstore_api.Controllers
             store.SetProducts(filteredProductsList);
 
             return Ok(store);
+        }
+
+        [HttpGet("store/pago")]
+        [AllowAnonymous]
+        public IActionResult GetMetodosPago(string idSearch, string idSearchCat)//recibe el estado y el nombre del metodo de pago
+        {
+            //llaman a metodo de clase logica que extrae de la base de datos 
+            //returna ese nuevo array 
+            return Ok();
+        }
+
+        [HttpPut("store/pago")]
+        [AllowAnonymous]
+        public IActionResult SetMetodosPago(string idSearch, string idSearchCat)//recibe el estado y el nombre del metodo de pago
+        {
+            //llama a metodo de clase db que recibe el estado y nombre y modifica en base de datos
+            return Ok();
         }
     }
 }

@@ -10,7 +10,7 @@ public class StoreDbTesting
     [SetUp]
     public void Setup()
     {
-         var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
+        var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
         Storage.Init(myDbtest);
         store = new StoreDb();
         StoreDb.CrearDatosSync();
@@ -19,8 +19,8 @@ public class StoreDbTesting
     [Test]
     public void ExtraerProductosDB_ListaNoVacia()
     {
-       
-        List<Product> productList;
+
+        IEnumerable<Product> productList;
         productList = StoreDb.ExtraerProductosDB();
         Assert.IsNotNull(productList);
         Assert.IsNotEmpty(productList);
@@ -31,8 +31,25 @@ public class StoreDbTesting
     {
         var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
         Storage.Init(myDbtest);
-        List<Product> productList;
+        IEnumerable<Product> productList;
         productList = StoreDb.ExtraerProductosDB();
         Assert.That(productList.Count, Is.EqualTo(12));
+    }
+
+    [Test]
+    public void ExtraerIDMax_ObtenerIDValido()
+    {
+        StoreDb storeDb = new StoreDb();
+        int maxId = storeDb.ExtraerIDMax();
+        Assert.IsTrue(maxId > 0); 
+    }
+
+    [Test]
+    public void ExtraerIDMax_ExtraerIDCorrecto()
+    {
+        IEnumerable<Product> productList = StoreDb.ExtraerProductosDB();
+        int maxIdInDb = productList.Max(p => p.id);
+        int nextId = store.ExtraerIDMax();
+        Assert.That(nextId, Is.EqualTo(maxIdInDb + 1));
     }
 }

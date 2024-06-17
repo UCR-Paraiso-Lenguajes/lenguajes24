@@ -1,37 +1,66 @@
-"use client"; 
-import "../../styles/pago.css"; 
-import "bootstrap/dist/css/bootstrap.min.css";
+"use client";
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
-import React, { useState } from 'react';
+import "../../styles/pago.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-const Pago = () => {//validaciones
-  const storedData = localStorage.getItem("tienda");
-  const dataObject = JSON.parse(storedData);
+const Pago = () => { //los metodos de pago deben venir de la consulta en base de datos no de local storage ahora
+  const [dataObject, setDataObject] = useState(null);
   const [pagoIngresado, setPagoIngresado] = useState(false);
 
-  function agregarPago(e){
+  useEffect(() => {
+    if (typeof localStorage !== 'undefined') {
+      const storedData = localStorage.getItem("tienda");
+      if (storedData) {
+        try {
+          const parsedData = JSON.parse(storedData);
+          setDataObject(parsedData);
+        } catch (error) {
+          console.error('Error al parsear datos de localStorage:', error);
+        }
+      }
+    }
+  }, []);
+
+  function agregarPago(e) {
     e.preventDefault();
-    
+
+    if (!dataObject) {
+      console.error('No se han cargado los datos de tienda correctamente.');
+      return;
+    }
+
+    let metodoPago = e.target.pago.value;
     let pago = 0; 
-    if(e.target.pago.value == "Efectivo"){
-      pago = 0;
-    }else{
+
+    if (metodoPago === "Sinpe Movil") {
       pago = 1;
     }
-  
+
     const updatedCart = {
       ...dataObject.cart,
-      metodosPago: pago, 
+      metodosPago: pago,
     };
+
     const updatedDataObject = { ...dataObject, cart: updatedCart };
-    localStorage.setItem("tienda", JSON.stringify(updatedDataObject));
-    setPagoIngresado(true);
+
+    try {
+      localStorage.setItem("tienda", JSON.stringify(updatedDataObject));
+      setPagoIngresado(true);
+    } catch (error) {
+      console.error('Error al guardar en localStorage:', error);
+      throw new Error('No se pudo guardar el método de pago.');
+    }
   };
+
+  if (!dataObject) {
+    return <p></p>;
+  }
 
   return (
     <article>
       <div>
-          <Navbar cantidad_Productos={dataObject.cart.productos.length}/>
+        <Navbar cantidad_Productos={dataObject.cart.productos.length} />
       </div>
       <div className="form_pago">
         <form onSubmit={agregarPago}>
@@ -64,11 +93,11 @@ const Pago = () => {//validaciones
           </button>
         </form>
         {pagoIngresado && (
-          <p className="infoPago" style={{fontSize: '0.8em'}}>Método de pago ingresado exitosamente.</p>
+          <p className="infoPago" style={{ fontSize: '0.8em' }}>Método de pago ingresado exitosamente.</p>
         )}
         <div className="cart_box">
           <a
-            href="/detalle" 
+            href="/detalle"
             className="btn btn-info mt-3"
           >
             Continuar con la compra

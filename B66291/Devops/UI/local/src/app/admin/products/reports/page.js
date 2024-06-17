@@ -19,7 +19,6 @@ const Reports = () => {
   const datePickerRef = useRef(undefined);
 
   useEffect(() => {
-
     const verificarFechaExpiracion = () => {
       const token = sessionStorage.getItem("token");
       if (!token) {
@@ -113,52 +112,59 @@ const Reports = () => {
         <div className="col-md-3">
           <Sidebar />
         </div>
-        <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4">
-          <div className="chart-title" style={{ marginBottom: '10px', marginLeft: '100px', marginTop: '10px' }}>Tabla de ventas diarias</div>
-          <Chart
-            chartType="Table"
-            loader={<div>Cargando tabla por favor espere</div>}
-            data={data}
-            options={{
-              titleTextStyle: { fontSize: 24, color: 'blue' },
-              showRowNumber: true,
-              cssClassNames: {
-                tableCell: 'google-chart-table-cell',
-                headerRow: 'google-chart-header-row',
-                tableRow: 'google-chart-table-row',
-                oddTableRow: 'google-chart-odd-table-row',
-                selectedTableRow: 'google-chart-selected-table-row',
-                hoverTableRow: 'google-chart-hover-table-row',
-                headerCell: 'google-chart-header-cell'
-              }
-            }}
-          />
-        </div>
-        <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4" >
-          <Chart
-            chartType="PieChart"
-            loader={<div>Cargando gráfico por favor espere</div>}
-            data={[headersForPieChart, ...dataForPieChart]}
-            options={{
-              title: 'Gráfico de ventas semanales',
-              titleTextStyle: { fontSize: 15 },
-              is3D: true,
-            }}
-          />
-        </div>
-        <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4" style={{ marginTop: '30px', marginLeft: '870px' }}>
-          <input
-            ref={datePickerRef}
-            type="text"
-            className="form-control datepicker-input text-center"
-            placeholder="Ingrese una fecha para mostar los reportes"
-            style={{
-              borderRadius: '5px',
-              padding: '10px',
-              fontSize: '16px',
-              borderColor: '#ced4da',
-              width: '350px'
-            }} />
+        <div className="col-md-9">
+          <div className="row">
+            <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4">
+              <div className="chart-title" style={{ marginBottom: '10px', marginTop: '10px' }}>
+                Tabla de ventas diarias
+              </div>
+              <Chart
+                chartType="Table"
+                loader={<div>Cargando tabla por favor espere</div>}
+                data={data}
+                options={{
+                  titleTextStyle: { fontSize: 24, color: 'blue' },
+                  showRowNumber: true,
+                  cssClassNames: {
+                    tableCell: 'google-chart-table-cell',
+                    headerRow: 'google-chart-header-row',
+                    tableRow: 'google-chart-table-row',
+                    oddTableRow: 'google-chart-odd-table-row',
+                    selectedTableRow: 'google-chart-selected-table-row',
+                    hoverTableRow: 'google-chart-hover-table-row',
+                    headerCell: 'google-chart-header-cell'
+                  }
+                }}
+              />
+            </div>
+            <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4">
+              <Chart
+                chartType="PieChart"
+                loader={<div>Cargando gráfico por favor espere</div>}
+                data={[headersForPieChart, ...dataForPieChart]}
+                options={{
+                  title: 'Gráfico de ventas semanales',
+                  titleTextStyle: { fontSize: 15 },
+                  is3D: true,
+                  width: '105%', 
+                }}
+              />
+            </div>
+            <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <input
+                ref={datePickerRef}
+                type="text"
+                className="form-control datepicker-input text-center"
+                placeholder="Ingrese una fecha"
+                style={{
+                  borderRadius: '5px',
+                  padding: '10px',
+                  fontSize: '16px',
+                  borderColor: '#ced4da',
+                  width: '300px'
+                }} />
+            </div>
+          </div>
         </div>
       </div>
     </div>
