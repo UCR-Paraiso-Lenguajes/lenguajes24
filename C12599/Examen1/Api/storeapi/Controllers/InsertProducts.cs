@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+// InsertProductsController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using storeapi.Models;
 using storeapi.Business;
 using Microsoft.Extensions.Caching.Memory;
+using MySqlConnector;
 
 namespace storeapi.Controllers
 {
@@ -16,7 +18,7 @@ namespace storeapi.Controllers
         public InsertProductsController(IMemoryCache cache, Categories categories)
         {
             _categories = categories;
-            _insertProductsLogic = new InsertProductsLogic(cache, InsertProductToList);
+            _insertProductsLogic = new InsertProductsLogic(cache, InsertProductToDatabase);
         }
 
         [HttpPost]
@@ -28,7 +30,7 @@ namespace storeapi.Controllers
             }
 
             Category category = _categories.GetCategoryById(request.CategoryId);
-         
+           
 
             Product product = new Product
             {
@@ -44,9 +46,21 @@ namespace storeapi.Controllers
             return Ok(updatedProducts);
         }
 
-        private void InsertProductToList(Product product, List<Product> products)
+        private static void InsertProductToDatabase(Product product, MySqlConnection connection, MySqlTransaction transaction)
         {
-            products.Add(product);
+            string insertProductQuery = @"
+                INSERT INTO products (name, price, description, image, category)
+                VALUES (@name, @price, @description, @image, @category)";
+
+            using (var insertCommand = new MySqlCommand(insertProductQuery, connection, transaction))
+            {
+                insertCommand.Parameters.AddWithValue("@name", product.Name);
+                insertCommand.Parameters.AddWithValue("@price", product.Price);
+                insertCommand.Parameters.AddWithValue("@description", product.Description);
+                insertCommand.Parameters.AddWithValue("@image", product.ImageUrl);
+                insertCommand.Parameters.AddWithValue("@category", product.Category.Id);
+                insertCommand.ExecuteNonQuery();
+            }
         }
     }
 
