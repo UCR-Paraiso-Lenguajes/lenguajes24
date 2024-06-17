@@ -1,11 +1,13 @@
-﻿// File: UT/InsertProductsLogicTests.cs
+// File: UT/InsertProductsLogicTests.cs
 using NUnit.Framework;
 using Microsoft.Extensions.Caching.Memory;
 using storeapi.Business;
 using storeapi.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using core;
+
 namespace UT
 {
     [TestFixture]
@@ -18,13 +20,10 @@ namespace UT
         public void Setup()
         {
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
-            _insertProductsLogic = new InsertProductsLogic(_memoryCache, shouldSaveToDatabase: false);
-
-
+            _insertProductsLogic = new InsertProductsLogic(_memoryCache, InsertProductToList);
 
             var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
             DataConnection.Init(dbtestDefault);
-
         }
 
         [TearDown]
@@ -44,12 +43,7 @@ namespace UT
                 Price = 99,
                 ImageUrl = "http://example.com/image.png",
                 Description = "New Product Description",
-                Category = new Category { _id = 1, _name
-                
-                
-                
-                
-                 = "New Category" }
+                Category = new Category { _id = 1, _name = "New Category" }
             };
 
             // Act
@@ -99,9 +93,27 @@ namespace UT
             Assert.AreEqual(updatedProduct.Category.Name, productInCache.Category.Name);
         }
 
+        private void InsertProductToList(Product product, List<Product> products)
+        {
+            var existingProduct = products.FirstOrDefault(p => p.id == product.id);
+            if (existingProduct != null)
+            {
+                existingProduct.Name = product.Name;
+                existingProduct.Price = product.Price;
+                existingProduct.ImageUrl = product.ImageUrl;
+                existingProduct.Description = product.Description;
+                existingProduct.Category = product.Category;
+            }
+            else
+            {
+                products.Add(product);
+            }
+        }
+
         public void Dispose()
         {
             _memoryCache?.Dispose();
         }
     }
 }
+
