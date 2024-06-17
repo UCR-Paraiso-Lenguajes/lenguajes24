@@ -19,7 +19,7 @@ public class MessageBusiness
     public async Task<Message> RemoveMessage(String id)
     {
         if(String.IsNullOrEmpty(id)) throw new ArgumentException("The message identifier cannot be empty");
-        await messageData.DeleteMessageAsync(id);
+        return await messageData.DeleteMessageAsync(id);
     }
 
     public async Task<IEnumerable<Message>> GetMessages()

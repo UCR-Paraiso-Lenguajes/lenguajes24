@@ -2,8 +2,12 @@ namespace ApiLab7;
 
 public class Message
 {
-    public Guid Id { get; private set; }
-    public string Text { get; private set; }
+    public Guid Id { get; set; }
+    public string Text { get; set; }
+
+    public Message(){
+        
+    }
 
     private Message(Guid id, String text){
         Id = id;

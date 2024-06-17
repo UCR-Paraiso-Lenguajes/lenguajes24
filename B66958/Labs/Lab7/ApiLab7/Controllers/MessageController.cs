@@ -16,11 +16,11 @@ namespace ApiLab7.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateMessageAsync([FromBody] MessageDto message)
+        public async Task<IActionResult> CreateMessageAsync([FromBody] Message message)
         {
             if(message == null) throw new ArgumentException("Please provide a message");
             await messageBusiness.AddMessage(message.Text);
-            message.Active = true;
+            //message.Active = true;
             _webSocketService.SendMessage(message);
             return Ok();
         }
@@ -40,10 +40,4 @@ namespace ApiLab7.Controllers
             return messages;
         }
     }
-
-public class MessageDto
-{
-    public string Text { get; set; }
-    public bool? Active { get; set; }
-}
 }

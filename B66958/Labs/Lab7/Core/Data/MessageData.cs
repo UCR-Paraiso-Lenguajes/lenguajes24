@@ -50,7 +50,7 @@ public class MessageData
                 {
                     if (await reader.ReadAsync())
                     {
-                        Message deletedMessage = 
+                        deletedMessage = 
                         Message.BuildForDisplay(new Guid(reader[0].ToString()),Encoding.UTF8.GetString((byte[])reader[1]) );
                     }
                 }
