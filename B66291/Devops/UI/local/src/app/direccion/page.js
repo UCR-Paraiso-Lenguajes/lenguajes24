@@ -153,7 +153,7 @@ const Direccion = () => {
           const parsedData = JSON.parse(storedData);
           setDataObject(parsedData);
         } catch (error) {
-          console.error('Error al parsear datos de localStorage:', error);
+          throw new Error('Error al parsear datos de localStorage:', error);
         }
       }
     }
@@ -224,7 +224,7 @@ const Direccion = () => {
               )}
             </>
           )}
-          <button className="btnAsignar" type="submit" style={{marginTop:"20px"}}>Asignar</button>
+          <button className="btnAsignar" type="submit" style={{ marginTop: "20px" }}>Asignar</button>
         </form>
         {errorMessage && <p className="error-message" style={{ fontSize: '0.8em', color: 'red' }}>{errorMessage}</p>}
         {direccionInsertada && <p className="texto-direc" style={{ fontSize: '0.8em' }}>Dirección insertada correctamente.</p>}

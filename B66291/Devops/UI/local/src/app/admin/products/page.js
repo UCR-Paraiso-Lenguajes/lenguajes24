@@ -18,7 +18,7 @@ const Products = () => {
         const parsedData = JSON.parse(storedData);
         setDataObject(parsedData);
       } catch (error) {
-        console.error("Error parsing data from localStorage:", error);
+        throw new Error("Error al parsear la variable", error);
       }
     }
   }, []);
@@ -44,7 +44,7 @@ const Products = () => {
           pList.products.sort((a, b) => a.id - b.id);
           setProductList(pList);
         } catch (error) {
-          console.error("Error while fetching data:", error);
+          throw new Error("Error al realizar el fetch:", error);
         }
       }
     };
@@ -54,10 +54,6 @@ const Products = () => {
 
   const agregarProducto = () => {
     window.location.href = "/admin/product";
-  };
-
-  const eliminarProducto = () => {
-    // No implementado aun
   };
 
   return (

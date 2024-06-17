@@ -16,7 +16,7 @@ const Detalle = () => {
         const parsedData = JSON.parse(storedData);
         setDataObject(parsedData);
       } catch (error) {
-        console.error("Error al parsear datos de localStorage:", error);
+        throw new Error("Error al parsear datos de localStorage:", error);
       }
     }
   }, []);
@@ -47,9 +47,8 @@ const Detalle = () => {
   }
 
   const enviarDatosPago = async () => {
-    if (!dataObject) {
-      console.error('No se han cargado los datos de tienda correctamente.');
-      return;
+    if (!dataObject) {  
+      return <p></p>;
     }
 
     const idsProductos = dataObject.cart.productos.map((producto) => String(producto.id));
@@ -90,12 +89,12 @@ const Detalle = () => {
         throw new Error(errorResponseData.message || "Error al procesar el pago");
       }
     } catch (error) {
-      console.error("Error al procesar el pago:", error);
+      throw new Error("Error al procesar el pago:", error);
     }
   };
 
   if (!dataObject) {
-    return <p></p>; // Puedes mostrar un mensaje de carga aquí si lo deseas
+    return <p></p>; 
   }
 
   return (

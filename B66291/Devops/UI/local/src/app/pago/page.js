@@ -16,7 +16,7 @@ const Pago = () => { //los metodos de pago deben venir de la consulta en base de
           const parsedData = JSON.parse(storedData);
           setDataObject(parsedData);
         } catch (error) {
-          console.error('Error al parsear datos de localStorage:', error);
+          throw new Error('Error al parsear datos de localStorage:', error);
         }
       }
     }
@@ -26,8 +26,7 @@ const Pago = () => { //los metodos de pago deben venir de la consulta en base de
     e.preventDefault();
 
     if (!dataObject) {
-      console.error('No se han cargado los datos de tienda correctamente.');
-      return;
+      return <p></p>;
     }
 
     let metodoPago = e.target.pago.value;
@@ -48,7 +47,6 @@ const Pago = () => { //los metodos de pago deben venir de la consulta en base de
       localStorage.setItem("tienda", JSON.stringify(updatedDataObject));
       setPagoIngresado(true);
     } catch (error) {
-      console.error('Error al guardar en localStorage:', error);
       throw new Error('No se pudo guardar el método de pago.');
     }
   };

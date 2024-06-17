@@ -82,7 +82,7 @@ export default function Home() {
           const parsedData = JSON.parse(storedData);
           setTienda(parsedData);
         } catch (error) {
-          console.error('Error al parsear datos de localStorage:', error);
+          throw new error('Error al parsear datos de localStorage:', error);
         }
       }
     }

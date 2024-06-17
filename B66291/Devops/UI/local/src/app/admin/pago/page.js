@@ -4,12 +4,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from '../../../components/Navbar';
 import React, { useState } from 'react';
 
-const ModificaPago= () => {
+const ModificaPago = () => {
 
     const storedData = localStorage.getItem('tienda');
     const dataObject = JSON.parse(storedData);
-
-    //debe haber 2 checkbox un texto que acomañe que diga sinpe o efectivo y un boton para apagar o insertar
 
     return (
         <article>

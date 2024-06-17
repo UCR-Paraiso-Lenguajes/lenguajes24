@@ -21,9 +21,9 @@ const Login = () => {
       try {
         setTienda(JSON.parse(storedTienda));
       } catch (error) {
-        console.error("Error parsing localStorage data:", error);
-        setTienda(initialState);
+        throw new Error("Error al realizar el parsing", error);
       }
+      setTienda(initialState);
     } else {
       setTienda(initialState);
     }
