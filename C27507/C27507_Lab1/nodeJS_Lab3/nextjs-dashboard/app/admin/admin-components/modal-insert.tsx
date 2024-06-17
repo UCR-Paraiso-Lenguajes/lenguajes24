@@ -38,7 +38,9 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
     const [productPrice, setProductPrice] = useState('');
     const [description, setDescription] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [images, setImages] = useState<File | string | null>(null);
+    //const [images, setImages] = useState<File | string | null>(null);
+    const [defaultImage, setDefaultImage] = useState<string>("");
+
     const [error, setError] = useState('');
 
     //gestionamiento para los alert de boostrap
@@ -50,16 +52,12 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
     function closeAlertShop(): void {
         setShowAlert(false);     
     }
-
-    //Variable global para la url img
-    let defaultImage: string;
-        
+            
     const deleteNewProductInfo = () => {
         setProductName('');
         setProductPrice('')
         setDescription('');
         setSelectedCategory('');
-        setImages(null);
         setError('');
     }
 
@@ -67,15 +65,10 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
     const getImageURL = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newImage = e.target.files?.[0];
         if (newImage) {
-            //leemos la imagen
-            const reader = new FileReader();
-            //leemos su url
-            reader.readAsDataURL(newImage);
-            //se debe cargar en cache para manipular la imagen
-            reader.onload = () => {
-                const imageURL = reader.result as string                
-                defaultImage = imageURL;                
-            };
+            const imageName = newImage.name;
+            const imagePath = "./img/";
+            const imageURL = imagePath + imageName;
+            setDefaultImage(imageURL);
         }
     };
 
@@ -100,14 +93,15 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
       setError('Por favor ingrese una descripción válida');
       return;
     }
-    if (selectedCategory === '' || !selectedCategory) {
+    if (selectedCategory === ''|| !selectedCategory) {
       setError('Por favor seleccione una categoría');
       return;
     }
     
-    if (defaultImage === '' || !defaultImage) {
+    if (defaultImage === ''|| !defaultImage) {
         //Si no se asigna una imagen (es nulo), se usa una por defect
-        defaultImage = "./img/not_found_img.jpg";
+        setDefaultImage("./img/not_found_img.jpg");        
+        console.log(defaultImage);
     }
             
     const newProduct : ProductAPI = {
