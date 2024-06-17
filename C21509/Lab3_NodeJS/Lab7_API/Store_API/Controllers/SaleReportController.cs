@@ -14,7 +14,7 @@ namespace Store_API.Controllers
         }
 
         [HttpGet, Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetSalesReportAsync( [FromQuery] DateTime date)
+        public async Task<IActionResult> GetSalesReportAsync( DateTime date)
         {
             if (date == DateTime.MinValue || date > DateTime.Now)
             {
