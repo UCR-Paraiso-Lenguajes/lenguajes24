@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using storeapi.Database;
 using storeapi.Bussisnes;
+using storeapi.Models;
 using core;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSingleton<Categories>(); // or AddScoped/AddTransient based on your requirement
+
 
 // Add SwaggerGen for Swagger UI
 builder.Services.AddSwaggerGen(setup =>
