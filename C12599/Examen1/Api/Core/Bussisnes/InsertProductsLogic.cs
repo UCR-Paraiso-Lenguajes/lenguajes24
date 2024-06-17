@@ -1,5 +1,4 @@
-﻿// File: storeapi/Business/InsertProductsLogic.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,12 +10,15 @@ namespace storeapi.Business
     public class InsertProductsLogic
     {
         private readonly IMemoryCache _cache;
-        private readonly bool _shouldSaveToDatabase;
+     
+        private readonly InsertProductDelegate _insertProductDelegate;
 
-        public InsertProductsLogic(IMemoryCache cache, bool shouldSaveToDatabase = true)
+        public  delegate void InsertProductDelegate(Product product, List<Product> products);
+
+        public  InsertProductsLogic(IMemoryCache cache, InsertProductDelegate insertProductDelegate)
         {
             _cache = cache;
-            _shouldSaveToDatabase = shouldSaveToDatabase;
+            _insertProductDelegate = insertProductDelegate;
         }
 
         public List<Product> InsertProduct(Product product)
@@ -29,67 +31,24 @@ namespace storeapi.Business
                 _cache.Set("Products", products);
             }
 
-            var existingProduct = products.FirstOrDefault(p => p.id == product.id);
-            if (existingProduct != null)
-            {
-                existingProduct.Name = product.Name;
-                existingProduct.Price = product.Price;
-                existingProduct.ImageUrl = product.ImageUrl;
-                existingProduct.Description = product.Description;
-                existingProduct.Category = product.Category;
-            }
-            else
-            {
-                products.Add(product);
-            }
-
+            _insertProductDelegate(product, products);
             _cache.Set("Products", products);
 
-            if (_shouldSaveToDatabase)
-            {
+          
+            
                 StoreDB.InsertProducts(products);
-            }
+            
 
             return products;
         }
 
         private void ValidateProduct(Product product)
         {
-            if (product == null)
-            {
-                throw new ArgumentNullException(nameof(product), "Product cannot be null.");
-            }
-
-            if (string.IsNullOrWhiteSpace(product.Name))
-            {
-                throw new ArgumentException("Product name must not be null or empty.", nameof(product.Name));
-            }
-
-            if (string.IsNullOrWhiteSpace(product.ImageUrl))
-            {
-                throw new ArgumentException("Product image URL must not be null or empty.", nameof(product.ImageUrl));
-            }
-
-            if (product.Price <= 0)
-            {
-                throw new ArgumentException("Product price must be a positive value.", nameof(product.Price));
-            }
-
-            if (string.IsNullOrWhiteSpace(product.Description))
-            {
-                throw new ArgumentException("Product description must not be null or empty.", nameof(product.Description));
-            }
-
-
-            if (product.Category.Id <= 0)
-            {
-                throw new ArgumentException("Product category ID must be greater than zero.", nameof(product.Category.Id));
-            }
-
-            if (string.IsNullOrWhiteSpace(product.Category.Name))
-            {
-                throw new ArgumentException("Product category name must not be null or empty.", nameof(product.Category.Name));
-            }
+            if (product == null) throw new ArgumentException("El producto no puede ser nulo.");
+            if (string.IsNullOrWhiteSpace(product.Name)) throw new ArgumentException("El nombre del producto no puede estar vacío o ser nulo.", nameof(product.Name));
+            if (product.Price <= 0) throw new ArgumentOutOfRangeException(nameof(product.Price), "El precio del producto debe ser mayor que cero.");
+            if (string.IsNullOrWhiteSpace(product.ImageUrl)) throw new ArgumentException("La URL de la imagen del producto no puede estar vacía o ser nula.", nameof(product.ImageUrl));
+            if (string.IsNullOrWhiteSpace(product.Description)) throw new ArgumentException("La descripción del producto no puede estar vacía o ser nula.", nameof(product.Description));
         }
     }
 }
