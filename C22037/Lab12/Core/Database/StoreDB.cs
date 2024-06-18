@@ -8,12 +8,12 @@ using TodoApi.Models;
 namespace TodoApi.Database;
 public class StoreDB
 {
-    internal delegate void ProductAddedHandler(ProductAdd product, int id);
+    internal delegate void ProductAddedDelegate(ProductAdd product, int id);
 
-    ProductAddedHandler addNewProduct = async (product, id) =>
+    ProductAddedDelegate addNewProduct = async (product, id) =>
     {
         var store = await Store.InstanceAsync();
-        store.OnProductAdded(product, id);
+        store.AddProduct(product, id);
     };
 
     public static void CreateMysql()

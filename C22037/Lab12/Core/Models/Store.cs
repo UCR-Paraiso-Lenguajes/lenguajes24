@@ -16,7 +16,7 @@ namespace TodoApi.Models
         public int TaxPercentage { get; private set; }
         private CategoryLogic categoryLogic;
 
-        private Store(List<Product> products, int taxPercentage, StoreDB db)
+        public Store(List<Product> products, int taxPercentage, StoreDB db)
         {
             if (products == null) throw new ArgumentNullException(nameof(products), "Products cannot be null.");
             if (!products.Any()) throw new ArgumentException("Products list cannot be empty.", nameof(products));
@@ -46,7 +46,7 @@ namespace TodoApi.Models
             return instance;
         }
 
-        public async Task OnProductAdded(ProductAdd productAdd, int id)
+        public async Task AddProduct(ProductAdd productAdd, int id)
         {
             var newProduct = new Product(productAdd.name, productAdd.imageUrl, productAdd.price, productAdd.description, id, new Categories().GetType(productAdd.category));
             Products.Add(newProduct);
