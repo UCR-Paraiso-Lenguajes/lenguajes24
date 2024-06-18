@@ -23,14 +23,14 @@ var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
+builder.Configuration.AddJsonFile("appsettings.json", optional: false,reloadOnChange: true);
 if (app.Environment.IsDevelopment())
 {
-    string connectionString = "server=localhost;user=root;password=123456;database=Store_API";
+    string connectionString = builder.Configuration.GetSection("ConnectionStrings").GetSection("DataBase").Value.ToString();
     DB_API dbApi= new DB_API(connectionString);
     string DB_value = Environment.GetEnvironmentVariable("DB");
     if (!String.IsNullOrEmpty(DB_value))
     {
-        Console.WriteLine("varible is not empty", connectionString);
         connectionString = DB_value;
     }
 
