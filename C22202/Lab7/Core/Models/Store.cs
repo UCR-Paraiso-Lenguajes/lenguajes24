@@ -22,8 +22,4 @@ public sealed class Store
 
         Store.Instance = new Store(products, 13, categories);
     }
-
-    public void GetProductsCategory(int id){
-        Products = ProductsLogic.Instance.GetProductsCategory(id);
-    }
 }

@@ -4,6 +4,8 @@ import "./globals.css";
 import { Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 import Link from "next/link";
 import Search from "./ui/Search";
+import CartButton from "./ui/CartButton";
+import { StateProvider } from "./ui/StateContext";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,6 +20,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
+        <StateProvider>
+
         <header>
           <Container>
             <Row className="d-flex align-items-center align-self-center">
@@ -32,14 +36,14 @@ export default function RootLayout({ children }) {
                 <Search />
               </Col>
               <Col>
-              {/* <CartButton /> */}
+              <CartButton />
               </Col>
-              {/* <Col /> */}
             </Row>
           </Container>
         </header>
 
         {children}
+        </StateProvider>
 
         <footer>
           <Container>

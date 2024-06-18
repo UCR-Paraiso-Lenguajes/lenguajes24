@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Store_API.Business;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Store_API.Controllers
 {
@@ -12,8 +13,8 @@ namespace Store_API.Controllers
         {
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetSalesReportAsync( [FromQuery] DateTime date)
+        [HttpGet, Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetSalesReportAsync( DateTime date)
         {
             if (date == DateTime.MinValue || date > DateTime.Now)
             {

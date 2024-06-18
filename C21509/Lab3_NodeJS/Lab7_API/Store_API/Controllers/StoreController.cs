@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Store_API.Models; 
-using Core.Models; 
+using Store_API.Models;
+using Core.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Store_API.Controllers
 {
@@ -9,18 +10,21 @@ namespace Store_API.Controllers
     public class StoreController : ControllerBase
     {
         [HttpGet]
+        [AllowAnonymous]
         public Store GetStore()
         {
             return Store.Instance;
         }
 
         [HttpGet("Categories")]
+        [AllowAnonymous]
         public IEnumerable<Category> GetCategories()
         {
-            return Categories.GetCategories(); 
+            return Categories.GetCategories();
         }
 
         [HttpGet("Products")]
+        [AllowAnonymous]
         public IEnumerable<Product> GetProductsByCategory([FromQuery] int categoryId)
         {
             if (categoryId < 1)
@@ -29,7 +33,8 @@ namespace Store_API.Controllers
             return Store.Instance.Products.Where(p => p.Categoria.IdCategory == categoryId);
         }
 
-       [HttpGet("Search")]
+        [HttpGet("Search")]
+        [AllowAnonymous]
         public async Task<ActionResult<Product>> GetProductByNameAndCategoryIdAsync([FromQuery] string productName, [FromQuery] int categoryId)
         {
             try
