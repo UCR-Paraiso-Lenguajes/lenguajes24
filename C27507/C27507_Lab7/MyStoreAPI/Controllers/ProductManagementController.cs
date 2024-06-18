@@ -18,8 +18,7 @@ namespace MyStoreAPI.Controllers
         [HttpPost("product/insert")]
         [Authorize(Roles = "Admin, Operator")]
         public async Task<IActionResult> InsertNewProductInStoreAsync([FromBody] Product newProduct){
-            try{
-                Console.WriteLine(newProduct.id);
+            try{                
                 ProductManagementLogic productManagementLogic = new ProductManagementLogic();
                 //Hacemos que al delegate se le asigne la funcion de actualizar la lista en memoria
                 productManagementLogic.onProductInserted = Store.Instance.addNewProductInStore;
