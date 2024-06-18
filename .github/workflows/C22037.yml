@@ -5,9 +5,9 @@ name: C22037
 
 on:
   push:
-    branches: [ "DevOps_C22037" ]
+    branches: [ "C22037" ]
   pull_request:
-    branches: [ "DevOps_C22037" ]
+    branches: [ "C22037" ]
 
 jobs:
   build:
