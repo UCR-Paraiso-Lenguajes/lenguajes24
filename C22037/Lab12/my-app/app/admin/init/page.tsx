@@ -237,7 +237,6 @@ export default function Init() {
     
             const updatedProducts = data.products;
     
-            // Update localStorage
             const storeData = JSON.parse(localStorage.getItem('store')) || {};
             storeData.products = updatedProducts;
             localStorage.setItem('store', JSON.stringify(storeData));
