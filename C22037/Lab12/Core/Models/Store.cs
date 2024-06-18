@@ -48,18 +48,46 @@ namespace TodoApi.Models
 
         public async Task AddProduct(ProductAdd productAdd, int id)
         {
+            if (string.IsNullOrWhiteSpace(productAdd.name))
+                throw new ArgumentException("Product name cannot be null or empty.", nameof(productAdd.name));
+            if (string.IsNullOrWhiteSpace(productAdd.imageUrl))
+                throw new ArgumentException("Product image URL cannot be null or empty.", nameof(productAdd.imageUrl));
+            if (productAdd.price <= 0)
+                throw new ArgumentException("Product price must be greater than zero.", nameof(productAdd.price));
+            if (string.IsNullOrWhiteSpace(productAdd.description))
+                throw new ArgumentException("Product description cannot be null or empty.", nameof(productAdd.description));
+            if (id <= 0)
+                throw new ArgumentException("Product ID must be greater than zero.", nameof(id));
+            if (productAdd.category <= 0)
+                throw new ArgumentException("Product category must be greater than zero.", nameof(productAdd.category));
+
             var newProduct = new Product(productAdd.name, productAdd.imageUrl, productAdd.price, productAdd.description, id, new Categories().GetType(productAdd.category));
             Products.Add(newProduct);
         }
 
         public async Task AddProductAsync(ProductAdd product)
         {
-            if (product == null) throw new ArgumentNullException(nameof(product));
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+            if (string.IsNullOrWhiteSpace(product.name))
+                throw new ArgumentException("Product name cannot be null or empty.", nameof(product.name));
+            if (string.IsNullOrWhiteSpace(product.imageUrl))
+                throw new ArgumentException("Product image URL cannot be null or empty.", nameof(product.imageUrl));
+            if (product.price <= 0)
+                throw new ArgumentException("Product price must be greater than zero.", nameof(product.price));
+            if (string.IsNullOrWhiteSpace(product.description))
+                throw new ArgumentException("Product description cannot be null or empty.", nameof(product.description));
+            if (product.category <= 0)
+                throw new ArgumentException("Product category must be greater than zero.", nameof(product.category));
+
             await storeDB.InsertProductAsync(product);
         }
 
         public async Task RemoveProductAsync(int id)
         {
+            if (id <= 0)
+                throw new ArgumentException("Product ID must be greater than zero.", nameof(id));
+
             var product = Products.FirstOrDefault(p => p.Id == id);
             if (product != null)
             {

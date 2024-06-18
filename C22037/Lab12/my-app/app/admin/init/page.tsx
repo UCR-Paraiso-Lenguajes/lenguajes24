@@ -243,7 +243,7 @@ export default function Init() {
     
             setProducts(updatedProducts);
         } catch (error) {
-            console.error('Error adding product:', error);
+            throw new Error('Error adding product:', error);
         }
     };    
 
