@@ -6,9 +6,15 @@ namespace Store_API.Database
 {
     public class DB_API
     {
-        private readonly string connectionString = "server=localhost;user=root;password=123456;database=Store_API";
+        private string connectionString;
+        public  DB_API(string connString){
 
-        public void ConnectDB()
+            connectionString = connString;
+        }
+
+        public  DB_API(){}
+        
+        public void ConnectDB(string connectionString)
         {
             try
             {

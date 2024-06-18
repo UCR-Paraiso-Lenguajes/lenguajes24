@@ -1,9 +1,12 @@
+
+using Store_API.Database;
 using Store_API;
 using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models; 
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,9 +73,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
+builder.Configuration.AddJsonFile("appsettings.json", optional: false,reloadOnChange: true);
 if (app.Environment.IsDevelopment())
 {
+    string connectionString = builder.Configuration.GetSection("ConnectionStrings").GetSection("DataBase").Value.ToString();
+    DB_API dbApi= new DB_API(connectionString);
+    string DB_value = Environment.GetEnvironmentVariable("DB");
+    if (!String.IsNullOrEmpty(DB_value))
+    {
+        connectionString = DB_value;
+    }
+
+    dbApi.ConnectDB(connectionString);
     app.UseSwagger();
     app.UseSwaggerUI();
 }

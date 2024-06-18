@@ -88,7 +88,7 @@ namespace Store_API.Models
                 }
             };
 
-            dbApi.ConnectDB();
+          
 
             List<Product> dbProducts = dbApi.SelectProducts();
 
