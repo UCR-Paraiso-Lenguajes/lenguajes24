@@ -5,13 +5,13 @@ namespace KEStoreApi
 {
     public class Product : ICloneable, IComparable<Product>
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public decimal Price { get; set; }
-        public string ImageUrl { get; set; }
-        public int Quantity { get; set; }
-        public Categoria Categoria { get; set; }
-
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    public string ImageUrl { get; set; }
+    public int Quantity { get; set; }
+    public int CategoriaId { get; set; }
+     public bool IsDeleted { get; set; }
         public object Clone()
         {
             return new Product

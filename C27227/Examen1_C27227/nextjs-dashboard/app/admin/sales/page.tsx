@@ -7,7 +7,7 @@ import Sidebar from "../init/page";
 import "chartjs-plugin-datalabels";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-datepicker/dist/react-datepicker.css";
-import '@/app/ui/styles/SalesReport.css';
+import '@/app/ui/Styles/SalesReport.css';
 import { checkTokenDate } from '../../hooks/jwtHooks';
 import { useRouter } from 'next/navigation';
 

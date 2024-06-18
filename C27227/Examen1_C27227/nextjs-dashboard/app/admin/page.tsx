@@ -1,16 +1,15 @@
 "use client";
 import "bootstrap/dist/css/bootstrap.min.css";
-import '@/app/ui/styles/login.css';
+import '@/app/ui/Styles/login.css';
 import { useState, useEffect } from "react";
 import { decodeToken, checkTokenDate } from '../hooks/jwtHooks';
-
 export default function LoginForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [warningUser, setWarningUser] = useState(false);
     const [warningPassword, setWarningPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    
+    const URLConection = process.env.NEXT_PUBLIC_API;
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
   
@@ -30,7 +29,7 @@ export default function LoginForm() {
 
     async function authenticateUser() {
         try {
-            const response = await fetch('http://localhost:5072/api/login', {
+            const response = await fetch(URLConection + '/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

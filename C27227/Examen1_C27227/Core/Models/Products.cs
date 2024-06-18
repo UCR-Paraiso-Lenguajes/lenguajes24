@@ -2,97 +2,58 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using KEStoreApi;
+using Core;
 using KEStoreApi.Data;
 
-namespace Core
+namespace KEStoreApi
 {
-    public class Products
+    public sealed class Products
     {
-        public IEnumerable<Product> ProductsStore { get; private set; }
-        public Dictionary<int, List<Product>> ProductDictionary { get; private set; }
+        public List<Product> ProductsStore { get; private set; }
+        private static readonly Lazy<Task<Products>> _instance = new Lazy<Task<Products>>(() => InitializeAsync());
 
-        private Products(IEnumerable<Product> products)
+        private Products(List<Product> products)
         {
-            if (products == null) throw new ArgumentNullException(nameof(products), "La lista de productos no puede ser nula.");
-            if (!products.Any()) throw new ArgumentException("La lista de productos debe contener al menos un elemento.", nameof(products));
-            ProductsStore = products;
-            ProductDictionary = new Dictionary<int, List<Product>>();
-            foreach (var product in products)
-            {
-                if (!ProductDictionary.TryGetValue(product.Categoria.Id, out List<Product> productList))
-                {
-                    productList = new List<Product>();
-                    ProductDictionary[product.Categoria.Id] = productList;
-                }
-                productList.Add(product);
-            }
+            ProductsStore = products ?? throw new ArgumentNullException(nameof(products));
+        }
+
+        public static Task<Products> Instance => _instance.Value;
+
+        private static async Task<Products> InitializeAsync()
+        {
+            var products = await DatabaseStore.GetProductsFromDBaAsync();
+            return new Products(products.ToList());
         }
 
         public static Products InitializeFromMemory(IEnumerable<Product> products)
         {
-            return new Products(products);
+            return new Products(products.ToList());
         }
 
-        public static async Task<Products> InitializeAsync()
+        public async Task<IEnumerable<Product>> GetProductsByCategory(IEnumerable<int> categoryIds)
         {
-            var products = await DatabaseStore.GetProductsFromDBaAsync();
-            return new Products(products);
+            if (categoryIds == null) throw new ArgumentNullException(nameof(categoryIds));
+            if (!categoryIds.All(id => id > 0)) throw new ArgumentException("Invalid category ID(s) provided.");
+
+            return ProductsStore.Where(p => categoryIds.Contains(p.CategoriaId));
         }
 
-        public async Task<List<Product>> GetProductsByCategory(IEnumerable<int> categoryIds)
-        {
-            if (categoryIds == null)
-                throw new ArgumentNullException(nameof(categoryIds), "Los IDs de categoría no pueden ser nulos.");
-
-            var validCategoryIds = categoryIds.Where(id => id >= 1).ToList();
-
-            if (!validCategoryIds.Any())
-                throw new ArgumentException("Se debe proporcionar al menos un ID de categoría válido (mayor o igual a 1).", nameof(categoryIds));
-
-            List<Product> productsList = new List<Product>();
-
-            foreach (int categoryId in validCategoryIds)
-            {
-                if (ProductDictionary.TryGetValue(categoryId, out List<Product> productList))
-                    productsList.AddRange(productList);
-            }
-
-            return await Task.FromResult(productsList);
-        }
-
-        public async Task<List<Product>> GetAllProducts()
-        {
-            return await Task.FromResult(ProductsStore.ToList());
-        }
 
         public async Task<List<Product>> SearchProductsByName(string productName)
         {
-            var products = await GetAllProducts();
+            if (string.IsNullOrEmpty(productName)) throw new ArgumentException("El nombre del producto no puede ser nulo o vacío.", nameof(productName));
 
-            var bst = new BinarySearchTree<Product>();
-            foreach (var product in products)
-            {
-                bst.Insert(product);
-            }
-
-            return bst.Search(productName);
+            return ProductsStore.Where(p => p.Name.Contains(productName, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
         public async Task<List<Product>> SearchProducts(string productName, IEnumerable<int> categoryIds)
         {
-            var products = await GetProductsByCategory(categoryIds);
+            if (string.IsNullOrEmpty(productName)) throw new ArgumentException("El nombre del producto no puede ser nulo o vacío.", nameof(productName));
+            if (categoryIds == null || !categoryIds.Any()) throw new ArgumentException("Debe proporcionar al menos un ID de categoría.", nameof(categoryIds));
 
-            var bst = new BinarySearchTree<Product>();
-            foreach (var product in products)
-            {
-                bst.Insert(product);
-            }
-
-            return bst.Search(productName);
+            return ProductsStore
+                .Where(p => p.Name.Contains(productName, StringComparison.OrdinalIgnoreCase) && categoryIds.Contains(p.CategoriaId))
+                .ToList();
         }
-
-        private static readonly Lazy<Task<Products>> InstanceTask = new Lazy<Task<Products>>(InitializeAsync);
-        public static Task<Products> Instance => InstanceTask.Value;
     }
 }

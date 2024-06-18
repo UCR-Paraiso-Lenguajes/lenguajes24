@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/address.css';
+import '../Styles/address.css';
 import PaymentMethods from './payment_method';
 import { decodeToken, checkTokenDate } from '../../hooks/jwtHooks';
 import { useRouter } from 'next/navigation';

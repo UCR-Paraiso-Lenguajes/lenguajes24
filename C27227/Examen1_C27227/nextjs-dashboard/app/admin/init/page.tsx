@@ -32,7 +32,7 @@ const Sidebar = () => {
         router.push("/admin");
       }
     } catch (error) {
-      console.error("Error validating token:", error);
+      throw new Error('Error ' + error.message);
       setErrorMessage('Ocurrió un error al validar la sesión, por favor inicie sesión nuevamente.');
       router.push("/admin");
     }
@@ -74,7 +74,7 @@ const Sidebar = () => {
             <div className="offcanvas-body">
               <ul className="nav flex-column">
                 <li className="nav-item">
-                  <Link href="/admin/init" passHref>
+                  <Link href="/" passHref>
                     <span className="nav-link">Home</span>
                   </Link>
                 </li>
@@ -84,9 +84,9 @@ const Sidebar = () => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <a href="#" className="nav-link">
-                    Products
-                  </a>
+                <Link href="/admin/products" passHref>
+                    <span className="nav-link">Products</span>
+                </Link>
                 </li>
               </ul>
             </div>

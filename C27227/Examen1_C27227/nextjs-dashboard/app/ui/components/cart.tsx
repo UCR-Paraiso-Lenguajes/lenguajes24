@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/cart.css';
+import '../Styles/cart.css';
 import AddressForm from './addressUser';
 import { decodeToken, checkTokenDate } from '../../hooks/jwtHooks';
 import { useRouter } from 'next/navigation';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/paymentMethods.css';
+import '../Styles/paymentMethods.css';
 import { decodeToken, checkTokenDate } from '../../hooks/jwtHooks';
 import { useRouter } from 'next/navigation';
 
@@ -60,7 +60,8 @@ const PaymentMethods = () => {
   };
 
   const enviarDatosPago = async () => {
-    const datosDePagoValidos = tiendaLocal.cart.direccionEntrega && tiendaLocal.cart.metodoPago && (tiendaLocal.cart.metodoPago === 'cash' || (tiendaLocal.cart.metodoPago === 'sinpe' && paymentCode.trim() !== ''));
+    const isPaymentCodeRequired = tiendaLocal.cart.metodoPago === 'sinpe';
+    const datosDePagoValidos = tiendaLocal.cart.direccionEntrega && tiendaLocal.cart.metodoPago && (!isPaymentCodeRequired || (isPaymentCodeRequired && paymentCode.trim() !== ''));
 
     if (datosDePagoValidos) {
       const productQuantities = Object.keys(tiendaLocal.cart.cartItems).map(productId => ({
@@ -77,7 +78,7 @@ const PaymentMethods = () => {
       };
 
       try {
-        const response = await fetch(URLConection+'api/cart', {
+        const response = await fetch(URLConection+'/api/cart', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -96,7 +97,7 @@ const PaymentMethods = () => {
         throw new Error('Error al enviar datos: ' + error.message);
       }
     } else {
-      if (tiendaLocal.cart.metodoPago === 'sinpe' && paymentCode.trim() === '') {
+      if (isPaymentCodeRequired && paymentCode.trim() === '') {
         setWarningMessage('Por favor, ingrese el comprobante de pago.');
       } else {
         setWarningMessage('Por favor, complete los datos de pago.');
