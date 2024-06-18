@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using Store_API.Models;
 using Core.Models;
@@ -7,13 +10,14 @@ namespace Store_API.Database
     public class DB_API
     {
         private string connectionString;
-        public  DB_API(string connString){
+        public DB_API(string connString)
+        {
 
             connectionString = connString;
         }
 
-        public  DB_API(){}
-        
+        public DB_API() { }
+
         public void ConnectDB(string connectionString)
         {
             try
@@ -107,7 +111,7 @@ namespace Store_API.Database
                             command.Parameters.AddWithValue("@name", actualProduct.Name);
                             command.Parameters.AddWithValue("@imageURL", actualProduct.ImageURL);
                             command.Parameters.AddWithValue("@price", actualProduct.Price);
-                            command.Parameters.AddWithValue("@categoria", actualProduct.Categoria.IdCategory); 
+                            command.Parameters.AddWithValue("@categoria", actualProduct.Categoria.IdCategory);
 
                             command.ExecuteNonQuery();
                         }
@@ -400,5 +404,56 @@ namespace Store_API.Database
 
             return weeklySalesReport;
         }
+
+        public async Task<bool> InsertionProductInDBAsync(Product insertedProduct)
+        {
+            if (insertedProduct == null) throw new ArgumentException($"{nameof(insertedProduct)} cannot be null");
+
+            MySqlConnection connectionWithDB = null;
+            MySqlTransaction transaction = null;
+
+            try
+            {
+                connectionWithDB = new MySqlConnection(connectionString);                
+                await connectionWithDB.OpenAsync();
+                transaction = await connectionWithDB.BeginTransactionAsync();
+
+                string insertQuery = @"
+                    INSERT INTO Products (Name, ImageUrl, Price, Quantity, Description, Category)
+                    VALUES (@name, @imageUrl, @price, @quantity, @description, @idCategory);
+                ";
+
+                using (MySqlCommand command = new MySqlCommand(insertQuery, connectionWithDB))
+                {
+                    command.Transaction = transaction;
+
+                    command.Parameters.AddWithValue("@name", insertedProduct.Name);
+                    command.Parameters.AddWithValue("@imageUrl", insertedProduct.ImageURL);
+                    command.Parameters.AddWithValue("@price", insertedProduct.Price);
+                    command.Parameters.AddWithValue("@idCategory", insertedProduct.Categoria.IdCategory);
+                    await command.ExecuteNonQueryAsync();
+                }
+                await transaction.CommitAsync();                
+            }
+            catch (Exception)
+            { 
+                if (transaction != null)
+                {
+                    await transaction.RollbackAsync();
+                }
+                throw;                
+            }
+            finally
+            {                
+                if (connectionWithDB != null)
+                {
+                    await connectionWithDB.CloseAsync();
+                }
+            }
+
+            return true;
+        }
     }
+
+   
 }
