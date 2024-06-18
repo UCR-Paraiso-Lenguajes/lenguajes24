@@ -78,7 +78,6 @@ const Page = () => {
         await fetchAllProducts();
         return;
       }
-
       const url = new URL(URLConection + '/api/store/products');
       categoryIds.forEach(id => url.searchParams.append('categoryIds', id));
 
