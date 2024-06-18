@@ -1,5 +1,4 @@
 'use client';
- 05be98cb1201a9092cb811e9868223b63e1937f6
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, ShoppingCart } from 'react-feather';
