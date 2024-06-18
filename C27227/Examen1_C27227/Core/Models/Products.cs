@@ -9,12 +9,16 @@ namespace KEStoreApi
 {
     public sealed class Products
     {
-        public List<Product> ProductsStore { get; private set; }
+        public IEnumerable<Product> ProductsStore { get; private set; }
+        public Dictionary<int, List<Product>> ProductDictionary { get; private set; }
         private static readonly Lazy<Task<Products>> _instance = new Lazy<Task<Products>>(() => InitializeAsync());
 
-        private Products(List<Product> products)
+        private Products(IEnumerable<Product> products)
         {
             ProductsStore = products ?? throw new ArgumentNullException(nameof(products));
+            ProductDictionary = ProductsStore
+                .GroupBy(p => p.CategoriaId)
+                .ToDictionary(g => g.Key, g => g.ToList());
         }
 
         public static Task<Products> Instance => _instance.Value;
@@ -22,12 +26,12 @@ namespace KEStoreApi
         private static async Task<Products> InitializeAsync()
         {
             var products = await DatabaseStore.GetProductsFromDBaAsync();
-            return new Products(products.ToList());
+            return new Products(products);
         }
 
         public static Products InitializeFromMemory(IEnumerable<Product> products)
         {
-            return new Products(products.ToList());
+            return new Products(products);
         }
 
         public async Task<IEnumerable<Product>> GetProductsByCategory(IEnumerable<int> categoryIds)
@@ -37,7 +41,6 @@ namespace KEStoreApi
 
             return ProductsStore.Where(p => categoryIds.Contains(p.CategoriaId));
         }
-
 
         public async Task<List<Product>> SearchProductsByName(string productName)
         {
