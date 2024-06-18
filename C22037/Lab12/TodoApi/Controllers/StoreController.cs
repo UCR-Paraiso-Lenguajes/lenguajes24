@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TodoApi.Business;
 
@@ -11,12 +12,21 @@ namespace TodoApi.Models
     [ApiController]
     public class storeController : ControllerBase
     {
+        private static Store storeInstance;
+
         [HttpGet("store")]
         public async Task<IActionResult> GetStoreAsync()
         {
-            var store = await Store.InstanceAsync();
+            storeInstance = await Store.InstanceAsync();
             var categories = new Categories().GetCategories();
-            return Ok(new { store, categories });
+            return Ok(new { store = storeInstance, categories });
+        }
+
+        [HttpGet("store/categories")]
+        public IActionResult GetCategories()
+        {
+            var categories = new Categories().GetCategories();
+            return Ok(new { categories });
         }
 
         [HttpGet("store/products")]

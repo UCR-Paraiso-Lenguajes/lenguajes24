@@ -1,4 +1,4 @@
-"use client"; //Para utilizar el cliente en lugar del servidor
+"use client"; // Para utilizar el cliente en lugar del servidor
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@/public/styles.css";
 import { useState, useEffect } from "react";
@@ -19,15 +19,23 @@ export default function Home() {
 
     const loadData = async () => {
       try {
-        const response = await fetch(`https://localhost:7067/api/store`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-        setProductList(data.store.products);
-        setCategories(data.categories);
+        const storeData = JSON.parse(localStorage.getItem('store')) || {};
+        if (storeData.products) {
+          setProductList(storeData.products);
+          setCategories(storeData.categories || []);
+        } else {
+          const response = await fetch(`https://localhost:7067/api/store`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch data');
+          }
+          const data = await response.json();
+          setProductList(data.store.products);
+          setCategories(data.categories);
 
-        const selectedCategories = data.categories.filter(category => categoryIds.includes(category.id.toString()));
+          localStorage.setItem('store', JSON.stringify(data.store));
+        }
+
+        const selectedCategories = categories.filter(category => categoryIds.includes(category.id.toString()));
         setSelectedCategory(selectedCategories);
 
         if (search || categoryIds.length > 0) {
@@ -39,7 +47,7 @@ export default function Home() {
           setProductList(searchData.products);
         }
       } catch (error) {
-        throw new Error('Failed to fetch data', error);
+        throw new Error('Error loading data.');
       }
     };
 
@@ -53,7 +61,6 @@ export default function Home() {
 
     loadData();
   }, []);
-
 
   const updateUrl = (searchQuery, selectedCategory) => {
     const categoryIds = selectedCategory.map(category => category.id).join(',');
@@ -96,7 +103,7 @@ export default function Home() {
 
       setProductList(data.products);
     } catch (error) {
-      throw new Error('Failed to fetch data', error);
+      throw new Error('Error fetching data.');
     }
   };
 
@@ -144,7 +151,7 @@ export default function Home() {
       const data = await response.json();
       setProductList(data.products);
     } catch (error) {
-      throw new Error('Failed to fetch data', error);
+      throw new Error('Error fetching data.');
     }
   };
 

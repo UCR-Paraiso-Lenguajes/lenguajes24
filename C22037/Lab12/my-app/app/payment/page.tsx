@@ -11,26 +11,29 @@ const PaymentMethodsEnum = {
 export default function Payment() {
   const [selectedMethod, setSelectedMethod] = useState(PaymentMethodsEnum.Cash);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
-  const [cartProducts, setCartProducts] = useState([]);
+  const [cartProducts, setCartProducts] = useState<string[]>([]);
   const [address, setAddress] = useState('');
   const [total, setTotal] = useState('');
-  const [purchaseNumber, setpurchaseNumber] = useState('');
+  const [purchaseNumber, setPurchaseNumber] = useState('');
 
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem('cart')) || { products: {} };
+    const cart = localStorage.getItem('cart');
+    const storedCart = cart ? JSON.parse(cart) : { products: {} };
     const productIds = Object.keys(storedCart.products);
     setCartProducts(productIds);
+    
     const storedAddress = localStorage.getItem('address') || '';
     setAddress(storedAddress);
+    
     const storedTotal = localStorage.getItem('total') || '';
     setTotal(storedTotal);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('selectedMethod', selectedMethod);
+    localStorage.setItem('selectedMethod', selectedMethod.toString());
   }, [selectedMethod]);
 
-  const handleMethodSelect = (method) => {
+  const handleMethodSelect = (method: number) => {
     setSelectedMethod(method);
     setPaymentConfirmed(false);
   };
@@ -61,7 +64,7 @@ export default function Payment() {
         throw new Error('Failed to confirm purchase.');
       } else {
         const purchaseNumberApp = await response.json();
-        setpurchaseNumber(purchaseNumberApp.purchaseNumberResponse);
+        setPurchaseNumber(purchaseNumberApp.purchaseNumberResponse);
       }
 
       localStorage.removeItem('cart');
@@ -69,7 +72,7 @@ export default function Payment() {
       localStorage.removeItem('selectedMethod');
 
     } catch (error) {
-      throw new Error('Error confirming purchase:', error.message);
+      throw new Error('Error confirming purchase.');
     }
   };
 

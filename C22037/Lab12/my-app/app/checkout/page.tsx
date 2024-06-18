@@ -6,16 +6,15 @@ import Link from 'next/link';
 export default function Address() {
     const [address, setAddress] = useState('');
 
-    const handleAddressChange = (e) => {
+    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newAddress = e.target.value;
         
         if (newAddress === undefined) {
-          throw new Error('Address cannot be undefined.');
+            throw new Error('Address cannot be undefined.');
         }
       
         setAddress(newAddress);
-      };
-      
+    };
 
     const handleSaveAddress = () => {
         if (address.trim() !== '') {
@@ -48,12 +47,14 @@ export default function Address() {
                         id="address"
                         name="address"
                         value={address}
-                        onChange={handleAddressChange}/>
+                        onChange={handleAddressChange}
+                    />
                 </form>
                 <Link href="/payment">
-                    <button className="Button" onClick={handleSaveAddress} disabled={isAddressEmpty}>Save Address and Proceed</button>
+                    <button className="Button" onClick={handleSaveAddress} disabled={isAddressEmpty}>
+                        Save Address and Proceed
+                    </button>
                 </Link>
-                    
             </div>
 
             <div className="footer">

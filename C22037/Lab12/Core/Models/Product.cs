@@ -1,5 +1,3 @@
-using System.ComponentModel;
-
 namespace TodoApi.Models
 {
     public class Product : ICloneable
@@ -13,11 +11,12 @@ namespace TodoApi.Models
 
         public Product(string name, string imageURL, decimal price, string description, int id, Categories.CategorySt category)
         {
-            if (string.IsNullOrEmpty(name))throw new ArgumentException("Name cannot be null or empty.");
-            if (string.IsNullOrEmpty(imageURL))throw new ArgumentException("ImageURL cannot be null or empty.");
-            if (price <= 0)throw new ArgumentException("Price must be greater than zero.");
-            if (string.IsNullOrEmpty(description))throw new ArgumentException("Description cannot be null or empty.");
-            if (id <= 0)throw new ArgumentException("Id must be greater than zero.");
+            if (string.IsNullOrEmpty(name)) throw new ArgumentException("Name cannot be null or empty.");
+            if (string.IsNullOrEmpty(imageURL)) throw new ArgumentException("ImageURL cannot be null or empty.");
+            if (price <= 0) throw new ArgumentException("Price must be greater than zero.");
+            if (string.IsNullOrEmpty(description)) throw new ArgumentException("Description cannot be null or empty.");
+            if (id <= 0) throw new ArgumentException("Id must be greater than zero.");
+            if (category.Equals(default(Categories.CategorySt))) throw new ArgumentException("Category cannot be null.");
 
             Name = name;
             ImageURL = imageURL;
