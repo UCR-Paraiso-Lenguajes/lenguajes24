@@ -94,7 +94,6 @@ const Products: React.FC = () => {
       throw new Error(error.message);
     }
   };
-
   const handleDelete = async (productId: number) => {
     if (!window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
       return;
