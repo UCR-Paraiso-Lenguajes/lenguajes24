@@ -33,6 +33,7 @@ function Page() {
     //useState para el buscador y la búsqueda rapida (solo catalogo)
     const [productCategory, setproductCategory] = useState(0);    
     const [categoryListForSearch, setCategoryListForSearch] = useState<number[]>([]);
+    
    
     //Se llama por defecto (este trae el Tax para la tienda, la lista de Categorias y los productos por defecto)
     useEffect(() => {
@@ -50,6 +51,7 @@ function Page() {
         }  
         loadDataProductAPI();
     }, []);
+
 
     function getSearchParamsFromUrl(){
         const params = new URLSearchParams(window.location.search);

@@ -21,19 +21,17 @@ namespace MyStoreAPI.Controllers
         [AllowAnonymous]
         [Consumes("application/json")]
         public async Task<IActionResult> CreateCartAsync([FromBody] Cart cart){                        
-            
+
             try{
                 SaleLogic saleLogic = new SaleLogic();
                 Sale saleConfirmed = await saleLogic.createSaleAsync(cart);
-                var purchaseNum = saleConfirmed.purchaseNum;
-
-                Console.WriteLine("Antes de mandar la respuesta post - Valor de saleConfirmed.purchaseNum: " + saleConfirmed.purchaseNum);
-                return Ok(new { purchaseNum });                        
+                var purchaseNum = saleConfirmed.purchaseNum;                                
+                return Ok(new { purchaseNum });
                  }
-            catch (BussinessException){                
+            catch (BussinessException ex){                
                 return StatusCode(501, "Ha ocurrido un error al generar la transaccion. Por favor inténtalo más tarde.");
             }
-            catch (Exception){                                             
+            catch (Exception ex){                                             
                 //Otros posibles errores
                 return StatusCode(500, "Ha ocurrido un error al generar la transaccion. Por favor inténtalo más tarde.");
             }

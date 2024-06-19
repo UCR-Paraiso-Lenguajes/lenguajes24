@@ -8,6 +8,10 @@ import { UserAccountAPI } from "../models-data/UserAccountAPI";
 import { useRouter } from 'next/navigation';
 
 import { jwtDecode } from 'jwt-decode';
+import { CartShopAPI } from "../models-data/CartShopAPI";
+import { ProductWithoutCategoryAPI } from "../models-data/ProductWithoutCategoryAPI";
+import { CartShopWithoutCategoryAPI } from "../models-data/CartShopWithoutCategoryAPI";
+import { stringify } from "querystring";
 
 
 const { default: jwt_decode } = require("jwt-decode");
@@ -40,11 +44,10 @@ const { default: jwt_decode } = require("jwt-decode");
 
     //POST Sale
     export async function sendCartDataToAPI(data:any): Promise<string | null> {
-
+                
         let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
 
         let directionAPI = `${urlByReactEnviroment}/api/Cart`;
-
         //Especificacion POST
         let postConfig = {
             method: "POST",
@@ -76,8 +79,7 @@ const { default: jwt_decode } = require("jwt-decode");
         } catch (error) {
             throw new Error('Failed to POST data: '+ error);
         }        
-    }
-
+    }    
 
     export async function getRegisteredSalesFromAPI(data: any): Promise<string | RegisteredSaleReport | null> {
         //const router = useRouter();       
@@ -206,3 +208,38 @@ const { default: jwt_decode } = require("jwt-decode");
             throw new Error('Failed to POST data: '+ error);
         }        
     }
+
+
+
+    //CRUD
+    export async function insertNewProductInDBAsync(newProduct: ProductAPI): Promise<string | boolean | null> {
+        
+        console.log(newProduct);
+        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
+        let directionAPI = `${urlByReactEnviroment}/api/ProductManagement/product/insert`;
+        //Especificacion POST
+        let postConfig = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(newProduct)
+        }            
+    
+        try {         
+            console.log("Hola");
+            let responsePost = await fetch(directionAPI,postConfig);            
+            if(!responsePost.ok){                                
+                const errorMessage = await responsePost.text();                                
+                return errorMessage;
+            }        
+            const insertedWithSuccess = await responsePost.json();                      
+            return insertedWithSuccess;
+        } catch (error) {            
+            throw new Error('Failed to POST data: '+ error);
+        }        
+    }
+
+
+

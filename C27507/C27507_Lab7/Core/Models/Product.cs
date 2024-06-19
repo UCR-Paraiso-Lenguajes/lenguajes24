@@ -11,9 +11,8 @@ namespace MyStoreAPI.Models
         public decimal price { get; set; }
         public decimal quantity { get; set; }        
         public string description { get; set; }        
-        public decimal id { get; internal set; }      
-        [JsonIgnore]  
-        public Category category {get; internal set;}
+        public decimal id { get; set; }        
+        public Category category {get; set;}
 
         public object Clone()
         {

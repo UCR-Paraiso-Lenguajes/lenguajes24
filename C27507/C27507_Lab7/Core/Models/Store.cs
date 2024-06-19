@@ -12,7 +12,7 @@ namespace MyStoreAPI.Models
         public IEnumerable<Product> Products { get; private set; } 
         public IEnumerable<Category> AllProductCategories {get; private set;}
         public int TaxPercentage { get; private set; }
-        public bool StoreConnectedWithDB {get; private set;}
+        public bool StoreConnectedWithDB {get; private set;}                
 
         private Store(){            
             this.TaxPercentage = 13;
@@ -41,6 +41,16 @@ namespace MyStoreAPI.Models
             //unica instancia de Store (con los productos y la conexion a la DB)            
             Store.Instance = new Store();                                    
         }
+
+
+        //Actualizar la lista en memoria de Store, justo despues de actualizar la DB con el nuevo producto
+        public void addNewProductInStore(Product newProduct){
+        var productList = Products.ToList();
+        productList.Add(newProduct);
+        Products = productList;
+    }
+
+
                 
         //Generamos productos en caso de que por alguna razon la tabla este vacia     
         public List<Product> createStoreProducts(){
@@ -150,13 +160,16 @@ namespace MyStoreAPI.Models
                 return products;
         }
 
+
+        //Esta funcion es solo para generar ventas automaticas a lo largo de 2 semanas
+        //por si se necesitan pruebas de algo. Por eso esta comentada mas arriba
         public void mockDataAsync(IEnumerable<Product> productsFromDB){
 
-            //Generamos productos
+            //Generamos ventas
             //var productsFromDB = Store.Products;            
             Random rand = new Random();            
             SaleLogic saleLogic = new SaleLogic();           
-            DateTime startDate = new DateTime(2024, 04, 29);  // Ajusta la fecha de inicio según sea necesario
+            DateTime startDate = new DateTime(2024, 04, 29);
 
             for (int week = 0; week < 2; week++){
 
