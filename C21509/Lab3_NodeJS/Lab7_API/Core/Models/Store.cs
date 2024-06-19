@@ -24,75 +24,78 @@ namespace Store_API.Models
             {
                 new Product
                 {
-                    Id= 1,
-                    Name = $"Iphone",
-                    ImageURL = $"/img/Iphone.jpg",
+                    Id = 1,
+                    Name = "Iphone",
+                    ImageURL = "/img/Iphone.jpg",
                     Price = 200M,
-                    Categoria  = new Category(1, "Electrónica")
+                    Categoria = new Category(1, "Electrónica")
                 },
                 new Product
                 {
-                    Id= 2,
-                    Name = $"Audifono",
-                    ImageURL = $"/img/audifonos.jpg",
+                    Id = 2,
+                    Name = "Audifono",
+                    ImageURL = "/img/audifonos.jpg",
                     Price = 100M,
-                    Categoria  = new Category(1, "Electrónica")
+                    Categoria = new Category(1, "Electrónica")
                 },
                 new Product
                 {
-                    Id= 3,
-                    Name = $"Mouse",
-                    ImageURL = $"/img/mouse.jpg",
+                    Id = 3,
+                    Name = "Mouse",
+                    ImageURL = "/img/mouse.jpg",
                     Price = 35M,
-                    Categoria  = new Category(2, "Hogar y oficina")
+                    Categoria = new Category(2, "Hogar y oficina")
                 },
                 new Product
                 {
-                    Id= 4,
-                    Name = $"Pantalla",
-                    ImageURL = $"/img/Pantalla.jpg",
+                    Id = 4,
+                    Name = "Pantalla",
+                    ImageURL = "/img/Pantalla.jpg",
                     Price = 68M,
-                    Categoria  = new Category(3, "Entretenimiento")
+                    Categoria = new Category(3, "Entretenimiento")
                 },
                 new Product
                 {
-                    Id= 5,
-                    Name = $"Headphone",
-                    ImageURL = $"/img/Headphone.jpg",
+                    Id = 5,
+                    Name = "Headphone",
+                    ImageURL = "/img/Headphone.jpg",
                     Price = 35M,
-                    Categoria  = new Category(3, "Entretenimiento")
+                    Categoria = new Category(3, "Entretenimiento")
                 },
                 new Product
                 {
-                    Id= 6,
-                    Name = $"Teclado",
-                    ImageURL = $"/img/teclado.jpg",
+                    Id = 6,
+                    Name = "Teclado",
+                    ImageURL = "/img/teclado.jpg",
                     Price = 95M,
-                    Categoria  = new Category(1, "Electrónica")
+                    Categoria = new Category(1, "Electrónica")
                 },
                 new Product
                 {
-                    Id= 7,
-                    Name = $"Cable USB",
-                    ImageURL = $"/img/Cable.jpg",
+                    Id = 7,
+                    Name = "Cable USB",
+                    ImageURL = "/img/Cable.jpg",
                     Price = 10M,
-                    Categoria  = new Category(4, "Tecnología")
+                    Categoria = new Category(4, "Tecnología")
                 },
                 new Product
                 {
-                    Id= 8,
-                    Name = $"Chromecast",
-                    ImageURL = $"/img/Chromecast.jpg",
+                    Id = 8,
+                    Name = "Chromecast",
+                    ImageURL = "/img/Chromecast.jpg",
                     Price = 150M,
-                    Categoria  = new Category(4, "Tecnología")
+                    Categoria = new Category(4, "Tecnología")
                 }
             };
-
-          
 
             List<Product> dbProducts = dbApi.SelectProducts();
 
             Store.Instance = new Store(dbProducts);
+        }
+
+        public void AddNewProductToStore(Product newProduct)
+        {
+            Products.Add(newProduct);
         }
 
         public async Task<Product> GetProductByNameAndCategoryIdAsync(string productName, int categoryId)
@@ -129,8 +132,6 @@ namespace Store_API.Models
                 var currentProduct = products[mid];
                 int compareResult = CompareProducts(currentProduct, productName, categoryId);
 
-                Console.WriteLine($"Searching: {currentProduct.Name}, {currentProduct.Categoria.IdCategory}");
-
                 if (compareResult == 0)
                 {
                     return currentProduct;
@@ -147,6 +148,7 @@ namespace Store_API.Models
 
             return null;
         }
+
         private int CompareProducts(Product product, string productName, int categoryId)
         {
             // Compara los nombres de los productos de manera insensible a mayúsculas y minúsculas
@@ -157,6 +159,5 @@ namespace Store_API.Models
             }
             return nameComparison;
         }
-
     }
 }
