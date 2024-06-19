@@ -47,8 +47,6 @@ const Carousel = ({ products, onAdd }: { products: Product[], onAdd: any }) => {
   )
 }
 
-
-//Componente principal
 const ProductsRow = ({ products, onAdd }: { products: Product[], onAdd: any }) => {
   let number = (products.length - (products.length % 4)) / 2
   return (

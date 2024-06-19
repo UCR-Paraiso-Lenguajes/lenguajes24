@@ -52,8 +52,8 @@ namespace StoreApi
             return product;
         }
 
-        [HttpPost, Authorize(Roles = "Admin")]
-        public async Task<Product> AddProductAsync(Product products)
+        [HttpPost, Authorize(Roles = "Operator")]
+        public async Task<Product> AddProductAsync([FromBody] Product products)
         {
             var product = await mediator.Send(new CreateProductCommand(
                 products.Name,
@@ -65,8 +65,8 @@ namespace StoreApi
             return product;
         }
 
-        [HttpPut, Authorize(Roles = "Admin")]
-        public async Task<int> UpdateProductAsync(Product products)
+        [HttpPut, Authorize(Roles = "Operator")]
+        public async Task<int> UpdateProductAsync([FromBody] Product products)
         {
             var isProductUpdated = await mediator.Send(new UpdateProductCommand(
                products.Uuid,
@@ -78,7 +78,7 @@ namespace StoreApi
             return isProductUpdated;
         }
 
-        [HttpDelete, Authorize(Roles = "Admin")]
+        [HttpDelete, Authorize(Roles = "Operator")]
         public async Task<int> DeleteProductAsync(Guid Uuid)
         {
             return await mediator.Send(new DeleteProductCommand() { Uuid = Uuid });

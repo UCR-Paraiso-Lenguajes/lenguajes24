@@ -32,34 +32,34 @@ public class AuthController : ControllerBase
             return BadRequest("Invalid client request");
         }
 
-        if (hostEnvironment.IsDevelopment())
+        //if (hostEnvironment.IsDevelopment())
+        //{
+
+        var validUser = credentials.Where(c => c.UserName == user.UserName && c.Password == user.Password).FirstOrDefault();
+
+        if (validUser is not null)
         {
-
-            var validUser = credentials.Where(c => c.UserName == user.UserName && c.Password == user.Password).FirstOrDefault();
-
-            if (validUser is not null)
-            {
-                var claims = new List<Claim>
+            var claims = new List<Claim>
                         {
                             new Claim(ClaimTypes.Name, validUser.UserName),
                             new Claim(ClaimTypes.Role, validUser.Rol),
                         };
 
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]));
-                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-                var tokeOptions = new JwtSecurityToken(
-                    issuer: "https://localhost:5001",
-                    audience: "https://localhost:5001",
-                    claims: claims,
-                    expires: DateTime.Now.AddMinutes(5),
-                    signingCredentials: signinCredentials
-                );
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:SecretKey"]));
+            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+            var tokeOptions = new JwtSecurityToken(
+                issuer: "https://localhost:5001",
+                audience: "https://localhost:5001",
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(180),
+                signingCredentials: signinCredentials
+            );
 
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-                return Ok(new AuthenticatedResponse { Token = tokenString });
-            }
-
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+            return Ok(new AuthenticatedResponse { Token = tokenString });
         }
+
+        //}
 
 
         return Unauthorized();

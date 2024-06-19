@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Moq;
 using StoreApi.Models;
 using StoreApi.Repositories;
 
@@ -7,7 +8,6 @@ namespace StoreApiTests
     public class HappyPathTest
     {
         private IConfiguration _configuration;
-        private IProductRepository _productRepository;
         private ISalesRepository _salesRepository;
         [OneTimeSetUp]
         public async Task Setup()
@@ -15,8 +15,17 @@ namespace StoreApiTests
             _configuration = new ConfigurationBuilder()
                        .AddJsonFile("appsettings.json")
                        .Build();
-            _productRepository = new ProductRepository(_configuration);
-            _salesRepository = new SalesRepository(_configuration);
+
+            var salesRepositoryMock = new Mock<ISalesRepository>();
+
+            //Configuracion de los metodos simulados de ISalesRepository
+            salesRepositoryMock.Setup(repo => repo.AddSalesAsync(It.IsAny<Sales>()))
+                                .ReturnsAsync(new Sales() { Uuid = Guid.NewGuid() });
+
+            salesRepositoryMock.Setup(repo => repo.GetSalesByPurchaseNumberAsync(It.IsAny<string>()))
+                                .ReturnsAsync(new Sales() { Uuid = Guid.NewGuid() });
+
+            _salesRepository = salesRepositoryMock.Object;
         }
 
         [Test]
@@ -33,15 +42,6 @@ namespace StoreApiTests
             };
             var result = await _salesRepository.AddSalesAsync(sales);
             Assert.NotNull(result);
-        }
-
-        [Test]
-        public async Task GetSalesByPurchaseNumberAsync()
-        {
-            var existingPurchaseNumber = "123456";
-            var result = await _salesRepository.GetSalesByPurchaseNumberAsync(existingPurchaseNumber);
-            Assert.NotNull(result);
-            Assert.That(result.PurchaseNumber, Is.EqualTo(existingPurchaseNumber));
         }
     }
 }

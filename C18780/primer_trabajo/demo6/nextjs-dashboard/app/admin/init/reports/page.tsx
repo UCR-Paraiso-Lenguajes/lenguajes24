@@ -14,12 +14,6 @@ export default function Reports() {
   const [dataDailySales, setDataDailySales] = useState<(string | number)[][]>([]);
   const router = useRouter();
 
-  //useEffect(() => {
-  //  if (!token) {
-  //    router.push('/login');
-  //  }
-  //}, [token])
-
   const { dailyReports, weeklyReports } = useFetchReports(selectedDate);
 
   const handleOnDay = (selectedDay: Date) => {
@@ -53,9 +47,7 @@ export default function Reports() {
             <h2>Venta por semana</h2>
             <Pie data={dataWeeklySales} />
           </div>
-        </div>
-        <div className='row align-items-center'>
-          <div className='col'>
+          <div className='col-sm-12 col-md-6 col-lg-6'>
             <h2>Venta por día</h2>
             <Charts data={dataDailySales} />
           </div>

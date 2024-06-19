@@ -1,45 +1,84 @@
 using Microsoft.AspNetCore.Mvc;
+using NUnit.Framework;
+using StoreApi.Controllers;
+using StoreApi.Models;
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Moq;
+using System.Linq;
+using Microsoft.Extensions.Hosting.Internal;
 using StoreApi;
 
 namespace StoreApiTests
 {
     [TestFixture]
-    public class AuthTests
+    public class AuthControllerTests
     {
-        private Mock<IConfiguration> _configurationMock;
-        private Mock<IHostEnvironment> _hostEnvironmentMock;
-        private AuthController _authController;
+        private IConfiguration configuration;
+        private IHostEnvironment hostEnvironment;
+        private AuthController authController;
 
         [SetUp]
         public void Setup()
         {
-            _configurationMock = new Mock<IConfiguration>();
-            _hostEnvironmentMock = new Mock<IHostEnvironment>();
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { "JwtSettings:SecretKey", "SecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKeySecretKey" },
+                { "Credentials:Staff:0:UserName", "testUser" },
+                { "Credentials:Staff:0:Password", "testPassword" },
+                { "Credentials:Staff:0:Rol", "Admin" }
+            });
+            configuration = configurationBuilder.Build();
 
-            _configurationMock.Setup(config => config["JwtSettings:SecretKey"]).Returns("superSecretKey@345superSecretKey@345");
+            hostEnvironment = new HostingEnvironment();
 
-            _hostEnvironmentMock.Setup(env => env.EnvironmentName).Returns("Development");
-
-            _authController = new AuthController(_configurationMock.Object, _hostEnvironmentMock.Object);
+            authController = new AuthController(configuration, hostEnvironment);
         }
 
         [Test]
-        public async Task LoginAsync_ReturnsOkResult()
+        public void Login_ValidUser_ReturnsToken()
         {
-            var loginModel = new LoginModel { UserName = "jean@gmail.com", Password = "123456" };
-            var result = await _authController.LoginAsync(loginModel);
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            // Arrange
+            var userModel = new LoginModel { UserName = "testUser", Password = "testPassword" };
+
+            // Act
+            var result = authController.LoginAsync(userModel).GetAwaiter().GetResult() as ObjectResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(200, result.StatusCode);
+            Assert.IsNotNull(result.Value);
+            Assert.IsInstanceOf<AuthenticatedResponse>(result.Value);
+            var response = (AuthenticatedResponse)result.Value;
+            Assert.IsNotNull(response.Token);
         }
 
         [Test]
-        public async Task LoginAsync_ReturnsUnauthorizedResult()
+        public void Login_InvalidUser_ReturnsUnauthorized()
         {
-            var loginModel = new LoginModel { UserName = "user", Password = "password" };
-            var result = await _authController.LoginAsync(loginModel);
-            Assert.IsInstanceOf<UnauthorizedResult>(result);
+            // Arrange
+            var userModel = new LoginModel { UserName = "invalidUser", Password = "invalidPassword" };
+
+            // Act
+            var result = authController.LoginAsync(userModel).GetAwaiter().GetResult() as StatusCodeResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(401, result.StatusCode);
+        }
+
+        [Test]
+        public void Login_NullUser_ReturnsBadRequest()
+        {
+            // Act
+            var result = authController.LoginAsync(null).GetAwaiter().GetResult() as BadRequestObjectResult;
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(400, result.StatusCode);
+            Assert.AreEqual("Invalid client request", result.Value);
         }
     }
 }

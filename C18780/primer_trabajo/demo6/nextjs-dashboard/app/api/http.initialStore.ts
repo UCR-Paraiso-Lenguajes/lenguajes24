@@ -23,7 +23,6 @@ export function useFetchInitialStore({ category, search }: { category: string[],
 
     getProducts();
   }, [category, search]);
-
   return products;
 }
 

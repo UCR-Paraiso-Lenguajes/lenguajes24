@@ -31,7 +31,7 @@ const SideNav = () => {
                         </span>
                     </li>
                 </Link>
-                <Link href="/admin/init">
+                <Link href="/admin/init/products">
                     <li className="nav">
                         <FontAwesomeIcon icon={faCartFlatbed} className="fa-icon me-2" />
                         <span className={`text-hidden ${isMenuOpen ? '' : 'hidden'}`}>

@@ -19,7 +19,7 @@ export default function Page() {
         setIsLoading(true);
 
         const user: LoginModel = { UserName: userName, Password: password };
-        
+
         try {
             const response = await login(user);
             const decodedToken = jwtDecode(response.token);
@@ -54,7 +54,8 @@ export default function Page() {
                                                     <use xlinkHref="#exclamation-triangle-fill" />
                                                 </svg>
                                                 <div>
-                                                    Incorrect mail or password                                                </div>
+                                                    Incorrect mail or password
+                                                </div>
                                             </div></>
                                         }
                                         <h3 className="display-4">Abacaxi</h3>
