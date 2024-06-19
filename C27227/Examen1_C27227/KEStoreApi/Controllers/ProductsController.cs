@@ -42,7 +42,7 @@ namespace KEStoreApi.Controllers
             }
 
             var store = await Store.Instance;
-            await store.AddProduct(product);
+            await store.AddProductAsync(product);
             return CreatedAtAction(nameof(PostProduct), new { id = product.Id }, product);
         }
 
@@ -53,7 +53,7 @@ namespace KEStoreApi.Controllers
             {
                 await DatabaseStore.DeleteProductAsync(id);
                 var store = await Store.Instance;
-                await store.RefreshProductsList();
+                await store.RefreshProductsListAsync();
                 return NoContent();
             }
             catch (Exception ex)
