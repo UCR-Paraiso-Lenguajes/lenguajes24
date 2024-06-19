@@ -122,15 +122,14 @@ namespace storeapi.Database
         }
 
         // Delegate method to insert a product
-        private static void InsertProduct(Product product, MySqlConnection connection, MySqlTransaction transaction)
+        public static void InsertProduct(Product product, MySqlConnection connection, MySqlTransaction transaction)
         {
             string insertProductQuery = @"
-                INSERT INTO products (id, name, price, description, image, category)
-                VALUES (@id, @name, @price, @description, @image, @category)";
+                INSERT INTO products (name, price, description, image, category)
+                VALUES (@name, @price, @description, @image, @category)";
 
             using (var insertCommand = new MySqlCommand(insertProductQuery, connection, transaction))
             {
-                insertCommand.Parameters.AddWithValue("@id", product.id);
                 insertCommand.Parameters.AddWithValue("@name", product.Name);
                 insertCommand.Parameters.AddWithValue("@price", product.Price);
                 insertCommand.Parameters.AddWithValue("@description", product.Description);
@@ -209,4 +208,5 @@ namespace storeapi.Database
         }
     }
 }
+
 
