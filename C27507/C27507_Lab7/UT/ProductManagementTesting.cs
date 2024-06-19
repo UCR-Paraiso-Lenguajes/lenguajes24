@@ -16,16 +16,16 @@ namespace UT{
             productsInserted = new List<Product>();
         }
 
-        //Test para los datos de consultas de ventas
         [Test]
         public async Task delegateTesting(){
+
             // Arrange
             ProductManagementLogic productManagementLogic = new ProductManagementLogic();
             productManagementLogic.onProductInserted = TestProductInsertedDelegate;
 
             // Act
-            Product productToAdd = new Product { id = 1, name = "Test Product", /* Otras propiedades */ };
-            await productManagementLogic.insertProductAsyncUT(productToAdd);
+            Product productToAdd = new Product { id = 1, name = "Test Product"};
+            await productManagementLogic.insertProductAsyncUT(productToAdd,TestProductInsertedDelegate);
 
             // Assert
             Assert.IsTrue(productsInserted.Contains(productToAdd));            

@@ -19,11 +19,8 @@ namespace MyStoreAPI.Controllers
         [Authorize(Roles = "Admin, Operator")]
         public async Task<IActionResult> InsertNewProductInStoreAsync([FromBody] Product newProduct){
             try{                
-                ProductManagementLogic productManagementLogic = new ProductManagementLogic();
-                //Hacemos que al delegate se le asigne la funcion de actualizar la lista en memoria
-                productManagementLogic.onProductInserted = Store.Instance.addNewProductInStore;
-                //Dentro de insertProductAsync() se ejecutaria el OnProductInserted
-                bool insertedProductStatus = await productManagementLogic.insertProductAsync(newProduct);                
+                ProductManagementLogic productManagementLogic = new ProductManagementLogic();                                
+                bool insertedProductStatus = await productManagementLogic.insertProductAsync(newProduct, Store.Instance.addNewProductInStore);                
                 return Ok( new {insertedProductStatus});
                 
             //501 son para NotImplemented o Excepciones Propias

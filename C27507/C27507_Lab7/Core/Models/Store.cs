@@ -169,7 +169,7 @@ namespace MyStoreAPI.Models
             //var productsFromDB = Store.Products;            
             Random rand = new Random();            
             SaleLogic saleLogic = new SaleLogic();           
-            DateTime startDate = new DateTime(2024, 04, 29);  // Ajusta la fecha de inicio según sea necesario
+            DateTime startDate = new DateTime(2024, 04, 29);
 
             for (int week = 0; week < 2; week++){
 

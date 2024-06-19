@@ -11,7 +11,7 @@ namespace MyStoreAPI.Business
         public delegate void ProductInsertedDelegate(Product newProduct);
         public ProductInsertedDelegate onProductInserted;
         
-        public async Task<bool> insertProductAsync(Product newProduct){
+        public async Task<bool> insertProductAsync(Product newProduct,ProductInsertedDelegate onProductInserted){
             try{
                 await db_product.InsertProductInDBAsync(newProduct);
                 //Si no hay errores significa que la inserción en la bd fue exitosa, 
@@ -24,7 +24,7 @@ namespace MyStoreAPI.Business
             }
         }
 
-        public async Task<bool> insertProductAsyncUT(Product newProduct){            
+        public async Task<bool> insertProductAsyncUT(Product newProduct,ProductInsertedDelegate onProductInserted){            
             onProductInserted?.Invoke(newProduct);
             return true;
         }
