@@ -1,14 +1,18 @@
 'use client';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Button, Modal } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function Page() {
 
-    const [show, setShow] = useState(true)
+    const [show, setShow] = useState(false)
 
     const handleClose = () => setShow(false)
     const handleShow = () => setShow(true);
+
+    useEffect(() => {
+        setShow(true)
+      }, [])
 
     return (
         <>

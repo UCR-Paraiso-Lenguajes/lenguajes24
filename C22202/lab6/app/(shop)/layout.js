@@ -1,11 +1,11 @@
 
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 import Link from "next/link";
-import Search from "./ui/Search";
-import CartButton from "./ui/CartButton";
-import { StateProvider } from "./ui/StateContext";
+import Search from "../ui/Search";
+import CartButton from "../ui/CartButton";
+import { StateProvider } from "../ui/StateContext";
 
 
 const inter = Inter({ subsets: ["latin"] });

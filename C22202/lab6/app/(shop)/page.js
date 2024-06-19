@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button'
 import React from 'react';
 import { Card, Container } from "react-bootstrap";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useStateValue } from "./ui/StateContext";
+import { useStateValue } from '../ui/StateContext';
 
 const Product = ({ product, addToCart }) => {
   const { id, imgSource, name, price } = product;

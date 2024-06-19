@@ -60,7 +60,8 @@ public sealed class StoreDB
                     name VARCHAR(100),
                     price DECIMAL(10, 2),
                     imgSource VARCHAR(255),
-                    category INT
+                    category INT,
+                    deleted INT DEFAULT 0
                 );
                 
                 CREATE TABLE IF NOT EXISTS sales (

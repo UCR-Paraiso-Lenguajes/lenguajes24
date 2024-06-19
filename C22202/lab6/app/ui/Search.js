@@ -98,7 +98,7 @@ export default function Search() {
 
     const handleChangeSelect = async (ids, search = '') => {
         const params = { categories: ids, search: search };
-        debugger
+        // debugger
         if(path === '/' || (!selectedCategories.includes(0) && selectedCategories.length >= 1))
             router.push('/?' + createQueryString(params));
     };

@@ -89,7 +89,8 @@ public sealed class ProductDB
             {
                 if (int.TryParse(row["id"], out int id) &&
                     decimal.TryParse(row["price"], out decimal price) &&
-                    int.TryParse(row["category"], out int categoryId))
+                    int.TryParse(row["category"], out int categoryId) &&
+                    int.TryParse(row["deleted"], out int deleted))
 
                 {
                     string name = row["name"];
@@ -97,7 +98,7 @@ public sealed class ProductDB
 
                     Category category = CategoriesLogic.Instance.GetCategories().SingleOrDefault(c => c.id == categoryId);
 
-                    if (!categoryId.Equals(default(Category)))
+                    if (!categoryId.Equals(default(Category)) && deleted == 0)
                     {
                         Product product = new Product
                         {
