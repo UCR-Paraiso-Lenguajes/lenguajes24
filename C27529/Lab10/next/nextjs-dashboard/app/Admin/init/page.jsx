@@ -2,7 +2,7 @@
 import React, { createContext, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Reports from './Reports';
-import ProductList from './ProductList';
+import StoreCrud from './StoreCrud';
 
 
 const SidebarContext = createContext();
@@ -39,7 +39,7 @@ function Page() {
                 </li>
                 <li className="nav-item">
                   <a className="nav-link disabled" aria-disabled="true" href="#">
-                    Ofertas
+                    Promociones
                   </a>
                 </li>
               </ul>
@@ -48,7 +48,7 @@ function Page() {
         </div>
         <div className="col-sm-9">
           <main role="main" className="col-md-10 ml-md-auto px-4">
-            {selected == 0 ? (<ProductList />) : (<Reports />)}
+            {selected == 0 ? (<StoreCrud />) : (<Reports />)}
           </main>
 
         </div>

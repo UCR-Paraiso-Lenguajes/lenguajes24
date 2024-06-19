@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MySqlConnector;
 using Core;
+using storeApi.Business;
 namespace storeApi.db;
 public sealed class StoreDB
 {
@@ -12,8 +13,6 @@ public sealed class StoreDB
 
     public static async Task CreateMysql()
     {
-
-
         var products = new List<Product>
             {
                new Product
@@ -187,7 +186,7 @@ public sealed class StoreDB
                 Description = "Consola de última generación con capacidad de 4K.",
                 Price = 60000,
                 ImageURL = "https://m.media-amazon.com/images/I/71rWPpdhwgL._AC_UY218_.jpg",
-                Category =     new Category.ProductCategory { Id = 3, Name = "Consolas" } 
+                Category =     new Category.ProductCategory { Id = 3, Name = "Consolas" }
             },
             new Product
             {
@@ -205,7 +204,7 @@ public sealed class StoreDB
                 Description = "Mouse ergonómico con conexión Bluetooth.",
                 Price = 15000,
                 ImageURL = "https://m.media-amazon.com/images/I/61N+CzcA8vL._AC_UY218_.jpg",
-                Category =     new Category.ProductCategory { Id = 5, Name = "Mouse" } 
+                Category =     new Category.ProductCategory { Id = 5, Name = "Mouse" }
             },
             new Product
             {
@@ -214,7 +213,7 @@ public sealed class StoreDB
                 Description = "Silla ergonómica diseñada para largas sesiones de juego.",
                 Price = 35000,
                 ImageURL = "https://m.media-amazon.com/images/I/61Sp94J-hhL._AC_UL320_.jpg",
-                Category =     new Category.ProductCategory { Id = 6, Name = "Sillas" } 
+                Category =     new Category.ProductCategory { Id = 6, Name = "Sillas" }
             },
             new Product
             {
@@ -232,7 +231,7 @@ public sealed class StoreDB
                 Description = "Experimenta la realidad virtual de alta calidad con Oculus Rift.",
                 Price = 40000,
                 ImageURL = "https://m.media-amazon.com/images/I/61GhF+JUXGL._AC_UY218_.jpg",
-                Category =     new Category.ProductCategory { Id = 8, Name = "RealidadVirtual"} 
+                Category =     new Category.ProductCategory { Id = 8, Name = "RealidadVirtual"}
             },
             new Product
             {
@@ -250,7 +249,7 @@ public sealed class StoreDB
                 Description = "Monitor de 27 pulgadas con resolución QHD y tasa de actualización de 144Hz.",
                 Price = 35000,
                 ImageURL = "https://m.media-amazon.com/images/I/71NN-PW+pdL._AC_UL320_.jpg",
-                Category =    new Category.ProductCategory { Id = 10, Name = "Monitores" } 
+                Category =    new Category.ProductCategory { Id = 10, Name = "Monitores" }
             },
             new Product
             {
@@ -318,7 +317,8 @@ public sealed class StoreDB
             string createTableQuery = @"
                 DROP DATABASE IF EXISTS store;
                 CREATE DATABASE store;
-                use store;
+                USE store;
+
 
                 CREATE TABLE IF NOT EXISTS paymentMethods (
                     paymentId INT PRIMARY KEY,
@@ -361,34 +361,35 @@ public sealed class StoreDB
                     
                 INSERT INTO sales (purchase_date, total, payment_method, purchase_number)
                 VALUES
-                    ('2024-06-08 05:20:00', 67.20, 1, 'SA123456789'),
-                    ('2024-06-09 14:45:00', 45.80, 0, 'SB987654321'),
-                    ('2024-06-10 08:55:00', 35.60, 1, 'SC246813579'),
-                    ('2024-06-11 17:30:00', 78.90, 0, 'SD135792468'),
-                    ('2024-06-12 10:10:00', 25.50, 0, 'SE987654321'),
-                    ('2024-06-13 12:25:00', 50.30, 1, 'SF123456789'),
-                    ('2024-06-14 13:15:00', 90.00, 0, 'SG246813579'),
+                    ('2024-06-15 05:20:00', 67.20, 1, 'SA123456789'),
+                    ('2024-06-15 14:45:00', 45.80, 0, 'SB987654321'),
+                    ('2024-06-15 08:55:00', 35.60, 1, 'SC246813579'),
+                    ('2024-06-15 17:30:00', 78.90, 0, 'SD135792468'),
+                    ('2024-06-15 10:10:00', 25.50, 0, 'SE987654321'),
+                    ('2024-06-15 12:25:00', 50.30, 1, 'SF123456789'),
+                    ('2024-06-15 13:15:00', 90.00, 0, 'SG246813579'),
                     ('2024-06-15 07:50:00', 55.25, 1, 'SH135792468'),
-                    ('2024-06-16 11:40:00', 40.75, 0, 'SI987654321'),
-                    ('2024-06-17 09:05:00', 70.00, 1, 'SJ123456789'),
-                    ('2024-06-18 15:20:00', 60.40, 1, 'SX123456789'),
-                    ('2024-06-19 08:55:00', 35.75, 0, 'SY987654321'),
-                    ('2024-05-20 12:30:00', 80.20, 1, 'SZ246813579'),
-                    ('2024-05-21 09:45:00', 25.50, 0, 'SW135792468'),
-                    ('2024-05-22 11:00:00', 45.90, 0, 'SV987654321'),
-                    ('2024-06-23 14:10:00', 70.80, 1, 'SU123456789'),
-                    ('2024-06-24 16:25:00', 50.70, 0, 'ST246813579'),
-                    ('2024-06-25 10:35:00', 35.25, 1, 'SS135792468'),
-                    ('2024-06-26 13:20:00', 67.00, 0, 'SR987654321'),
-                    ('2024-06-27 07:15:00', 40.25, 1, 'SQ123456789'),
-                    ('2024-05-31 08:14:00', 90.25, 0, 'SG123456459'),
-                    ('2024-05-02 08:23:00', 92.25, 1, 'HG123494459'),
-                    ('2024-05-03 08:09:00', 93.25, 0, 'SV123475459'),
-                    ('2024-05-04 05:20:00', 67.20, 1, 'SA124456789'),
-                    ('2024-05-05 05:20:00', 67.20, 1, 'SA122456789'),
-                    ('2024-06-06 08:18:00', 95.25, 1, 'TE123434459'),
-                    ('2024-06-07 01:20:00', 67.20, 1, 'SA121456789'),
-                    ('2024-06-07 01:50:00', 67.20, 1, 'SA129456789')
+                    ('2024-06-15 11:40:00', 40.75, 0, 'SI987654321'),
+                    ('2024-06-15 09:05:00', 70.00, 1, 'SJ123456789'),
+                    ('2024-06-15 15:20:00', 60.40, 1, 'SX123456789'),
+                    ('2024-06-15 08:55:00', 35.75, 0, 'SY987654321'),
+                    ('2024-06-15 12:30:00', 80.20, 1, 'SZ246813579'),
+                    ('2024-06-15 09:45:00', 25.50, 0, 'SW135792468'),
+                    ('2024-06-15 11:00:00', 45.90, 0, 'SV987654321'),
+                    ('2024-06-15 14:10:00', 70.80, 1, 'SU123456789'),
+                    ('2024-06-15 16:25:00', 50.70, 0, 'ST246813579'),
+                    ('2024-06-15 10:35:00', 35.25, 1, 'SS135792468'),
+                    ('2024-06-15 13:20:00', 67.00, 0, 'SR987654321'),
+                    ('2024-06-15 07:15:00', 40.25, 1, 'SQ123456789'),
+                    ('2024-06-15 08:14:00', 90.25, 0, 'SG123456459'),
+                    ('2024-06-15 08:23:00', 92.25, 1, 'HG123494459'),
+                    ('2024-06-15 08:09:00', 93.25, 0, 'SV123475459'),
+                    ('2024-06-15 05:20:00', 67.20, 1, 'SA124456789'),
+                    ('2024-06-15 05:20:00', 67.20, 1, 'SA122456789'),
+                    ('2024-06-15 08:18:00', 95.25, 1, 'TE123434459'),
+                    ('2024-06-15 01:20:00', 67.20, 1, 'SA121456789'),
+                    ('2024-06-15 01:50:00', 67.20, 1, 'SA129456789')
+
 
                                 ";
 
@@ -436,7 +437,7 @@ public sealed class StoreDB
     public static async Task<List<Product>> GetProductsAsync()
     {
         List<Product> products = new List<Product>();
-         Category category = new Category();
+        Category category = new Category();
         using (MySqlConnection connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
         {
             await connection.OpenAsync();
@@ -468,6 +469,59 @@ public sealed class StoreDB
     }
 
 
+    public async Task AddProductAsync(Product product)
+    {
+        using (MySqlConnection connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
+        {
+            await connection.OpenAsync();
 
+            string insertProductQuery = @"
+                    use store;
+                    INSERT INTO products (name, description, price, imageURL, category)
+                    VALUES (@name, @description, @price, @imageURL, @category);";
 
+            using (var insertCommand = new MySqlCommand(insertProductQuery, connection))
+            {
+                insertCommand.Parameters.AddWithValue("@name", product.Name);
+                insertCommand.Parameters.AddWithValue("@description", product.Description);
+                insertCommand.Parameters.AddWithValue("@price", product.Price);
+                insertCommand.Parameters.AddWithValue("@imageURL", product.ImageURL);
+                insertCommand.Parameters.AddWithValue("@category", product.Category.Id.ToString());
+                await insertCommand.ExecuteNonQueryAsync();
+            }
+        }
+        var addedProduct = await GetProductByIdAsync(product.Id);
+
+        StoreLogic.RaiseProductAddedEvent(addedProduct);
+    }
+
+    private async Task<Product> GetProductByIdAsync(int productId)
+    {
+        Product product = null;
+        using (MySqlConnection connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
+        {
+            await connection.OpenAsync();
+            string query = "use store; SELECT * FROM products WHERE id = @productId;";
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@productId", productId);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        product = new Product
+                        {
+                            Id = reader.GetInt32("id"),
+                            Name = reader.GetString("name"),
+                            Description = reader.GetString("description"),
+                            Price = reader.GetDecimal("price"),
+                            ImageURL = reader.GetString("imageURL"),
+                            Category = new Category.ProductCategory { Id = reader.GetInt32("category"), Name = "" }
+                        };
+                    }
+                }
+            }
+        }
+        return product;
+    }
 }

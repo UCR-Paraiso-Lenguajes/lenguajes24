@@ -12,7 +12,7 @@ public class SaleDBTest
         [SetUp]
         public void Setup()
         {
-            ConnectionDB.Init("Server=localhost;Port=3306;Database=mysql;Uid=root;Pwd=123456;");
+            ConnectionDB.Init("Server=172.20.192.1;Database=mysql;Uid=root;Pwd=123456;");
             _saleDB = new SaleDB();
         }
 

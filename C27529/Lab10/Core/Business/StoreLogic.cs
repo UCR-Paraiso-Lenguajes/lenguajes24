@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
 using storeApi.Models;
 using storeApi.Database;
 
@@ -9,7 +9,14 @@ namespace storeApi.Business
 {
     public sealed class StoreLogic
     {
+        public delegate void ProductAddedHandler(Product product);
+        public static event ProductAddedHandler OnProductAdded;
         private SaleDB saleDB = new SaleDB();
+
+        public StoreLogic()
+        {
+
+        }
 
         public async Task<Sale> PurchaseAsync(Cart cart) //UT
         {
@@ -17,7 +24,6 @@ namespace storeApi.Business
             if (cart.Address == "") throw new ArgumentException("Address must be provided.");
 
             var products = Store.Instance.Products;
-           // var taxPercentage = Store.Instance.TaxPercentage;
 
             // Find matching products based on the product IDs in the cart
             IEnumerable<Product> matchingProducts = products.Where(p => cart.ProductIds.Contains(p.Id.ToString())).ToList();
@@ -36,7 +42,7 @@ namespace storeApi.Business
             return sale;
         }
 
-        public static string GenerateNextPurchaseNumber()//UT
+        public static string GenerateNextPurchaseNumber()
         {
             Random random = new Random();
 
@@ -51,7 +57,9 @@ namespace storeApi.Business
             return purchaseNumber;
         }
 
-
-        
+        public static void RaiseProductAddedEvent(Product product)
+        {
+            OnProductAdded?.Invoke(product);
+        }
     }
 }

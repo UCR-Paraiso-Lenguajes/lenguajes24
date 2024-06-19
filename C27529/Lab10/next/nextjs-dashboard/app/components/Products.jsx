@@ -7,14 +7,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 export const Products = () => {
-  const [productList, setProductList] = useState([]);
-  const [listNames, setListNames] = useState([]);
+  const [productList, setProductList] = useState(() => {
+    const storedProductList = localStorage.getItem('productList');
+    return storedProductList ? JSON.parse(storedProductList) : [];
+  });
+  const [listNames, setListNames] = useState(() => {
+    const storedListNames = localStorage.getItem('listNames');
+    return storedListNames ? JSON.parse(storedListNames) : [];
+  });
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [searchText, setSearchText] = useState('');
 
   const navigate = useNavigate();
   const location = useLocation();
-
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -30,6 +35,14 @@ export const Products = () => {
       loadData();
     }
   }, [location.search]);
+
+  useEffect(() => {
+    localStorage.setItem('productList', JSON.stringify(productList));
+  }, [productList]);
+
+  useEffect(() => {
+    localStorage.setItem('listNames', JSON.stringify(listNames));
+  }, [listNames]);
 
   const loadData = async () => {
     try {
@@ -76,8 +89,6 @@ export const Products = () => {
       setSelectedCategories([...selectedCategories, categoryId]);
     }
   };
-
-  
 
   const [storeData, setStoreData] = useState(() => {
     const storedStoreData = localStorage.getItem("tienda");
