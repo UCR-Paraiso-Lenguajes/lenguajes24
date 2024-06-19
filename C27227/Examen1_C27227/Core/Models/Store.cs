@@ -40,20 +40,20 @@ namespace KEStoreApi
             return new Store(products, 13, categorias);
         }
 
-        public async Task<IEnumerable<Product>> GetProductosCategoryID(IEnumerable<int> categoryIds)
+        public async Task<IEnumerable<Product>> GetProductosCategoryIDAsync(IEnumerable<int> categoryIds)
         {
             if (categoryIds == null)
                 throw new ArgumentNullException(nameof(categoryIds), "Los IDs de categoría no pueden ser nulos.");
-            await RefreshProductsList();
+            await RefreshProductsListAsync();
             return _productsInstance.ProductsStore.Where(p => categoryIds.Contains(p.CategoriaId) && !p.IsDeleted);
         }
 
-        public async Task<List<Product>> SearchProductsStore(string productName, IEnumerable<int> categoryIds)
+        public async Task<List<Product>> SearchProductsStoreAsync(string productName, IEnumerable<int> categoryIds)
         {
             if (string.IsNullOrEmpty(productName))
                 throw new ArgumentException("El nombre del producto no puede ser nulo o vacío.", nameof(productName));
 
-            await RefreshProductsList();
+            await RefreshProductsListAsync();
 
             if (categoryIds == null || !categoryIds.Any())
             {
@@ -65,7 +65,7 @@ namespace KEStoreApi
             }
         }
 
-        public async Task AddProduct(Product product)
+        public async Task AddProductAsync(Product product)
         {
             ProductActionDelegate actions = async (newProduct) =>
             {
@@ -106,7 +106,7 @@ namespace KEStoreApi
             };
         }
 
-        public async Task RefreshProductsList()
+        public async Task RefreshProductsListAsync()
         {
             var products = await DatabaseStore.GetProductsFromDBaAsync();
             ProductsList = products.Where(p => !p.IsDeleted);
