@@ -10,34 +10,41 @@ on:
     branches: [ "C27507" ]
 
 jobs:
-  test:
+  Test:
     runs-on: ubuntu-latest    
-    steps:
-    - uses: actions/checkout@v4
-    - name: Wait for MySQL to be healthy
-      run: |
-        docker run -d --name mysql_db -e MYSQL_ROOT_PASSWORD=123456 -e MYSQL_DATABASE=MyStoreApi mysql:latest
-        docker ps -a
-        docker exec mysql_db mysql -u root -p123456 -e "CREATE DATABASE IF NOT EXISTS MyStoreApi;"
-        
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: |
-        cd C27507/C27507_Lab7
-        dotnet restore
-    - name: Build
-      run: |
-        cd C27507/C27507_Lab7
-        dotnet build --no-restore    
-    - name: Test
-      run: |
-        cd C27507/C27507_Lab7
-        dotnet test --no-build --verbosity normal
-        
+    services:
+      mysql:
+        image: mysql:latest
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        env:
+          MYSQL_ROOT_PASSWORD: 123456
+          MYSQL_DATABASE: MyStoreApi
+          MYSQL_USER: root
+          MYSQL_PASSWORD: 123456
+    steps:            
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore dependencies
+        run: |
+          cd C27507/C27507_Lab7
+          dotnet restore
+      - name: Build
+        run: |
+          cd C27507/C27507_Lab7
+          dotnet build --no-restore    
+      - name: Test
+        run: |
+          cd C27507/C27507_Lab7
+          dotnet test --no-build --verbosity normal        
   publish-api:
     runs-on: ubuntu-latest
     steps:
@@ -60,5 +67,3 @@ jobs:
         echo "${{ secrets.DOCKERHUBPASS_C27507 }}" | docker login -u "alvaro.siles@ucr.ac.cr" --password-stdin
         docker push alvaro944/store_api_leng_2024:latest
       
-                
-        
