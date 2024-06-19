@@ -60,16 +60,17 @@ namespace TodoApi.Database
             }
         }
 
-        public async Task<SalesReport> GetSalesReportAsync(DateTime date)
+        public SalesReport GetSalesReport(DateTime date)
         {
             if (date == DateTime.MinValue)
                 throw new ArgumentException("Date cannot be:", nameof(date));
 
             Task<List<WeeklyReport>> weeklySalesTask = GetWeeklySalesAsync(date);
             Task<List<DailyReport>> dailySalesTask = GetDailySalesAsync(date);
-            await Task.WhenAll(weeklySalesTask, dailySalesTask);
-            List<WeeklyReport> weeklySales = await weeklySalesTask;
-            List<DailyReport> dailySales = await dailySalesTask;
+            Task.WaitAll(weeklySalesTask, dailySalesTask);
+            List<WeeklyReport> weeklySales = weeklySalesTask.Result;
+            List<DailyReport> dailySales = dailySalesTask.Result;
+
             SalesReport salesReport = new SalesReport(dailySales, weeklySales);
             return salesReport;
         }

@@ -17,7 +17,7 @@ export default function Admin() {
         password: ''
     });
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+    const URL = process.env.NEXT_PUBLIC_API_URL;
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({
@@ -37,7 +37,7 @@ export default function Admin() {
         }
 
         try {
-            const response = await fetch('https://localhost:7067/api/auth/login', {
+            const response = await fetch(URL + '/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

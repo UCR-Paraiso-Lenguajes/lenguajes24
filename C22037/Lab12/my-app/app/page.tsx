@@ -12,6 +12,7 @@ export default function Home() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const { search, categories: categoryIds } = getQueryParams();
@@ -24,7 +25,7 @@ export default function Home() {
           setProductList(storeData.products);
           setCategories(storeData.categories || []);
         } else {
-          const response = await fetch(`https://localhost:7067/api/store`);
+          const response = await fetch(URL + `/api/store`);
           if (!response.ok) {
             throw new Error('Failed to fetch data');
           }
@@ -39,7 +40,7 @@ export default function Home() {
         setSelectedCategory(selectedCategories);
 
         if (search || categoryIds.length > 0) {
-          const searchResponse = await fetch(`https://localhost:7067/api/store/search?search=${search}&categories=${categoryIds.join(',') || 'null'}`);
+          const searchResponse = await fetch(URL + `/api/store/search?search=${search}&categories=${categoryIds.join(',') || 'null'}`);
           if (!searchResponse.ok) {
             throw new Error('Failed to fetch data.');
           }
@@ -84,7 +85,7 @@ export default function Home() {
 
     updateUrl(searchQuery, selectedCategory);
 
-    let url = `https://localhost:7067/api/store/search?search=${searchQuery}`;
+    let url = URL + `/api/store/search?search=${searchQuery}`;
 
     if (selectedCategory.length > 0) {
       const categoryIds = selectedCategory.map(category => category.id).join(',');
@@ -143,7 +144,7 @@ export default function Home() {
 
       updateUrl(searchQuery, updatedCategories);
 
-      const response = await fetch(`https://localhost:7067/api/store/products?${updatedCategories.length > 0 ? `categories=${updatedCategories.map(c => c.id).join(',')}` : 'categories=null'}`);
+      const response = await fetch(URL + `/api/store/products?${updatedCategories.length > 0 ? `categories=${updatedCategories.map(c => c.id).join(',')}` : 'categories=null'}`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }

@@ -38,6 +38,7 @@ export default function Init() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [showDeleteProducts, setShowDeleteProducts] = useState(false);
     const [showInsertProducts, setShowInsertProducts] = useState(false);
+    const URL = process.env.NEXT_PUBLIC_API_URL;
     const [newProduct, setNewProduct] = useState({
         name: '',
         description: '',
@@ -90,7 +91,7 @@ export default function Init() {
 
         try {
             const formattedDate = selectedDay.toISOString().split('T')[0];
-            const response = await fetch(`https://localhost:7067/api/sale?date=${formattedDate}`, {
+            const response = await fetch(URL + `/api/sale?date=${formattedDate}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -120,7 +121,7 @@ export default function Init() {
 
     const fetchCategories = async () => {
         try {
-            const response = await fetch('https://localhost:7067/api/store/categories', {
+            const response = await fetch(URL + '/api/store/categories', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -145,7 +146,7 @@ export default function Init() {
         }
 
         try {
-            const response = await fetch(`https://localhost:7067/api/store/products?categories=${categories}`, {
+            const response = await fetch(URL + `/api/store/products?categories=${categories}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -183,7 +184,7 @@ export default function Init() {
         }
 
         try {
-            const response = await fetch(`https://localhost:7067/api/store/products/${productId}`, {
+            const response = await fetch(URL + `/api/store/products/${productId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -220,7 +221,7 @@ export default function Init() {
         };
     
         try {
-            const response = await fetch('https://localhost:7067/api/product/store/add', {
+            const response = await fetch(URL + '/api/product/store/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

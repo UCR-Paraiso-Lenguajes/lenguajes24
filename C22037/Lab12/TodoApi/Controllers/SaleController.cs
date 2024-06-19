@@ -24,7 +24,7 @@ namespace TodoApi.Models
             }
 
             SaleDB saleDB = new SaleDB();
-            SalesReport salesReport = await saleDB.GetSalesReportAsync(date);
+            SalesReport salesReport = saleDB.GetSalesReport(date);
             return Ok(salesReport);
         }
     }
