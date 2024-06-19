@@ -73,7 +73,7 @@ export default function InitPage() {
                             <Link href="/admin/init/report">
                                 <button className="btn btn-dark mb-3">Reportes de Ventas</button>
                             </Link>
-                            <Link href="/admin/init">
+                            <Link href="/admin/init/products">
                                 <button className="btn btn-dark mb-3">Productos</button>
                             </Link>
                             <Link href="/admin/init">

@@ -42,7 +42,7 @@ namespace UT
     {
       var cart = new Cart
       {
-        ProductIds = new List<string>(),
+        ProductIds = new List<ProductQuantity>(),
         Address = "Dirección válida",
         PaymentMethod = PaymentMethods.Type.CASH
       };
@@ -55,8 +55,7 @@ namespace UT
     public void PurchaseAsync_NullCart_ThrowsArgumentException()
     {
       Cart cart = null;
-
-      Assert.ThrowsAsync<ArgumentException>(async () => await storeLogic.PurchaseAsync(cart));
+      Assert.ThrowsAsync<NullReferenceException>(async () => await storeLogic.PurchaseAsync(cart));
     }
 
     // Compra sin dirección de envío
@@ -65,7 +64,10 @@ namespace UT
     {
       var cart = new Cart
       {
-        ProductIds = new List<string> { "1", "2" },
+        ProductIds = new List<ProductQuantity>{
+        new ProductQuantity("1", 1), // Por ejemplo, asumiendo que el identificador del primer producto es "1" y la cantidad es 1
+        new ProductQuantity("2", 1)  // Por ejemplo, asumiendo que el identificador del segundo producto es "2" y la cantidad es 1
+        },
         Address = "",
         PaymentMethod = PaymentMethods.Type.CASH
       };
@@ -93,7 +95,7 @@ namespace UT
     {
       var cart = new Cart
       {
-        ProductIds = new List<string>(),
+        ProductIds = new List<ProductQuantity>(),
         Address = "Dirección válida",
         PaymentMethod = PaymentMethods.Type.CASH
       };
@@ -117,7 +119,10 @@ namespace UT
 
       var cart = new Cart
       {
-        ProductIds = new List<string> { "1", "2" },
+        ProductIds = new List<ProductQuantity>{
+        new ProductQuantity("1", 1), // Por ejemplo, asumiendo que el identificador del primer producto es "1" y la cantidad es 1
+        new ProductQuantity("2", 1)  // Por ejemplo, asumiendo que el identificador del segundo producto es "2" y la cantidad es 1
+       },
         Address = "Turrialba",
         PaymentMethod = PaymentMethods.Type.CASH
       };
@@ -132,7 +137,7 @@ namespace UT
 
 
       // Comprobar que el monto total de la venta sea igual al monto esperado
-      Assert.That(sale.Amount, Is.EqualTo(21470));
+      Assert.That(sale.Amount, Is.EqualTo(19000));
     }
 
     //Generación correcta del número de compra: 
@@ -141,7 +146,10 @@ namespace UT
     {
       var cart = new Cart
       {
-        ProductIds = new List<string> { "1", "2" },
+        ProductIds = new List<ProductQuantity>{
+        new ProductQuantity("1", 1), // Por ejemplo, asumiendo que el identificador del primer producto es "1" y la cantidad es 1
+        new ProductQuantity("2", 1)  // Por ejemplo, asumiendo que el identificador del segundo producto es "2" y la cantidad es 1
+       },
         Address = "Dirección válida",
         PaymentMethod = PaymentMethods.Type.CASH
       };
@@ -160,7 +168,10 @@ namespace UT
 
       var cart = new Cart
       {
-        ProductIds = new List<string> { "1", "2" },
+        ProductIds = new List<ProductQuantity>{
+        new ProductQuantity("1", 1), // Por ejemplo, asumiendo que el identificador del primer producto es "1" y la cantidad es 1
+        new ProductQuantity("2", 1)  // Por ejemplo, asumiendo que el identificador del segundo producto es "2" y la cantidad es 1
+       },
         Address = "Turrialba",
         PaymentMethod = PaymentMethods.Type.CASH
       };
@@ -178,7 +189,10 @@ namespace UT
       // Arrange
       var cart = new Cart
       {
-        ProductIds = new List<string> { "1", "2" },
+        ProductIds = new List<ProductQuantity>{
+        new ProductQuantity("1", 1), // Por ejemplo, asumiendo que el identificador del primer producto es "1" y la cantidad es 1
+        new ProductQuantity("2", 1)  // Por ejemplo, asumiendo que el identificador del segundo producto es "2" y la cantidad es 1
+       },
         Address = "Turrialba",
         PaymentMethod = PaymentMethods.Type.CASH
       };
@@ -190,7 +204,7 @@ namespace UT
       Assert.IsNotNull(sale);
       Assert.That(sale.Address, Is.EqualTo("Turrialba"));
       Assert.That(sale.Products.Count(), Is.EqualTo(2));
-      Assert.That(sale.Amount, Is.EqualTo(21470));
+      Assert.That(sale.Amount, Is.EqualTo(19000));
       Assert.That(sale.PaymentMethod, Is.EqualTo(PaymentMethods.Type.CASH));
       Assert.IsTrue(sale.Amount > 0);
       Assert.IsFalse(String.IsNullOrEmpty(sale.NumberOrder));

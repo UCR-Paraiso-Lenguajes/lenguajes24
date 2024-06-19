@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Xml.Schema;
 using StoreAPI.Database;
 
 namespace StoreAPI.models;
@@ -25,6 +26,43 @@ public class Products
     }
     public static Products Instance;
 
+    private void Validation(Product product)
+    {
+        if (product == null) throw new ArgumentException("The product can't be null");
+        if (product.Name == null || product.Name == "") throw new ArgumentException("The product's name should be provided");
+        if (product.Author == null || product.Author == "") throw new ArgumentException("The product's description should be provided");
+        if (product.ImgUrl == null || product.ImgUrl == "") throw new ArgumentException("The product's description should be provided");
+        if (product.Price <= 0) throw new ArgumentException("The product's price should be above 0");
+        if (product.ProductCategory.IdCategory <= 0) throw new ArgumentException("The product's category should be above 0");
+    }
+    internal void AddNewProduct(Product product)
+    {
+        Validation(product);
+        AddProduct(product);
+    }
+
+    internal void AddProduct(Product product)
+    {
+        Validation(product);
+        if (!productByCategoryId.TryGetValue(product.ProductCategory.IdCategory, out var categoryProducts))
+        {
+            categoryProducts = new List<Product>();
+            productByCategoryId[product.ProductCategory.IdCategory] = categoryProducts;
+        }
+        categoryProducts.Add(product);
+
+        if (!productByName.TryGetValue(product.Name, out var nameProducts))
+        {
+            nameProducts = new List<Product>();
+            productByName[product.Name] = nameProducts;
+        }
+        nameProducts.Add(product);
+    }
+
+    public static async Task InitializeInstanceAsync()
+    {
+        Instance = await InitializeAsync();
+    }
     static async Task<Products> InitializeAsync()
     {
         var products = await Store.LoadProductsAsync();
@@ -49,11 +87,6 @@ public class Products
         }
 
         return new Products(products, productsByCategoryId, productsByName);
-    }
-
-    public static async Task InitializeInstanceAsync()
-    {
-        Instance = await InitializeAsync();
     }
 
 

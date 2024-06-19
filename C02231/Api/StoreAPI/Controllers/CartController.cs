@@ -18,7 +18,7 @@ namespace StoreAPI.Controllers
         {
             try
             {
-                if (cart == null || cart.ProductIds == null || cart.ProductIds.Count == 0) return BadRequest("The cart cannot be empty.");
+                if (cart == null || cart.ProductIds == null ) return BadRequest("The cart cannot be empty.");
 
                 var sale = await storeLogic.PurchaseAsync(cart);
 

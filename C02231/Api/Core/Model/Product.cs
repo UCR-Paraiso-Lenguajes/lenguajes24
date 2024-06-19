@@ -1,21 +1,27 @@
 namespace StoreAPI.models;
+using System.ComponentModel.DataAnnotations;
 public class Product : ICloneable
 {
-    public string Name { get; private set; }
-    public string Author { get; private set; }
-    public string ImgUrl { get; private set; }
+    [Required]
+    public string Name { get; set; }
+    [Required]
+    public string Author { get; set; }
+    [Required]
+    public string ImgUrl { get; set; }
+    [Required]
     public decimal Price { get; set; }
     public int Id { get; set; }
     public int Quantity { get; set; }
+    [Required]
     public Category ProductCategory { get; set; }
 
     public Product(string name, string author, string imgUrl, decimal price, Category category, int id)
     {
-        if (string.IsNullOrEmpty(name)) throw new ArgumentException("Name cannot be null or empty.", nameof(name));
-        if (string.IsNullOrEmpty(author)) throw new ArgumentException("Description cannot be null or empty.", nameof(author));
-        if (string.IsNullOrEmpty(imgUrl)) throw new ArgumentException("ImageURL cannot be null or empty.", nameof(imgUrl));
-        if (price < 0) throw new ArgumentException("Price must be greater than zero.", nameof(price));
-        if (id < 0) throw new ArgumentException("Id must be greater than zero.", nameof(id));
+        if (string.IsNullOrEmpty(name)) throw new ArgumentException($"{nameof(name)} cannot be null or empty.");
+        if (string.IsNullOrEmpty(author)) throw new ArgumentException($"{nameof(author)} cannot be null or empty.");
+        if (string.IsNullOrEmpty(imgUrl)) throw new ArgumentException($"{nameof(imgUrl)} cannot be null or empty.");
+        if (price < 0) throw new ArgumentException($"{nameof(price)} must be greater than zero.");
+        if (id < 0) throw new ArgumentException($"{nameof(id)} must be greater than zero.");
 
         Name = name;
         Author = author;
@@ -24,9 +30,26 @@ public class Product : ICloneable
         Id = id;
         ProductCategory = category;
     }
+
+    public Product()
+        {
+        }
     // Implementation of the ICloneable interface
     public object Clone()
     {
         return new Product(this.Name, this.Author, this.ImgUrl, this.Price, this.ProductCategory, this.Id);
+    }
+}
+
+public class ProductQuantity
+{
+    public string ProductId { get; private set; }
+    public int Quantity { get; private set; }
+    public ProductQuantity(string productId, int quantity)
+    {
+        if (string.IsNullOrWhiteSpace(productId)) { throw new ArgumentException($"The {nameof(productId)} cant be null or empty."); }
+        if (quantity < 0) { throw new ArgumentOutOfRangeException($" {nameof(quantity)} cant be lower than 0."); }
+        ProductId = productId;
+        Quantity = quantity;
     }
 }

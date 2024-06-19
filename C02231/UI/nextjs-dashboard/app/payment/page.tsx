@@ -28,10 +28,11 @@ export default function PaymentPage() {
         receipt: '',
         confirmation: '',
         total: '',
+        cant: 1,
         isCartEmpty: true
     });
 
-    const [selectedProvince, setSelectedProvince] = useState<string>('');
+    const [selectedProvince, setSelectedProvince] = useState('');
     const [selectedCanton, setSelectedCanton] = useState('');
     const [specificDetails, setSpecificDetails] = useState('');
 
@@ -39,15 +40,15 @@ export default function PaymentPage() {
         let cartItemStored = localStorage.getItem('cartItem');
         if (cartItemStored !== null) {
             let cartData = JSON.parse(cartItemStored);
-            const validProducts = cartItemStored && Array.isArray(cartData.products) && cartData.products.length > 0;
+            const validProducts = cartData.products && Array.isArray(cartData.products) && cartData.products.length > 0;
             if (validProducts) {
                 setCart({ ...cartData, isCartEmpty: false });
             } else {
                 localStorage.removeItem('cartItem');
-                setCart({ ...cart, isCartEmpty: true });
+                setCart(prevCart => ({ ...prevCart, isCartEmpty: true }));
             }
         } else {
-            setCart({ ...cart, isCartEmpty: true });
+            setCart(prevCart => ({ ...prevCart, isCartEmpty: true }));
         }
         // Reemplazar la entrada actual del historial con una nueva entrada que apunte a la página de inicio
         window.history.replaceState(null, '', '/'); // Esto hace que no sea posible retroceder a esta página
@@ -74,14 +75,20 @@ export default function PaymentPage() {
 
     const updateDeliveryAddress = (province: string, canton: string, details: string) => {
         const address = `${province}, ${canton}, ${details}`;
-        setCart(prevCart => ({ ...prevCart, deliveryAddress: address }));
-        updateLocalStorage({ ...cart, deliveryAddress: address });
+        setCart(prevCart => {
+            const updatedCart = { ...prevCart, deliveryAddress: address };
+            updateLocalStorage(updatedCart);
+            return updatedCart;
+        });
     };
 
     const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
-        setCart(prevCart => ({ ...prevCart, paymentMethod: value }));
-        updateLocalStorage({ ...cart, paymentMethod: value });
+        setCart(prevCart => {
+            const updatedCart = { ...prevCart, paymentMethod: value };
+            updateLocalStorage(updatedCart);
+            return updatedCart;
+        });
     };
 
     const updateLocalStorage = (updatedCart: any) => {
@@ -90,27 +97,34 @@ export default function PaymentPage() {
 
     const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setCart(prevCart => ({ ...prevCart, receipt: value }));
-        updateLocalStorage({ ...cart, receipt: value });
+        setCart(prevCart => {
+            const updatedCart = { ...prevCart, receipt: value };
+            updateLocalStorage(updatedCart);
+            return updatedCart;
+        });
         setPaymentConfirmed(true);
     };
 
     const handleSubmit = async () => {
         const { deliveryAddress, paymentMethod, products, total } = cart;
-        const validOrder = deliveryAddress && paymentMethod && (paymentMethod === 'cash' || paymentMethod === 'sinpe');
+        const validOrder = deliveryAddress && paymentMethod && products.length > 0 && (paymentMethod === 'cash' || paymentMethod === 'sinpe');
         if (validOrder) {
-            const productIds = products.map((producto: any) => String(producto.id));
+            const productIds = products.map((producto: any) => ({
+                productId: String(producto.id),
+                quantity: producto.cant // Utilizar la cantidad establecida en CartPage
+            }));
             let paymentMethodValue = 0;
             if (paymentMethod === 'sinpe') {
                 paymentMethodValue = 1;
             }
-
+    
             const dataToSend = {
                 productIds: productIds,
                 address: deliveryAddress,
                 paymentMethod: paymentMethodValue,
                 total: total
             };
+    
             try {
                 const response = await fetch(URL + '/api/Cart', {
                     method: 'POST',
@@ -119,12 +133,12 @@ export default function PaymentPage() {
                     },
                     body: JSON.stringify(dataToSend)
                 });
-
+    
                 if (response.ok) {
                     const responseData = await response.json();
                     const { purchaseNumber } = responseData;
                     const orderNumber = purchaseNumber;
-
+    
                     updateLocalStorage({
                         products: [],
                         deliveryAddress: '',
@@ -144,6 +158,7 @@ export default function PaymentPage() {
             setCart(prevCart => ({ ...prevCart, confirmation: 'Please complete all required fields or add items to the cart.' }));
         }
     };
+    
 
     return (
         <div>
@@ -188,78 +203,43 @@ export default function PaymentPage() {
                     </div>
                 )}
 
-                {selectedCanton && (
-                    <div className="form-group">
-                        <label htmlFor="specificDetails">Specific Details:</label>
-                        <input
-                            type="text"
-                            id="specificDetails"
-                            className="form-control"
-                            value={specificDetails}
-                            onChange={handleSpecificDetailsChange}
-                        />
-                    </div>
-                )}
+                <div className="form-group">
+                    <label htmlFor="specificDetails">Specific Details:</label>
+                    <input type="text" id="specificDetails" className="form-control" value={specificDetails} onChange={handleSpecificDetailsChange} />
+                </div>
 
-                {cart.deliveryAddress && (
-                    <div className="form-group">
-                        <label htmlFor="paymentMethod">Payment Method:</label>
-                        <select
-                            id="paymentMethod"
-                            className="form-control"
-                            value={cart.paymentMethod}
-                            onChange={handlePaymentMethodChange}
-                        >
-                            <option value="">Select Payment Method</option>
+                <div className="form-group">
+                    <label htmlFor="paymentMethod">Payment Method:</label>
+                    <select id="paymentMethod" className="form-control" value={cart.paymentMethod} onChange={handlePaymentMethodChange}>
+                        <option value="">Select Payment Method</option>
+                        <option value="cash">Cash</option>
+                            <option value="sinpe">Sinpe</option>
                             <option value="sinpe">Sinpe</option>
                             <option value="cash">Cash</option>
-                        </select>
-                    </div>
-                )}
+                        <option value="sinpe">Sinpe</option>
+                            <option value="cash">Cash</option>
+                    </select>
+                </div>
 
-                {cart.paymentMethod === 'cash' && (
-                    <div>
-                        <button className="btn btn-success" style={{ margin: '1px' }} onClick={handleSubmit} disabled={!specificDetails}>
-                            {specificDetails ? 'Confirm Payment' : 'Fill out all the fields'}
-                        </button>
-                        <p>{cart.confirmation}</p>
-                    </div>
-                )}
+                <div className="form-group">
+                    <label htmlFor="receipt">Receipt:</label>
+                    <input type="text" id="receipt" className="form-control" value={cart.receipt} onChange={handleReceiptChange} />
+                </div>
 
+                <button className="btn btn-secondary" onClick={handleSubmit}>Submit</button>
 
-
-                {cart.paymentMethod === 'sinpe' && (
-                    <div>
-                        <p>Make payment for the purchase at the following Sinpe Number: +506 86920997</p>
-                        <div className="form-group">
-                            <label htmlFor="receipt">Receipt:</label>
-                            <input
-                                type="text"
-                                id="receipt"
-                                className="form-control"
-                                value={cart.receipt}
-                                onChange={handleReceiptChange}
-                            />
-                        </div>
-                        <div>
-                            {specificDetails.length > 10 && cart && cart.receipt && cart.receipt.length > 0 ? (
-                                <button className="btn btn-success" onClick={handleSubmit}>
-                                    Confirm Payment
-                                </button>
-                            ) : (
-                                <button className="btn btn-success" disabled>Confirm Payment</button>
-                            )}
-                        </div>
-                        <p>{cart.confirmation}</p>
+                {cart.confirmation && (
+                    <div className="alert alert-warning mt-3">
+                        {cart.confirmation}
                     </div>
                 )}
             </div>
 
-            <footer className='footer' style={{ position: 'fixed', bottom: '0', width: '100%', zIndex: '9999' }}>
+            <footer className='footer'>
                 <div className="text-center p-3">
                     <h5 className="text-light">Paula's Library</h5>
                 </div>
             </footer>
         </div>
     );
-};
+}

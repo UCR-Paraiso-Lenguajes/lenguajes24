@@ -1,9 +1,23 @@
-import React from 'react';
+'use client'
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import Link from 'next/link';
 import '/app/ui/global.css';
+import useAuth from '../../useAuth';
 
 export default function PaymentMethods() {
+    const isAuthenticated = useAuth();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+        }
+    }, [isAuthenticated]);
+
+    
+
+    if (!isAuthenticated) {
+        return null;
+    }
     return (
         <div>
             <header className="p-3 text-bg-dark">

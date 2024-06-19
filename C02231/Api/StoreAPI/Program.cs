@@ -76,7 +76,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    builder.Configuration.AddJsonFile("C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Store/Lab7/StoreAPI/appsettings.json", optional: true, reloadOnChange: true);
+    builder.Configuration.AddJsonFile("C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Api/StoreAPI/appsettings.json", optional: true, reloadOnChange: true);
     string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
    // var value = Environment.GetEnvironmentVariable("DB");
 

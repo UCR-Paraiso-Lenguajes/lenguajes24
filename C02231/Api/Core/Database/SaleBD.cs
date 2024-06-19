@@ -29,7 +29,7 @@ namespace StoreAPI.Database
                         {
                             command.Parameters.AddWithValue("@date", DateTime.Now);
                             command.Parameters.AddWithValue("@total", sale.Amount);
-                            command.Parameters.AddWithValue("@PaymentMethod", sale.PaymentMethod.GetHashCode().ToString());
+                            command.Parameters.AddWithValue("@PaymentMethod", (int)sale.PaymentMethod);
                             command.Parameters.AddWithValue("@orderNumber", sale.NumberOrder);
 
                             await command.ExecuteNonQueryAsync();
@@ -63,7 +63,7 @@ namespace StoreAPI.Database
                     {
                         insertCommand.Parameters.AddWithValue("@saleId", saleId);
                         insertCommand.Parameters.AddWithValue("@productId", product.Id);
-                        insertCommand.Parameters.AddWithValue("@quantity", 1);
+                        insertCommand.Parameters.AddWithValue("@quantity", product.Quantity);
                         insertCommand.Parameters.AddWithValue("@finalPrice", product.Price);
                         await insertCommand.ExecuteNonQueryAsync();
                     }
