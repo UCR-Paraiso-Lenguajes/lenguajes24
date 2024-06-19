@@ -15,13 +15,12 @@ namespace storeapi.Models
             TaxPercentage = taxPercentage;
         }
 
-        public static Store Instance { get; } = CreateInstance();
+        public static Store Instance => CreateInstance();
 
         private static Store CreateInstance()
         {
             IEnumerable<Product> products = LoadProductsFromDatabase();
             int taxPercentage = 13;
-
             return new Store(products, taxPercentage);
         }
 

@@ -28,7 +28,7 @@ namespace storeapi.Controllers
             string purchaseNumber = _storeLogic.PurchaseNumber;
 
             var response = new { purchaseNumberResponse = purchaseNumber };
-            return Ok(response);
+            return Ok(sale.Products);
         }
 
         private void ValidateCart(Cart cart)

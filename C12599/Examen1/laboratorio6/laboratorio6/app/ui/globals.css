@@ -39,6 +39,29 @@ h2 {
   justify-content: center;
 }
 
+.insert-product-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.insert-product-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.insert-product-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.insert-product-label {
+  margin-bottom: 5px;
+}
+
+
 
 
 

@@ -8,6 +8,9 @@ namespace storeapi.Database
 {
     public sealed class StoreDB
     {
+        // Define the delegate for inserting a product
+        public delegate void InsertProductDelegate(Product product, MySqlConnection connection, MySqlTransaction transaction);
+
         public static void CreateMysql()
         {
             var categories = new Categories();
@@ -18,7 +21,7 @@ namespace storeapi.Database
             {
                 connection.Open();
 
-                // Continuar con la creación de la tabla y la inserción de productos
+                // Crear la tabla si no existe
                 string createTableQuery = @"
                     CREATE TABLE IF NOT EXISTS products (
                         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -34,23 +37,33 @@ namespace storeapi.Database
                     createTableCommand.ExecuteNonQuery();
                 }
 
+                // Verificar si ya existen productos en la tabla
+                string checkProductsQuery = "SELECT COUNT(*) FROM products";
+                using (var checkProductsCommand = new MySqlCommand(checkProductsQuery, connection))
+                {
+                    int productCount = Convert.ToInt32(checkProductsCommand.ExecuteScalar());
+                    if (productCount > 0)
+                    {
+                        return;
+                    }
+                }
+
+                // Generar productos
                 string[] randomWords = { "amazing", "awesome", "fantastic", "incredible", "superb", "excellent", "wonderful", "marvelous", "brilliant", "fabulous" };
                 string[] productNames = { "Gizmo", "Widget", "Contraption", "Gadget", "Appliance", "Device", "Tool", "Instrument", "Machine", "Equipment" };
 
                 for (int i = 1; i <= 14; i++)
                 {
                     Category randomCategory = GetRandomCategory(categories);
-                    int randomIndex = random.Next(0, categories.ListCategories.Count); // Obtener un índice aleatorio válido
+                    int randomIndex = random.Next(0, categories.ListCategories.Count);
 
-                    // Generar una descripción aleatoria seleccionando algunas palabras al azar
                     string description = $"Description of Product {i}: ";
                     for (int j = 0; j < 1; j++)
                     {
-                        int innerRandomWordIndex = random.Next(0, randomWords.Length); // Cambiar el nombre de la variable aquí
+                        int innerRandomWordIndex = random.Next(0, randomWords.Length);
                         description += randomWords[innerRandomWordIndex] + " ";
                     }
 
-                    // Seleccionar un nombre aleatorio para el producto
                     int randomWordIndex = random.Next(0, randomWords.Length);
                     int randomNameIndex = random.Next(0, productNames.Length);
                     string productName = $"{productNames[randomNameIndex]} {randomWords[randomWordIndex]}";
@@ -60,7 +73,7 @@ namespace storeapi.Database
                         Name = productName,
                         ImageUrl = $"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
                         Price = 10.99m * i,
-                        Description = description.Trim(), // Eliminar el espacio adicional al final
+                        Description = description.Trim(),
                         Category = randomCategory
                     });
                 }
@@ -70,27 +83,31 @@ namespace storeapi.Database
                     throw new ArgumentException("La lista de productos no puede estar vacía.", nameof(products));
                 }
 
+                InsertProducts(products, InsertProduct);
+            }
+        }
+
+        // Method to insert products using a delegate
+        public static void InsertProducts(List<Product> products, InsertProductDelegate insertProductDelegate)
+        {
+            using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            {
+                connection.Open();
+
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
+                        string deleteProductsQuery = "DELETE FROM products";
+                        using (var deleteCommand = new MySqlCommand(deleteProductsQuery, connection, transaction))
+                        {
+                            deleteCommand.ExecuteNonQuery();
+                        }
+
                         foreach (Product product in products)
                         {
                             ValidateProductForInsert(product);
-
-                            string insertProductQuery = @"
-                                INSERT INTO products (name, price, description, image, category)
-                                VALUES (@name, @price, @description, @image, @category)";
-
-                            using (var insertCommand = new MySqlCommand(insertProductQuery, connection, transaction))
-                            {
-                                insertCommand.Parameters.AddWithValue("@name", product.Name);
-                                insertCommand.Parameters.AddWithValue("@price", product.Price);
-                                insertCommand.Parameters.AddWithValue("@description", product.Description);
-                                insertCommand.Parameters.AddWithValue("@image", product.ImageUrl);
-                                insertCommand.Parameters.AddWithValue("@category", product.Category.Id);
-                                insertCommand.ExecuteNonQuery();
-                            }
+                            insertProductDelegate(product, connection, transaction);
                         }
 
                         transaction.Commit();
@@ -101,6 +118,24 @@ namespace storeapi.Database
                         throw new Exception($"Error inserting products into database: {ex.Message}");
                     }
                 }
+            }
+        }
+
+        // Delegate method to insert a product
+        public static void InsertProduct(Product product, MySqlConnection connection, MySqlTransaction transaction)
+        {
+            string insertProductQuery = @"
+                INSERT INTO products (name, price, description, image, category)
+                VALUES (@name, @price, @description, @image, @category)";
+
+            using (var insertCommand = new MySqlCommand(insertProductQuery, connection, transaction))
+            {
+                insertCommand.Parameters.AddWithValue("@name", product.Name);
+                insertCommand.Parameters.AddWithValue("@price", product.Price);
+                insertCommand.Parameters.AddWithValue("@description", product.Description);
+                insertCommand.Parameters.AddWithValue("@image", product.ImageUrl);
+                insertCommand.Parameters.AddWithValue("@category", product.Category.Id);
+                insertCommand.ExecuteNonQuery();
             }
         }
 
@@ -173,4 +208,5 @@ namespace storeapi.Database
         }
     }
 }
+
 

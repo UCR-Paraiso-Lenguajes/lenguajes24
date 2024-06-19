@@ -1,52 +1,129 @@
-﻿using NUnit.Framework;
-using Moq;
-using Microsoft.Extensions.Hosting;
-using storeapi.Controllers;
-using storeapi.Models; // Agregar esta línea
-using Microsoft.AspNetCore.Mvc;
+﻿// UserAccountTests.cs
+using Microsoft.IdentityModel.Tokens;
+using NUnit.Framework;
 using so.Models;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+
 namespace UT
 {
-    public class SecurityTest
+    [TestFixture]
+    public class UserAccountTests
     {
-        private AuthController _controller;
-
         [SetUp]
         public void Setup()
         {
-            // Llamar a SeedUsers para asegurarse de que haya datos de usuario disponibles para las pruebas
-            UserAccountSeeder.SeedUsers();
-
-            var hostingEnvironmentMock = new Mock<IHostEnvironment>();
-            _controller = new AuthController(hostingEnvironmentMock.Object);
+            UserAccount.allUsers.Clear();
+            
         }
 
         [Test]
-        public void Login_ValidUser_ReturnsOkObjectResult()
+        public void CreateUserAccount_WithValidData_ShouldAddUserToAllUsers()
         {
             // Arrange
-            var user = new UserAccount(
-                userName: "mariano", 
-                userPassword: "123456", 
-                userRoles: new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, "mariano"),
-                    new Claim(ClaimTypes.Role, "Admin")
-                });
+            string userName = "testuser";
+            string userPassword = "testpassword";
+            var userRoles = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, "testuser"),
+                new Claim(ClaimTypes.Role, "TestRole")
+            };
 
             // Act
-            var result = _controller.Login(user) as OkObjectResult;
+            var userAccount = new UserAccount(userName, userPassword, userRoles);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(200, result.StatusCode);
-            var response = result.Value as AuthenticatedResponse;
-            Assert.IsNotNull(response);
-            Assert.IsNotNull(response.Token);
+            Assert.Contains(userAccount, UserAccount.allUsers);
         }
 
-        
+        [Test]
+        public void CreateUserAccount_WithNullRoles_ShouldThrowArgumentException()
+        {
+            // Arrange
+            string userName = "testuser";
+            string userPassword = "testpassword";
+            List<Claim> userRoles = null;
+
+            // Act & Assert
+            var ex = Assert.Throws<ArgumentException>(() => new UserAccount(userName, userPassword, userRoles));
+            Assert.AreEqual("Debe crear roles para los usuarios", ex.Message);
+        }
+
+        [Test]
+        public void CreateUserAccount_WithEmptyRoles_ShouldThrowArgumentException()
+        {
+            // Arrange
+            string userName = "testuser";
+            string userPassword = "testpassword";
+            var userRoles = new List<Claim>();
+
+            // Act & Assert
+            var ex = Assert.Throws<ArgumentException>(() => new UserAccount(userName, userPassword, userRoles));
+            Assert.AreEqual("Debe crear roles para los usuarios", ex.Message);
+        }
+
+        [Test]
+        public void CreateUserAccount_WithNullUserName_ShouldThrowArgumentException()
+        {
+            // Arrange
+            string userName = null;
+            string userPassword = "testpassword";
+            var userRoles = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, "testuser"),
+                new Claim(ClaimTypes.Role, "TestRole")
+            };
+
+            // Act & Assert
+            var ex = Assert.Throws<ArgumentException>(() => new UserAccount(userName, userPassword, userRoles));
+            Assert.AreEqual("No pueden existir usuarios nulos", ex.Message);
+        }
+
+        [Test]
+        public void CreateUserAccount_WithNullUserPassword_ShouldThrowArgumentException()
+        {
+            // Arrange
+            string userName = "testuser";
+            string userPassword = null;
+            var userRoles = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, "testuser"),
+                new Claim(ClaimTypes.Role, "TestRole")
+            };
+
+            // Act & Assert
+            var ex = Assert.Throws<ArgumentException>(() => new UserAccount(userName, userPassword, userRoles));
+            Assert.AreEqual("Debe existir un password", ex.Message);
+        }
+
+        [Test]
+        public void SeedUsers_ShouldAddUsersToAllUsers()
+        {
+            // Act
+            UserAccountSeeder.SeedUsers();
+
+            // Assert
+            Assert.AreEqual(3, UserAccount.allUsers.Count);
+            Assert.IsTrue(UserAccount.allUsers.Exists(u => u.UserName == "mariano"));
+            Assert.IsTrue(UserAccount.allUsers.Exists(u => u.UserName == "juan"));
+            Assert.IsTrue(UserAccount.allUsers.Exists(u => u.UserName == "sofia"));
+        }
+
+        [Test]
+        public void SeedUsers_ValidatesUserRoles()
+        {
+            // Act
+            UserAccountSeeder.SeedUsers();
+
+            // Assert
+            var mariano = UserAccount.allUsers.Find(u => u.UserName == "mariano");
+            var juan = UserAccount.allUsers.Find(u => u.UserName == "juan");
+            var sofia = UserAccount.allUsers.Find(u => u.UserName == "sofia");
+
+            Assert.AreEqual(2, mariano.UserRoles.Count());
+            Assert.AreEqual(2, juan.UserRoles.Count());
+            Assert.AreEqual(2, sofia.UserRoles.Count());
+        }
+    }
 }
-     }

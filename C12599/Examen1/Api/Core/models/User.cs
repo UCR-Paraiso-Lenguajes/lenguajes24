@@ -38,7 +38,6 @@ namespace so.Models
             new UserAccount("mariano", "123456", new List<Claim>
             {
                 new Claim(ClaimTypes.Name, "mariano"),
-                new Claim(ClaimTypes.Role, "Operator"),
                 new Claim(ClaimTypes.Role, "Admin")
             });
 

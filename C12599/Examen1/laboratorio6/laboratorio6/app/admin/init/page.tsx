@@ -1,5 +1,4 @@
 'use client';
-// pages/admin/init.tsx
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, ShoppingCart } from 'react-feather';
@@ -41,7 +40,7 @@ const CustomAccordionItem: React.FC<CustomAccordionItemProps> = ({ title, href, 
             </Link>
           </div>
           <div>
-            <Link href={href || '#'}>
+            <Link href="/products"> {/* Enlace a la página de productos */}
               <button className="btn btn-secondary btn-sm btn-block">
                 Ir a Productos
               </button>

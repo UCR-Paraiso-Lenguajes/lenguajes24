@@ -1,9 +1,8 @@
-// pages/admin/index.tsx (login page)
 'use client';
 import React, { useState } from 'react';
 import '../ui/globals.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import { jwtDecode }from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 
 const Admin: React.FC = () => {
   const [formData, setFormData] = useState({
