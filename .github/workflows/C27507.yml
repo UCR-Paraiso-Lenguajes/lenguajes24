@@ -16,8 +16,9 @@ jobs:
     - uses: actions/checkout@v4
     - name: Wait for MySQL to be healthy
       run: |
+        docker run -d --name mysql_db -e MYSQL_ROOT_PASSWORD=123456 -e MYSQL_DATABASE=MyStoreApi mysql:latest
         docker ps -a
-        #docker-compose run --rm wait-for-it.sh mysql:3306 -t 30
+        docker exec mysql_db mysql -u root -p123456 -e "CREATE DATABASE IF NOT EXISTS MyStoreApi;"
         
     - uses: actions/checkout@v4
     - name: Setup .NET
