@@ -26,11 +26,11 @@ jobs:
         dotnet-version: 8.0.x
     - name: Restore dependencies
       run: |
-        cd C27507/Docker
+        cd C27507/C27507_Lab7
         dotnet restore
     - name: Build
       run: |
-        cd C27507/Docker
+        cd C27507/C27507_Lab7
         dotnet build --no-restore    
     - name: Test
       run: |
