@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 
 namespace ApiLab7;
 
@@ -33,7 +34,7 @@ public class Db
             "IF EXISTS (SELECT 1 FROM sys.databases WHERE name = 'andromeda_store') DROP DATABASE andromeda_store;",
             "CREATE DATABASE andromeda_store;",
             "USE andromeda_store;",
-            "CREATE TABLE products (id CHAR(36) PRIMARY KEY, name VARCHAR(100), description VARCHAR(100), "
+            "CREATE TABLE products (id CHAR(36) PRIMARY KEY, name VARCHAR(100), description VARBINARY(MAX), "
                 + "image_Url VARCHAR(MAX), price DECIMAL(10, 2), category INT);",
             "CREATE TABLE payment_method (id INT PRIMARY KEY, name VARCHAR(20), description VARCHAR(100), enabled BIT)",
             "CREATE TABLE sales (id INT PRIMARY KEY IDENTITY(1,1), address VARCHAR(100), "
@@ -64,24 +65,6 @@ public class Db
             }
         }
     }
-
-    /* public bool productsExist()
-    {
-        string query = "USE andromeda_store; SELECT COUNT(*) FROM products";
-        using (SqlConnection connection = new SqlConnection(Db.Instance.DbConnectionString))
-        {
-            using (SqlCommand command = new SqlCommand(query, connection))
-            {
-                connection.Open();
-
-                int rowCount = (int)command.ExecuteScalar();
-
-                bool tableHasProducts = rowCount > 0;
-
-                return tableHasProducts;
-            }
-        }
-    } */
 
     public static void FillPaymentMethods()
     {
@@ -118,7 +101,7 @@ public class Db
                 {
                     command.Parameters.AddWithValue("@id", products.ElementAt(i).Uuid);
                     command.Parameters.AddWithValue("@name", products.ElementAt(i).Name);
-                    command.Parameters.AddWithValue("@description", products.ElementAt(i).Description);
+                    command.Parameters.AddWithValue("@description", Encoding.UTF8.GetBytes(products.ElementAt(i).Description));
                     command.Parameters.AddWithValue("@imageUrl", products.ElementAt(i).ImageUrl);
                     command.Parameters.AddWithValue(
                         "@price",
@@ -188,7 +171,7 @@ public class Db
                             {
                                 Uuid = new Guid(reader[0].ToString()),
                                 Name = reader[1].ToString(),
-                                Description = reader[2].ToString(),
+                                Description = Encoding.UTF8.GetString((byte[])reader[2]),
                                 ImageUrl = reader[3].ToString(),
                                 Price = (decimal)reader[4],
                                 Category = Categories.Instance.GetCategoryById(reader.GetInt32(5))

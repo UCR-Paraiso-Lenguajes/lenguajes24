@@ -7,6 +7,7 @@ import Calendar from "react-calendar";
 import { Chart } from 'react-google-charts';
 import { checkTokenDate } from "@/app/hooks/jwtHooks";
 import { useRouter } from 'next/navigation';
+import Products from "./products";
 
 export default function MainAdmin() {
 
@@ -37,7 +38,6 @@ export default function MainAdmin() {
         setShowReports(false);
         setShowProducts(false);
     }
-
     function checkTokenStatus() {
         var token = sessionStorage.getItem("sessionToken");
         var expiracyDate = sessionStorage.getItem("expiracyToken");
@@ -92,7 +92,7 @@ export default function MainAdmin() {
         }
 
         useEffect(() => {
-            if (checkTokenStatus()){
+            if (checkTokenStatus()) {
                 const fetchData = async () => {
                     try {
                         const result = await getData();
@@ -181,15 +181,9 @@ export default function MainAdmin() {
         </>
     }
 
-    const Products = () => {
-        return <>
-            Soy productos
-        </>
-    }
-
     return <>
         <div className="d-flex" style={{ height: "100vh" }}>
-            <div className="flex-shrink-0 p-3 text-white bg-dark h-100" style={{ width: "200px", height: "100%" }}>
+            <div className="p-3 text-white bg-dark h-100" style={{ width: "200px", height: "100%", flex: "0 0 auto" }}>
                 <a href="/" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
                     <img src="https://cdn.pixabay.com/photo/2016/03/31/19/56/avatar-1295397__340.png"
                         className="img-fluid img-thumbnail rounded-circle me-3"
