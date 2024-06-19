@@ -24,9 +24,7 @@ jobs:
           --health-retries=3
         env:
           MYSQL_ROOT_PASSWORD: 123456
-          MYSQL_DATABASE: MyStoreApi
-          MYSQL_USER: root
-          MYSQL_PASSWORD: 123456
+          MYSQL_DATABASE: MyStoreApi          
     steps:            
       - uses: actions/checkout@v4
       - name: Setup .NET
