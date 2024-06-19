@@ -22,6 +22,11 @@ const InitPage = () => {
                     Reportes de Ventas
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link href="/admin/product_crud">
+                     Opciones de productos
+                  </Link>
+                </li>
               </ul>
             </div>
           </nav>

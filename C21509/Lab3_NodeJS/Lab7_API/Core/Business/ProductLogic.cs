@@ -9,7 +9,7 @@ namespace Core.Business
         public delegate void InsertedProductDelegate(Product newProduct);
         public InsertedProductDelegate referenceProductInserted;
 
-        public async Task<bool> insertProductAsync(Product newProduct)
+        public async Task<bool> insertProductAsync(Product newProduct, InsertedProductDelegate  referenceProductInserted)
         {
             try
             {
@@ -19,15 +19,32 @@ namespace Core.Business
             }
             catch (ArgumentNullException ex)
             {
-                throw new ArgumentNullException("El producto no puede ser nulo: " + ex.Message, ex);
+                throw new ArgumentNullException("Product cannot be null: " + ex.Message, ex);
             }
             catch (Exception ex)
             {
-                throw new Exception("Ocurrió un error inesperado: " + ex.Message, ex);
+                throw new Exception("There was an error: " + ex.Message, ex);
             }
         }
 
-        public async Task<bool> insertionProductAsyncUT(Product newProduct)
+         public async Task<bool> deleteProductAsync(int productId)
+        {
+            try
+            {
+                bool deleteStatus = await db_product.DeleteProductFromDBAsync(productId);
+                return deleteStatus;
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException("Invalid product ID: " + ex.Message, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("There was an error: " + ex.Message, ex);
+            }
+        }
+
+        public async Task<bool> insertionProductAsyncUT(Product newProduct, InsertedProductDelegate  referenceProductInserted)
         {
             referenceProductInserted?.Invoke(newProduct);
             return true;

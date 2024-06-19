@@ -33,7 +33,7 @@ namespace UT
                 Price = 200,
                 Categoria = new Category(1, "Electrónica") 
             };
-            await productLogic.insertionProductAsyncUT(addedProduct);
+            await productLogic.insertionProductAsyncUT(addedProduct, TestProductInsertedDelegate);
 
             
             Assert.IsTrue(productsInserted.Contains(addedProduct));

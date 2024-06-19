@@ -25,26 +25,26 @@ namespace Store_API.Controllers
         {
             try
             {
-                bool insertedProductStatus = await productLogic.insertProductAsync(newProduct);
+                bool insertedProductStatus = await productLogic.insertProductAsync(newProduct, Store.Instance.AddNewProductToStore);
                 return Ok(new { insertedProductStatus });
             }
             catch (ArgumentNullException ex)
             {
-                return StatusCode(400, $"El producto no puede ser nulo: {ex.Message}");
+                return StatusCode(400, $"Product cannot be null: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Ha ocurrido un error al agregar el nuevo producto. Por favor inténtalo más tarde. Error: {ex.Message}");
+                return StatusCode(500, $"Product insertion was unsuccessful: {ex.Message}");
             }
         }
 
         [HttpPost("product/delete")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteProductInDBAsync([FromBody] Product productToDelete)
+       public async Task<IActionResult> DeleteProductInDBAsync([FromBody] Product productToDelete)
         {
             try
             {
-                string deleteProductStatus = "Producto elimina";
+                bool deleteProductStatus = await productLogic.deleteProductAsync(productToDelete.Id);
                 return Ok(new { deleteProductStatus });
             }
             catch (ArgumentNullException ex)
@@ -53,7 +53,7 @@ namespace Store_API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $": {ex.Message}");
+                return StatusCode(500, $"An error has ocurred: {ex.Message}");
             }
         }
     }

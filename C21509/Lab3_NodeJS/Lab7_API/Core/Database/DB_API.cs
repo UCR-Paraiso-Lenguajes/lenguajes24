@@ -414,13 +414,13 @@ namespace Store_API.Database
 
             try
             {
-                connectionWithDB = new MySqlConnection(connectionString);                
+                connectionWithDB = new MySqlConnection(connectionString);
                 await connectionWithDB.OpenAsync();
                 transaction = await connectionWithDB.BeginTransactionAsync();
 
                 string insertQuery = @"
-                    INSERT INTO Products (Name, ImageUrl, Price, Quantity, Description, Category)
-                    VALUES (@name, @imageUrl, @price, @quantity, @description, @idCategory);
+                    INSERT INTO Products (Name, ImageUrl, Price, Category)
+                    VALUES (@name, @imageUrl, @price, @idCategory);
                 ";
 
                 using (MySqlCommand command = new MySqlCommand(insertQuery, connectionWithDB))
@@ -433,18 +433,63 @@ namespace Store_API.Database
                     command.Parameters.AddWithValue("@idCategory", insertedProduct.Categoria.IdCategory);
                     await command.ExecuteNonQueryAsync();
                 }
-                await transaction.CommitAsync();                
+                await transaction.CommitAsync();
             }
             catch (Exception)
-            { 
+            {
                 if (transaction != null)
                 {
                     await transaction.RollbackAsync();
                 }
-                throw;                
+                throw;
             }
             finally
-            {                
+            {
+                if (connectionWithDB != null)
+                {
+                    await connectionWithDB.CloseAsync();
+                }
+            }
+
+            return true;
+        }
+
+        public async Task<bool> DeleteProductFromDBAsync(int productId)
+        {
+            if (productId <= 0) throw new ArgumentException($"{nameof(productId)} must be greater than zero");
+
+            MySqlConnection connectionWithDB = null;
+            MySqlTransaction transaction = null;
+
+            try
+            {
+                connectionWithDB = new MySqlConnection(connectionString);
+                await connectionWithDB.OpenAsync();
+                transaction = await connectionWithDB.BeginTransactionAsync();
+
+                string deleteQuery = @"
+            DELETE FROM Products
+            WHERE Id = @productId;
+        ";
+
+                using (MySqlCommand command = new MySqlCommand(deleteQuery, connectionWithDB))
+                {
+                    command.Transaction = transaction;
+                    command.Parameters.AddWithValue("@productId", productId);
+                    await command.ExecuteNonQueryAsync();
+                }
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                if (transaction != null)
+                {
+                    await transaction.RollbackAsync();
+                }
+                throw;
+            }
+            finally
+            {
                 if (connectionWithDB != null)
                 {
                     await connectionWithDB.CloseAsync();
@@ -455,5 +500,5 @@ namespace Store_API.Database
         }
     }
 
-   
+
 }
