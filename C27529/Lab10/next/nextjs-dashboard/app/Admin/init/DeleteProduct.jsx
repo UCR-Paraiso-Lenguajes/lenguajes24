@@ -18,7 +18,7 @@ function DeleteProduct() {
         setProductList(json.products); 
         localStorage.setItem('productList', JSON.stringify(json.products));
       } catch (error) {
-        console.error('Error loading data:', error);
+        throw new Error('Error loading data:', error);
       }
     };
 

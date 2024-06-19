@@ -47,8 +47,7 @@ function AddProduct() {
         throw new Error('Failed to add product');
       }
     } catch (error) {
-      console.error('Error adding product:', error);
-      alert('Error adding product');
+      throw new Error('Error adding product:', error);
     }
   };
 
