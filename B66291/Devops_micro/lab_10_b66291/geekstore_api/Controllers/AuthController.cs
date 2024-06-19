@@ -5,19 +5,17 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-
-namespace geekstore_api.Controllers.AuthController
+namespace geekstore_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IConfiguration configuration;
-        private readonly IHostEnvironment hostEnvironment;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(IHostEnvironment hostEnvironment)
+        public AuthController(IConfiguration configuration)
         {
-            this.hostEnvironment = hostEnvironment;
+            _configuration = configuration;
         }
 
         public class TestUser
@@ -25,6 +23,19 @@ namespace geekstore_api.Controllers.AuthController
             public string UserName { get; set; }
             public string UserPassword { get; set; }
             public IEnumerable<string> UserRoles { get; set; }
+        }
+
+        private List<TestUser> GetTestUsers()
+        {
+            return new List<TestUser>
+            {
+                new TestUser
+                {
+                    UserName = "jaziel",
+                    UserPassword = "12345",
+                    UserRoles = new List<string> { "Admin", "User" }
+                },
+            };
         }
 
         [HttpPost("login")]
@@ -36,11 +47,8 @@ namespace geekstore_api.Controllers.AuthController
                 throw new ArgumentNullException(nameof(user), "El usuario no se encuentra definido");
             }
 
-            var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.Development.json")
-            .Build(); 
-
-            var testUsers = configuration.GetSection("TestUsers").Get<List<TestUser>>();
+            var testUsers = GetTestUsers();
+            var secretKey = _configuration.GetValue<string>("Jwt:SecretKey");
 
             foreach (var testUser in testUsers)
             {
@@ -49,9 +57,9 @@ namespace geekstore_api.Controllers.AuthController
                     var claims = testUser.UserRoles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
                     claims.Add(new Claim(ClaimTypes.Name, testUser.UserName));
 
-                    var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
-                    var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-                    var tokeOptions = new JwtSecurityToken(
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+                    var signinCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                    var tokenOptions = new JwtSecurityToken(
                         issuer: "https://localhost:5001",
                         audience: "https://localhost:5001",
                         claims: claims,
@@ -59,7 +67,7 @@ namespace geekstore_api.Controllers.AuthController
                         signingCredentials: signinCredentials
                     );
 
-                    var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+                    var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
 
                     return Ok(new AuthenticatedResponse { Token = tokenString });
                 }
@@ -67,10 +75,8 @@ namespace geekstore_api.Controllers.AuthController
 
             return Unauthorized();
         }
-
-
-
     }
+
     public class LoginModel
     {
         public string? UserName { get; set; }
