@@ -7,9 +7,9 @@ using System.Text;
 //para la variable de ambiente
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-
-
-
+//WebSockets
+using Microsoft.AspNetCore.SignalR;
+using MyStoreAPI.Controllers;//indicar donde esta el/los hub creados
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +47,9 @@ builder.Services.AddSwaggerGen(setup =>
     });
 
 });
+
+// Add SignalR service
+builder.Services.AddSignalR();
 
 
 //Configure CORS
@@ -118,4 +121,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.UseCors(); //builder.Services.AddCors() ya agrega CORS
+
+//Map SignalR hubs
+app.MapHub<NotificationHub>("/notificationHub");
+    //nombre del dominio<-/hub 
 app.Run();

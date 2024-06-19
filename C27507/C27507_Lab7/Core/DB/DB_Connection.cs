@@ -102,7 +102,7 @@ namespace MyStoreAPI{
 
                 string createTableNotification = @"
                 CREATE TABLE Notifications (
-                    Id INT IDENTITY(1,1) PRIMARY KEY,
+                    Id INT AUTO_INCREMENT PRIMARY KEY,
                     Title NVARCHAR(255) NOT NULL,
                     Message TEXT NOT NULL,
                     Creation_Date DATETIME NOT NULL

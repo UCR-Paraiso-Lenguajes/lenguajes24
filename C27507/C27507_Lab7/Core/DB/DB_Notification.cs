@@ -11,8 +11,51 @@ namespace MyStoreAPI.DB{
 
     public class DB_Notification{
 
+        public async Task<IEnumerable<Notification>> getNotificationsForUsersAsync(){
 
-        public async void InsertNotificationAsync(Notification newNotification){
+
+            List<Notification>  listOfNotifications =new List<Notification>();
+            MySqlConnection connectionWithDB = null;
+            MySqlTransaction transaction = null;
+            
+            try{
+                connectionWithDB = new MySqlConnection(DB_Connection.INIT_CONNECTION_DB());                
+                await connectionWithDB.OpenAsync();
+                transaction = await connectionWithDB.BeginTransactionAsync();
+
+                string selectNotifications = @"
+                SELECT Id, Title, Message, Creation_Date
+                FROM Notifications;";
+
+                using(MySqlCommand command = new MySqlCommand(selectNotifications,connectionWithDB)){
+                    
+                    command.Transaction = transaction;                    
+                    using (MySqlDataReader readerTable = await command.ExecuteReaderAsync()){
+                        while(await readerTable.ReadAsync()){
+                            var id = Convert.ToInt32(readerTable["Id"]);
+                            var title = readerTable["Title"].ToString();
+                            var message = readerTable["Message"].ToString();
+                            var creationDate = (DateTime)readerTable["Creation_Date"];
+                            var currentNotify = new Notification(id,title,message,creationDate);
+                            listOfNotifications.Add(currentNotify);                            
+                        }
+                    }
+                }
+                await transaction.CommitAsync();
+
+
+            }catch(Exception ex){
+                
+                await transaction.RollbackAsync();
+                throw;
+
+            }finally{
+                await connectionWithDB.CloseAsync();
+            }            
+            return listOfNotifications;
+        }            
+
+        public async Task InsertNotificationAsync(Notification newNotification){
             
             if(newNotification == null) throw new ArgumentException($"{nameof(newNotification)} no puede ser nulo");
 
@@ -35,7 +78,7 @@ namespace MyStoreAPI.DB{
                     command.Transaction = transaction;                        
                     command.Parameters.AddWithValue("@title", newNotification.notifyTitle);
                     command.Parameters.AddWithValue("@message", newNotification.notifyMessage);
-                    command.Parameters.AddWithValue("@creationDate", newNotification.Direction);
+                    command.Parameters.AddWithValue("@creationDate", newNotification.notifyCreationDate);
                     await command.ExecuteNonQueryAsync();
 
                     // Despues de la insercion, obtenemos el ID recién insertado, pero en la misma conexion (mismo bloqueo)
@@ -48,10 +91,7 @@ namespace MyStoreAPI.DB{
                     //Devolvemos el id de la notificacion generada (porque es IDENTITY(1,1))                    
                     await InsertNotificationCopyAsync(connectionWithDB, transaction, thisIdNotification, newNotification);
                     await transaction.CommitAsync();
-                }
-                //await InsertNotificationCopyAsync(connectionWithDB,transaction,thisIdNotification,newNotification);
-                //Commiteamos tanto la insercion en DB_Sale y DB_SaleLine
-                //await transaction.CommitAsync();
+                }               
             }catch(Exception ex){
                 await transaction.RollbackAsync();
                 //Mandamos el eroro a NotificationLogic
@@ -62,7 +102,7 @@ namespace MyStoreAPI.DB{
             }            
         }
 
-        public async void InsertNotificationCopyAsync(MySqlConnection connectionWithDB, MySqlTransaction transaction,int thisIdNotification, Notification newNotification){
+        public async Task InsertNotificationCopyAsync(MySqlConnection connectionWithDB, MySqlTransaction transaction,int thisIdNotification, Notification newNotification){
 
             if (connectionWithDB == null) throw new ArgumentException($"{nameof(connectionWithDB)} la conexión no puede ser nula");
             if (transaction == null) throw new ArgumentException($"{nameof(transaction)} la transactión no puede ser nula");            
@@ -80,7 +120,7 @@ namespace MyStoreAPI.DB{
 
                     //asociamos las acciones a realizar con una transaction
                     command.Transaction = transaction;
-                    command.Parameters.AddWithValue("@id", newNotification.notifyId);
+                    command.Parameters.AddWithValue("@id", thisIdNotification);
                     command.Parameters.AddWithValue("@title", newNotification.notifyTitle);
                     command.Parameters.AddWithValue("@message", newNotification.notifyMessage);
                     command.Parameters.AddWithValue("@creationDate", newNotification.notifyCreationDate);

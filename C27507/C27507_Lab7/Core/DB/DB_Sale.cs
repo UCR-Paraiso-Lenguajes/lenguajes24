@@ -19,7 +19,7 @@ namespace MyStoreAPI.DB{
         public DB_Sale(){            
             DB_SaleLine = new DB_SaleLine();
         }
-        
+                
         public async Task<int> InsertSaleAsync(string purchaseNum, DateTime dateTimeSale,Cart purchasedCart){
 
             if(string.IsNullOrEmpty(purchaseNum)) throw new BussinessException($"{nameof(purchaseNum)} no puede ser nulo ni estar vacio");

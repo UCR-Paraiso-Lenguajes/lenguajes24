@@ -8,6 +8,7 @@ using Core;
 
 //JWT Authentication
 using Microsoft.AspNetCore.Authorization;
+
 namespace MyStoreAPI.Controllers
 {
     [Route("api/[controller]")]
@@ -22,8 +23,8 @@ namespace MyStoreAPI.Controllers
             try{
                 CampaignLogic campaignLogic = new CampaignLogic();
                 
-                var succesNotification = await campaignLogic.createNewNotificationAsync(newNotify);
-                return Ok(new { succesNotification });
+                await campaignLogic.createNewNotificationAsync(newNotify);
+                return Ok();
                  }
             catch (BussinessException ex){                
                 return StatusCode(501, "Ha ocurrido un error al generar la notificación. Por favor inténtalo más tarde.");

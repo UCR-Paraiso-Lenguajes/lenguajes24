@@ -11,7 +11,7 @@ namespace MyStoreAPI.Models
         public DateTime notifyCreationDate { get; set; }
 
 
-        public void Notification(){
+        public Notification(int notifyId, string notifyTitle, string notifyMessage,DateTime notifyCreationDate){
             if (notifyId <= 0)
                 throw new ArgumentException($"{nameof(notifyId)} no puede ser negativo ni igual a cero.");
                         
@@ -21,8 +21,13 @@ namespace MyStoreAPI.Models
             if (string.IsNullOrWhiteSpace(notifyMessage))
                 throw new ArgumentException($"{nameof(notifyMessage)} no puede estar vacío.");
             
-            if (Message.Length > 5000)
-                throw new ArgumentException($"{nameof(Message)} no puede tener más de 5000 caracteres.");
+            if (notifyMessage.Length > 5000)
+                throw new ArgumentException($"{nameof(notifyMessage)} no puede tener más de 5000 caracteres.");
+
+            this.notifyId = notifyId;
+            this.notifyTitle = notifyTitle;
+            this.notifyMessage = notifyMessage;
+            this.notifyCreationDate = notifyCreationDate;
         }
     }
     
