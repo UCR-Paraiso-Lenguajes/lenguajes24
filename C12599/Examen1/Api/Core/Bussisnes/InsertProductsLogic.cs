@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
@@ -11,7 +12,7 @@ namespace storeapi.Business
     public class InsertProductsLogic
     {
         private readonly IMemoryCache _cache;
-     
+
         public delegate void InsertProductDelegate(Product product, MySqlConnection connection, MySqlTransaction transaction);
 
         private readonly InsertProductDelegate _insertProductDelegate;
@@ -66,3 +67,4 @@ namespace storeapi.Business
         }
     }
 }
+
