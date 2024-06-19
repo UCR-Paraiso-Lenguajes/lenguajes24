@@ -1,46 +1,68 @@
 using MySqlConnector;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using storeApi.Models;
-using System.Net.Http.Headers;
 using storeApi.db;
+using storeApi.Business;
 
 namespace storeApi
 {
     public sealed class Store
-    {
+    {   
         public IEnumerable<Product> Products { get; private set; }
         public Dictionary<int, List<Product>> CategoriesProducts { get; private set; }
         public IEnumerable<Category.ProductCategory> CategoriesNames { get; private set; }
         public const int TaxPercent = 13;
+        private List<Product> mockProducts;
 
-        private Store(IEnumerable<Product> products)
+         internal Store(IEnumerable<Product> products)
         {
-            this.Products = products;
-        }
-        public readonly static Store Instance;
-        public List<Product> mockProducts;
-
-        static Store()
-        {
-            Task<IEnumerable<Product>> productsTask = productsFromDB();
-            Store.Instance = new Store(productsTask.Result);
+            this.Products = products ?? throw new ArgumentNullException(nameof(products));
+            this.RelateProductsToCategories();
             var category = new Category();
-            Store.Instance.CategoriesNames = category.GetCategoryNames();
+            this.CategoriesNames = category.GetCategoryNames();
+        }
+
+        public static Store Instance { get; private set; }
+
+         static Store()
+        {
+            try
+            {
+                var productsTask = productsFromDB().GetAwaiter().GetResult();
+                Store.Instance = new Store(productsTask);
+                StoreLogic.OnProductAdded += AddProductToStore;
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException($"Error during static initialization: {ex.Message}");
+            }
         }
 
         public Store(List<Product> mockProducts)
         {
             this.mockProducts = mockProducts;
         }
+        
 
         private static async Task<IEnumerable<Product>> productsFromDB()
         {
-            return await StoreDB.GetProductsAsync();
+            try
+            {
+                return await StoreDB.GetProductsAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException($"Error retrieving products from DB: {ex.Message}");
+                
+            }
         }
 
         private void RelateProductsToCategories()
         {
-            if (Products.Count() <= 0) throw new ArgumentException("Products are missing for category relation. Store");
+            if (!Products.Any()) throw new ArgumentException("Products are missing for category relation. Store");
 
             this.CategoriesProducts = new Dictionary<int, List<Product>>();
 
@@ -56,7 +78,7 @@ namespace storeApi
 
         public async Task<Store> GetFilteredProductsAsync(IEnumerable<int> categoryIds)
         {
-            await Task.Run(() => Store.Instance.RelateProductsToCategories());
+            await Task.Run(() => this.RelateProductsToCategories());
             List<Product> products = new List<Product>();
 
             if (categoryIds == null || !categoryIds.Any())
@@ -82,6 +104,17 @@ namespace storeApi
             }
 
             return new Store(products);
+        }
+
+        public List<Product> GetFilteredTextProducts(string searchText)
+        {
+            var sortedProducts = Products.OrderBy(p => p.Name).ToList();
+            var nameResults = BinarySearchProducts(sortedProducts, searchText, p => p.Name);
+
+            sortedProducts = Products.OrderBy(p => p.Description).ToList();
+            var descriptionResults = BinarySearchProducts(sortedProducts, searchText, p => p.Description);
+
+            return nameResults.Union(descriptionResults).ToList();
         }
 
         private List<Product> BinarySearchProducts(List<Product> sortedProducts, string searchText, Func<Product, string> selector)
@@ -127,15 +160,14 @@ namespace storeApi
             return foundProducts;
         }
 
-        public List<Product> GetFilteredTextProducts(string searchText)
+        private static void AddProductToStore(Product product)
         {
-            var sortedProducts = Products.OrderBy(p => p.Name).ToList();
-            var nameResults = BinarySearchProducts(sortedProducts, searchText, p => p.Name);
-
-            sortedProducts = Products.OrderBy(p => p.Description).ToList();
-            var descriptionResults = BinarySearchProducts(sortedProducts, searchText, p => p.Description);
-
-            return nameResults.Union(descriptionResults).ToList();
+            var productsList = Instance.Products.ToList();
+            productsList.Add(product);
+            Instance.Products = productsList;
+            Instance.RelateProductsToCategories();
         }
+
+       
     }
 }

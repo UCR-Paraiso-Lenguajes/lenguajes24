@@ -18,7 +18,6 @@ function Page() {
 
       if (timeout < 0) {
         sessionStorage.removeItem('token');
-        throw new Error('La sesión ha expirado, por favor inicie sesión nuevamente.');
         window.location.href = '/Admin';
       } else {
         setTimeout(() => {

@@ -48,5 +48,8 @@ namespace storeApi.Tests
             Assert.AreEqual(1, filteredProducts.Count);
             Assert.AreEqual("Product1", filteredProducts.First().Name);
         }
+
+
+       
     }
 }
