@@ -1,19 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using KEStoreApi.Bussiness;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+
 namespace KEStoreApi.Controllers
 {
     [Route("api/")]
     [ApiController]
     public class CartController : ControllerBase
     {
-        private StoreLogic storeLogic = new StoreLogic();
+        private readonly StoreLogic _storeLogic;
+
+        public CartController()
+        {
+            _storeLogic = new StoreLogic();
+        }
 
         [HttpPost("cart")]
         [AllowAnonymous]
         public async Task<IActionResult> CreateCartAsync([FromBody] Cart cart)
         {
-
             if (cart == null)
             {
                 return BadRequest("El objeto Cart no puede ser nulo.");
@@ -25,12 +31,16 @@ namespace KEStoreApi.Controllers
                 return BadRequest("El carrito debe contener al menos un producto.");
             }
 
-            // Realizar la compra
-            var saleTask = storeLogic.PurchaseAsync(cart);
-            var sale = await saleTask;
-            var purchaseNumber = sale.PurchaseNumber;
-            var response = new { purchaseNumber = purchaseNumber };
-            return Ok(response);
+            try
+            {
+                var sale = await _storeLogic.PurchaseAsync(cart);
+                var response = new { purchaseNumber = sale.PurchaseNumber };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
     }
 }

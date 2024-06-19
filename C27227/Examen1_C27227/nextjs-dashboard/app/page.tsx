@@ -6,7 +6,7 @@ import Cart_Store from './ui/components/cart';
 import CarouselBanner from '@/app/ui/components/carrusel';
 import LoginForm from './admin/page';
 import "bootstrap/dist/css/bootstrap.min.css";
-import '@/app/ui/styles/app.css';
+import '@/app/ui/Styles/app.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { decodeToken, checkTokenDate } from './hooks/jwtHooks';
 import { useRouter } from 'next/navigation';
@@ -78,7 +78,6 @@ const Page = () => {
         await fetchAllProducts();
         return;
       }
-
       const url = new URL(URLConection + '/api/store/products');
       categoryIds.forEach(id => url.searchParams.append('categoryIds', id));
 

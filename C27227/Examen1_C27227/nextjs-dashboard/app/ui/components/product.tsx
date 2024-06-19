@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/product.css';
+import '../Styles/product.css';
 
 
 const Product = ({ product, handleClick}) => {

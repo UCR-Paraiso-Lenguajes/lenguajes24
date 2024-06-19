@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/address.css';
+import '../Styles/address.css';
 import PaymentMethods from './payment_method';
 import { decodeToken, checkTokenDate } from '../../hooks/jwtHooks';
 import { useRouter } from 'next/navigation';
 
-const AddressForm = ({ onSubmit }) => {
-  const [address, setAddress] = useState('');
-  const [showPaymentMethod, setShowPaymentMethod] = useState(false);
-  const [warning, setWarning] = useState(false);
+const AddressForm: React.FC = () => {
+  const [address, setAddress] = useState<string>('');
+  const [showPaymentMethod, setShowPaymentMethod] = useState<boolean>(false);
+  const [warning, setWarning] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -23,25 +23,15 @@ const AddressForm = ({ onSubmit }) => {
     }
   }, [router]);
 
-  const handleInputChange = (event) => {
-    if (!event || !event.target) {
-      throw new Error('El evento y el objetivo son requeridos.');
-    }
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAddress(event.target.value);
   };
 
-  const isValidAddress = (address) => {
-    if (!address) {
-      throw new Error('La dirección es requerida.');
-    }
-    const minLength = 10;
-    return address.trim().length >= minLength;
+  const isValidAddress = (address: string): boolean => {
+    return address.trim().length >= 10;
   };
 
-  const handleContinueBuy = (event) => {
-    if (!event) {
-      throw new Error('El evento es requerido.');
-    }
+  const handleContinueBuy = (event: React.FormEvent) => {
     event.preventDefault();
     if (!isValidAddress(address)) {
       setWarning(true);
@@ -54,7 +44,7 @@ const AddressForm = ({ onSubmit }) => {
   };
 
   return showPaymentMethod ? (
-    <PaymentMethods />
+    <PaymentMethods address={address} />
   ) : (
     <form onSubmit={handleContinueBuy}>
       <div>Ingrese su dirección</div>

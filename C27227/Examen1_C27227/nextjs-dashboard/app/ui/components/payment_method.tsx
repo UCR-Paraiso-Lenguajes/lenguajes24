@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import '../styles/paymentMethods.css';
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import '../Styles/paymentMethods.css';
 import { decodeToken, checkTokenDate } from '../../hooks/jwtHooks';
 import { useRouter } from 'next/navigation';
 
-const PaymentMethods = () => {
-  const [paymentmethod, setpaymentmethod] = useState('');
-  const [paymentCode, setPaymentCode] = useState('');
-  const [ConfirmationPurchase, setConfirmationPurchase] = useState(false);
-  const [warning, setWarning] = useState(false);
-  const [warningMessage, setWarningMessage] = useState('');
-  const [purchaseNumber, setPurchaseNumber] = useState('');
+interface PaymentMethodsProps {
+  address: string;
+}
+
+const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
+  const [paymentmethod, setPaymentMethod] = useState<string>('');
+  const [paymentCode, setPaymentCode] = useState<string>('');
+  const [ConfirmationPurchase, setConfirmationPurchase] = useState<boolean>(false);
+  const [warning, setWarning] = useState<boolean>(false);
+  const [warningMessage, setWarningMessage] = useState<string>('');
+  const [purchaseNumber, setPurchaseNumber] = useState<string>('');
   const tiendaPago = localStorage.getItem('tienda');
-  const tiendaLocal = JSON.parse(tiendaPago);
-  const URLConection = process.env.NEXT_PUBLIC_API;
+  const tiendaLocal = tiendaPago ? JSON.parse(tiendaPago) : {};
+  const URLConection = process.env.NEXT_PUBLIC_API as string;
   const router = useRouter();
 
   useEffect(() => {
@@ -28,12 +32,8 @@ const PaymentMethods = () => {
     }
   }, [router]);
 
-  const handlePaymentCodeChange = (event) => {
-    if (event && event.target && typeof event.target.value === 'string') {
-      setPaymentCode(event.target.value);
-    } else {
-      throw new Error('El argumento del evento no es válido');
-    }
+  const handlePaymentCodeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setPaymentCode(event.target.value);
   };
 
   const handlePaymentMethod = () => {
@@ -49,7 +49,8 @@ const PaymentMethods = () => {
         ...tiendaLocal,
         cart: {
           ...tiendaLocal.cart,
-          metodoPago: paymentmethod
+          metodoPago: paymentmethod,
+          direccionEntrega: address
         },
         necesitaVerifica: true,
         idCompra: 1
@@ -60,47 +61,53 @@ const PaymentMethods = () => {
   };
 
   const enviarDatosPago = async () => {
-    const datosDePagoValidos = tiendaLocal.cart.direccionEntrega && tiendaLocal.cart.metodoPago && (tiendaLocal.cart.metodoPago === 'cash' || (tiendaLocal.cart.metodoPago === 'sinpe' && paymentCode.trim() !== ''));
+    if (paymentmethod === 'sinpe' && !paymentCode.trim()) {
+      setWarning(true);
+      setWarningMessage('Por favor, ingrese el comprobante de pago.');
+      setTimeout(() => {
+        setWarning(false);
+        setWarningMessage('');
+      }, 2000);
+      return;
+    }
 
-    if (datosDePagoValidos) {
-      const productQuantities = Object.keys(tiendaLocal.cart.cartItems).map(productId => ({
-        id: parseInt(productId), 
-        quantity: tiendaLocal.cart.cartItems[productId]
-      }));
+    const productQuantities = Object.keys(tiendaLocal.cart.cartItems).map(productId => ({
+      id: parseInt(productId),
+      quantity: tiendaLocal.cart.cartItems[productId]
+    }));
 
-      const paymentMethodValue = tiendaLocal.cart.metodoPago === 'sinpe' ? 1 : 0;
+    const paymentMethodValue = paymentmethod === 'sinpe' ? 1 : 0;
 
-      const dataToSend = {
-        product: productQuantities,
-        address: tiendaLocal.cart.direccionEntrega,
-        paymentMethod: paymentMethodValue
-      };
+    const dataToSend = {
+      product: productQuantities,
+      address: address,
+      paymentMethod: paymentMethodValue,
+      paymentCode: paymentmethod === 'sinpe' ? paymentCode : undefined
+    };
 
-      try {
-        const response = await fetch(URLConection+'api/cart', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(dataToSend)
-        });
+    try {
+      const response = await fetch(`${URLConection}/api/cart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          setPurchaseNumber(data.purchaseNumber);
-        } else {
-          const errorResponseData = await response.json();
-          throw new Error(errorResponseData.message || 'Error');
+      if (!response.ok) {
+        const errorResponseData = await response.text();
+        try {
+          const errorJson = JSON.parse(errorResponseData);
+          throw new Error(errorJson.message || 'Error');
+        } catch (jsonError) {
+          throw new Error(errorResponseData);
         }
-      } catch (error) {
-        throw new Error('Error al enviar datos: ' + error.message);
       }
-    } else {
-      if (tiendaLocal.cart.metodoPago === 'sinpe' && paymentCode.trim() === '') {
-        setWarningMessage('Por favor, ingrese el comprobante de pago.');
-      } else {
-        setWarningMessage('Por favor, complete los datos de pago.');
-      }
+
+      const data = await response.json();
+      setPurchaseNumber(data.purchaseNumber);
+    } catch (error) {
+      setWarningMessage('Error al enviar datos: ' + error.message);
       setWarning(true);
       setTimeout(() => {
         setWarning(false);
@@ -113,7 +120,7 @@ const PaymentMethods = () => {
     return (
       <div className="payment-info">
         <p className="payment-info-title">Detalles de Pago:</p>
-        <p>Número de compra:{purchaseNumber} </p>
+        <p>Número de compra: {purchaseNumber}</p>
         <p>Espere la confirmación del administrador con respecto al pago.</p>
         <button className='BtnBuy' onClick={enviarDatosPago}>Confirmar compra</button>
       </div>
@@ -125,7 +132,7 @@ const PaymentMethods = () => {
       <div className="payment-info">
         <p className="payment-info-title">Detalles de Pago:</p>
         <p>Número de cuenta: +506-5678-9012</p>
-        <p>Número de compra:{purchaseNumber} </p>
+        <p>Número de compra: {purchaseNumber}</p>
         <input type="text" value={paymentCode} onChange={handlePaymentCodeChange} className="payment-code-input" placeholder="Ingrese el comprobante" />
         <p>Espere la confirmación del administrador con respecto al pago.</p>
         <button className='BtnBuy' onClick={enviarDatosPago}>Confirmar compra</button>
@@ -142,11 +149,11 @@ const PaymentMethods = () => {
         <fieldset className="payment-methods">
           <legend>Escoja el método de pago</legend>
           <div className="payment-method">
-            <input type="radio" id="sinpe" name="paymentMethod" value="sinpe" checked={paymentmethod === 'sinpe'} onChange={() => setpaymentmethod('sinpe')} />
+            <input type="radio" id="sinpe" name="paymentMethod" value="sinpe" checked={paymentmethod === 'sinpe'} onChange={() => setPaymentMethod('sinpe')} />
             <label htmlFor="sinpe">Sinpe</label>
           </div>
           <div className="payment-method">
-            <input type="radio" id="cash" name="paymentMethod" value="cash" checked={paymentmethod === 'cash'} onChange={() => setpaymentmethod('cash')} />
+            <input type="radio" id="cash" name="paymentMethod" value="cash" checked={paymentmethod === 'cash'} onChange={() => setPaymentMethod('cash')} />
             <label htmlFor="cash">Efectivo</label>
           </div>
           <button className='BtnBuy' onClick={handlePaymentMethod}>Continuar compra</button>

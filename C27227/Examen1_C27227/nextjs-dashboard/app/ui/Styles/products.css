@@ -1,0 +1,16 @@
+.d-flex {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 250px;
+    background-color: #f8f9fa;
+    min-height: 100vh; 
+    position: fixed;
+  }
+
+  .container {
+    margin-left: 250px;
+    padding: 20px;
+  }
+  

@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import '../styles/header.css';
+import '../Styles/header.css';
 import Link from 'next/link';
 import "bootstrap/dist/css/bootstrap.min.css";
 

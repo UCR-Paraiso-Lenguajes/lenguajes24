@@ -31,7 +31,7 @@ namespace KEStoreApi.Controllers
             try
             {
                 var storeInstance = await Store.Instance;
-                var productsByCategory = await storeInstance.getProductosCategoryID(categoryIds);
+                var productsByCategory = await storeInstance.GetProductosCategoryIDAsync(categoryIds);
                 return Ok(new { Products = productsByCategory });
             }
             catch (ArgumentException ex)
@@ -52,7 +52,7 @@ namespace KEStoreApi.Controllers
             try
             {
                 var store = await Store.Instance;
-                var products = await store.searchProductsStore(productName, categoryIds);
+                var products = await store.SearchProductsStoreAsync(productName, categoryIds);
 
                 return Ok(new { Products = products });
             }

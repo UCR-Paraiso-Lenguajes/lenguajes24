@@ -71,13 +71,13 @@ public async Task<Sale> PurchaseAsync(Cart cart)
             int charType = randomNumber.Next(0, 3);
             switch (charType)
             {
-                case 0: // Generar un dígito
+                case 0:
                     sb.Append(randomNumber.Next(0, 10));
                     break;
-                case 1: // Generar una letra mayúscula
+                case 1:
                     sb.Append((char)randomNumber.Next('A', 'Z' + 1));
                     break;
-                case 2: // Generar una letra minúscula
+                case 2:
                     sb.Append((char)randomNumber.Next('a', 'z' + 1));
                     break;
             }
