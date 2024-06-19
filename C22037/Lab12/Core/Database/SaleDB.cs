@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.IO.Compression;
+using System.Threading.Tasks;
 using MySqlConnector;
 using TodoApi.Models;
 
@@ -60,22 +60,22 @@ namespace TodoApi.Database
             }
         }
 
-        public async Task<SalesReport> GetSalesReportAsync(DateTime date)
+        public SalesReport GetSalesReport(DateTime date)
         {
             if (date == DateTime.MinValue)
                 throw new ArgumentException("Date cannot be:", nameof(date));
 
             Task<List<WeeklyReport>> weeklySalesTask = GetWeeklySalesAsync(date);
             Task<List<DailyReport>> dailySalesTask = GetDailySalesAsync(date);
-            await Task.WhenAll(weeklySalesTask, dailySalesTask);
+            Task.WaitAll(weeklySalesTask, dailySalesTask);
             List<WeeklyReport> weeklySales = weeklySalesTask.Result;
             List<DailyReport> dailySales = dailySalesTask.Result;
+
             SalesReport salesReport = new SalesReport(dailySales, weeklySales);
             return salesReport;
         }
 
-
-        private async Task<IEnumerable<WeeklyReport>> GetWeeklySalesAsync(DateTime date)
+        private async Task<List<WeeklyReport>> GetWeeklySalesAsync(DateTime date)
         {
             List<WeeklyReport> weeklySales = new List<WeeklyReport>();
 
@@ -108,9 +108,9 @@ namespace TodoApi.Database
             return weeklySales;
         }
 
-        private async Task<IEnumerable<DailyReport>> GetDailySalesAsync(DateTime date)
+        private async Task<List<DailyReport>> GetDailySalesAsync(DateTime date)
         {
-            List<DailyReport> dailylySales = new List<DailyReport>();
+            List<DailyReport> dailySales = new List<DailyReport>();
 
             using (MySqlConnection connection = new MySqlConnection(Storage.Instance.ConnectionString))
             {
@@ -132,13 +132,13 @@ namespace TodoApi.Database
                             DateTime purchaseDate = reader.GetDateTime("purchase_date");
                             string purchaseNumber = reader.GetString("purchase_number");
                             decimal total = reader.GetDecimal("total");
-                            DailyReport dailyReport = new DailyReport(purchaseDate, purchaseNumber.ToString(), total);
-                            dailylySales.Add(dailyReport);
+                            DailyReport dailyReport = new DailyReport(purchaseDate, purchaseNumber, total);
+                            dailySales.Add(dailyReport);
                         }
                     }
                 }
             }
-            return dailylySales;
+            return dailySales;
         }
     }
 }

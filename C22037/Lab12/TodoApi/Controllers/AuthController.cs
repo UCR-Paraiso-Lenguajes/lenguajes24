@@ -50,7 +50,7 @@ namespace TodoApi.Controllers
                     issuer: "https://localhost:7067",
                     audience: "https://localhost:7067",
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(1),
+                    expires: DateTime.Now.AddMinutes(3),
                     signingCredentials: signinCredentials
                 );
 

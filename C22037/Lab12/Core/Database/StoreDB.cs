@@ -6,8 +6,16 @@ using MySqlConnector;
 using TodoApi.Models;
 
 namespace TodoApi.Database;
-public sealed class StoreDB
+public class StoreDB
 {
+    internal delegate void ProductAddedDelegate(ProductAdd product, int id);
+
+    ProductAddedDelegate addNewProduct = async (product, id) =>
+    {
+        var store = await Store.InstanceAsync();
+        store.AddProduct(product, id);
+    };
+
     public static void CreateMysql()
     {
         Categories category = new Categories();
@@ -148,6 +156,45 @@ public sealed class StoreDB
         }
     }
 
+    public async Task InsertProductAsync(ProductAdd product)
+    {
+        int id = 0;
+        using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"INSERT INTO products (imageURL, name, price, description, category)
+                      VALUES (@imageURL, @name, @price, @description, @category);
+                      SELECT LAST_INSERT_ID();";
+
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@imageURL", product.imageUrl);
+                command.Parameters.AddWithValue("@name", product.name);
+                command.Parameters.AddWithValue("@price", product.price);
+                command.Parameters.AddWithValue("@description", product.description);
+                command.Parameters.AddWithValue("@category", product.category);
+                id = Convert.ToInt32(await command.ExecuteScalarAsync());
+            }
+        }
+
+        addNewProduct(product, id);
+    }
+
+    public async Task DeleteProductAsync(int id)
+    {
+        using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
+        {
+            await connection.OpenAsync();
+            var query = "DELETE FROM products WHERE id = @id;";
+
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+    }
+
     public static async Task<IEnumerable<Product>> GetProductsAsync()
     {
         List<Product> products = new List<Product>();
@@ -157,7 +204,7 @@ public sealed class StoreDB
         {
             await connection.OpenAsync();
 
-            string query =  @"SELECT id, imageURL, name, price, description, category FROM products";
+            string query = @"SELECT id, imageURL, name, price, description, category FROM products";
             using (var command = new MySqlCommand(query, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
@@ -166,12 +213,12 @@ public sealed class StoreDB
                     {
                         var Name = reader.GetString("name");
                         var ImageURL = reader.GetString("imageURL");
-                        var Price = reader.GetDecimal("price");     
+                        var Price = reader.GetDecimal("price");
                         var Id = reader.GetInt32("id");
                         var Description = reader.GetString("description");
                         var CategoryId = reader.GetInt32("category");
                         products.Add(
-                            new Product(Name, ImageURL, Price, Description , Id, category.GetType(CategoryId))
+                            new Product(Name, ImageURL, Price, Description, Id, category.GetType(CategoryId))
                         );
                     }
                 }

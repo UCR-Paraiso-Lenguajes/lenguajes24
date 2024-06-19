@@ -1,10 +1,14 @@
 "use client"; // Para utilizar el cliente en lugar del servidor
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import "@/public/styles.css";
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from 'jwt-decode';
+import { useRouter } from 'next/navigation';
 import { Alert } from 'react-bootstrap';
+
+interface JwtPayload {
+    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"?: string;
+}
 
 export default function Admin() {
     const router = useRouter();
@@ -12,9 +16,9 @@ export default function Admin() {
         email: '',
         password: ''
     });
-    const [errorMessage, setErrorMessage] = useState(null);
-
-    const handleInputChange = (e) => {
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const URL = process.env.NEXT_PUBLIC_API_URL;
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
@@ -22,28 +26,28 @@ export default function Admin() {
         });
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-    
+
         const { email, password } = formData;
-    
+
         if (!email || !password) {
             setErrorMessage("Please enter the email and password.");
             return;
         }
-    
+
         try {
-            const response = await fetch('https://localhost:7067/api/auth/login', {
+            const response = await fetch(URL + '/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ User: email, Password: password })
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
-                const decodedToken = jwtDecode(data.token);
+                const decodedToken = jwtDecode<JwtPayload>(data.token);
                 const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
                 
                 if (userRole === "Admin") {

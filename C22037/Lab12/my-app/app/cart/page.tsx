@@ -1,17 +1,33 @@
-"use client"; //Para utilizar el cliente en lugar del servidor
+"use client"; // Para utilizar el cliente en lugar del servidor
 import { useEffect, useState } from 'react';
 import "@/public/styles.css";
 import Link from 'next/link';
 
+interface CartItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  imageURL: string;
+}
+
+interface Cart {
+  products: { [key: string]: CartItem };
+  subtotal?: number;
+}
+
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState({});
+  const [cartItems, setCartItems] = useState<{ [key: string]: CartItem }>({});
   const [subtotal, setSubtotal] = useState(0);
   const taxRate = 0.13;
 
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem('cart')) || { products: {} };
-    setCartItems(storedCart.products);
-    setSubtotal(storedCart.subtotal || 0);
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      const parsedCart: Cart = JSON.parse(storedCart);
+      setCartItems(parsedCart.products || {});
+      setSubtotal(parsedCart.subtotal || 0);
+    }
   }, []);
 
   useEffect(() => {
@@ -29,10 +45,7 @@ export default function CartPage() {
     localStorage.setItem('taxRate', taxRate.toString());
   }, [taxRate]);
 
-  const handleRemoveFromCart = (productId) => {
-    if (productId === undefined) {
-      throw new Error('ProductId cannot be undefined.');
-    }
+  const handleRemoveFromCart = (productId: string) => {
     const updatedCartItems = { ...cartItems };
     delete updatedCartItems[productId];
     setCartItems(updatedCartItems);
@@ -45,7 +58,7 @@ export default function CartPage() {
         <img src={item.imageURL} alt={item.name} />
         <div>
           <h3>{item.name}</h3>
-          <p>{item.decription}</p>
+          <p>{item.description}</p>
           <p>Precio: ${item.price}</p>
           <button className="Button" onClick={() => handleRemoveFromCart(item.id)}>Remove</button>
         </div>
@@ -70,7 +83,7 @@ export default function CartPage() {
 
       <div className="totals">
         <p>Subtotal: ${subtotal.toFixed(2)}</p>
-        <p>Impuestos ({(taxRate * 100)}%): ${(subtotal * taxRate).toFixed(2)}</p> 
+        <p>Impuestos ({(taxRate * 100)}%): ${(subtotal * taxRate).toFixed(2)}</p>
         <p>Total: ${(subtotal + (subtotal * taxRate)).toFixed(2)}</p>
         <Link href={isCartEmpty ? "#" : "/checkout"}>
           <button className="Button" disabled={isCartEmpty}>Proceed to checkout</button>
@@ -84,7 +97,6 @@ export default function CartPage() {
       <div className="footer">
         <h2>Tienda.com</h2>
       </div>
-
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-"use client"; //Para utilizar el cliente en lugar del servidor
+"use client"; // Para utilizar el cliente en lugar del servidor
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@/public/styles.css";
 import { useState, useEffect } from "react";
@@ -12,6 +12,7 @@ export default function Home() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const { search, categories: categoryIds } = getQueryParams();
@@ -19,19 +20,27 @@ export default function Home() {
 
     const loadData = async () => {
       try {
-        const response = await fetch(`https://localhost:7067/api/store`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-        setProductList(data.store.products);
-        setCategories(data.categories);
+        const storeData = JSON.parse(localStorage.getItem('store')) || {};
+        if (storeData.products) {
+          setProductList(storeData.products);
+          setCategories(storeData.categories || []);
+        } else {
+          const response = await fetch(URL + `/api/store`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch data');
+          }
+          const data = await response.json();
+          setProductList(data.store.products);
+          setCategories(data.categories);
 
-        const selectedCategories = data.categories.filter(category => categoryIds.includes(category.id.toString()));
+          localStorage.setItem('store', JSON.stringify(data.store));
+        }
+
+        const selectedCategories = categories.filter(category => categoryIds.includes(category.id.toString()));
         setSelectedCategory(selectedCategories);
 
         if (search || categoryIds.length > 0) {
-          const searchResponse = await fetch(`https://localhost:7067/api/store/search?search=${search}&categories=${categoryIds.join(',') || 'null'}`);
+          const searchResponse = await fetch(URL + `/api/store/search?search=${search}&categories=${categoryIds.join(',') || 'null'}`);
           if (!searchResponse.ok) {
             throw new Error('Failed to fetch data.');
           }
@@ -39,7 +48,7 @@ export default function Home() {
           setProductList(searchData.products);
         }
       } catch (error) {
-        throw new Error('Failed to fetch data', error);
+        throw new Error('Error loading data.');
       }
     };
 
@@ -53,7 +62,6 @@ export default function Home() {
 
     loadData();
   }, []);
-
 
   const updateUrl = (searchQuery, selectedCategory) => {
     const categoryIds = selectedCategory.map(category => category.id).join(',');
@@ -77,7 +85,7 @@ export default function Home() {
 
     updateUrl(searchQuery, selectedCategory);
 
-    let url = `https://localhost:7067/api/store/search?search=${searchQuery}`;
+    let url = URL + `/api/store/search?search=${searchQuery}`;
 
     if (selectedCategory.length > 0) {
       const categoryIds = selectedCategory.map(category => category.id).join(',');
@@ -96,7 +104,7 @@ export default function Home() {
 
       setProductList(data.products);
     } catch (error) {
-      throw new Error('Failed to fetch data', error);
+      throw new Error('Error fetching data.');
     }
   };
 
@@ -136,7 +144,7 @@ export default function Home() {
 
       updateUrl(searchQuery, updatedCategories);
 
-      const response = await fetch(`https://localhost:7067/api/store/products?${updatedCategories.length > 0 ? `categories=${updatedCategories.map(c => c.id).join(',')}` : 'categories=null'}`);
+      const response = await fetch(URL + `/api/store/products?${updatedCategories.length > 0 ? `categories=${updatedCategories.map(c => c.id).join(',')}` : 'categories=null'}`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -144,7 +152,7 @@ export default function Home() {
       const data = await response.json();
       setProductList(data.products);
     } catch (error) {
-      throw new Error('Failed to fetch data', error);
+      throw new Error('Error fetching data.');
     }
   };
 

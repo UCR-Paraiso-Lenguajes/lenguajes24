@@ -1,4 +1,4 @@
-"use client";
+"use client"; // Para utilizar el cliente en lugar del servidor
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Chart } from 'react-google-charts';
@@ -6,25 +6,16 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
-import DataTable from 'react-data-table-component';
 
 interface CustomJwtPayload {
     exp: number;
     "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"?: string;
 }
 
-interface Category {
-    id: number;
-    name: string;
-}
-
 interface Product {
     id: number;
     name: string;
-    description: string;
     price: number;
-    imageUrl: string;
-    category: Category;
 }
 
 export default function Init() {
@@ -35,17 +26,9 @@ export default function Init() {
     const [dailySalesData, setDailySalesData] = useState([['Purchase Date', 'Purchase Number', 'Total']]);
     const [isVerified, setIsVerified] = useState(false);
     const [products, setProducts] = useState<Product[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
     const [showDeleteProducts, setShowDeleteProducts] = useState(false);
     const [showInsertProducts, setShowInsertProducts] = useState(false);
-    const URL = process.env.NEXT_PUBLIC_API_URL;
-    const [newProduct, setNewProduct] = useState({
-        name: '',
-        description: '',
-        price: '',
-        imageUrl: '',
-        categoryId: ''
-    });
+    const [newProduct, setNewProduct] = useState({ name: '', description: '', price: '', imageUrl: '' });
 
     const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
     let userRole = null;
@@ -74,13 +57,12 @@ export default function Init() {
     useEffect(() => {
         checkTokenValidity();
         const interval = setInterval(checkTokenValidity, 10000);
-
+    
         return () => clearInterval(interval);
     }, [token]);
 
     useEffect(() => {
         fetchData();
-        fetchCategories();
     }, [selectedDay]);
 
     const fetchData = async () => {
@@ -91,7 +73,7 @@ export default function Init() {
 
         try {
             const formattedDate = selectedDay.toISOString().split('T')[0];
-            const response = await fetch(URL + `/api/sale?date=${formattedDate}`, {
+            const response = await fetch(`https://localhost:7067/api/sale?date=${formattedDate}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -119,34 +101,14 @@ export default function Init() {
         }
     };
 
-    const fetchCategories = async () => {
-        try {
-            const response = await fetch(URL + '/api/store/categories', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch categories.');
-            }
-
-            const data = await response.json();
-            setCategories(data.categories);
-            localStorage.setItem('categories', JSON.stringify(data.categories));
-        } catch (error) {
-            throw new Error("Error loading categories.");
-        }
-    };
-
-    const fetchProducts = async (categories = "null") => {
+    const fetchProducts = async () => {
         if (!token || userRole !== "Admin") {
             router.push('/admin');
             return;
         }
 
         try {
-            const response = await fetch(URL + `/api/store/products?categories=${categories}`, {
+            const response = await fetch('https://localhost:7067/api/store/products', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -158,7 +120,6 @@ export default function Init() {
 
             const data = await response.json();
             setProducts(data.products);
-            localStorage.setItem('productList', JSON.stringify(data.products));
         } catch (error) {
             throw new Error("Error loading products.");
         }
@@ -172,7 +133,7 @@ export default function Init() {
 
     const handleDayChange = (date: Date | null) => {
         if (!date) {
-            return;
+            throw new Error("Invalid date argument.");
         }
         const adjustedDay = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
         setSelectedDay(adjustedDay);
@@ -184,7 +145,7 @@ export default function Init() {
         }
 
         try {
-            const response = await fetch(URL + `/api/store/products/${productId}`, {
+            const response = await fetch(`https://localhost:7067/api/store/products/${productId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -195,103 +156,44 @@ export default function Init() {
                 throw new Error('Failed to delete product.');
             }
 
-            const updatedProducts = products.filter(product => product.id !== productId);
-            setProducts(updatedProducts);
-            localStorage.setItem('productList', JSON.stringify(updatedProducts));
+            setProducts(products.filter(product => product.id !== productId));
         } catch (error) {
             throw new Error("Error deleting product.");
         }
     };
 
-    const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const { value } = e.target;
-        const category = categories.find(cat => cat.id.toString() === value);
-        if (category) {
-            setNewProduct({ ...newProduct, categoryId: category.id.toString() });
-        }
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setNewProduct({ ...newProduct, [name]: value });
     };
 
-    const handleAddProduct = async () => {
-        const productData = {
-            name: newProduct.name,
-            description: newProduct.description,
-            price: parseFloat(newProduct.price),
-            imageUrl: newProduct.imageUrl,
-            category: parseInt(newProduct.categoryId)
-        };
-    
+    const handleInsertProduct = async () => {
+        if (!token || userRole !== "Admin") {
+            router.push('/admin');
+            return;
+        }
+
         try {
-            const response = await fetch(URL + '/api/product/store/add', {
+            const response = await fetch('https://localhost:7067/api/store/products', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(productData)
+                body: JSON.stringify(newProduct)
             });
-    
+
             if (!response.ok) {
-                throw new Error('Failed to add product.');
+                throw new Error('Failed to insert product.');
             }
-    
+
             const data = await response.json();
-    
-            const updatedProducts = data.products;
-    
-            const storeData = JSON.parse(localStorage.getItem('store')) || {};
-            storeData.products = updatedProducts;
-            localStorage.setItem('store', JSON.stringify(storeData));
-    
-            setProducts(updatedProducts);
+            setProducts([...products, data.product]);
+            setNewProduct({ name: '', description: '', price: '', imageUrl: '' });
         } catch (error) {
-            throw new Error('Error adding product:', error);
+            throw new Error("Error inserting product.");
         }
-    };    
-
-    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewProduct({ ...newProduct, name: e.target.value });
     };
-
-    const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setNewProduct({ ...newProduct, description: e.target.value });
-    };
-
-    const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewProduct({ ...newProduct, price: e.target.value });
-    };
-
-    const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewProduct({ ...newProduct, imageUrl: e.target.value });
-    };
-
-    const columns = [
-        {
-            name: 'Name',
-            selector: (row: Product) => row.name,
-            sortable: true,
-        },
-        {
-            name: 'Description',
-            selector: (row: Product) => row.description,
-            sortable: true,
-        },
-        {
-            name: 'Price',
-            selector: (row: Product) => row.price,
-            sortable: true,
-        },
-        {
-            name: 'Category',
-            selector: (row: Product) => row.category.name,
-            sortable: true,
-        },
-        {
-            cell: (row: Product) => <button onClick={() => handleDeleteProduct(row.id)}>Delete</button>,
-            ignoreRowClick: true,
-            allowOverflow: true,
-            button: true,
-        },
-    ];
 
     if (!isVerified) {
         return null;
@@ -323,11 +225,14 @@ export default function Init() {
                                 <button className="Button" onClick={() => { setShowInsertProducts(true); setShowDeleteProducts(false); }}>Insert Products</button>
                             </div>
                             {showDeleteProducts && (
-                                <DataTable
-                                    columns={columns}
-                                    data={products}
-                                    pagination
-                                />
+                                <div>
+                                    {products.map(product => (
+                                        <div key={product.id}>
+                                            <span>{product.name} - ${product.price}</span>
+                                            <button onClick={() => handleDeleteProduct(product.id)}>Delete</button>
+                                        </div>
+                                    ))}
+                                </div>
                             )}
                             {showInsertProducts && (
                                 <div>
@@ -338,7 +243,7 @@ export default function Init() {
                                             name="name"
                                             placeholder="Name"
                                             value={newProduct.name}
-                                            onChange={handleNameChange}
+                                            onChange={handleInputChange}
                                         />
                                     </div>
                                     <div>
@@ -346,7 +251,7 @@ export default function Init() {
                                             name="description"
                                             placeholder="Description"
                                             value={newProduct.description}
-                                            onChange={handleDescriptionChange}
+                                            onChange={handleInputChange}
                                         />
                                     </div>
                                     <div>
@@ -355,7 +260,7 @@ export default function Init() {
                                             name="price"
                                             placeholder="Price"
                                             value={newProduct.price}
-                                            onChange={handlePriceChange}
+                                            onChange={handleInputChange}
                                         />
                                     </div>
                                     <div>
@@ -364,24 +269,10 @@ export default function Init() {
                                             name="imageUrl"
                                             placeholder="Image URL"
                                             value={newProduct.imageUrl}
-                                            onChange={handleImageUrlChange}
+                                            onChange={handleInputChange}
                                         />
                                     </div>
-                                    <div>
-                                        <select
-                                            name="categoryId"
-                                            value={newProduct.categoryId}
-                                            onChange={handleCategoryChange}
-                                        >
-                                            <option value="">Select Category</option>
-                                            {categories.map(category => (
-                                                <option key={category.id} value={category.id}>
-                                                    {category.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <button className="Button" onClick={handleAddProduct}>Submit</button>
+                                    <button className="Button" onClick={handleInsertProduct}>Submit</button>
                                 </div>
                             )}
                         </div>
