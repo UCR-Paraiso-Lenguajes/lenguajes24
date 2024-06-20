@@ -1,3 +1,4 @@
+// File: UT/InsertProductsLogicTests.cs
 using NUnit.Framework;
 using Microsoft.Extensions.Caching.Memory;
 using storeapi.Business;
@@ -10,42 +11,21 @@ using storeapi.Database;
 
 namespace UT
 {
-    public class InMemoryStoreDB : IStoreDB
-    {
-        private List<Product> _products = new List<Product>();
-
-        public List<Product> InsertProduct(Product product)
-        {
-            var existingProduct = _products.FirstOrDefault(p => p.id == product.id);
-            if (existingProduct != null)
-            {
-                existingProduct.Name = product.Name;
-                existingProduct.Price = product.Price;
-                existingProduct.ImageUrl = product.ImageUrl;
-                existingProduct.Description = product.Description;
-                existingProduct.Category = product.Category;
-            }
-            else
-            {
-                _products.Add(product);
-            }
-            return _products;
-        }
-    }
-
     [TestFixture]
     public class InsertProductsLogicTests : IDisposable
     {
         private IMemoryCache _memoryCache;
         private InsertProductsLogic _insertProductsLogic;
-        private InMemoryStoreDB _inMemoryStoreDB;
 
         [SetUp]
         public void Setup()
         {
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
-            _inMemoryStoreDB = new InMemoryStoreDB();
-            _insertProductsLogic = new InsertProductsLogic(_memoryCache, _inMemoryStoreDB);
+
+            var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
+            DataConnection.Init(dbtestDefault);
+            DatabaseInitializer.Initialize();
+            _insertProductsLogic = new InsertProductsLogic(_memoryCache, StoreDB.InsertProduct);
         }
 
         [TearDown]
@@ -113,6 +93,23 @@ namespace UT
             Assert.AreEqual(updatedProduct.ImageUrl, productInCache.ImageUrl);
             Assert.AreEqual(updatedProduct.Description, productInCache.Description);
             Assert.AreEqual(updatedProduct.Category._name, productInCache.Category._name);
+        }
+
+        private void InsertProductToList(Product product, List<Product> products)
+        {
+            var existingProduct = products.FirstOrDefault(p => p.id == product.id);
+            if (existingProduct != null)
+            {
+                existingProduct.Name = product.Name;
+                existingProduct.Price = product.Price;
+                existingProduct.ImageUrl = product.ImageUrl;
+                existingProduct.Description = product.Description;
+                existingProduct.Category = product.Category;
+            }
+            else
+            {
+                products.Add(product);
+            }
         }
 
         public void Dispose()
