@@ -71,8 +71,8 @@ jobs:
     - name: Build & Push Image
       run: |
         cd C22037/Lab12/my-app
-        docker image build -t itschaco26/react:latest -f DockerfileFront .
-        docker image build -t itschaco26/react:0.0.1 -f DockerfileFront .
+        docker image build -t itschaco26/react:latest .
+        docker image build -t itschaco26/react:0.0.1 .
         echo "${{ secrets.C22037DOCKERHUBPASS  }}" | docker login -u "aaronchacon2601@gmail.com" --password-stdin
         docker push itschaco26/react:latest
         docker push itschaco26/react:0.0.1
