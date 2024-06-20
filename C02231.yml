@@ -1,0 +1,61 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+    ports:
+      - "3306:3306"
+#    networks:
+#      internal_net:
+#        ipv4_address: 192.168.1.10
+    command: >
+      bash -c "
+        docker-entrypoint.sh mysqld &
+        sleep 30 && 
+        mysql -u root -p123456 -e 'CREATE DATABASE IF NOT EXISTS store;' && 
+        wait
+      "
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p123456 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ui:
+    image: lani06/react:latest
+    container_name: ui
+    environment:
+      #- API=192.168.1.12:57600
+      - API_URL=http://10.59.19.211:8080      
+    ports:
+      - "3000:3000"
+#    networks:
+#      internal_net:
+#        ipv4_address: 192.168.1.11
+
+  api:
+    image: lani06/storeapi:latest
+    container_name: api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      #- mysql=192.168.1.10:3306
+      - DB=Server=10.59.19.211;Database=store;Uid=root;Pwd=123456
+    ports:
+      - "8080:8080"
+#    networks:
+#      internal_net:
+#        ipv4_address: 192.168.1.12
+    depends_on:
+      mysql:
+        condition: service_healthy
+#    entrypoint: ["./wait-for-it.sh", "mysql:3306", "--", "sh", "-c", "sleep 5 && your_api_start_command_here"]
+
+networks:
+  internal_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
