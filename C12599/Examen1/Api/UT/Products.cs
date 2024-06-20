@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using Microsoft.Extensions.Caching.Memory;
-using Moq;
 using storeapi.Business;
 using storeapi.Models;
 using System.Collections.Generic;
@@ -11,20 +10,42 @@ using storeapi.Database;
 
 namespace UT
 {
+    public class InMemoryStoreDB : IStoreDB
+    {
+        private List<Product> _products = new List<Product>();
+
+        public List<Product> InsertProduct(Product product)
+        {
+            var existingProduct = _products.FirstOrDefault(p => p.id == product.id);
+            if (existingProduct != null)
+            {
+                existingProduct.Name = product.Name;
+                existingProduct.Price = product.Price;
+                existingProduct.ImageUrl = product.ImageUrl;
+                existingProduct.Description = product.Description;
+                existingProduct.Category = product.Category;
+            }
+            else
+            {
+                _products.Add(product);
+            }
+            return _products;
+        }
+    }
+
     [TestFixture]
     public class InsertProductsLogicTests : IDisposable
     {
         private IMemoryCache _memoryCache;
         private InsertProductsLogic _insertProductsLogic;
-        private Mock<IStoreDB> _mockStoreDB;
+        private InMemoryStoreDB _inMemoryStoreDB;
 
         [SetUp]
         public void Setup()
         {
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
-            _mockStoreDB = new Mock<IStoreDB>();
-
-            _insertProductsLogic = new InsertProductsLogic(_memoryCache, _mockStoreDB.Object);
+            _inMemoryStoreDB = new InMemoryStoreDB();
+            _insertProductsLogic = new InsertProductsLogic(_memoryCache, _inMemoryStoreDB);
         }
 
         [TearDown]
@@ -46,12 +67,6 @@ namespace UT
                 Description = "New Product Description",
                 Category = new Category { _id = 1, _name = "New Category" }
             };
-
-            _mockStoreDB.Setup(db => db.InsertProduct(It.IsAny<Product>())).Returns((Product p) =>
-            {
-                InsertProductToList(p, new List<Product>());
-                return new List<Product> { p };
-            });
 
             // Act
             var result = _insertProductsLogic.InsertProduct(newProduct);
@@ -87,12 +102,6 @@ namespace UT
                 Category = new Category { _id = 1, _name = "Updated Category" }
             };
 
-            _mockStoreDB.Setup(db => db.InsertProduct(It.IsAny<Product>())).Returns((Product p) =>
-            {
-                InsertProductToList(p, new List<Product> { existingProduct });
-                return new List<Product> { p };
-            });
-
             // Act
             var result = _insertProductsLogic.InsertProduct(updatedProduct);
 
@@ -106,26 +115,10 @@ namespace UT
             Assert.AreEqual(updatedProduct.Category._name, productInCache.Category._name);
         }
 
-        private void InsertProductToList(Product product, List<Product> products)
-        {
-            var existingProduct = products.FirstOrDefault(p => p.id == product.id);
-            if (existingProduct != null)
-            {
-                existingProduct.Name = product.Name;
-                existingProduct.Price = product.Price;
-                existingProduct.ImageUrl = product.ImageUrl;
-                existingProduct.Description = product.Description;
-                existingProduct.Category = product.Category;
-            }
-            else
-            {
-                products.Add(product);
-            }
-        }
-
         public void Dispose()
         {
             _memoryCache?.Dispose();
         }
     }
 }
+
