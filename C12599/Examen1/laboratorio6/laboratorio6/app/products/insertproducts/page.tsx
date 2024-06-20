@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import '../../ui/globals.css';
+
 const URL = process.env.NEXT_PUBLIC_API;
 
 const categories = [
@@ -24,10 +25,12 @@ const InsertProduct = () => {
     const [errors, setErrors] = useState({});
 
     const validateForm = () => {
-        let formErrors = {};
+        const formErrors = {};
 
         if (!productName.trim()) {
             formErrors.productName = 'El nombre del producto es obligatorio';
+        } else if (productName.length < 3 || productName.length > 50) {
+            formErrors.productName = 'El nombre del producto debe tener entre 3 y 50 caracteres';
         }
 
         if (!productPrice || isNaN(productPrice) || parseFloat(productPrice) <= 0) {
@@ -36,10 +39,14 @@ const InsertProduct = () => {
 
         if (!productDescription.trim()) {
             formErrors.productDescription = 'La descripción del producto es obligatoria';
+        } else if (productDescription.length < 10 || productDescription.length > 200) {
+            formErrors.productDescription = 'La descripción del producto debe tener entre 10 y 200 caracteres';
         }
 
         if (!productImage.trim()) {
             formErrors.productImage = 'La URL de la imagen del producto es obligatoria';
+        } else if (!/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/.test(productImage)) {
+            formErrors.productImage = 'La URL de la imagen debe ser válida y terminar en .jpg, .jpeg, .png, o .gif';
         }
 
         setErrors(formErrors);
@@ -54,8 +61,6 @@ const InsertProduct = () => {
         }
 
         const token = sessionStorage.getItem('authToken');
-
-        // Get the last product ID from local storage and set the new product ID
         const lastProductId = localStorage.getItem('lastProductId');
         const newProductId = lastProductId ? parseInt(lastProductId) + 1 : 1;
 
@@ -68,7 +73,7 @@ const InsertProduct = () => {
             categoryId: productCategory
         };
 
-        const response = await fetch(URL+'/api/InsertProducts', {
+        const response = await fetch(`${URL}/api/InsertProducts`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -78,9 +83,7 @@ const InsertProduct = () => {
         });
 
         if (response.ok) {
-            // Save the new product ID to local storage
             localStorage.setItem('lastProductId', newProductId.toString());
-            // Clear the form fields
             setProductName('');
             setProductPrice('');
             setProductDescription('');
