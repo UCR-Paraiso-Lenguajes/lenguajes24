@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import '../ui/globals.css';
 import 'bootstrap/dist/css/bootstrap.css';
+const URL = process.env.NEXT_PUBLIC_API;
 
 const Products: React.FC = () => {
     const [state, setState] = useState({
@@ -11,24 +12,23 @@ const Products: React.FC = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-                const response = await fetch('https://localhost:7043/api/store');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch data');
-                }
-                const json = await response.json();
-                const { products, categories } = json;
+            const response = await fetch(URL+'store');
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+            const json = await response.json();
+            const { products, categories } = json;
 
-                setState({
-                    productList: products || [],
-                    categories: categories || []
-                });
+            setState({
+                productList: products || [],
+                categories: categories || []
+            });
 
-                // Save the ID of the last product in local storage
-                if (products && products.length > 0) {
-                    const lastProductId = products[products.length - 1].id;
-                    localStorage.setItem('lastProductId', lastProductId);
-                }
-         
+            // Save the ID of the last product in local storage
+            if (products && products.length > 0) {
+                const lastProductId = products[products.length - 1].id;
+                localStorage.setItem('lastProductId', lastProductId);
+            }
         };
 
         fetchData();
@@ -60,7 +60,9 @@ const Products: React.FC = () => {
                             <td>{product.name}</td>
                             <td>{product.price}</td>
                             <td>{product.description}</td>
-                            <td>{product.imageUrl}</td>
+                            <td>
+                                <img src={product.imageUrl} alt={product.name} style={{ width: '70px', height: '70px' }} />
+                            </td>
                         </tr>
                     ))}
                 </tbody>

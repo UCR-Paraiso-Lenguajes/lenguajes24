@@ -1,10 +1,9 @@
-// pages/admin/index.tsx (login page)
 'use client';
 import React, { useState } from 'react';
 import '../ui/globals.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import { jwtDecode }from 'jwt-decode';
-
+import  {jwtDecode } from 'jwt-decode';
+const URL = process.env.NEXT_PUBLIC_API;
 const Admin: React.FC = () => {
   const [formData, setFormData] = useState({
     username: '',
@@ -39,44 +38,42 @@ const Admin: React.FC = () => {
         errorMessage: ''
       });
 
-      const response = await fetch('https://localhost:7043/api/Auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userName: username, userPassword: password })
-      });
+        const response = await fetch(URL+'Auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userName: username, userPassword: password })
+        });
 
-      if (response.ok) {
-        const data = await response.json();
+        if (response.ok) {
+          const data = await response.json();
 
-        // Decode the token to extract roles
-        const decodedToken: any = jwtDecode(data.token);
-        const roles = decodedToken?.roles || [];
+          // Decode the token to extract roles
+          const decodedToken: any = jwtDecode(data.token);
+          const roles = decodedToken?.roles || [];
 
-<<<<<<< HEAD
-        if (roles.includes('Admin')) {
-=======
-        if (!roles.includes('Admin')) {
->>>>>>> 05be98cb1201a9092cb811e9868223b63e1937f6
+          if (!roles.includes('Admin')) {
+            // Store the token in sessionStorage
+            sessionStorage.setItem('authToken', data.token);
+
+            // Redirect the user to the admin page
+            window.location.href = '/admin/init';
+          } else {
+            setFormData({
+              ...formData,
+              errorMessage: 'Los usuarios sin el rol Admin no pueden iniciar sesión.'
+            });
+          }
+        } else {
+          const errorData = await response.json();
           setFormData({
             ...formData,
-            errorMessage: 'Los usuarios sin el rol Admin no pueden iniciar sesión.'
+            errorMessage: errorData.message || 'Usuario o contraseña incorrectos'
           });
-        } else {
-          // Store the token in sessionStorage
-          sessionStorage.setItem('authToken', data.token);
-
-          // Redirect the user to the admin page
-          window.location.href = '/admin/init';
         }
-      } else {
-        const errorData = await response.json();
-        setFormData({
-          ...formData,
-          errorMessage: errorData.message || 'Usuario o contraseña incorrectos'
-        });
-      }
+
+      
     } else {
       setFormData({
         ...formData,

@@ -1,8 +1,5 @@
 'use client';
-<<<<<<< HEAD
-=======
 // pages/admin/init.tsx
->>>>>>> 05be98cb1201a9092cb811e9868223b63e1937f6
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, ShoppingCart } from 'react-feather';
@@ -36,17 +33,22 @@ const CustomAccordionItem: React.FC<CustomAccordionItemProps> = ({ title, href, 
       </div>
       {isOpen && (
         <div className="p-3">
-          <div className="mb-2">
+          <div className="mb-3">
             <Link href={href || '#'}>
               <button className="btn btn-secondary btn-sm btn-block">
                 Ir a Ventas
               </button>
             </Link>
           </div>
-          <div>
-            <Link href="/products"> {/* Enlace a la página de productos */}
+          <div className="mb-3"> {/* Add margin-bottom: 20px */}            <Link href="/products"> {/* Enlace a la página de productos */}
               <button className="btn btn-secondary btn-sm btn-block">
                 Ir a Productos
+              </button>
+            </Link>
+          </div>
+          <div className="mb-3"> {/* Add margin-bottom: 20px */}            <Link href="/campannas"> {/* Enlace a la página de productos */}
+              <button className="btn btn-secondary btn-sm btn-block">
+                Ir a campañas
               </button>
             </Link>
           </div>
