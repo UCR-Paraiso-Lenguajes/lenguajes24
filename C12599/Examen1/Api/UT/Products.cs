@@ -41,11 +41,11 @@ namespace UT
             var newProduct = new Product
             {
                 id = 1,
-                Name = "New Product",
+                Name = "Awesome",
                 Price = 99,
-                ImageUrl = "http://example.com/image.png",
+                ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
                 Description = "New Product Description",
-                Category = new Category { _id = 1, _name = "New Category" }
+                Category = new Category { _id = 1, _name = "Electronica" }
             };
 
             // Act
@@ -64,22 +64,22 @@ namespace UT
             var existingProduct = new Product
             {
                 id = 1,
-                Name = "Updated Product",
+                Name = "Amazing Product",
                 Price = 29,
-                ImageUrl = "http://example.com/image.png",
-                Description = "Updated Product Description",
-                Category = new Category { _id = 1, _name = "Updated Category" }
+                ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
+                Description = "Big Product",
+                Category = new Category { _id = 1, _name = "Electronica" }
             };
             _memoryCache.Set("Products", new List<Product> { existingProduct });
 
             var updatedProduct = new Product
             {
                 id = 1,
-                Name = "Updated Product",
+                Name = "Amazing Product",
                 Price = 29,
-                ImageUrl = "http://example.com/image.png",
-                Description = "Updated Product Description",
-                Category = new Category { _id = 1, _name = "Updated Category" }
+                ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
+                Description = "Big Product",
+                Category = new Category { _id = 1, _name = "Electronica" }
             };
 
             // Act
