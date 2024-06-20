@@ -5,7 +5,6 @@ import Link from 'next/link';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 const URL = process.env.NEXT_PUBLIC_API;
-
 const Page = () => {
   const [state, setState] = useState({
     cart: {
@@ -16,10 +15,9 @@ const Page = () => {
     categories: [],
     selectedCategories: [],
   });
-
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch('https://localhost:7043/api/store');
+      const response = await fetch(URL+'store');
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -78,18 +76,13 @@ const Page = () => {
     const { selectedCategories } = state;
 
     let updatedCategories = [];
-
-    // Verificamos si la categoría es la de "Todos Productos"
     if (categoryId === 'all') {
-      // Si es "Todos Productos" y ya estaba seleccionada, la deseleccionamos
       if (selectedCategories.length === state.categories.length) {
         updatedCategories = [];
       } else {
-        // Si no estaba seleccionada, la seleccionamos junto con todas las demás categorías
         updatedCategories = state.categories.map(category => category.id);
       }
     } else {
-      // Si no es "Todos Productos", manejamos la selección de categorías normalmente
       const index = selectedCategories.indexOf(categoryId);
       if (index === -1) {
         updatedCategories = [...selectedCategories, categoryId];
@@ -98,16 +91,11 @@ const Page = () => {
       }
     }
 
-    // Actualizamos el estado con las categorías seleccionadas
     setState({
       ...state,
       selectedCategories: updatedCategories,
     });
-
-    // Construimos la URL con todas las categorías seleccionadas
     const url = buildUrl(updatedCategories);
-
-    // Realizamos el fetch solo si hay categorías seleccionadas
     if (updatedCategories.length > 0) {
       const response = await fetch(url);
       if (!response.ok) {
@@ -115,29 +103,21 @@ const Page = () => {
       }
       const json = await response.json();
       const productList = json || [];
-
-      // Actualizamos el estado con la lista de productos y las categorías seleccionadas
       setState({
         ...state,
         productList,
         selectedCategories: updatedCategories,
       });
-
-      // Actualizar la URL del navegador para reflejar la búsqueda
       const searchParams = new URLSearchParams({ categoryIDs: updatedCategories.join(',') });
       window.history.pushState(null, '', `${window.location.pathname}?${searchParams.toString()}`);
     } else {
-      // Si no hay categorías seleccionadas, limpiamos la lista de productos
       setState({
         ...state,
         productList: [],
       });
-      // Si no hay categorías seleccionadas, limpiamos la URL
       window.history.pushState(null, '', window.location.pathname);
     }
   };
-
-
 
   const handleSearch = async (event) => {
     if (!event || typeof event !== 'object' || !event.hasOwnProperty('target') || typeof event.target !== 'object') {
@@ -146,25 +126,16 @@ const Page = () => {
     event.preventDefault();
     const query = event.target.q.value.trim();
     const { selectedCategories } = state;
-
-    // Construimos la URL con las categorías seleccionadas y la búsqueda
-    let url = 'https://localhost:7043/api/Products';
+    let url = URL+'Products';
     const queryParams = [];
-
-    // Agregamos las categorías seleccionadas a los parámetros de la URL
     selectedCategories.forEach(categoryID => {
       queryParams.push(`categoryIDs=${categoryID}`);
     });
-
-    // Agregamos el parámetro de búsqueda si hay una consulta
     if (query) {
       queryParams.push(`search=${encodeURIComponent(query)}`);
     } else {
-      // Si no hay consulta, agregamos "null" como parámetro de búsqueda
       queryParams.push('search=null');
     }
-
-    // Unimos todos los parámetros de la URL
     if (queryParams.length > 0) {
       url += `?${queryParams.join('&')}`;
     }
@@ -189,7 +160,6 @@ const Page = () => {
 
     return (
       <div>
-        {/* Checkbox para "Todos Productos" */}
         <div key="all">
           <input
             type="checkbox"
@@ -201,8 +171,6 @@ const Page = () => {
           />
           <label htmlFor="all" style={{ marginRight: '10px' }}>Todos Productos</label>
         </div>
-
-        {/* Checkbox para cada categoría */}
         {categories.map(category => (
           <div key={category.id}>
             <input
@@ -220,7 +188,6 @@ const Page = () => {
     );
   };
 
-
   const renderProducts = () => {
     const { productList } = state;
 
@@ -232,9 +199,7 @@ const Page = () => {
             <h5 className="card-title">{product.name}</h5>
             <p className="card-text">{product.description}</p>
             <p className="card-text">${product.price}</p>
-
             <button className="btn btn-primary" onClick={() => handleAddToCart(product)}>
-              Comprar
             </button>
           </div>
         </div>
@@ -263,7 +228,6 @@ const Page = () => {
                 <h3>{product.name}</h3>
                 <p>{product.description}</p>
                 <p>${product.price}</p>
-
                 <button className="btn btn-primary" onClick={() => handleAddToCart(product)}>
                   Comprar
                 </button>
@@ -278,7 +242,6 @@ const Page = () => {
   return (
     <div className="container">
       <div className="row align-items-center">
-        {/* Formulario de búsqueda */}
         <div className="col-sm-6 text-center">
           <form onSubmit={handleSearch} className="d-flex justify-content-center align-items-center" autoComplete="off">
             <input type="text" name="q" placeholder="Buscar..." className="form-control me-2" />
@@ -287,8 +250,6 @@ const Page = () => {
             </button>
           </form>
         </div>
-
-        {/* Botones de Carrito y Admin */}
         <div className="col-sm-6 text-end">
           <div className="my-3">
             <Link href="/cart">
@@ -297,6 +258,11 @@ const Page = () => {
               </button>
             </Link>
             <span className="badge rounded-pill bg-danger me-2">{state.cart.count}</span>
+            <Link href="/campaigns">
+              <button className="btn btn-primary me-2">
+                <i className="bi bi-megaphone-fill"></i> Campañas Usuario
+              </button>
+            </Link>
             <Link href="/admin">
               <button className="btn btn-primary">
                 <i className="bi bi-person"></i> Admin
@@ -305,34 +271,25 @@ const Page = () => {
           </div>
         </div>
       </div>
-
-      {/* Categorías */}
       <div className="row">
         <div className="col-sm-4">
           {renderCategories()}
         </div>
       </div>
-
-      {/* Lista de Productos */}
       <div className="row">
         <div className="col">
           <h1 className="mb-3">Lista de Productos</h1>
         </div>
       </div>
-
       <div className="row row-cols-4 g-4">
         {renderProducts()}
       </div>
-
-      {/* Productos Destacados */}
       <div className="row mt-4">
         <div className="col">
           <h2 className="mb-3">Productos Destacados</h2>
           {renderCarouselItems()}
         </div>
       </div>
-
-      {/* Footer */}
       <footer className="footer mt-auto py-3" style={{ backgroundColor: '#ADD8E6' }}>
         <div className="container text-center">
           <span className="text-muted">Mariano Duran Artavia</span>
@@ -341,5 +298,4 @@ const Page = () => {
     </div>
   );
 };
-
 export default Page;

@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import '../../ui/globals.css';
+const URL = process.env.NEXT_PUBLIC_API;
 
 const categories = [
     { id: 1, name: "Electrónica" },
@@ -67,7 +68,7 @@ const InsertProduct = () => {
             categoryId: productCategory
         };
 
-        const response = await fetch('https://localhost:7043/api/InsertProducts', {
+        const response = await fetch(URL+'InsertProducts', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

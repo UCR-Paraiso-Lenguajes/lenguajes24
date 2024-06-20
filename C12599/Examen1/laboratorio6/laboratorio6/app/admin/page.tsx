@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import '../ui/globals.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import jwtDecode from 'jwt-decode';
+const URL = process.env.NEXT_PUBLIC_API;
 
 const Admin: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -12,9 +13,6 @@ const Admin: React.FC = () => {
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e || !e.target || typeof e.target.name !== 'string' || typeof e.target.value !== 'string') {
-      throw new Error('Los argumentos son inválidos.');
-    }
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -23,10 +21,6 @@ const Admin: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    if (!e || !e.preventDefault || !e.currentTarget || typeof e.currentTarget.checkValidity !== 'function') {
-      throw new Error('Los argumentos son inválidos.');
-    }
-
     e.preventDefault();
     const { username, password } = formData;
 
@@ -38,7 +32,7 @@ const Admin: React.FC = () => {
         errorMessage: ''
       });
 
-      const response = await fetch('https://localhost:7043/api/Auth/login', {
+      const response = await fetch(`${URL}Auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -46,30 +40,28 @@ const Admin: React.FC = () => {
         body: JSON.stringify({ userName: username, userPassword: password })
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      const data = await response.json();
 
-        // Decode the token to extract roles
+      if (response.ok) {
         const decodedToken: any = jwtDecode(data.token);
         const roles = decodedToken?.roles || [];
 
-        if (!roles.includes('Admin')) {
-          setFormData({
-            ...formData,
-            errorMessage: 'Los usuarios sin el rol Admin no pueden iniciar sesión.'
-          });
-        } else {
+        if (roles.includes('Admin')) {
           // Store the token in sessionStorage
           sessionStorage.setItem('authToken', data.token);
 
           // Redirect the user to the admin page
           window.location.href = '/admin/init';
+        } else {
+          setFormData({
+            ...formData,
+            errorMessage: 'Los usuarios sin el rol Admin no pueden iniciar sesión.'
+          });
         }
       } else {
-        const errorData = await response.json();
         setFormData({
           ...formData,
-          errorMessage: errorData.message || 'Usuario o contraseña incorrectos'
+          errorMessage: data.message || 'Usuario o contraseña incorrectos'
         });
       }
     } else {

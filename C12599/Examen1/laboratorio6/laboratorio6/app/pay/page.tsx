@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
+const URL = process.env.NEXT_PUBLIC_API;
+
+
 
 const PayPage: React.FC = () => {
     const [cart, setCart] = useState({
@@ -54,7 +57,7 @@ const PayPage: React.FC = () => {
 
     useEffect(() => {
         const fetchPaymentMethods = async () => {
-            const response = await fetch('https://localhost:7043/api/Payment');
+            const response = await fetch(URL+'Payment');
             if (response.ok) {
                 const paymentMethodsData = await response.json();
                 const { cash, sinpe } = paymentMethodsData;
@@ -176,7 +179,7 @@ const PayPage: React.FC = () => {
             paymentMethod: paymentMethodValue
         };
 
-        const response = await fetch('https://localhost:7043/api/Cart', {
+        const response = await fetch(URL+'Cart', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -1,4 +1,4 @@
-// File: UT/InsertProductsLogicTests.cs
+﻿// File: UT/InsertProductsLogicTests.cs
 using NUnit.Framework;
 using Microsoft.Extensions.Caching.Memory;
 using storeapi.Business;
@@ -20,7 +20,6 @@ namespace UT
         public void Setup()
         {
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
-            _insertProductsLogic = new InsertProductsLogic(_memoryCache, InsertProductToList);
 
             var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
             DataConnection.Init(dbtestDefault);
@@ -116,4 +115,3 @@ namespace UT
         }
     }
 }
-
