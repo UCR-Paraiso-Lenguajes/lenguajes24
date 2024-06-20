@@ -21,9 +21,13 @@ COPY . .
  
 # Compila la aplicación
 #RUN npm run build
-
+RUN chmod +x write_env.sh
 # Expone el puerto en el que la aplicación se ejecutará
 EXPOSE 3000
+
+RUN dos2unix write_env.sh && chmod +x write_env.sh
+CMD ./write_env.sh && npm run dev
+
 
 # Comando para ejecutar la aplicación cuando se inicie el contenedor
 CMD ["npm", "run", "dev"]
