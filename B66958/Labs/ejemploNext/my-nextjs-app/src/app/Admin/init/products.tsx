@@ -21,6 +21,8 @@ export default function Products() {
     const handleShow = () => setShow(true);
     const categoriesArePresent = categories !== undefined && categories.length > 0;
 
+    let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
+
     interface Product {
         id: string,
         description: string,
@@ -61,7 +63,7 @@ export default function Products() {
         };
         var token = sessionStorage.getItem("sessionToken");
         try {
-            const res = await fetch('https://localhost:7151/api/product', {
+            const res = await fetch(`http://${environmentUrl}/api/product`, {
                 method: 'POST',
                 body: JSON.stringify(newProduct),
                 headers: {
@@ -81,7 +83,7 @@ export default function Products() {
     };
 
     async function getData() {
-        const res = await fetch('https://localhost:7151/api/store');
+        const res = await fetch(`http://${environmentUrl}/api/store`);
         if (!res.ok) {
             throw new Error('Failed to fetch data');
         }

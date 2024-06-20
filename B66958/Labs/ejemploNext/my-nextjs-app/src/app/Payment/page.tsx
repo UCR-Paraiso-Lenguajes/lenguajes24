@@ -18,6 +18,8 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
         SINPE = 1
     }
 
+    let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
+
     useEffect(() => {
         setCart(cart => ({
             ...cart,
@@ -56,7 +58,7 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
         }
 
         try {
-            const res = await fetch('https://localhost:7151/api/cart', {
+            const res = await fetch(`http://${environmentUrl}/api/cart`, {
                 method: 'POST',
                 body: JSON.stringify(purchaseToPersist),
                 headers: {

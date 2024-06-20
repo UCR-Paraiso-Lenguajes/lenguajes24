@@ -17,6 +17,8 @@ export default function MainAdmin() {
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
 
+    let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
+
     useEffect(() => {
         checkTokenStatus();
     }, []);
@@ -74,7 +76,7 @@ export default function MainAdmin() {
         async function getData() {
             var token = sessionStorage.getItem("sessionToken");
             try {
-                const res = await fetch(`https://localhost:7151/api/sale/sales?dateToFind=${selectedDate.toISOString().split('T')[0]}`,
+                const res = await fetch(`http://${environmentUrl}/api/sale/sales?dateToFind=${selectedDate.toISOString().split('T')[0]}`,
                     {
                         method: 'GET',
                         headers: {

@@ -29,7 +29,7 @@ export default function LogIn() {
 
     async function authenticateUser(){
         try {
-            const response = await fetch('https://localhost:7151/api/auth/login', {
+            const response = await fetch(`http://${environmentUrl}/api/auth/login`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

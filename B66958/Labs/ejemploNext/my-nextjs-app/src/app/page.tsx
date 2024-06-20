@@ -44,6 +44,8 @@ export default function Home() {
     necesitaVerificacion: false
   });
 
+  let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
+
   const categoriesSearchString = Array.isArray(categoriesSearch) ? categoriesSearch.join(',') : categoriesSearch;
   useEffect(() => {
     if (categoriesSearch.length !== 0 || querySearch !== null) {
@@ -52,7 +54,7 @@ export default function Home() {
       let urlToFilterQuery = urlToFilterCategories ? (searchedQuerie ? `&${searchedQuerie}` : '') : (searchedQuerie ? `?${searchedQuerie}` : '')
       if (categoriesSearch)
         setSelectedCategories(categoriesSearch);
-      const fetchUrl = 'https://localhost:7151/api/store/products' + urlToFilterCategories + urlToFilterQuery;
+      const fetchUrl = `http://${environmentUrl}/api/store/products` + urlToFilterCategories + urlToFilterQuery;
       const fetchData = async () => {
         /* try { */
         const res = await fetch(fetchUrl, {
@@ -195,7 +197,7 @@ export default function Home() {
 
   async function getData() {
     try {
-      const res = await fetch('https://localhost:7151/api/store');
+      const res = await fetch(`http://${environmentUrl}/api/store`);
       if (!res.ok) {
         throw new Error('Failed to fetch data');
       }
