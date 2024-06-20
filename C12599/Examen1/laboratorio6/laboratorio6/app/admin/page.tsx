@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import '../ui/globals.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 const URL = process.env.NEXT_PUBLIC_API;
 
 const Admin: React.FC = () => {
