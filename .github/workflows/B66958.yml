@@ -47,7 +47,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build & Push Image
         run: |
-          cd B66958/Labs
+          cd B66958/Labs/ejemploNext
           echo "${{ secrets.DOCKERHUBPASSB66958  }}" | docker login -u "${{ secrets.DOCKERHUBACCOUNTB66958  }}" --password-stdin
           docker image build -t eisenheimdiego/store_fe:latest .
           docker image build -t eisenheimdiego/store_fe:0.0.1 .
