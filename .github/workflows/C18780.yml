@@ -2,55 +2,21 @@ name: C18780
 
 on:
   push:
-    branches: [ "C18780" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "C18780" ]
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:latest
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-        env:
-          MYSQL_ROOT_PASSWORD: 123456
-          MYSQL_DATABASE: store
-          MYSQL_USER: store
-          MYSQL_PASSWORD: 123456          
-
     steps:
     - uses: actions/checkout@v4
 
-    - name: Wait for MySQL to be healthy
-      run: |
-        echo "Waiting for MySQL to be healthy..."
-        while ! docker inspect --format '{{json .State.Health.Status}}' $(docker ps -q --filter ancestor=mysql:latest) | grep -q '"healthy"'; do
-          echo "Waiting for MySQL..."
-          sleep 5
-        done
-        echo "MySQL is healthy."
-
-    - name: Insert initial data into Category and Product tables
-      run: |
-        docker exec $(docker ps -q --filter ancestor=mysql:latest) \
-        mysql -u root -p123456 -e "
-        USE sys;
-        INSERT INTO Category (uuid, name) VALUES ('4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18', 'Categoría 1');
-        INSERT INTO Product (uuid, name, imageUrl, price, description, category) VALUES ('1547f3c3-54e6-4e7d-bf8f-f26daa15c843', 'Producto 1', 'example', 1, 'description', '4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18');
-        "
-
-    - name: Setup .NET
+    - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: '8.0.x'
 
     - name: Restore dependencies
       run: |
@@ -60,9 +26,35 @@ jobs:
     - name: Build
       run: |
         cd C18780/backend
-        dotnet build --no-restore
+        dotnet build --configuration Release
 
-    - name: Test
+    - name: Run unit tests
       run: |
         cd C18780/backend
-        dotnet test --no-build --verbosity normal
+        dotnet test --no-build --verbosity normal --configuration Release
+
+  publish-Api:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+        cd C18780/backend
+        docker image build -t zjean42/api:latest .
+        docker image build -t zjean42/api:0.0.1 .
+        echo "${{ secrets.DOCKERHUBPASSC18780  }}" | docker login -u "zjeancarlo42@gmail.com" --password-stdin
+        docker push zjean42/api:latest
+        docker push zjean42/api:0.0.1
+        
+  publish-UI:   
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+        cd C18780/primer_trabajo/demo6/nextjs-dashboard
+        docker image build -t zjean42/ui:latest .
+        docker image build -t zjean42/ui:0.0.1 .
+        echo "${{ secrets.DOCKERHUBPASSC18780  }}" | docker login -u "zjeancarlo42@gmail.com" --password-stdin
+        docker push zjean42/ui:latest
+        docker push zjean42/ui:0.0.1  
