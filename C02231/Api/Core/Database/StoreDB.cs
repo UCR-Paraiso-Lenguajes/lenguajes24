@@ -86,7 +86,7 @@ public sealed class StoreDB
             connection.Open();
 
 
-            // Create the products table if it does not exist  //;
+            // Create the products table if it does not exist  //;  author VARCHAR(100)  NOT NULL,
             string createTableQuery = @"
 
                 DROP DATABASE IF EXISTS store; 
@@ -95,8 +95,8 @@ public sealed class StoreDB
                 
                 CREATE TABLE IF NOT EXISTS products (
                     id INT AUTO_INCREMENT PRIMARY KEY,
-                    name VARCHAR(100)  NOT NULL,
-                    author VARCHAR(100)  NOT NULL,
+                    name VARCHAR(250)  NOT NULL,
+                    author BLOB NOT NULL,
                     price DECIMAL(10, 2)  NOT NULL,
                     idCategory INT  NOT NULL,
                     imgUrl VARCHAR(255)  NOT NULL

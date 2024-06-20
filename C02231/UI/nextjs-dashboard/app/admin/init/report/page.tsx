@@ -9,14 +9,13 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { format } from 'date-fns';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
-import useAuth from '../../useAuth';
-
 
 export default function ReportPage() {
-    const isAuthenticated = useAuth();
+
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [weeklySalesData, setWeeklySalesData] = useState([['Day', 'Total']]);
     const [dailySalesData, setDailySalesData] = useState([['Day', 'Total']]);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const router = useRouter();
     const storage = sessionStorage.getItem("authToken");
 
@@ -24,15 +23,45 @@ export default function ReportPage() {
     if (!URL) {
         throw new Error('NEXT_PUBLIC_API_URL is not defined');
     }
-    useEffect(() => {
-        if (isAuthenticated) {
-            fetchData();
-        }
-    }, [isAuthenticated]);
 
     useEffect(() => {
         fetchData();
     }, [selectedDate]);
+
+    const checkAuthToken = async () => {
+        const loginToken = sessionStorage.getItem("authToken");
+
+        if (!loginToken) {
+            return false;
+        }
+
+        try {
+            const tokenFormat = jwtDecode(loginToken);
+            const todayDate = Date.now() / 1000;
+
+            if (tokenFormat.exp && tokenFormat.exp < todayDate) {
+                sessionStorage.removeItem("authToken");
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            return false;
+        }
+    };
+
+    useEffect(() => {
+        const verifyToken = async () => {
+            const isValid = await checkAuthToken();
+            if (!isValid) {
+                router.push("/../admin");
+            } else {
+                setIsAuthenticated(true);
+            }
+        };
+
+        verifyToken();
+    }, [router]);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -45,6 +74,12 @@ export default function ReportPage() {
         try {
 
             const token = sessionStorage.getItem('authToken');
+            const isTokenValid = await checkAuthToken();
+
+            if (!isTokenValid) {
+                router.push("/../admin");
+                return;
+            }
 
             const year = selectedDate.getFullYear();
             const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
@@ -52,7 +87,7 @@ export default function ReportPage() {
             const formattedDate = `${year}-${month}-${day}`;
 
 
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/Sale?date=${formattedDate}`, {
+            const response = await fetch(URL+`/api/Sale?date=${formattedDate}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,7 +118,7 @@ export default function ReportPage() {
             setWeeklySalesData(weeklyData);
 
         } catch (error) {
-
+            
             router.push("/../admin");
         }
     };
@@ -144,7 +179,7 @@ export default function ReportPage() {
                                             headerRow: 'chart-header-row',
                                             tableCell: 'chart-cell',
                                         },
-                                        allowHtml: true,
+                                        allowHtml: true, 
                                         pageSize: 20,
                                     }}
                                 />

@@ -9,46 +9,37 @@ import { useRouter } from 'next/navigation';
 export default function InitPage() {
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const loginToken = sessionStorage.getItem("authToken");
+    const URL = process.env.NEXT_PUBLIC_API;
 
-    const checkAuthToken = async () => {
-        const loginToken = sessionStorage.getItem("authToken");
-
-        if (!loginToken) {
-            return false;
-        }
-
-        try {
-            const tokenFormat = jwtDecode(loginToken);
-            const todayDate = Date.now() / 1000;
-
-            if (tokenFormat.exp && tokenFormat.exp < todayDate) {
-                sessionStorage.removeItem("authToken");
-                return false;
-            }
-
-            return true;
-        } catch (error) {
-            return false;
-        }
-    };
+    var loginToken = sessionStorage.getItem("authToken");
 
     useEffect(() => {
-        const verifyToken = async () => {
-            const isValid = await checkAuthToken();
-            if (!isValid) {
-                router.push("/../admin");
-            } else {
-                setIsAuthenticated(true);
+        const checkTokenValidity = () => {
+            if (!loginToken) {
+                return false;
+            }
+            try {
+                const tokenFormat = jwtDecode(loginToken);
+                const todayTime = Date.now() / 1000;
+
+                if (tokenFormat.exp && tokenFormat.exp < todayTime) {
+                    sessionStorage.removeItem("authToken");
+                    return false;
+                }
+
+                return true;
+            } catch (error) {
+                console.error("Error decoding token:", error);
+                return false;
             }
         };
 
-        verifyToken();
-    }, [router]);
+        const isAuthenticated = checkTokenValidity();
+        // Aquí puedes manejar el estado de autenticación si es necesario, por ejemplo:
+        setIsAuthenticated(isAuthenticated);
 
-    if (!isAuthenticated) {
-        return null;
-    }
+    }, [loginToken]);
+
 
     const handleRemove = async () => {
         sessionStorage.removeItem("authToken");

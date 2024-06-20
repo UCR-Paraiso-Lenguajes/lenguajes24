@@ -8,9 +8,7 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(setup =>
@@ -38,13 +36,19 @@ builder.Services.AddSwaggerGen(setup =>
     {
         { jwtSecurityScheme, Array.Empty<string>() }
     });
-
 });
 
-//https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-8.0
-//https://medium.com/@chandrashekharsingh25/securing-asp-net-core-web-api-with-jwt-authentication-ff9ecd9ba1ed
-//cristianguillenmendez@Cristians-MacBook-Pro Lab7 % cd TodoApi 
-//cristianguillenmendez@Cristians-MacBook-Pro TodoApi % dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.4
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
         options =>
@@ -59,48 +63,79 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = "http://localhost:5207",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
         };
-    });
 
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(builder =>
-    {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = c =>
+            {
+                Console.WriteLine("Authentication failed:");
+                Console.WriteLine(c);
+                Console.WriteLine($"Exception: {c.Exception}");
+                Console.WriteLine($"Exception: {c.HttpContext}");
+                return Task.CompletedTask;
+            },
+            OnMessageReceived = msg =>
+            {
+                var token = msg?.Request.Headers.Authorization.ToString();
+                string path = msg?.Request.Path ?? "";
+                if (!string.IsNullOrEmpty(token))
+                {
+                    Console.WriteLine("Access token");
+                    Console.WriteLine($"URL: {path}");
+                    Console.WriteLine($"Token: {token}\r\n");
+                }
+                else
+                {
+                    Console.WriteLine("Access token");
+                    Console.WriteLine("URL: " + path);
+                    Console.WriteLine("Token: No access token provided\r\n");
+                }
+
+                // Imprimir más información de la solicitud
+                Console.WriteLine("Headers:");
+                foreach (var header in msg.Request.Headers)
+                {
+                    Console.WriteLine($"{header.Key}: {header.Value}");
+                }
+                Console.WriteLine($"Method: {msg.Request.Method}");
+                Console.WriteLine($"Query String: {msg.Request.QueryString}");
+                Console.WriteLine($"Content Length: {msg.Request.ContentLength}");
+                Console.WriteLine($"Content Type: {msg.Request.ContentType}");
+                Console.WriteLine($"Host: {msg.Request.Host}");
+
+                return Task.CompletedTask;
+            }
+        };
     });
-});
 
 var app = builder.Build();
 
+// Configure the HTTP request pipeline.
+string connection = "";
+var value = Environment.GetEnvironmentVariable("DB");
+if (value == null)
+{
+    builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+    connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
+}
+else
+{
+    connection = value;
+}
 
 if (app.Environment.IsDevelopment())
 {
-    builder.Configuration.AddJsonFile("C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Api/StoreAPI/appsettings.json", optional: true, reloadOnChange: true);
-    string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
-   // var value = Environment.GetEnvironmentVariable("DB");
-
-    var DB_value = Environment.GetEnvironmentVariable("DB");
-    if (!String.IsNullOrEmpty(DB_value))
-    {
-        connection = DB_value;
-    }
-    Storage.Init(connection);
-
     app.UseSwagger();
     app.UseSwaggerUI();
-
-    StoreDB.CreateMysql();
-
-    Storage.Init(connection);
-
 }
 
+Storage.Init(connection);
 
-app.UseHttpsRedirection();
-app.UseAuthentication(); 
+app.UseRouting();
+app.UseCors();
+app.UseAuthentication(); // Asegúrate de agregar esta línea
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseCors();
+
 app.Run();

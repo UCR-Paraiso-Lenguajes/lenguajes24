@@ -34,7 +34,7 @@ export default function LoginPage() {
             });
 
             try {
-                const response = await fetch(URL + '/api/Auth/login', {
+                const response = await fetch(URL + '/api/Auth/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -48,7 +48,7 @@ export default function LoginPage() {
                     sessionStorage.setItem('authToken', data.token);
                     // Redirigir al usuario a la página de administración
                     window.location.href = '/admin/init';  //ver si funciona con el router
-                    //router.push('/admin/init');
+                    router.push('/admin/init');
                 } else {
                     const errorData = await response.json();
                     setFormData({
@@ -59,7 +59,7 @@ export default function LoginPage() {
             } catch (error) {
                 setFormData({
                     ...formData,
-                    errorMessage: 'Error en la conexión con el servidor'
+                    errorMessage: ''
                 });
             }
         } else {
