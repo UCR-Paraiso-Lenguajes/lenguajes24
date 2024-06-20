@@ -63,7 +63,7 @@ export default function Products() {
         };
         var token = sessionStorage.getItem("sessionToken");
         try {
-            const res = await fetch(`http://${environmentUrl}/api/product`, {
+            const res = await fetch(`${environmentUrl}/api/product`, {
                 method: 'POST',
                 body: JSON.stringify(newProduct),
                 headers: {
@@ -77,13 +77,14 @@ export default function Products() {
             }
             else { setErrorMessage("Error al realizar la compra"); }
         } catch (error) {
-            setErrorMessage(error);
+            setErrorMessage(String(error));
         }
         setShow(false);
+        setIsErrorShowing(true)
     };
 
     async function getData() {
-        const res = await fetch(`http://${environmentUrl}/api/store`);
+        const res = await fetch(`${environmentUrl}/api/store`);
         if (!res.ok) {
             throw new Error('Failed to fetch data');
         }
@@ -104,7 +105,7 @@ export default function Products() {
                 }));
                 setData(formattedData);
             } catch (error) {
-                setErrorMessage(error)
+                setErrorMessage(String(error))
                 setIsErrorShowing(true)
             }
         };
@@ -122,7 +123,7 @@ export default function Products() {
                 <Row className="mb-4">
                     <Col className="d-flex justify-content-end">
                         <Button variant="primary" onClick={handleShow}>
-                            <FaPlus /> {/* Add the icon here */}
+                            <FaPlus />
                         </Button>
                     </Col>
                 </Row>
@@ -215,7 +216,7 @@ export default function Products() {
                         }
                     >
                         <Alert variant="danger" onClose={() => setIsErrorShowing(false)} dismissible>
-                            <Alert.Heading>Error</Alert.Heading>
+                            <Alert.Heading>Información</Alert.Heading>
                             <p>{errorMessage.toString()}</p>
                         </Alert>
                     </div > : ''

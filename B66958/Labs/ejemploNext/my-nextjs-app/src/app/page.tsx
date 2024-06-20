@@ -54,22 +54,16 @@ export default function Home() {
       let urlToFilterQuery = urlToFilterCategories ? (searchedQuerie ? `&${searchedQuerie}` : '') : (searchedQuerie ? `?${searchedQuerie}` : '')
       if (categoriesSearch)
         setSelectedCategories(categoriesSearch);
-      const fetchUrl = `http://${environmentUrl}/api/store/products` + urlToFilterCategories + urlToFilterQuery;
+      const fetchUrl = `${environmentUrl}/api/store/products` + urlToFilterCategories + urlToFilterQuery;
       const fetchData = async () => {
-        /* try { */
         const res = await fetch(fetchUrl, {
           method: 'GET',
           headers: {
             'content-type': 'application/json'
           }
         });
-        console.log(urlToFilterCategories, urlToFilterQuery)
         var productsForQuerySearch = await res.json();
         setProducts(productsForQuerySearch);
-        /* } catch (error) {
-          setErrorMessage(error)
-          setIsErrorShowing(true)
-        } */
       };
       fetchData();
     } else {
@@ -78,7 +72,7 @@ export default function Home() {
           const result = await getData();
           setProducts(result.productsInStore);
         } catch (error) {
-          setErrorMessage(error)
+          setErrorMessage(String(error))
           setIsErrorShowing(true)
         }
       };
@@ -197,7 +191,7 @@ export default function Home() {
 
   async function getData() {
     try {
-      const res = await fetch(`http://${environmentUrl}/api/store`);
+      const res = await fetch(`${environmentUrl}/api/store`);
       if (!res.ok) {
         throw new Error('Failed to fetch data');
       }

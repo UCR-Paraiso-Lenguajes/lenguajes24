@@ -58,7 +58,7 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
         }
 
         try {
-            const res = await fetch(`http://${environmentUrl}/api/cart`, {
+            const res = await fetch(`${environmentUrl}/api/cart`, {
                 method: 'POST',
                 body: JSON.stringify(purchaseToPersist),
                 headers: {
@@ -73,7 +73,7 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
             }
             else { setMessage("Error al realizar la compra"); setAlertType(1) }
         } catch (error) {
-            setMessage(error);
+            setMessage(String(error));
             setAlertType(1)
         } finally {
             setIsMessageShowing(true);

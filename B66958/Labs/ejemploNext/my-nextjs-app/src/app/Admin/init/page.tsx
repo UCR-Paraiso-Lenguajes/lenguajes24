@@ -76,7 +76,7 @@ export default function MainAdmin() {
         async function getData() {
             var token = sessionStorage.getItem("sessionToken");
             try {
-                const res = await fetch(`http://${environmentUrl}/api/sale/sales?dateToFind=${selectedDate.toISOString().split('T')[0]}`,
+                const res = await fetch(`${environmentUrl}/api/sale/sales?dateToFind=${selectedDate.toISOString().split('T')[0]}`,
                     {
                         method: 'GET',
                         headers: {
@@ -89,7 +89,7 @@ export default function MainAdmin() {
                 }
                 return await res.json()
             } catch (error) {
-                setErrorMessage(error);
+                setErrorMessage(String(error));
             }
         }
 
@@ -101,7 +101,7 @@ export default function MainAdmin() {
                         setSalesOfTheDayObtained(result.salesOfTheDay);
                         setSalesOfTheWeekObtained(result.salesOfTheWeek);
                     } catch (error: any) {
-                        setErrorMessage(error)
+                        setErrorMessage(String(error))
                     }
                 };
                 fetchData();
