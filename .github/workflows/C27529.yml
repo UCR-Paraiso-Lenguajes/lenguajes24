@@ -24,7 +24,7 @@ jobs:
           --health-retries=3
         env:
           MYSQL_ROOT_PASSWORD: 123456
-          MYSQL_DATABASE: store1
+          MYSQL_DATABASE: mysql
           MYSQL_USER: store1
           MYSQL_PASSWORD: 123456
     steps:
