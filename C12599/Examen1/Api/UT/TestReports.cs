@@ -11,16 +11,18 @@ namespace UT
     public class SalesDBTests
     {
         [SetUp]
-              public void Setup()
-    {
-        
-        var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
-        DataConnection.Init(dbtestDefault);
-    }
+        public void Setup()
+        {
+
+            var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
+            DataConnection.Init(dbtestDefault);
+            DatabaseInitializer.Initialize();
+
+        }
         [Test]
         public async Task GetForWeekAsync_ValidDate_ReturnsDataWithTotal()
         {
-         
+
             // Arrange
             var salesDB = new SalesDB();
             var validDate = new DateTime(2024, 04, 30); // Fecha válida
@@ -46,14 +48,14 @@ namespace UT
             // Act & Assert
             var ex = Assert.ThrowsAsync<ArgumentException>(async () => await salesDB.GetForWeekAsync(DateTime.MinValue));
             Assert.AreEqual("La fecha no puede ser DateTime.MinValue", ex.Message);
-            
+
         }
 
         [Test]
         public async Task GetForDayAsync_ValidDate_ReturnsDataWithTotal()
         {
             // Arrange
-           // Arrange
+            // Arrange
             var salesDB = new SalesDB();
             var validDate = new DateTime(2024, 04, 30); // Fecha válida
 
@@ -76,8 +78,8 @@ namespace UT
 
             // Act & Assert
             var ex = Assert.ThrowsAsync<ArgumentException>(async () => await salesDB.GetForDayAsync(DateTime.MinValue));
-           Assert.AreEqual("La fecha no puede ser DateTime.", ex.Message);
-          
+            Assert.AreEqual("La fecha no puede ser DateTime.", ex.Message);
+
         }
     }
 }
