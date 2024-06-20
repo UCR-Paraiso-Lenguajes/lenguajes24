@@ -123,6 +123,14 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("DefaultConnection").Value.ToString();
+
+    var DB_value = Environment.GetEnvironmentVariable("DB");
+    if (!String.IsNullOrEmpty(DB_value))
+    {
+        connection = DB_value;
+    }
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }
