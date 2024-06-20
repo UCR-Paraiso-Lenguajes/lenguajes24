@@ -17,7 +17,7 @@ namespace UT
         {
             var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
             DataConnection.Init(dbtestDefault);
-            StoreDB.CreateMysql();
+            DatabaseInitializer.Initialize();
         }
         [Test]
         public async Task Purchase_ValidCart_ReturnsSale()
