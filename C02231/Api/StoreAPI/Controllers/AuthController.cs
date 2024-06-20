@@ -26,16 +26,13 @@ namespace StoreAPI;
             mockDataUsers();
         }
 
-        [HttpPost("login")]
+        [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> LoginAsync([FromBody] LoginModel userDataFromUI){
-            //LoginModel es el equivalente a UserAccountAPI en React, para poder recibir solo el nombre y password
             
             // Accediendo a las propiedades de userDataFromUI
             var userName = userDataFromUI.userName;
             var userPassword = userDataFromUI.userPassword;
-            
-
             if (userDataFromUI is null) return BadRequest("Invalid client request");
             if (userName is null || string.IsNullOrEmpty(userName) ) return BadRequest("Invalid client request");            
             if (userPassword is null || string.IsNullOrEmpty(userPassword) ) return BadRequest("Invalid client request");            

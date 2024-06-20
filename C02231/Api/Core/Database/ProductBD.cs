@@ -8,7 +8,7 @@ namespace StoreAPI.Database
 {
     public sealed class ProductBD
     {
-        internal async Task<Product> InsertProductAsync(Product product, ProductLogic.OnNewProduct onNewProduct)
+        internal async Task<Product> InsertProductAsync(Product product, ProductLogic.OnNewProduct? onNewProduct)
         {
             if (product == null) throw new ArgumentNullException($"The {nameof(product)} object cannot be null.");
 
@@ -47,7 +47,7 @@ namespace StoreAPI.Database
                 }
             }
             // Notificar sobre el nuevo producto fuera de la transacción
-            onNewProduct(product);
+            if(product != null && onNewProduct != null) onNewProduct(product);
 
             return product;
         }

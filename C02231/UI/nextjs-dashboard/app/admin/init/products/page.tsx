@@ -1,16 +1,14 @@
-'use client'
+'use client';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 import '/app/ui/global.css';
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
-import useAuth from '../../useAuth';
 import validator from 'validator';
-
+import { jwtDecode } from 'jwt-decode';
 
 const ProductPage = () => {
-    const isAuthenticated = useAuth();
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -19,6 +17,7 @@ const ProductPage = () => {
     const [isAuthorValid, setIsAuthorValid] = useState(false);
     const [isPriceValid, setIsPriceValid] = useState(false);
     const [isCategoryValid, setIsCategoryValid] = useState(false);
+    const token = sessionStorage.getItem("authToken");
 
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
@@ -37,10 +36,11 @@ const ProductPage = () => {
     });
 
     useEffect(() => {
-        if (isAuthenticated) {
-            fetchProducts();
+        if (!token) {
+            sessionStorage.removeItem("authToken");
+            return;
         }
-    }, [isAuthenticated]);
+    }, []);
 
     useEffect(() => {
         fetchProducts();
@@ -48,13 +48,13 @@ const ProductPage = () => {
 
     const fetchProducts = async () => {
         try {
-            const token = sessionStorage.getItem("sessionToken");
+            const token = sessionStorage.getItem("authToken");
             const response = await fetch(`${URL}/api/Store`, {
                 headers: {
+                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 }
             });
-
             if (!response.ok) {
                 throw new Error('Failed to fetch products: ' + response.statusText);
             }
@@ -111,12 +111,18 @@ const ProductPage = () => {
 
             if (name === 'Name') {
                 setIsNameValid(value.trim() !== '');
-            } else if (name === 'Author') {
-                setIsAuthorValid(value.trim() !== '');
+            }
+
+            if (name === 'Author') {
+                // Permitir HTML en el campo Author
+                setNewProduct(prevState => ({
+                    ...prevState,
+                    [name]: value
+                }));
+                setIsAuthorValid(value.trim() !== ''); // Validación básica
             }
         }
     };
-
 
     const handleAddProduct = async () => {
         const productData = {
@@ -129,10 +135,19 @@ const ProductPage = () => {
                 IdCategory: newProduct.ProductCategory.IdCategory
             }
         };
-
+        const token = sessionStorage.getItem('authToken');
+        if (!token) {
+            sessionStorage.removeItem("authToken");
+            return;
+        }
+        const decodedToken = jwtDecode(token);
+        const nowTime = Date.now() / 1000;
+        if (decodedToken.exp < nowTime) {
+            sessionStorage.removeItem("authToken");
+            return;
+        }
         try {
-            const token = sessionStorage.getItem("sessionToken");
-            const response = await fetch(`${URL}/api/Product`, {
+            const response = await fetch(`${URL}/api/product`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -163,9 +178,7 @@ const ProductPage = () => {
             throw new Error('Error al guardar el producto:', error.message);
         }
     };
-    if (!isAuthenticated) {
-        return null;
-    }
+
     return (
         <div>
             <header className="p-3 text-bg-dark">
@@ -202,7 +215,7 @@ const ProductPage = () => {
                                         <tr key={product.id}>
                                             <td>{product.id}</td>
                                             <td>{product.name}</td>
-                                            <td>{product.author}</td>
+                                            <td dangerouslySetInnerHTML={{ __html: product.author }} />
                                             <td><img src={product.imgUrl} alt={product.name} width="50" /></td>
                                             <td>{product.price}</td>
                                             <td>
@@ -251,6 +264,7 @@ const ProductPage = () => {
                         <Form.Group>
                             <Form.Label>Category</Form.Label>
                             <Form.Control as="select" name="CategoryId" value={newProduct.ProductCategory.IdCategory} onChange={handleInputChange}>
+                                <option value="">Seleccione una categoría</option>
                                 <option value="">Seleccione una categoría</option>
                                 {categories.map(category => (
                                     <option key={category.idCategory} value={category.idCategory}>
