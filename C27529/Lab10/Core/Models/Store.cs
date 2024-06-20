@@ -10,14 +10,13 @@ using storeApi.Business;
 namespace storeApi
 {
     public sealed class Store
-    {   
+    {
         public IEnumerable<Product> Products { get; private set; }
         public Dictionary<int, List<Product>> CategoriesProducts { get; private set; }
         public IEnumerable<Category.ProductCategory> CategoriesNames { get; private set; }
         public const int TaxPercent = 13;
-        private List<Product> mockProducts;
 
-         internal Store(IEnumerable<Product> products)
+        internal Store(IEnumerable<Product> products)
         {
             this.Products = products ?? throw new ArgumentNullException(nameof(products));
             this.RelateProductsToCategories();
@@ -27,13 +26,12 @@ namespace storeApi
 
         public static Store Instance { get; private set; }
 
-         static Store()
+        static Store()
         {
             try
             {
                 var productsTask = productsFromDB().GetAwaiter().GetResult();
                 Store.Instance = new Store(productsTask);
-                StoreLogic.OnProductAdded += AddProductToStore;
             }
             catch (Exception ex)
             {
@@ -41,11 +39,7 @@ namespace storeApi
             }
         }
 
-        public Store(List<Product> mockProducts)
-        {
-            this.mockProducts = mockProducts;
-        }
-        
+
 
         private static async Task<IEnumerable<Product>> productsFromDB()
         {
@@ -56,7 +50,7 @@ namespace storeApi
             catch (Exception ex)
             {
                 throw new ArgumentException($"Error retrieving products from DB: {ex.Message}");
-                
+
             }
         }
 
@@ -160,14 +154,16 @@ namespace storeApi
             return foundProducts;
         }
 
-        private static void AddProductToStore(Product product)
+        public void AddProductToStore(Product product)
         {
+            if (product == null) throw new ArgumentNullException(nameof(product), "Product cannot be null.");
+
             var productsList = Instance.Products.ToList();
             productsList.Add(product);
             Instance.Products = productsList;
             Instance.RelateProductsToCategories();
         }
 
-       
+
     }
 }
