@@ -69,7 +69,6 @@ public class StoreDB
                     total DECIMAL(10, 2) NOT NULL,
                     payment_method INT NOT NULL,
                     purchase_number VARCHAR(50) NOT NULL,
-                    INDEX idx_purchase_number (purchase_number), 
                     FOREIGN KEY (payment_method) REFERENCES paymentMethods(paymentId)
                 );
 
