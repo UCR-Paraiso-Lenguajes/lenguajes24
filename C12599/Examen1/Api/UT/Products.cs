@@ -1,6 +1,6 @@
-// File: UT/InsertProductsLogicTests.cs
 using NUnit.Framework;
 using Microsoft.Extensions.Caching.Memory;
+using Moq;
 using storeapi.Business;
 using storeapi.Models;
 using System.Collections.Generic;
@@ -9,7 +9,6 @@ using System;
 using core;
 using storeapi.Database;
 
-using storeapi.Database;
 namespace UT
 {
     [TestFixture]
@@ -17,20 +16,15 @@ namespace UT
     {
         private IMemoryCache _memoryCache;
         private InsertProductsLogic _insertProductsLogic;
+        private Mock<IStoreDB> _mockStoreDB;
 
         [SetUp]
         public void Setup()
         {
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
+            _mockStoreDB = new Mock<IStoreDB>();
 
-            var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
-            DataConnection.Init(dbtestDefault);
-
-                        DatabaseInitializer.Initialize();
-
-
-            DatabaseInitializer.Initialize();
-            _insertProductsLogic = new InsertProductsLogic(_memoryCache, StoreDB.InsertProduct);
+            _insertProductsLogic = new InsertProductsLogic(_memoryCache, _mockStoreDB.Object);
         }
 
         [TearDown]
@@ -52,6 +46,12 @@ namespace UT
                 Description = "New Product Description",
                 Category = new Category { _id = 1, _name = "New Category" }
             };
+
+            _mockStoreDB.Setup(db => db.InsertProduct(It.IsAny<Product>())).Returns((Product p) =>
+            {
+                InsertProductToList(p, new List<Product>());
+                return new List<Product> { p };
+            });
 
             // Act
             var result = _insertProductsLogic.InsertProduct(newProduct);
@@ -86,6 +86,12 @@ namespace UT
                 Description = "Updated Product Description",
                 Category = new Category { _id = 1, _name = "Updated Category" }
             };
+
+            _mockStoreDB.Setup(db => db.InsertProduct(It.IsAny<Product>())).Returns((Product p) =>
+            {
+                InsertProductToList(p, new List<Product> { existingProduct });
+                return new List<Product> { p };
+            });
 
             // Act
             var result = _insertProductsLogic.InsertProduct(updatedProduct);
@@ -123,4 +129,3 @@ namespace UT
         }
     }
 }
-
