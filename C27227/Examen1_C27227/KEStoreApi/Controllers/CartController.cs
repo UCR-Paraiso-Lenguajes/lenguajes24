@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using KEStoreApi.Bussiness;
-using Microsoft.AspNetCore.Authorization;
+using KEStoreApi.Models;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace KEStoreApi.Controllers
 {
@@ -9,38 +10,46 @@ namespace KEStoreApi.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        private readonly StoreLogic _storeLogic;
-
-        public CartController()
-        {
-            _storeLogic = new StoreLogic();
-        }
+        private StoreLogic storeLogic = new StoreLogic();
 
         [HttpPost("cart")]
         [AllowAnonymous]
-        public async Task<IActionResult> CreateCartAsync([FromBody] Cart cart)
+        public async Task<IActionResult> CreateCartAsync([FromBody] CartRequest request)
         {
-            if (cart == null)
+            if (request == null || request.Cart == null)
             {
-                return BadRequest("El objeto Cart no puede ser nulo.");
+                return BadRequest(new { error = "The request and Cart fields are required." });
             }
+
+            var cart = request.Cart;
 
             bool isCartEmpty = cart.Product == null || cart.Product.Count == 0;
             if (isCartEmpty)
             {
-                return BadRequest("El carrito debe contener al menos un producto.");
+                return BadRequest(new { error = "El carrito debe contener al menos un producto." });
             }
 
-            try
+            if (!IsValidAddress(cart.address))
             {
-                var sale = await _storeLogic.PurchaseAsync(cart);
-                var response = new { purchaseNumber = sale.PurchaseNumber };
-                return Ok(response);
+                return BadRequest(new { error = "La dirección de entrega no es válida." });
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
-            }
+
+            var saleTask = storeLogic.PurchaseAsync(cart);
+            var sale = await saleTask;
+            var purchaseNumber = sale.PurchaseNumber;
+            var response = new { purchaseNumber = purchaseNumber };
+            return Ok(response);
         }
+
+        private bool IsValidAddress(string address)
+        {
+            // Validación básica de la dirección
+            return !string.IsNullOrEmpty(address) && address.Trim().Length >= 10;
+        }
+    }
+
+    public class CartRequest
+    {
+        public Cart Cart { get; set; }
     }
 }

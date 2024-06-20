@@ -1,16 +1,23 @@
+"use client"
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import '../Styles/paymentMethods.css';
 import { decodeToken, checkTokenDate } from '../../hooks/jwtHooks';
 import { useRouter } from 'next/navigation';
 
 interface PaymentMethodsProps {
-  address: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
 }
 
 const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
   const [paymentmethod, setPaymentMethod] = useState<string>('');
   const [paymentCode, setPaymentCode] = useState<string>('');
-  const [ConfirmationPurchase, setConfirmationPurchase] = useState<boolean>(false);
+  const [confirmationPurchase, setConfirmationPurchase] = useState<boolean>(false);
   const [warning, setWarning] = useState<boolean>(false);
   const [warningMessage, setWarningMessage] = useState<string>('');
   const [purchaseNumber, setPurchaseNumber] = useState<string>('');
@@ -50,7 +57,7 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
         cart: {
           ...tiendaLocal.cart,
           metodoPago: paymentmethod,
-          direccionEntrega: address
+          direccionEntrega: `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`
         },
         necesitaVerifica: true,
         idCompra: 1
@@ -79,10 +86,12 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
     const paymentMethodValue = paymentmethod === 'sinpe' ? 1 : 0;
 
     const dataToSend = {
-      product: productQuantities,
-      address: address,
-      paymentMethod: paymentMethodValue,
-      paymentCode: paymentmethod === 'sinpe' ? paymentCode : undefined
+      cart: {
+        product: productQuantities,
+        address: `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`,
+        paymentMethod: paymentMethodValue,
+        paymentCode: paymentmethod === 'sinpe' ? paymentCode : undefined
+      }
     };
 
     try {
@@ -106,6 +115,8 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
 
       const data = await response.json();
       setPurchaseNumber(data.purchaseNumber);
+      localStorage.removeItem('tienda');
+      setConfirmationPurchase(true); // Ensure confirmationPurchase is set to true
     } catch (error) {
       setWarningMessage('Error al enviar datos: ' + error.message);
       setWarning(true);
@@ -116,35 +127,28 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
     }
   };
 
-  const pagoEfectivo = () => {
-    return (
-      <div className="payment-info">
-        <p className="payment-info-title">Detalles de Pago:</p>
-        <p>Número de compra: {purchaseNumber}</p>
-        <p>Espere la confirmación del administrador con respecto al pago.</p>
-        <button className='BtnBuy' onClick={enviarDatosPago}>Confirmar compra</button>
-      </div>
-    );
-  };
-
-  const pagoSinpe = () => {
-    return (
-      <div className="payment-info">
-        <p className="payment-info-title">Detalles de Pago:</p>
-        <p>Número de cuenta: +506-5678-9012</p>
-        <p>Número de compra: {purchaseNumber}</p>
-        <input type="text" value={paymentCode} onChange={handlePaymentCodeChange} className="payment-code-input" placeholder="Ingrese el comprobante" />
-        <p>Espere la confirmación del administrador con respecto al pago.</p>
-        <button className='BtnBuy' onClick={enviarDatosPago}>Confirmar compra</button>
-      </div>
-    );
-  };
-
   return (
     <div>
       {warning && <div className='alert'>{warningMessage}</div>}
-      {ConfirmationPurchase ? (
-        paymentmethod === 'cash' ? pagoEfectivo() : paymentmethod === 'sinpe' ? pagoSinpe() : null
+      {confirmationPurchase ? (
+        <div className="payment-info">
+          <p className="payment-info-title">Detalles de Pago:</p>
+          <p>Número de compra: {purchaseNumber}</p>
+          {paymentmethod === 'sinpe' && (
+            <>
+              <p>Número de cuenta: +506-5678-9012</p>
+              <input
+                type="text"
+                value={paymentCode}
+                onChange={handlePaymentCodeChange}
+                className="payment-code-input"
+                placeholder="Ingrese el comprobante"
+              />
+            </>
+          )}
+          <p>Espere la confirmación del administrador con respecto al pago.</p>
+          <button className='BtnBuy' onClick={enviarDatosPago}>Confirmar compra</button>
+        </div>
       ) : (
         <fieldset className="payment-methods">
           <legend>Escoja el método de pago</legend>
