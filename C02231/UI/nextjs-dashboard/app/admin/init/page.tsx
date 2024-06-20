@@ -9,46 +9,37 @@ import { useRouter } from 'next/navigation';
 export default function InitPage() {
     const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const loginToken = sessionStorage.getItem("authToken");
+    const URL = process.env.NEXT_PUBLIC_API;
 
-    const checkAuthToken = async () => {
-        const loginToken = sessionStorage.getItem("authToken");
-
-        if (!loginToken) {
-            return false;
-        }
-
-        try {
-            const tokenFormat = jwtDecode(loginToken);
-            const todayDate = Date.now() / 1000;
-
-            if (tokenFormat.exp && tokenFormat.exp < todayDate) {
-                sessionStorage.removeItem("authToken");
-                return false;
-            }
-
-            return true;
-        } catch (error) {
-            return false;
-        }
-    };
+    var loginToken = sessionStorage.getItem("authToken");
 
     useEffect(() => {
-        const verifyToken = async () => {
-            const isValid = await checkAuthToken();
-            if (!isValid) {
-                router.push("/../admin");
-            } else {
-                setIsAuthenticated(true);
+        const checkTokenValidity = () => {
+            if (!loginToken) {
+                return false;
+            }
+            try {
+                const tokenFormat = jwtDecode(loginToken);
+                const todayTime = Date.now() / 1000;
+
+                if (tokenFormat.exp && tokenFormat.exp < todayTime) {
+                    sessionStorage.removeItem("authToken");
+                    return false;
+                }
+
+                return true;
+            } catch (error) {
+                console.error("Error decoding token:", error);
+                return false;
             }
         };
 
-        verifyToken();
-    }, [router]);
+        const isAuthenticated = checkTokenValidity();
+        // Aquí puedes manejar el estado de autenticación si es necesario, por ejemplo:
+        setIsAuthenticated(isAuthenticated);
 
-    if (!isAuthenticated) {
-        return null;
-    }
+    }, [loginToken]);
+
 
     const handleRemove = async () => {
         sessionStorage.removeItem("authToken");
@@ -71,13 +62,16 @@ export default function InitPage() {
                     <div className="col-md-3 bg-custom">
                         <div className="sidebar d-flex flex-column justify-content-between align-items-center" style={{ height: '100vh', marginTop: '200px' }}>
                             <Link href="/admin/init/report">
-                                <button className="btn btn-dark mb-3">Reportes de Ventas</button>
+                                <button className="btn btn-dark mb-3">Sale Reports</button>
                             </Link>
                             <Link href="/admin/init/products">
-                                <button className="btn btn-dark mb-3">Productos</button>
+                                <button className="btn btn-dark mb-3">Products</button>
                             </Link>
-                            <Link href="/admin/init">
+                            <Link href="/admin/init/payMethods">
                                 <button className="btn btn-dark ">Payment Methods</button>
+                            </Link>
+                            <Link href="/admin/init/campaign">
+                                <button className="btn btn-dark ">Campañas</button>
                             </Link>
 
 

@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Form, Dropdown } from 'react-bootstrap';
 import { usePathname, useRouter, useParams, useSearchParams } from 'next/navigation';
-
+import * as signalR from '@microsoft/signalr';
+import axios from 'axios';
 
 export default function Home() {
   const [storeProducts, setStoreProducts] = useState([]);
@@ -14,6 +15,8 @@ export default function Home() {
   const [filteredProducts, setFilteredProducts] = useState<string[]>([]);
   const [categories, setCategories] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
   const URL = process.env.NEXT_PUBLIC_API_URL;
@@ -53,6 +56,41 @@ export default function Home() {
     loadData();
   }, []);
 
+  type Message = {
+    id: string;
+    content: string;
+    timestamp: string;
+  };
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await axios.get('/api/messages/latest');
+        setMessages(response.data);
+        setUnreadCount(response.data.length);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+
+    fetchMessages();
+
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl("http://your-signalr-server-url/hub") // Cambia la URL por la correcta de tu servidor
+      .configureLogging(signalR.LogLevel.Information)
+      .build();
+
+    connection.on("newMessage", (message: Message) => {
+      setMessages(prevMessages => [message, ...prevMessages.slice(0, 2)]);
+      setUnreadCount(prevCount => prevCount + 1);
+    });
+
+    connection.start().catch(err => console.error("Connection error:", err));
+
+    return () => {
+      connection.stop().catch(err => console.error("Disconnection error:", err));
+    };
+  }, []);
 
   const [cart, setCart] = useState({
     products: [],
@@ -172,6 +210,11 @@ export default function Home() {
   };
 
 
+  const handleMarkAsRead = () => {
+    setUnreadCount(0);
+  };
+
+
   return (
 
     <main className="flex min-h-screen flex-col p-6" style={{ backgroundColor: 'silver' }}>
@@ -180,7 +223,7 @@ export default function Home() {
         <div className="row" style={{ color: 'gray' }}>
           <div className="col-sm-2">
             <Link href="/">
-              <img src="Logo1.jpg" style={{ height: '75px', width: '200px', margin: '1.4rem' }} className="img-fluid" />
+              <img src="https://i.ibb.co/bLZLVwd/Logo1.jpg" style={{ height: '75px', width: '200px', margin: '1.4rem' }} className="img-fluid" />
             </Link>
           </div>
 
@@ -234,6 +277,31 @@ export default function Home() {
                 Admin
               </button>
             </Link>
+            <div>
+              <Dropdown onToggle={() => handleMarkAsRead()}>
+                <Dropdown.Toggle variant="success" id="dropdown-notifications">
+                  <img src="https://png.pngtree.com/png-vector/20240521/ourmid/pngtree-free-golden-3d-bell-on-white-background-png-image_12501298.png"
+                    style={{ height: '40px', width: '40px' }} className="img-fluid" />
+                  ({unreadCount})
+                  {//unreadCount > 0 && <span className="badge bg-danger">{unreadCount}</span>
+                  }
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {messages.map((message, index) => (
+                    <Dropdown.Item key={index}>
+                      {message.content}- {message.timestamp}
+                    </Dropdown.Item>
+                  ))}
+                  <Dropdown.Item as={Link} href="/messages">
+                    Ver todos los mensajes
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+
+            <div style={{ position: 'absolute', top: '30px', right: '300px', backgroundColor: 'green', borderRadius: '50%', width: '20px', height: '20px', textAlign: 'center', color: 'white' }}>
+              {cart.count}
+            </div>
           </div>
 
 

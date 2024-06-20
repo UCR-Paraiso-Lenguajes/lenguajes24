@@ -1,9 +1,12 @@
 using Core;
 using StoreAPI.Database;
+using ApiPlu.Hubs;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,22 +66,33 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(builder =>
+    options.AddDefaultPolicy(
+        policy =>
     {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+
+        policy.WithOrigins("http://localhost:3000", "http://localhost:3001")
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
     });
 });
 
 var app = builder.Build();
+var hubContext = app.Services.GetService(typeof(IHubContext<ChatHub>));
+Task.Run(async () =>
+{
+    await Task.Delay(10000);
+    await ((IHubContext)hubContext).Clients.All.SendAsync("ReceiveMessage", "aaaaa", "aaaaa");
+    Console.WriteLine($"Message sent: {"aaaaa"}");
+
+});
 
 
 if (app.Environment.IsDevelopment())
 {
     builder.Configuration.AddJsonFile("C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Api/StoreAPI/appsettings.json", optional: true, reloadOnChange: true);
     string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
-   // var value = Environment.GetEnvironmentVariable("DB");
+    // var value = Environment.GetEnvironmentVariable("DB");
 
     var DB_value = Environment.GetEnvironmentVariable("DB");
     if (!String.IsNullOrEmpty(DB_value))
@@ -98,9 +112,10 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
-app.UseAuthentication(); 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.UseCors();
+app.MapHub<ChatHub>("/chatHub");
 app.Run();

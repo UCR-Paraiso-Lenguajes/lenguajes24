@@ -45,11 +45,11 @@ Flowchart TD
 
     Q --> R[Fin]
 
-![Flujo de Compra](DiagramaCompra.jpeg)
+![Flujo de Compra](Images/DiagramaCompra.jpeg)
 
 ## Diagrama Paquetes
 
-![Paquetes](Paquetes.jpeg)
+![Paquetes](Images/Paquetes.jpeg)
 
 **Front-end:**
 
@@ -89,7 +89,7 @@ El paquete principal contiene la lógica principal del negocio de la aplicación
 
 ## Diagrama Estructura de la aplicación
 
-![Fetch](Fetch.jpeg)
+![Fetch](Images/Fetch.jpeg)
 
 A[HomePage] --> B{Products}
 
@@ -102,7 +102,7 @@ C --> E{Cache}
 
 **Diagrama de Clase**
 
-![Clases](Clases.jpeg)
+![Clases](Images/Clases.jpeg)
 
 **Pagina Principal:** Se refiere a la página principal del sitio web.
 
