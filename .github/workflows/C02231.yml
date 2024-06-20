@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "C02231" ]
   pull_request:
-    branches: [ "Lab13_C02231" ]
+    branches: [ "C02231" ]
 
 jobs:
   unitTest:
