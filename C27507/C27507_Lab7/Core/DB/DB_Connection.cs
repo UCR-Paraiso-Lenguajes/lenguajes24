@@ -101,9 +101,9 @@ namespace MyStoreAPI{
                 }
 
                 string createTableNotification = @"
-                CREATE TABLE Notifications (
+                CREATE TABLE IF NOT EXISTS Notifications (
                     Id INT AUTO_INCREMENT PRIMARY KEY,
-                    Title NVARCHAR(255) NOT NULL,
+                    Title VARCHAR(255) NOT NULL,
                     Message TEXT NOT NULL,
                     Creation_Date DATETIME NOT NULL
                 );";
@@ -115,11 +115,11 @@ namespace MyStoreAPI{
                 }
 
                 string createTableNotificationCopy = @"
-                CREATE TABLE Notification_Copy (
+                CREATE TABLE IF NOT EXISTS Notification_Copy (
                     Id INT PRIMARY KEY,
-                    Title NVARCHAR(255) NOT NULL,
+                    Title VARCHAR(255) NOT NULL,
                     Message TEXT NOT NULL,                    
-                    Deletion_Date DATETIME NOT NULL,
+                    Deletion_Date DATETIME NOT NULL
                 );";
                 using (MySqlCommand command = new MySqlCommand(createTableNotificationCopy, connectionWithDB))
                 {
