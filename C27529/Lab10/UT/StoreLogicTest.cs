@@ -13,7 +13,7 @@ public class StoreLogicTest
     public void Setup()
     {
         ConnectionDB.Init("Server=localhost;Port=3407;Database=store;Uid=root;Pwd=123456;");
-        StoreLogic _storeLogic = new StoreLogic();
+        StoreLogic _storeLogic = new StoreLogic(); // Asegúrate de tener una clase StoreLogic para probar
 
     }
 
@@ -35,4 +35,5 @@ public class StoreLogicTest
         ArgumentException exception = Assert.ThrowsAsync<ArgumentException>(() => storeLogic.PurchaseAsync(cart));
         Assert.That(exception.Message, Is.EqualTo("Address must be provided."));
     }
+
 }
