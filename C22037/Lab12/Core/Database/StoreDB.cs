@@ -68,7 +68,7 @@ public class StoreDB
                     purchase_date DATETIME NOT NULL,
                     total DECIMAL(10, 2) NOT NULL,
                     payment_method INT NOT NULL,
-                    purchase_number VARCHAR(50) NOT NULL,
+                    purchase_number VARCHAR(50) NOT NULL UNIQUE,
                     FOREIGN KEY (payment_method) REFERENCES paymentMethods(paymentId)
                 );
 
@@ -78,7 +78,7 @@ public class StoreDB
                     price DECIMAL(10,2) NOT NULL,
                     PRIMARY KEY (productId, purchaseNumber),
                     FOREIGN KEY (productId) REFERENCES products(id),
-                    CONSTRAINT fk_purchaseNumber FOREIGN KEY (purchaseNumber) REFERENCES sales(purchase_number)
+                    FOREIGN KEY (purchaseNumber) REFERENCES sales(purchase_number)
                 );
 
                 INSERT INTO paymentMethods (paymentId, paymentName)
