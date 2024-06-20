@@ -20,7 +20,6 @@ namespace UT
         public void Setup()
         {
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
-     //       _insertProductsLogic = new InsertProductsLogic(_memoryCache, InsertProductToList);
 
             var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
             DataConnection.Init(dbtestDefault);
@@ -93,7 +92,7 @@ namespace UT
             Assert.AreEqual(updatedProduct.Category.Name, productInCache.Category.Name);
         }
 
-        internal  void InsertProductToList(Product product, List<Product> products)
+        private void InsertProductToList(Product product, List<Product> products)
         {
             var existingProduct = products.FirstOrDefault(p => p.id == product.id);
             if (existingProduct != null)

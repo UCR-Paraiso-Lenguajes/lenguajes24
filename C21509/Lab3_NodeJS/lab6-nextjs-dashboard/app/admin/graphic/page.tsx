@@ -1,24 +1,34 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from 'react';
 import { Chart } from 'react-google-charts';
 import "react-datepicker/dist/react-datepicker.css";
+import VerifyToken, { useTokenContext } from '@/app/components/verify_token';
+import { useRouter } from 'next/navigation';
 
 const Graphic = () => {
+  const { isValidToken, isVerifying } = useTokenContext();
+  const router = useRouter();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dailySales, setDailySales] = useState([]);
   const [weeklySales, setWeeklySales] = useState<[string, string][]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchData();
-  }, [selectedDate]);
-
   const fetchData = async () => {
+    if (!isValidToken) {
+      return; // Skip fetching if token is invalid
+    }
+
     setLoading(true);
     try {
       const formattedDate = selectedDate.toISOString().split('T')[0];
-      const response = await fetch(`https://localhost:7165/api/SalesReport?date=${formattedDate}`);
+      const response = await fetch(`https://localhost:7165/api/SalesReport?date=${formattedDate}`,
+        {
+          headers: {
+            'Authorization': 'Bearer ${token}' 
+          }
+        }
+      );
 
       if (!response.ok) {
         throw new Error('Failed to fetch sales data');
@@ -61,6 +71,26 @@ const Graphic = () => {
     }
   };
 
+  const handleDateChange = (e: any) => {
+    setSelectedDate(new Date(e.target.value));
+  };
+
+  useEffect(() => {
+    if (isValidToken && !isVerifying) {
+      fetchData();
+    }
+  }, [isValidToken, isVerifying, selectedDate]);
+
+  useEffect(() => {
+    if (!isValidToken && !isVerifying) {
+      router.push("/../admin");
+    }
+  }, [isValidToken, isVerifying, router]);
+
+  if (isVerifying || !isValidToken) {
+    return <p>Verifying...</p>; // Optional: some indication that the token is being verified or invalid
+  }
+
   return (
     <div className="container">
       <h2>Sales Reports</h2>
@@ -70,7 +100,7 @@ const Graphic = () => {
           <input
             type="date"
             value={selectedDate.toISOString().split('T')[0]}
-            onChange={e => setSelectedDate(new Date(e.target.value))}
+            onChange={handleDateChange}
           />
           <br />
           <br />
@@ -128,4 +158,10 @@ const Graphic = () => {
   );
 };
 
-export default Graphic;
+const WrappedGraphic = () => (
+  <VerifyToken>
+    <Graphic />
+  </VerifyToken>
+);
+
+export default WrappedGraphic;

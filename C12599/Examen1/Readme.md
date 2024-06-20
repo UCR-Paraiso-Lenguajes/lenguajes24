@@ -18,4 +18,4 @@ El diagrama de clase representa la estructura estática del sistema, mostrando l
 
 ![Diagrama de Paquetes](Diagrama%20de%20paquetes.png)
 
-El diagrama de paquetes muestra la organización modular del sistema, agrupando clases relacionadas en paquetes.
+El diagrama de paquetes muestra la organización modular del sistema, agrupando clases relacionadas en paquetes.a

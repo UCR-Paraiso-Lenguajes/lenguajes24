@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using storeapi.Models;
 using storeapi.Business;
@@ -57,3 +57,4 @@ namespace storeapi.Controllers
         public int CategoryId { get; set; }
     }
 }
+

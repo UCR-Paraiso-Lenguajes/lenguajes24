@@ -5,9 +5,9 @@ name: C27529
 
 on:
   push:
-    branches: [ "DevOps_C27529" ]
+    branches: [ "C27529" ]
   pull_request:
-    branches: [ "DevOps_C27529" ]
+    branches: [ "C27529" ]
 
 jobs:
   test:
