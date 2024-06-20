@@ -1,6 +1,9 @@
 # Usa una imagen de node como base
 FROM node:latest 
 
+# Instala dos2unix
+RUN apt-get update && apt-get install -y dos2unix
+
 # Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
@@ -26,8 +29,6 @@ RUN chmod +x write_env.sh
 EXPOSE 3000
 
 RUN dos2unix write_env.sh && chmod +x write_env.sh
-CMD ./write_env.sh && npm run dev
-
 
 # Comando para ejecutar la aplicación cuando se inicie el contenedor
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev"] && ./write_env.sh && npm run dev
