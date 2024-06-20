@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MySqlConnector;
 using core;
 
@@ -30,14 +30,14 @@ namespace storeapi.Database
 
                 // Crear la tabla de compras si no existe
                 string createComprasTableQuery = @"
-                CREATE TABLE IF NOT EXISTS Compras (
-                    total DECIMAL(10, 2) NOT NULL,
-                    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    purchaseNumber VARCHAR(255) NOT NULL,
-                    Paymethod INT,
-                    ProductsId varchar(100),
-                    PRIMARY KEY (purchaseNumber)
-                );";
+                    CREATE TABLE IF NOT EXISTS Compras (
+                        total DECIMAL(10, 2) NOT NULL,
+                        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        purchaseNumber VARCHAR(255) NOT NULL,
+                        Paymethod INT,
+                        ProductsId VARCHAR(100),
+                        PRIMARY KEY (purchaseNumber)
+                    );";
 
                 using (var command = new MySqlCommand(createComprasTableQuery, connection))
                 {
@@ -52,6 +52,23 @@ namespace storeapi.Database
                     )";
 
                 using (var command = new MySqlCommand(createCategoriesTableQuery, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+                // Crear la tabla de items si no existe
+                string createItemsTableQuery = @"
+                    CREATE TABLE IF NOT EXISTS Items (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        ProductId INT,
+                        PurchaseNumber VARCHAR(255),
+                        Address VARCHAR(255),
+                        Price DECIMAL(10, 2),
+                        FOREIGN KEY (ProductId) REFERENCES products(id),
+                        FOREIGN KEY (PurchaseNumber) REFERENCES Compras(purchaseNumber)
+                    );";
+
+                using (var command = new MySqlCommand(createItemsTableQuery, connection))
                 {
                     command.ExecuteNonQuery();
                 }
