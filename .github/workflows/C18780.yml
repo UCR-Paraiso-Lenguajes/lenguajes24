@@ -2,9 +2,9 @@ name: C18780
 
 on:
   push:
-    branches: [ "C18780_Lab13" ]
+    branches: [ "C18780" ]
   pull_request:
-    branches: [ "C18780_Lab13" ]
+    branches: [ "C18780" ]
 
 jobs:
   build:
