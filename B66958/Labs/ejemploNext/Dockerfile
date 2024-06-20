@@ -9,6 +9,7 @@ COPY my-nextjs-app/package*.json ./
 RUN npm install
 
 COPY ./my-nextjs-app ./ 
+COPY ./write_env.sh ./ 
 
 RUN chmod +x write_env.sh
 
