@@ -17,7 +17,7 @@ public class SaleDBTest
     public async Task Validate_Date_IsMinValue()
     {
         var saleDB = new SaleDB();
-        Assert.ThrowsAsync<ArgumentException>(async () => await saleDB.GetSalesReportAsync(DateTime.MinValue));
+        Assert.ThrowsAsync<ArgumentException>(async () => saleDB.GetSalesReport(DateTime.MinValue));
     }
 
     [Test]
@@ -26,7 +26,7 @@ public class SaleDBTest
         var saleDB = new SaleDB();
         DateTime validDate = new DateTime(2024, 5, 3);
 
-        var result = await saleDB.GetSalesReportAsync(validDate);
+        var result = saleDB.GetSalesReport(validDate);
 
         Assert.IsNotNull(result);
         Assert.IsInstanceOf<SalesReport>(result);

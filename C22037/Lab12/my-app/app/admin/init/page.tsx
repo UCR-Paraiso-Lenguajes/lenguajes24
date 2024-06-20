@@ -238,13 +238,13 @@ export default function Init() {
     
             const updatedProducts = data.products;
     
-            const storeData = JSON.parse(localStorage.getItem('store')) || {};
+            const storeData = JSON.parse(localStorage.getItem('store') || '{}');
             storeData.products = updatedProducts;
             localStorage.setItem('store', JSON.stringify(storeData));
     
             setProducts(updatedProducts);
         } catch (error) {
-            throw new Error('Error adding product:', error);
+            throw new Error('Error adding product.');
         }
     };    
 

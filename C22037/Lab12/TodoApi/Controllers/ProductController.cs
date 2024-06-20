@@ -37,15 +37,6 @@ namespace TodoApi.Controllers
             }
         }
 
-
-        [HttpGet("store")]
-        public async Task<IActionResult> GetStoreAsync()
-        {
-            storeInstance = await Store.InstanceAsync();
-            var categories = new Categories().GetCategories();
-            return Ok(new { store = storeInstance, categories });
-        }
-
         [HttpDelete("store/products/{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
