@@ -1,4 +1,4 @@
-﻿// File: UT/InsertProductsLogicTests.cs
+// File: UT/InsertProductsLogicTests.cs
 using NUnit.Framework;
 using Microsoft.Extensions.Caching.Memory;
 using storeapi.Business;
@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using core;
+using storeapi.Database;
 
 using storeapi.Database;
 namespace UT
@@ -24,8 +25,12 @@ namespace UT
 
             var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
             DataConnection.Init(dbtestDefault);
+
                         DatabaseInitializer.Initialize();
 
+
+            DatabaseInitializer.Initialize();
+            _insertProductsLogic = new InsertProductsLogic(_memoryCache, StoreDB.InsertProduct);
         }
 
         [TearDown]
@@ -64,11 +69,11 @@ namespace UT
             var existingProduct = new Product
             {
                 id = 1,
-                Name = "Existing Product",
-                Price = 19,
+                Name = "Updated Product",
+                Price = 29,
                 ImageUrl = "http://example.com/image.png",
-                Description = "Existing Product Description",
-                Category = new Category { _id = 1, _name = "Existing Category" }
+                Description = "Updated Product Description",
+                Category = new Category { _id = 1, _name = "Updated Category" }
             };
             _memoryCache.Set("Products", new List<Product> { existingProduct });
 
@@ -92,7 +97,7 @@ namespace UT
             Assert.AreEqual(updatedProduct.Price, productInCache.Price);
             Assert.AreEqual(updatedProduct.ImageUrl, productInCache.ImageUrl);
             Assert.AreEqual(updatedProduct.Description, productInCache.Description);
-            Assert.AreEqual(updatedProduct.Category.Name, productInCache.Category.Name);
+            Assert.AreEqual(updatedProduct.Category._name, productInCache.Category._name);
         }
 
         private void InsertProductToList(Product product, List<Product> products)
@@ -118,3 +123,4 @@ namespace UT
         }
     }
 }
+
