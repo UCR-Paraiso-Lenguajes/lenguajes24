@@ -48,6 +48,48 @@ public sealed class ProductDB
             }
         }
     }
+    public static void insertProduct(Product product, Action<Product> value)
+    {
+        string connectionString = Storage.Instance.ConnectionString;
+        using (var connection = new MySqlConnection(connectionString))
+        {
+            connection.Open();
+
+            // Begin a transaction
+            using (var transaction = connection.BeginTransaction())
+            {
+                try
+                {
+                    // name VARCHAR(100),
+                    // price DECIMAL(10, 2),
+                    // imgSource VARCHAR(100)
+                    string insertProductQuery = @"
+                            INSERT INTO store.products (name, price, imgSource, category)
+                            VALUES (@name, @price, @imgSource, @category);";
+
+                    using (var insertCommand = new MySqlCommand(insertProductQuery, connection, transaction))
+                    {
+                        insertCommand.Parameters.AddWithValue("@name", product.name);
+                        insertCommand.Parameters.AddWithValue("@price", product.price);
+                        insertCommand.Parameters.AddWithValue("@imgSource", product.imgSource);
+                        insertCommand.Parameters.AddWithValue("@category", product.category);
+                        insertCommand.ExecuteNonQuery();
+                    }
+
+
+                    // Commit the transaction if all inserts are successful
+                    transaction.Commit();
+                    value(product);
+                }
+                catch (Exception)
+                {
+                    // Rollback the transaction if an error occurs
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+    }
 
     internal static IEnumerable<Product> getProducts()
     {
@@ -121,5 +163,6 @@ public sealed class ProductDB
 
         return products;
     }
+
 
 }
