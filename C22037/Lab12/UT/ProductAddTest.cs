@@ -19,8 +19,10 @@ namespace UT
             storeDB = new StoreDB();
             category = new Categories();
 
+            Storage.Init("Server=localhost;Port=3407;Database=mysql;Uid=root;Pwd=123456;");
+            StoreDB.CreateMysql();
             Storage.Init("Server=localhost;Port=3407;Database=store;Uid=root;Pwd=123456;");
-            
+
             var products = new List<Product>
             {
                 new Product("Producto 1", "https://example.com/img1.jpg", 10, "Descripción 1", 1, category.GetType(1)),

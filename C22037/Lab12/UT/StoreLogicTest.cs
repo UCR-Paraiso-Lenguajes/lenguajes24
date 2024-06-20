@@ -11,6 +11,8 @@ public class StoreLogicTest
     [SetUp]
     public void Setup()
     {
+        Storage.Init("Server=localhost;Port=3407;Database=mysql;Uid=root;Pwd=123456;");
+        StoreDB.CreateMysql();
         Storage.Init("Server=localhost;Port=3407;Database=store;Uid=root;Pwd=123456;");
     }
 
@@ -18,12 +20,12 @@ public class StoreLogicTest
     public async Task Validate_Products_Empty()
     {
         StoreLogic storeLogic = new StoreLogic();
-        var list = new List<string> ();
+        var list = new List<string>();
         Cart cart = new Cart(list, "Santiago", 0, 10.0m);
         Assert.ThrowsAsync<ArgumentException>(async () => await storeLogic.PurchaseAsync(cart));
     }
 
-     [Test]
+    [Test]
     public async Task Validate_Address_Empty()
     {
         StoreLogic storeLogic = new StoreLogic();
