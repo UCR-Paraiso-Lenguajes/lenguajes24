@@ -8,6 +8,7 @@ using System.Linq;
 using System;
 using core;
 
+using storeapi.Database;
 namespace UT
 {
     [TestFixture]
@@ -23,6 +24,8 @@ namespace UT
 
             var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
             DataConnection.Init(dbtestDefault);
+                        DatabaseInitializer.Initialize();
+
         }
 
         [TearDown]
