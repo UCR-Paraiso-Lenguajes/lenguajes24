@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using storeapi.Models;
 using storeapi.Business;
 using Microsoft.Extensions.Caching.Memory;
+using MySqlConnector;
+using storeapi.Database;
 
 namespace storeapi.Controllers
 {
@@ -16,7 +18,7 @@ namespace storeapi.Controllers
         public InsertProductsController(IMemoryCache cache, Categories categories)
         {
             _categories = categories;
-            _insertProductsLogic = new InsertProductsLogic(cache, InsertProductToList);
+            _insertProductsLogic = new InsertProductsLogic(cache, StoreDB.InsertProduct);
         }
 
         [HttpPost]
@@ -28,7 +30,7 @@ namespace storeapi.Controllers
             }
 
             Category category = _categories.GetCategoryById(request.CategoryId);
-         
+
 
             Product product = new Product
             {
@@ -42,11 +44,6 @@ namespace storeapi.Controllers
 
             var updatedProducts = _insertProductsLogic.InsertProduct(product);
             return Ok(updatedProducts);
-        }
-
-        private void InsertProductToList(Product product, List<Product> products)
-        {
-            products.Add(product);
         }
     }
 
