@@ -130,7 +130,6 @@ if (app.Environment.IsDevelopment())
     {
         connection = DB_value;
     }
-
     app.UseSwagger();
     app.UseSwaggerUI();
 }
