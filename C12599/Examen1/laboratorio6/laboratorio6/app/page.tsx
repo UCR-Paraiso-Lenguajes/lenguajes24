@@ -126,7 +126,7 @@ const Page = () => {
     event.preventDefault();
     const query = event.target.q.value.trim();
     const { selectedCategories } = state;
-    let url = URL+'Products';
+    let url = URL+'/api/Products';
     const queryParams = [];
     selectedCategories.forEach(categoryID => {
       queryParams.push(`categoryIDs=${categoryID}`);
