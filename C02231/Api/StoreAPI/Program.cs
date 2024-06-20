@@ -122,14 +122,15 @@ else
 {
     connection = value;
 }
-
+Storage.Init(connection);
 if (app.Environment.IsDevelopment())
 {
+    StoreDB.CreateMysql();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-Storage.Init(connection);
+
 
 app.UseRouting();
 app.UseCors();
