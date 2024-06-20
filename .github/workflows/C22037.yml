@@ -10,25 +10,69 @@ on:
     branches: [ "C22037" ]
 
 jobs:
-  build:
+  unitTest:
 
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:latest
+        ports:
+          - 3407:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+        env:
+          MYSQL_ROOT_PASSWORD: 123456
+          MYSQL_DATABASE: store
+          MYSQL_USER: root1
+          MYSQL_PASSWORD: 123456
     steps:
     - uses: actions/checkout@v4
+    - name: Wait for MySQL to be healthy
+      run: |
+        docker ps -a
+        #docker-compose run --rm wait-for-it.sh mysql:3306 -t 30
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
       run: |
-        cd C22037\Lab12
+        cd C22037/Lab12
         dotnet restore
     - name: Build
       run: |
-        cd C22037\Lab12
+        cd C22037/Lab12
         dotnet build --no-restore
     - name: Test
       run: |
-        cd C22037\Lab12
+        cd C22037/Lab12
         dotnet test --no-build --verbosity normal
+
+  publish-Api:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+        cd C22037/Lab12
+        docker image build -t itschaco26/todoapi:latest .
+        docker image build -t itschaco26/todoapi:0.0.1 .
+        echo "${{ secrets.C22037DOCKERHUBPASS  }}" | docker login -u "aaronchacon2601@gmail.com" --password-stdin
+        docker push itschaco26/todoapi:latest
+        docker push itschaco26/todoapi:0.0.1
+  publish-UI:   
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+        cd C22037/Lab12/my-app
+        docker image build -t itschaco26/react:latest -f DockerfileFront .
+        docker image build -t itschaco26/react:0.0.1 -f DockerfileFront .
+        echo "${{ secrets.C22037DOCKERHUBPASS  }}" | docker login -u "aaronchacon2601@gmail.com" --password-stdin
+        docker push itschaco26/react:latest
+        docker push itschaco26/react:0.0.1
