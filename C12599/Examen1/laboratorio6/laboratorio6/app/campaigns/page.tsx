@@ -11,7 +11,7 @@ function Chat() {
 
     useEffect(() => {
         const fetchCampaigns = async () => {
-            const response = await fetch(URL+'Campannas');
+            const response = await fetch(URL+'/api/Campannas');
             if (response.ok) {
                 const data = await response.json();
                 const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
