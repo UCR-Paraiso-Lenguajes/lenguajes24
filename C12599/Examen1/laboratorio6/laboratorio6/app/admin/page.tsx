@@ -32,7 +32,7 @@ const Admin: React.FC = () => {
         errorMessage: ''
       });
 
-      const response = await fetch(`${URL}/api/Auth/login`, {
+      const response = await fetch(URL+'/api/Auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
