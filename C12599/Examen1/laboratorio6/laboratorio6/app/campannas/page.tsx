@@ -18,7 +18,7 @@ const Campannas: React.FC = () => {
 
   const fetchCampannas = async () => {
     const token = sessionStorage.getItem('authToken');
-    const response = await fetch(URL+'Campannas', {
+    const response = await fetch(URL+'/api/Campannas', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ const Campannas: React.FC = () => {
     }
 
     const token = sessionStorage.getItem('authToken');
-    const response = await fetch(URL+'Campannas', {
+    const response = await fetch(URL+'/api/Campannas', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
