@@ -4,11 +4,11 @@ RUN apt-get update && apt-get install -y dos2unix
 
 WORKDIR /app/my-nextjs-app
 
-COPY package*.json ./
+COPY my-nextjs-app/package*.json ./
 
 RUN npm install
 
-COPY . ./ 
+COPY ./my-nextjs-app ./ 
 
 RUN chmod +x write_env.sh
 
