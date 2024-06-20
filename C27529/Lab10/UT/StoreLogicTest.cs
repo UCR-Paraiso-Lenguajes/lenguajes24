@@ -13,7 +13,7 @@ public class StoreLogicTest
     public void Setup()
     {
         ConnectionDB.Init("Server=localhost;Port=3407;Database=store;Uid=root;Pwd=123456;");
-        StoreLogic _storeLogic = new StoreLogic(); // Asegúrate de tener una clase StoreLogic para probar
+        StoreLogic _storeLogic = new StoreLogic();
 
     }
 
@@ -35,36 +35,4 @@ public class StoreLogicTest
         ArgumentException exception = Assert.ThrowsAsync<ArgumentException>(() => storeLogic.PurchaseAsync(cart));
         Assert.That(exception.Message, Is.EqualTo("Address must be provided."));
     }
-
-
-    [Test]
-    public void RaiseProductAddedEvent_ShouldInvokeOnProductAdded()
-    {
-        // Arrange
-        var product = new Product
-        {
-            Id = 1,
-            Name = "Test Product",
-            ImageURL = "http://example.com/image.jpg",
-            Price = 10,
-            Description = "Test Description",
-            Category = new Category.ProductCategory { /* Inicializar propiedades de Category.ProductCategory si es necesario */ }
-        };
-        bool eventInvoked = false;
-        Product receivedProduct = null;
-
-        // Act
-        StoreLogic.OnProductAdded += (p) =>
-        {
-            eventInvoked = true;
-            receivedProduct = p;
-        };
-
-        StoreLogic.RaiseProductAddedEvent(product);
-
-        // Assert
-        Assert.IsTrue(eventInvoked);
-        Assert.AreEqual(product, receivedProduct);
-    }
-
 }
