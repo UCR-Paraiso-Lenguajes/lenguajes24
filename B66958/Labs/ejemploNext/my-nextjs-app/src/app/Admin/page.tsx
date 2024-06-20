@@ -10,6 +10,8 @@ export default function LogIn() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
+    let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
+
     const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);
     };
