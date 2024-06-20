@@ -68,7 +68,7 @@ const InsertProduct = () => {
             categoryId: productCategory
         };
 
-        const response = await fetch(URL+'InsertProducts', {
+        const response = await fetch(URL+'/api/InsertProducts', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

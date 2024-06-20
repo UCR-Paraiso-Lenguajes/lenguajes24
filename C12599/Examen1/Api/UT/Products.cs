@@ -9,6 +9,7 @@ using System;
 using core;
 using storeapi.Database;
 
+using storeapi.Database;
 namespace UT
 {
     [TestFixture]
@@ -24,6 +25,10 @@ namespace UT
 
             var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
             DataConnection.Init(dbtestDefault);
+
+                        DatabaseInitializer.Initialize();
+
+
             DatabaseInitializer.Initialize();
             _insertProductsLogic = new InsertProductsLogic(_memoryCache, StoreDB.InsertProduct);
         }
