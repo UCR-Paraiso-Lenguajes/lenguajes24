@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using core;
+using storeapi.Database;
 
 namespace UT
 {
@@ -16,6 +17,8 @@ namespace UT
         
         var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
         DataConnection.Init(dbtestDefault);
+                    DatabaseInitializer.Initialize();
+
     }
         [Test]
         public void LoadProductsFromDatabase_NoCachedData_ReturnsFilteredProducts()
@@ -108,3 +111,4 @@ namespace UT
         
     }
 }
+
