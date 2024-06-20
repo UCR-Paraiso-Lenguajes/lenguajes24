@@ -1,6 +1,7 @@
 "use client"; // Para utilizar el cliente en lugar del servidor
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import "../../public/styles.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';

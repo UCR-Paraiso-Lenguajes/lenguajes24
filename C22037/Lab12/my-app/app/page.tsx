@@ -1,6 +1,6 @@
 "use client"; // Para utilizar el cliente en lugar del servidor
 import "bootstrap/dist/css/bootstrap.min.css";
-import "@/public/styles.css";
+import "../public/styles.css";
 import { useState, useEffect } from "react";
 import { Carousel } from 'react-bootstrap';
 import Link from 'next/link';

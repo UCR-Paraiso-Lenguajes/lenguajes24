@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Chart } from 'react-google-charts';
 import DatePicker from "react-datepicker";
+import "../../../public/styles.css";
 import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
