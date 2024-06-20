@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using Core;
 using KEStoreApi.Data;
+using KEStoreApi.Models;
 
 namespace KEStoreApi
 {
@@ -111,6 +109,26 @@ namespace KEStoreApi
             var products = await DatabaseStore.GetProductsFromDBaAsync();
             ProductsList = products.Where(p => !p.IsDeleted);
             _productsInstance = Products.InitializeFromMemory(ProductsList);
+        }
+
+        public async Task ValidateAndAddOrderAsync(Order order)
+        {
+            if (!IsValidAddress(order.Address))
+            {
+                throw new ArgumentException("La dirección de entrega no es válida.", nameof(order.Address));
+            }
+
+        }
+
+        private bool IsValidAddress(Address address)
+        {
+            var zipCodePattern = new Regex(@"^[0-9]{5}(?:-[0-9]{4})?$"); // Simple US ZIP code validation
+
+            return !string.IsNullOrEmpty(address.Street) && address.Street.Trim().Length >= 5 &&
+                   !string.IsNullOrEmpty(address.City) && address.City.Trim().Length >= 2 &&
+                   !string.IsNullOrEmpty(address.State) && address.State.Trim().Length >= 2 &&
+                   !string.IsNullOrEmpty(address.ZipCode) && zipCodePattern.IsMatch(address.ZipCode) &&
+                   !string.IsNullOrEmpty(address.Country) && address.Country.Trim().Length >= 2;
         }
 
         private static readonly Lazy<Task<Store>> InstanceTask = new Lazy<Task<Store>>(InitializeInstanceAsync);
