@@ -47,8 +47,8 @@ namespace TodoApi.Controllers
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
                 var tokenOptions = new JwtSecurityToken(
-                    issuer: "https://localhost:7067",
-                    audience: "https://localhost:7067",
+                    issuer: "http://localhost:5087",
+                    audience: "http://localhost:5087",
                     claims: claims,
                     expires: DateTime.Now.AddMinutes(3),
                     signingCredentials: signinCredentials
