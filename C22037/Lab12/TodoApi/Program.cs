@@ -56,13 +56,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-
 var app = builder.Build();
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
-string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
-Storage.Init(connection);
-
 // Add CORS
 app.UseCors(builder =>
 {
@@ -70,6 +64,21 @@ app.UseCors(builder =>
            .AllowAnyMethod()
            .AllowAnyHeader();
 });
+
+
+string connection = "";
+var value = Environment.GetEnvironmentVariable("DB");
+if (value == null)
+{
+    builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+    connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
+}
+else 
+{
+    connection = value;
+}
+
+Storage.Init(connection);
 
 if(app.Environment.IsDevelopment())
 {
@@ -81,6 +90,8 @@ if(app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseCors();
 
 app.UseAuthentication();
 

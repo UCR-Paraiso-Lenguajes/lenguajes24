@@ -5,12 +5,17 @@ import { useState, useEffect } from "react";
 import { Carousel } from 'react-bootstrap';
 import Link from 'next/link';
 
+interface Category {
+  id: number;
+  name: string;
+}
+
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [count, setCount] = useState(0);
   const [productList, setProductList] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<Category[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -20,7 +25,7 @@ export default function Home() {
 
     const loadData = async () => {
       try {
-        const storeData = JSON.parse(localStorage.getItem('store')) || {};
+        const storeData = JSON.parse(localStorage.getItem('store') || '{}');
         if (storeData.products) {
           setProductList(storeData.products);
           setCategories(storeData.categories || []);
@@ -52,12 +57,12 @@ export default function Home() {
       }
     };
 
-    const storedCart = JSON.parse(localStorage.getItem('cart')) || {};
+    const storedCart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')!) : {};
     if (storedCart.products) {
       setCount(Object.keys(storedCart.products).length);
     }
 
-    const initialCart = JSON.parse(localStorage.getItem('cart')) || { products: {} };
+    const initialCart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')!) : { products: {} };
     localStorage.setItem('cart', JSON.stringify(initialCart));
 
     loadData();
