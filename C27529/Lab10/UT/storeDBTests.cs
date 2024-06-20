@@ -35,7 +35,6 @@ namespace storeApi.Tests
         {
             // Act
             await StoreDB.CreateMysql();
-
             // Assert
             var products = await StoreDB.GetProductsAsync();
             Assert.NotNull(products);
