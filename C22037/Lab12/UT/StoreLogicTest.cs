@@ -13,7 +13,6 @@ public class StoreLogicTest
     {
         Storage.Init("Server=localhost;Port=3407;Database=mysql;Uid=root;Pwd=123456;");
         StoreDB.CreateMysql();
-        Storage.Init("Server=localhost;Port=3407;Database=store;Uid=root;Pwd=123456;");
     }
 
     [Test]

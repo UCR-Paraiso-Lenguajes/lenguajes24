@@ -21,6 +21,7 @@ namespace TodoApi.Database
                     try
                     {
                         string insertQuery = @"
+                            use store;
                             INSERT INTO sales (purchase_date, total, payment_method, purchase_number)
                             VALUES (@purchase_date, @total, @payment_method, @purchase_number);";
 
@@ -34,6 +35,7 @@ namespace TodoApi.Database
                         }
 
                         string insertQueryLines = @"
+                            use store;
                             INSERT INTO saleLines (productId, purchaseNumber, price)
                             VALUES (@product_Id, @purchase_Number, @product_Price);";
 
@@ -84,6 +86,7 @@ namespace TodoApi.Database
                 await connection.OpenAsync();
 
                 string selectQuery = @"
+                    use store;
                     SELECT DAYNAME(sale.purchase_date) AS day, SUM(sale.total) AS total
                     FROM sales sale 
                     WHERE YEARWEEK(sale.purchase_date) = YEARWEEK(@date)
@@ -117,6 +120,7 @@ namespace TodoApi.Database
                 await connection.OpenAsync();
 
                 string selectQuery = @"
+                    use store;
                     SELECT purchase_date, purchase_number, total
                     FROM sales
                     WHERE DATE(purchase_date) = DATE(@date);";

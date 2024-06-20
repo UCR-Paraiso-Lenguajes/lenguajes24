@@ -129,6 +129,7 @@ public class StoreDB
                     foreach (Product product in products)
                     {
                         string insertProductQuery = @"
+                            use store;
                             INSERT INTO products (imageURL, name, price, description, category)
                             VALUES (@imageURL, @name, @price, @description, @category);";
 
@@ -162,9 +163,11 @@ public class StoreDB
         using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
         {
             await connection.OpenAsync();
-            var query = @"INSERT INTO products (imageURL, name, price, description, category)
-                      VALUES (@imageURL, @name, @price, @description, @category);
-                      SELECT LAST_INSERT_ID();";
+            var query = @"
+                    use store;
+                    INSERT INTO products (imageURL, name, price, description, category)
+                    VALUES (@imageURL, @name, @price, @description, @category);
+                    SELECT LAST_INSERT_ID();";
 
             using (var command = new MySqlCommand(query, connection))
             {
@@ -185,7 +188,9 @@ public class StoreDB
         using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
         {
             await connection.OpenAsync();
-            var query = "DELETE FROM products WHERE id = @id;";
+            var query = @"
+                    use store; 
+                    DELETE FROM products WHERE id = @id;";
 
             using (var command = new MySqlCommand(query, connection))
             {
@@ -204,7 +209,9 @@ public class StoreDB
         {
             await connection.OpenAsync();
 
-            string query = @"SELECT id, imageURL, name, price, description, category FROM products";
+            string query = @"
+                        use store;
+                        SELECT id, imageURL, name, price, description, category FROM products";
             using (var command = new MySqlCommand(query, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
