@@ -52,8 +52,9 @@ namespace MyStoreAPI.DB
             if (string.IsNullOrEmpty(guid)) throw new ArgumentException($"{nameof(guid)} no puede ser nulo ni estar vacío");
             if (idSale <= 0) throw new ArgumentException($"{nameof(idSale)} debe ser un valor positivo");
             if (purchasedCart == null) throw new ArgumentException($"{nameof(purchasedCart)} no puede ser nulo");
+            
 
-            try {
+            try {                
                 string insertSalesLine = @"
                     INSERT INTO SalesLines (IdSale, IdProduct,Quantity,PricePaid,OriginalProductName, OriginalProductPrice)
                     VALUES (@saleId, @productId,@productQuantity,@pricePaid, @originalProductName, @originalProductPrice);";

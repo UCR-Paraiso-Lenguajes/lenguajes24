@@ -5,13 +5,11 @@ using NUnit.Framework;
 namespace UT{
 
     [TestFixture]
-    public class RegisteredSaleTesting : TestBase{
+    public class RegisteredSaleTesting{
 
         [SetUp]
         public void SetUp(){
-
-
-
+            TestBase.EnsureInitialized();
         }
 
 

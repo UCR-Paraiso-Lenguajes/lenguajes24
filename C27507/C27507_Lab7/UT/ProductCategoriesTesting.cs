@@ -6,13 +6,14 @@ using NUnit.Framework;
 namespace UT{
 
     [TestFixture]
-    public class ProductCategoriesTesting : TestBase{
+    public class ProductCategoriesTesting{
         
         private ProductsLogic productsLogic;
 
 
         [SetUp]
         public void SetUp(){
+            TestBase.EnsureInitialized();
             productsLogic = new ProductsLogic();            
         }
 
