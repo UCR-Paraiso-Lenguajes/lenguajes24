@@ -4,13 +4,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using storeApi.Models;
 using storeApi.Database;
+using storeApi.db;
 
 namespace storeApi.Business
 {
     public sealed class StoreLogic
     {
+
+        
         public delegate void ProductAddedHandler(Product product);
-        public static event ProductAddedHandler OnProductAdded;
+
+        ProductAddedHandler OnProductAdded = (product) =>
+        {
+            var store =  Store.Instance;// instancia de la tienda para anadir el nuevo producto
+            store.AddProductToStore(product);
+        };
+
+        // public static event ProductAddedHandler OnProductAdded;
         private SaleDB saleDB = new SaleDB();
 
         public StoreLogic()
@@ -57,9 +67,10 @@ namespace storeApi.Business
             return purchaseNumber;
         }
 
-        public static void RaiseProductAddedEvent(Product product)
+        public  async Task RaiseProductAddedEventAsync(Product product)
         {
-            OnProductAdded?.Invoke(product);
+            StoreDB db = new StoreDB();
+            await db.AddProductAsync(product, OnProductAdded);
         }
     }
 }

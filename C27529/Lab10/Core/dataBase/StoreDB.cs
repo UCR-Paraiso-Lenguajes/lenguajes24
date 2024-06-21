@@ -313,7 +313,6 @@ public sealed class StoreDB
         using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
         {
             await connection.OpenAsync();
-            Console.WriteLine("Connection to database opened.");
 
 
             // Drop and create database commands
@@ -506,7 +505,7 @@ VALUES
                 await insertCommand.ExecuteNonQueryAsync();
             }
         }
-        newProductDelegate(await GetProductByIdAsync(product.Id));
+        newProductDelegate(product);
 
 
     }

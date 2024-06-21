@@ -8,7 +8,7 @@ function DeleteProduct() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await fetch('https://localhost:7280/api/store');
+        const response = await fetch('http://localhost:5164/api/store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }

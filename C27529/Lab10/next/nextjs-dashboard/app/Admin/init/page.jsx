@@ -1,11 +1,10 @@
 "use client"
-import React, { createContext, useState } from 'react';
+import React, {useEffect , useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Reports from './Reports';
 import StoreCrud from './StoreCrud';
+import { jwtDecode } from 'jwt-decode'; 
 
-
-const SidebarContext = createContext();
 function Page() {
   const [selected, setSelected] = useState();
   const [expanded, setExpanded] = useState(true);
@@ -17,6 +16,24 @@ function Page() {
     }
       
   };
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/Admin';
+      return;
+    }
+  
+    const decodedToken = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+  
+    if (decodedToken.exp < currentTime) {
+      sessionStorage.removeItem('token');
+      window.location.href = '/Admin';
+    }
+  }, []);
+  
+  
 
   return (
     <div className="container-fluid gray-background" style={{ height: "100vh" }}>
