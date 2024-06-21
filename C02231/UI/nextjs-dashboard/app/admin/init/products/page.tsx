@@ -17,6 +17,7 @@ const ProductPage = () => {
     const [isPriceValid, setIsPriceValid] = useState(false);
     const [isCategoryValid, setIsCategoryValid] = useState(false);
     const [isImgUrlValid, setIsImgUrlValid] = useState(true); // Nueva validación
+    const [isFormValid, setIsFormValid] = useState(false); // Nuevo estado para la validación del formulario
     const token = sessionStorage.getItem("authToken");
 
     const URL = process.env.NEXT_PUBLIC_API_URL;
@@ -46,9 +47,12 @@ const ProductPage = () => {
         fetchProducts();
     }, []);
 
+    useEffect(() => {
+        validateForm(); // Validar el formulario cada vez que cambie algún estado
+    }, [newProduct, isNameValid, isAuthorValid, isPriceValid, isCategoryValid, isImgUrlValid]);
+
     const fetchProducts = async () => {
         try {
-           // const token = sessionStorage.getItem("authToken"); 'Authorization': `Bearer ${token}`
             const response = await fetch(`${URL}/api/Store`, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -106,6 +110,13 @@ const ProductPage = () => {
                 setIsAuthorValid(value.trim() !== '');
             }
         }
+
+        validateForm(); // Validar el formulario después de cada cambio de entrada
+    };
+
+    const validateForm = () => {
+        const isFormValid = isNameValid && isAuthorValid && isPriceValid && isCategoryValid && isImgUrlValid;
+        setIsFormValid(isFormValid);
     };
 
     const handleAddProduct = async () => {
@@ -237,12 +248,12 @@ const ProductPage = () => {
                         <Form.Group>
                             <Form.Label>Name</Form.Label>
                             <Form.Control type="text" name="Name" value={newProduct.Name} onChange={handleInputChange} />
-                            {!isNameValid && <div style={{ color: 'red', marginTop: '0.5rem' }}></div>}
+                            {!isNameValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>El nombre es requerido</div>}
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Author</Form.Label>
                             <Form.Control type="text" name="Author" value={newProduct.Author} onChange={handleInputChange} />
-                            {!isAuthorValid && <div style={{ color: 'red', marginTop: '0.5rem' }}></div>}
+                            {!isAuthorValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>El autor es requerido</div>}
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Image</Form.Label>
@@ -264,7 +275,7 @@ const ProductPage = () => {
                                     </option>
                                 ))}
                             </Form.Control>
-                            {!isCategoryValid && <div style={{ color: 'red', marginTop: '0.5rem' }}></div>}
+                            {!isCategoryValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>La categoría es requerida</div>}
                         </Form.Group>
                     </Form>
                 </Modal.Body>
@@ -275,13 +286,12 @@ const ProductPage = () => {
                     <Button
                         variant="success"
                         onClick={handleAddProduct}
-                        disabled={!isNameValid || !isAuthorValid || !isCategoryValid || errorMessage !== ''}
+                        disabled={!isFormValid} // Deshabilitar el botón si el formulario no es válido
                     >
                         Save
                     </Button>
                 </Modal.Footer>
             </Modal>
-
         </div>
     );
 };
