@@ -19,9 +19,8 @@ namespace ApiLab7.Controllers
         public async Task<IActionResult> CreateMessageAsync([FromBody] Message message)
         {
             if(message == null) throw new ArgumentException("Please provide a message");
-            await messageBusiness.AddMessage(message.Text);
-            //message.Active = true;
-            _webSocketService.SendMessage(message);
+            var messageResult = await messageBusiness.AddMessage(message.Text);
+            _webSocketService.SendMessage(messageResult);
             return Ok();
         }
 
@@ -30,7 +29,7 @@ namespace ApiLab7.Controllers
         {
             if(id == null) throw new ArgumentException("Please provide a message id");
             var deleted = await messageBusiness.RemoveMessage(id);
-            return Ok();
+            return Ok(deleted);
         }
 
         [HttpGet]

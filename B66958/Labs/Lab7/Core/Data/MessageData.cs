@@ -13,8 +13,8 @@ public class MessageData
     public async Task InsertMessageAsync(Message message){
         string insertMessageQuery =
             @"USE andromeda_store;
-            INSERT INTO dbo.messages (id, message) 
-            VALUES (@id, @message)";
+            INSERT INTO dbo.messages (id, message, date) 
+            VALUES (@id, @message, @date)";
 
         using (SqlConnection connection = new SqlConnection(Db.Instance.DbConnectionString))
         {
@@ -23,6 +23,7 @@ public class MessageData
             {
                 command.Parameters.AddWithValue("@id", message.Id);
                 command.Parameters.AddWithValue("@message", Encoding.UTF8.GetBytes(message.Text));
+                command.Parameters.AddWithValue("@date", message.SentAt);
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -51,7 +52,9 @@ public class MessageData
                     if (await reader.ReadAsync())
                     {
                         deletedMessage = 
-                        Message.BuildForDisplay(new Guid(reader[0].ToString()),Encoding.UTF8.GetString((byte[])reader[1]) );
+                        Message.BuildForDisplay(new Guid(reader[0].ToString()),
+                        Encoding.UTF8.GetString((byte[])reader[1]),
+                        reader.GetDateTime(2));
                     }
                 }
             }
@@ -77,7 +80,7 @@ public class MessageData
                     while (reader.Read())
                     {
                         Message message = Message.BuildForDisplay(new Guid(reader[0].ToString()), 
-                        Encoding.UTF8.GetString((byte[])reader[1]));
+                        Encoding.UTF8.GetString((byte[])reader[1]), reader.GetDateTime(2));
                         messages.Add(message);
                     }
                 }

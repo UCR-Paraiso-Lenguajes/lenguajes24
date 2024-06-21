@@ -9,11 +9,12 @@ public class MessageBusiness
         messageData = new MessageData();
     }
 
-    public async Task AddMessage(String text)
+    public async Task<Message> AddMessage(String text)
     {
         if(String.IsNullOrEmpty(text)) throw new ArgumentException("The message cannot be empty");
         var message = Message.BuildForStorage(text);
         await messageData.InsertMessageAsync(message);
+        return message;
     }
 
     public async Task<Message> RemoveMessage(String id)
