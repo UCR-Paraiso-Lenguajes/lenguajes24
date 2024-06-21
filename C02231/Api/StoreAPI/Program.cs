@@ -72,8 +72,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Console.WriteLine(c);
                 Console.WriteLine($"Exception: {c.Exception}");
                 Console.WriteLine($"Exception: {c.HttpContext}");
+                Console.WriteLine($"-------------");
                 return Task.CompletedTask;
-            },
+            }/*,
             OnMessageReceived = msg =>
             {
                 var token = msg?.Request.Headers.Authorization.ToString();
@@ -104,7 +105,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Console.WriteLine($"Host: {msg.Request.Host}");
 
                 return Task.CompletedTask;
-            }
+            }*/
         };
     });
 
