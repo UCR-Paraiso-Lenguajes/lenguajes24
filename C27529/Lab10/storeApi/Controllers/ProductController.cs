@@ -3,6 +3,7 @@ using storeApi;
 using storeApi.db;
 using Microsoft.Extensions.Configuration;
 using storeApi.Business;
+using Microsoft.AspNetCore.Authorization;
 
 namespace storeApi.Controllers
 {
@@ -10,14 +11,15 @@ namespace storeApi.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly StoreDB _storeDB;
+        private StoreLogic storeLogic;
 
         public ProductController(IConfiguration configuration)
         {
-            _storeDB = new StoreDB();
+            storeLogic = new StoreLogic();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PostProduct([FromBody] Product product)
         {
             if (product == null ||
@@ -32,9 +34,8 @@ namespace storeApi.Controllers
 
             try
             {
-                await _storeDB.AddProductAsync(product);
-
-                return Ok("Product added successfully!");
+                await storeLogic.RaiseProductAddedEventAsync(product);
+                return Ok(product);
             }
             catch (Exception ex)
             {

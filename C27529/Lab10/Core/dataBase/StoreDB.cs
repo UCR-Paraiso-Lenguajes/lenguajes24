@@ -314,51 +314,66 @@ public sealed class StoreDB
         {
             await connection.OpenAsync();
 
+
+            // Drop and create database commands
+            string dropDatabaseQuery = "DROP DATABASE IF EXISTS store;";
+            string createDatabaseQuery = "CREATE DATABASE store;";
+            string useDatabaseQuery = "USE store;";
+
+            using (var dropCommand = new MySqlCommand(dropDatabaseQuery, connection))
+            {
+                await dropCommand.ExecuteNonQueryAsync();
+            }
+
+            using (var createCommand = new MySqlCommand(createDatabaseQuery, connection))
+            {
+                await createCommand.ExecuteNonQueryAsync();
+            }
+
+            using (var useCommand = new MySqlCommand(useDatabaseQuery, connection))
+            {
+                await useCommand.ExecuteNonQueryAsync();
+            }
+
+
             string createTableQuery = @"
-                DROP DATABASE IF EXISTS store;
-                CREATE DATABASE store;
-                USE store;
+             CREATE TABLE IF NOT EXISTS paymentMethods (
+    paymentId INT PRIMARY KEY,
+    paymentName VARCHAR(30) NOT NULL UNIQUE
+);
 
+CREATE TABLE IF NOT EXISTS products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    description TEXT,
+    price DECIMAL(10, 2),
+    imageURL VARCHAR(255),
+    category INT
+);
 
-                CREATE TABLE IF NOT EXISTS paymentMethods (
-                    paymentId INT PRIMARY KEY,
-                    paymentName VARCHAR(30) NOT NULL
-                );
-                
-                CREATE TABLE IF NOT EXISTS products (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(100),
-                description TEXT,
-                price DECIMAL(10, 2),
-                imageURL VARCHAR(255),
-                category INT
-                );
+CREATE TABLE IF NOT EXISTS sales (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    purchase_date DATETIME NOT NULL,
+    total DECIMAL(10, 2) NOT NULL,
+    payment_method INT NOT NULL,
+    purchase_number VARCHAR(50) NOT NULL UNIQUE,
+    FOREIGN KEY (payment_method) REFERENCES paymentMethods(paymentId)
+);
 
-                
-                CREATE TABLE IF NOT EXISTS sales (
-                    Id INT AUTO_INCREMENT PRIMARY KEY,
-                    purchase_date DATETIME NOT NULL,
-                    total DECIMAL(10, 2) NOT NULL,
-                    payment_method INT NOT NULL,
-                    purchase_number VARCHAR(50) NOT NULL,
-                    INDEX idx_purchase_number (purchase_number), 
-                    FOREIGN KEY (payment_method) REFERENCES paymentMethods(paymentId)
-                );
+CREATE TABLE IF NOT EXISTS saleLines (
+    productId INT,
+    purchaseNumber VARCHAR(50),
+    price DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (productId, purchaseNumber),
+    FOREIGN KEY (productId) REFERENCES products(id),
+    CONSTRAINT fk_purchaseNumber FOREIGN KEY (purchaseNumber) REFERENCES sales(purchase_number)
+);
 
-                CREATE TABLE IF NOT EXISTS saleLines (
-                    productId INT,
-                    purchaseNumber VARCHAR(50),
-                    price DECIMAL(10,2) NOT NULL,
-                    PRIMARY KEY (productId, purchaseNumber),
-                    FOREIGN KEY (productId) REFERENCES products(id),
-                    CONSTRAINT fk_purchaseNumber FOREIGN KEY (purchaseNumber) REFERENCES sales(purchase_number)
-                );
-                
-                INSERT INTO paymentMethods (paymentId, paymentName)
-                VALUES 
-                    (0, 'Cash'),
-                    (1, 'Sinpe');
-                    
+INSERT INTO paymentMethods (paymentId, paymentName)
+VALUES 
+    (0, 'Cash'),
+    (1, 'Sinpe');
+
                 INSERT INTO sales (purchase_date, total, payment_method, purchase_number)
                 VALUES
                     ('2024-06-15 05:20:00', 67.20, 1, 'SA123456789'),
@@ -469,7 +484,7 @@ public sealed class StoreDB
     }
 
 
-    public async Task AddProductAsync(Product product)
+    public async Task AddProductAsync(Product product, StoreLogic.ProductAddedHandler newProductDelegate = null)
     {
         using (MySqlConnection connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
         {
@@ -490,9 +505,9 @@ public sealed class StoreDB
                 await insertCommand.ExecuteNonQueryAsync();
             }
         }
-        var addedProduct = await GetProductByIdAsync(product.Id);
+        newProductDelegate(product);
 
-        StoreLogic.RaiseProductAddedEvent(addedProduct);
+
     }
 
     private async Task<Product> GetProductByIdAsync(int productId)

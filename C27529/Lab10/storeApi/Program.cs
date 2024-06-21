@@ -1,4 +1,4 @@
-using Core; 
+using Core;
 using storeApi.db; 
 using Microsoft.AspNetCore.Authentication.JwtBearer; 
 using Microsoft.IdentityModel.Tokens; 
@@ -9,6 +9,8 @@ using Microsoft.OpenApi.Models;
  
 var builder = WebApplication.CreateBuilder(args); 
  
+
+
 // Add services to the container. 
 builder.Services.AddControllers(); 
  
@@ -67,8 +69,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true, 
             ValidateLifetime = true, 
             ValidateIssuerSigningKey = true, 
-            ValidIssuer = "https://localhost:7280", 
-            ValidAudience = "https://localhost:7280", 
+            ValidIssuer = "https://localhost:5164", 
+            ValidAudience = "https://localhost:5164", 
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere")) 
         }; 
     }); 
@@ -76,10 +78,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
  
 var app = builder.Build(); 
  
- 
- 
 var value = Environment.GetEnvironmentVariable("DB"); 
- 
+
 if (value == null) 
 { 
     builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true); 
@@ -92,12 +92,12 @@ else
 { 
     connection = value; 
 } 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed 
-StoreDB.CreateMysql(); 
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed 
+
+app.Logger.LogInformation("Connection String: {connection}", connection);
+ConnectionDB.Init(connection);
+await StoreDB.CreateMysql(); 
  
-ConnectionDB.Init(connection); 
- 
+
 // Configure the HTTP request pipeline. 
 if (app.Environment.IsDevelopment()) 
 { 
@@ -119,4 +119,3 @@ app.UseAuthorization();
 app.MapControllers(); 
  
 app.Run(); 
-Console.WriteLine("Estoy ejecutando Program");

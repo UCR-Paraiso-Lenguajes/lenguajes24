@@ -44,7 +44,7 @@ namespace storeApi.Controllers
             {
                 var categoryIds = categoriesString.Split(',').Select(int.Parse).ToList();
                 var filteredStore = await store.GetFilteredProductsAsync(categoryIds);
-                var filteredProducts = filteredStore.mockProducts.Where(p => p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) );
+                var filteredProducts = filteredStore.Products.Where(p => p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) );
                 return Ok(new { products = filteredProducts });
             }
             else if (categoriesString != null)

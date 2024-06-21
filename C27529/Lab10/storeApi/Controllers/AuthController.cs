@@ -77,8 +77,8 @@ namespace TodoApi
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
             var tokenOptions = new JwtSecurityToken(
-                issuer: "https://localhost:7280",
-                audience: "https://localhost:7280",
+                issuer: "https://localhost:5164",
+                audience: "https://localhost:5164",
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(2), 
                 signingCredentials: signinCredentials

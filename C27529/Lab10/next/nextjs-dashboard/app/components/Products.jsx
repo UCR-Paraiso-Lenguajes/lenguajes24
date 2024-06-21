@@ -11,6 +11,7 @@ export const Products = () => {
     const storedProductList = localStorage.getItem('productList');
     return storedProductList ? JSON.parse(storedProductList) : [];
   });
+
   const [listNames, setListNames] = useState(() => {
     const storedListNames = localStorage.getItem('listNames');
     return storedListNames ? JSON.parse(storedListNames) : [];
@@ -20,6 +21,21 @@ export const Products = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const updatedProductList = localStorage.getItem('productList');
+      if (updatedProductList) {
+        setProductList(JSON.parse(updatedProductList));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -46,14 +62,14 @@ export const Products = () => {
 
   const loadData = async () => {
     try {
-      const response = await fetch(`https://localhost:7280/api/store`);
+      const response = await fetch(`http://localhost:5164/api/store`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
       const json = await response.json();
       if (!json) throw new Error('Failed to fetch data, null response');
       setListNames(json.categoriesNames);
-      setProductList(json.products); 
+      setProductList(json.products);
     } catch (error) {
       console.error('Error loading data:', error);
     }
@@ -64,7 +80,7 @@ export const Products = () => {
       const categoriesString = categories.length === 0 ? '0' : categories.join(',');
       const searchTextEncoded = searchText === '' ? '@' : encodeURIComponent(searchText);
 
-      const url = `https://localhost:7280/api/store/products?categoriesString=${categoriesString}&searchText=${searchTextEncoded}`;
+      const url = `http://localhost:5164/api/store/products?categoriesString=${categoriesString}&searchText=${searchTextEncoded}`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
@@ -166,7 +182,7 @@ export const Products = () => {
             <div className="navbar-nav">
               <div className="secciones">
                 <div className="row">
-                  <button className="nav-link btn btn-primary" onClick={()=>loadData()}>Página Principal</button>
+                  <button className="nav-link btn btn-primary" onClick={() => loadData()}>Página Principal</button>
                   <div className="col-sm-2">
                     <div className="dropdown">
                       <button className="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">

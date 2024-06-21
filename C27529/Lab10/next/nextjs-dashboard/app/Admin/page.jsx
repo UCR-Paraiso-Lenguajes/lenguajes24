@@ -37,7 +37,7 @@ function Page() {
     };
 
     try {
-      const response = await fetch('https://localhost:7280/api/Auth/login', {
+      const response = await fetch('http://localhost:5164/api/Auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

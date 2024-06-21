@@ -31,7 +31,7 @@ export const Payment = () => {
                 },
                 body: JSON.stringify(data)
             };
-            const response = await fetch('https://localhost:7280/api/Cart', requestOptions);
+            const response = await fetch('http://localhost:5164/api/Cart', requestOptions);
             if (!response.ok) {
                 throw new Error('Failed to post data');
             } else {

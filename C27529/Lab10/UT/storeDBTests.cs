@@ -15,7 +15,7 @@ namespace storeApi.Tests
         [SetUp]
         public void Setup()
         {
-            ConnectionDB.Init("Server=172.20.192.1;Database=mysql;Uid=root;Pwd=123456;");
+            ConnectionDB.Init("Server=localhost;Database=mysql;Uid=root;Pwd=123456;");
             storeDB = new StoreDB();
         }
 
@@ -35,7 +35,6 @@ namespace storeApi.Tests
         {
             // Act
             await StoreDB.CreateMysql();
-
             // Assert
             var products = await StoreDB.GetProductsAsync();
             Assert.NotNull(products);

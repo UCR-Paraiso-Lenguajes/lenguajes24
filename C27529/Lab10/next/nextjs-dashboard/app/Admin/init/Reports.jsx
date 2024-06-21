@@ -52,7 +52,7 @@ function Reports() {
 
 
     try {
-      const response = await fetch('http://localhost:7280/api/Sale', {
+      const response = await fetch('http://localhost:5164/api/Sale', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
