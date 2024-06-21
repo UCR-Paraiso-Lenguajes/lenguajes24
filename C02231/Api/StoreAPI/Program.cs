@@ -74,9 +74,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Console.WriteLine($"Exception: {c.HttpContext}");
                 Console.WriteLine($"-------------");
                 return Task.CompletedTask;
-            }/*,
+            },
             OnMessageReceived = msg =>
             {
+                Console.WriteLine($"-------------");
+                Console.WriteLine($"-------------");
                 var token = msg?.Request.Headers.Authorization.ToString();
                 string path = msg?.Request.Path ?? "";
                 if (!string.IsNullOrEmpty(token))
@@ -104,8 +106,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 Console.WriteLine($"Content Type: {msg.Request.ContentType}");
                 Console.WriteLine($"Host: {msg.Request.Host}");
 
+                Console.WriteLine($"-------------");
+                Console.WriteLine($"-------------");
                 return Task.CompletedTask;
-            }*/
+            }
         };
     });
 
