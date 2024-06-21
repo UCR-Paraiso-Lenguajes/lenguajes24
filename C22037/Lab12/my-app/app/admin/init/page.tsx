@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Chart } from 'react-google-charts';
@@ -279,7 +279,7 @@ export default function Init() {
         },
         {
             name: 'Description',
-            selector: (row: Product) => row.description,
+            selector: (row: Product) => <div dangerouslySetInnerHTML={{ __html: row.description }} />,
             sortable: true,
         },
         {
