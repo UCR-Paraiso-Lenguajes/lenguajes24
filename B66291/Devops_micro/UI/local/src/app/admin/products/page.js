@@ -29,7 +29,6 @@ const Products = () => {
   useEffect(() => {
     const loadData = async () => {
       const token = sessionStorage.getItem("token");
-      console.log(token);
       if (!token) {
         window.location.href = "/admin";
       } else {
