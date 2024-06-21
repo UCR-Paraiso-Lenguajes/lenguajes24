@@ -10,120 +10,94 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddSwaggerGen(setup =>
-{
-    // Include 'SecurityScheme' to use JWT Authentication
-    var jwtSecurityScheme = new OpenApiSecurityScheme
-    {
-        BearerFormat = "JWT",
-        Name = "JWT Authentication",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http,
-        Scheme = JwtBearerDefaults.AuthenticationScheme,
-        Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
-
-        Reference = new OpenApiReference
-        {
-            Id = JwtBearerDefaults.AuthenticationScheme,
-            Type = ReferenceType.SecurityScheme
-        }
-    };
-
-    setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
-
-    setup.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        { jwtSecurityScheme, Array.Empty<string>() }
-    });
-});
-
-// Add CORS
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(builder =>
+    options.AddDefaultPolicy(corsBuilder =>
     {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+        corsBuilder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
     });
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-        options =>
+var security = Environment.GetEnvironmentVariable("Security");
+
+if (string.IsNullOrEmpty(security) || security.ToLower() == "false")
+{
+    // Swagger configuration when security is false or not set
+    builder.Services.AddSwaggerGen(setup =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
+        var jwtSecurityScheme = new OpenApiSecurityScheme
         {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = false,
-            ValidateIssuerSigningKey = false,
-            ValidIssuer = "http://localhost:5207",
-            ValidAudience = "http://localhost:5207",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
+            BearerFormat = "JWT",
+            Name = "JWT Authentication",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.Http,
+            Scheme = JwtBearerDefaults.AuthenticationScheme,
+            Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+
+            Reference = new OpenApiReference
+            {
+                Id = JwtBearerDefaults.AuthenticationScheme,
+                Type = ReferenceType.SecurityScheme
+            }
         };
 
-        options.Events = new JwtBearerEvents
+        setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+        setup.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
-            OnAuthenticationFailed = c =>
-            {
-                Console.WriteLine("Authentication failed:");
-                Console.WriteLine(c);
-                Console.WriteLine($"Exception: {c.Exception}");
-                Console.WriteLine($"Exception: {c.HttpContext}");
-                Console.WriteLine($"-------------");
-                return Task.CompletedTask;
-            }/*,
-            OnMessageReceived = msg =>
-            {
-                var token = msg?.Request.Headers.Authorization.ToString();
-                string path = msg?.Request.Path ?? "";
-                if (!string.IsNullOrEmpty(token))
-                {
-                    Console.WriteLine("Access token");
-                    Console.WriteLine($"URL: {path}");
-                    Console.WriteLine($"Token: {token}\r\n");
-                }
-                else
-                {
-                    Console.WriteLine("Access token");
-                    Console.WriteLine("URL: " + path);
-                    Console.WriteLine("Token: No access token provided\r\n");
-                }
-
-                // Imprimir más información de la solicitud
-                Console.WriteLine("Headers:");
-                foreach (var header in msg.Request.Headers)
-                {
-                    Console.WriteLine($"{header.Key}: {header.Value}");
-                }
-                Console.WriteLine($"Method: {msg.Request.Method}");
-                Console.WriteLine($"Query String: {msg.Request.QueryString}");
-                Console.WriteLine($"Content Length: {msg.Request.ContentLength}");
-                Console.WriteLine($"Content Type: {msg.Request.ContentType}");
-                Console.WriteLine($"Host: {msg.Request.Host}");
-
-                return Task.CompletedTask;
-            }*/
-        };
+            { jwtSecurityScheme, Array.Empty<string>() }
+        });
     });
+}
+else
+{
+    // JWT Authentication configuration when security is set and not false
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = "http://localhost:5207",
+                ValidAudience = "http://localhost:5207",
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
+            };
+
+            options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = context =>
+                {
+                    Console.WriteLine("Authentication failed:");
+                    Console.WriteLine(context.Exception);
+                    return Task.CompletedTask;
+                }
+            };
+        });
+}
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-string connection = "";
-var value = Environment.GetEnvironmentVariable("DB");
-if (value == null)
+string connection;
+var dbConnection = Environment.GetEnvironmentVariable("DB");
+
+if (string.IsNullOrEmpty(dbConnection))
 {
     builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-    connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
+    connection = builder.Configuration.GetConnectionString("MyDatabase");
 }
 else
 {
-    connection = value;
+    connection = dbConnection;
 }
+
 Storage.Init(connection);
+
 if (app.Environment.IsDevelopment())
 {
     StoreDB.CreateMysql();
@@ -131,11 +105,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors();
-app.UseAuthorization();
+
+if (!string.IsNullOrEmpty(security) && security.ToLower() != "false")
+{
+    app.UseAuthentication();
+    app.UseAuthorization();
+}
+
 
 app.MapControllers();
 

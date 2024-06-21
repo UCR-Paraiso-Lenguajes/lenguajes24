@@ -15,7 +15,7 @@ namespace StoreAPI.Controllers
     public class ProductController : ControllerBase
     {
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddProductAsync([FromBody] Product product)
         {
             if (product == null ) return BadRequest("The product cannot be null.");
