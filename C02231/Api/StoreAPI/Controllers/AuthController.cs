@@ -1,3 +1,4 @@
+
 using StoreAPI;
 using StoreAPI.models;
 using Core;
@@ -60,17 +61,7 @@ namespace StoreAPI;
                         new Claim(ClaimTypes.Name, userDataFromUI.userName),                                
                     };
                     //pasamos los roles del usuario al claim general
-                    claims.AddRange(claimsRoleFromUser);   
-
-
-                    claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Name, "cris"),
-                            new Claim(ClaimTypes.Role, "Operator"),
-                            new Claim(ClaimTypes.Role, "Admin"),
-                            new Claim(ClaimTypes.Role, "Customer")
-                        };
-                        
+                    claims.AddRange(claimsRoleFromUser);    
 
                     var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
                     var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
