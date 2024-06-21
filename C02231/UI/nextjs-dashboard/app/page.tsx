@@ -305,7 +305,7 @@ const Products = ({ product, handleAddToCart }) => {
             <div className="card-body">
               <div className='text-center'>
                 <h4>{name}</h4>
-                <p>Author: {author}</p>
+                <p>Author: <span dangerouslySetInnerHTML={{ __html: author }} /></p>
                 <p>Price: ₡{price}</p>
                 <button className="btn btn-dark" onClick={() => handleAddToCart(product)}>Add to Cart</button>
               </div>

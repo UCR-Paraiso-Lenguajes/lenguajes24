@@ -8,7 +8,7 @@ export default function CartPage() {
     const cartDataString = localStorage.getItem('cartItem');
     const cartData = cartDataString ? JSON.parse(cartDataString) : {};
     const [cartUpdated, setCartUpdated] = useState(false);
-    const impuesto =  0.13;
+    const impuesto = 0.13;
     const [cart, setCart] = useState({
         products: [],
         subtotal: 0,
@@ -16,7 +16,6 @@ export default function CartPage() {
         cant: 0
     });
 
-    // Define handleRemove outside of handlePrice
     const handleRemove = (id) => {
         if (id == undefined) { throw new Error('The arguments to delete the product cant be null.'); }
 
@@ -31,12 +30,11 @@ export default function CartPage() {
         setCartUpdated(!cartUpdated);
     };
 
-    // Define handleQuantityChange outside of handlePrice
     const handleQuantityChange = (id, cant) => {
         if (cant == undefined || id == undefined) {
             throw new Error('Los argumentos para calcular el precio no pueden ser nulos.');
         }
-        if (cant < 1) { 
+        if (cant < 1) {
             return; // Evita que la cantidad sea menor que 1
         }
         const updatedProducts = cartData.products.map((item) => {
@@ -52,10 +50,6 @@ export default function CartPage() {
     };
 
     useEffect(() => {
-        /* const updatedStore = { ...cart, products: updatedProducts };
-         localStorage.setItem("cartItem", JSON.stringify(updatedStore));
-         setCart(updatedStore);
-         setCartUpdated(!cartUpdated);*/
         const cartItem = JSON.parse(localStorage.getItem('cartItem') || '{}');
         setCart(cartItem);
     }, []);
@@ -71,12 +65,6 @@ export default function CartPage() {
                 total: calculatedTotal
             }));
         }
-        /* else {
-            setCart(prevCart => ({
-                ...prevCart,
-                subtotal: 0,
-                total: 0
-            }));*/
     }, [cart.products]);
 
     var esCarritoVacio = cartData.products.length === 0;
@@ -99,7 +87,7 @@ export default function CartPage() {
                 </header>
 
                 <div className='total'>
-                    <span >Your cart is empty</span>
+                    <span>Your cart is empty</span>
                 </div>
             </div>
         );
@@ -129,13 +117,12 @@ export default function CartPage() {
                     <table id="cart_summary" className="table table-bordered stock-management-on">
                         <thead>
                             <tr>
-                                <th className="cart_product first_item">Producto</th>
-                                <th className="cart_description item">Descripción</th>
-                                <th className="cart_unit item text-right">Precio unitario</th>
-                                <th className="cart_quantity item text-center">Cantidad</th>
+                                <th className="cart_product first_item">Name</th>
+                                <th className="cart_description item">Author</th>
+                                <th className="cart_unit item text-right">Price</th>
+                                <th className="cart_quantity item text-center">Quantity</th>
                                 <th className="cart_total item text-right">Total</th>
                                 <th className="cart_delete last_item">&nbsp;</th>
-
                             </tr>
                         </thead>
                         <tbody>
@@ -150,7 +137,7 @@ export default function CartPage() {
                                         <p className="product-name">
                                             {item.name}
                                         </p>
-                                        <small>{item.author}</small>
+                                        <small dangerouslySetInnerHTML={{ __html: item.author }} />
                                     </td>
                                     <td className="cart_unit" data-title="Precio unitario">
                                         ₡{item.price}
@@ -170,7 +157,6 @@ export default function CartPage() {
                                     <td className="cart_delete text-center" data-title="Borrar">
                                         <button className="btn btn-dark" onClick={() => handleRemove(item.id)}>Delete</button>
                                     </td>
-                                    
                                 </tr>
                             ))}
                         </tbody>
@@ -181,8 +167,8 @@ export default function CartPage() {
             <div className="d-flex justify-content-end" style={{ position: 'fixed', bottom: '65px', right: '10px', zIndex: '1000' }}>
                 <div style={{ backgroundColor: 'white', margin: '100' }}>
                     <h2>Subtotal: ₡{cart.subtotal ? cart.subtotal.toFixed(2) : '0.00'}</h2>
-                    <h2 className='my-3'>Taxes 13%: ₡{(cart.total ? (cart.total - cart.subtotal).toFixed(2)  : '0.00')}</h2>
-                    <h2 className='my-3'>Total: ₡{cart.total ? cart.total.toFixed(2) : '0.00'} </h2>
+                    <h2 className='my-3'>Taxes 13%: ₡{(cart.total ? (cart.total - cart.subtotal).toFixed(2) : '0.00')}</h2>
+                    <h2 className='my-3'>Total: ₡{cart.total ? cart.total.toFixed(2) : '0.00'}</h2>
                     {cart && cart.products && cart.products.length > 0 ? (
                         <Link href="/payment">
                             <button className="btn btn-success" style={{ display: 'flex', justifyContent: 'left' }}>Click to Buy</button>
@@ -194,7 +180,7 @@ export default function CartPage() {
             </div>
             <footer className='footer'>
                 <div className="text-center p-3">
-                    <h5 className="text-light">  Paula's Library </h5>
+                    <h5 className="text-light">Paula's Library</h5>
                 </div>
             </footer>
         </div>

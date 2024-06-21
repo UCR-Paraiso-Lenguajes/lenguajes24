@@ -96,7 +96,7 @@ public sealed class StoreDB
                 CREATE TABLE IF NOT EXISTS products (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     name VARCHAR(250)  NOT NULL,
-                    author BLOB NOT NULL,
+                    author TEXT NOT NULL,
                     price DECIMAL(10, 2)  NOT NULL,
                     idCategory INT  NOT NULL,
                     imgUrl VARCHAR(255)  NOT NULL
