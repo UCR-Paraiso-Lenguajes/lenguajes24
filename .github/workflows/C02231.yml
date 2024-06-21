@@ -54,10 +54,10 @@ jobs:
       run: |
         cd  C02231/Api
         docker image build -t lani06/storeapi:latestP .
-        docker image build -t lani06/storeapi:0.0.1 .
+        docker image build -t lani06/storeapi:0.0.1P .
         echo "${{ secrets.DOCKERHUBPASSC02231  }}" | docker login -u "pchavesr29@gmail.com" --password-stdin
-        docker push lani06/storeapi:latest
-        docker push lani06/storeapi:0.0.1
+        docker push lani06/storeapi:latestP
+        docker push lani06/storeapi:0.0.1P
   publish-UI:   
     runs-on: ubuntu-latest
     steps:
@@ -66,7 +66,7 @@ jobs:
       run: |
         cd  C02231/UI/nextjs-dashboard
         docker image build -t lani06/react:latestP .
-        docker image build -t lani06/react:0.0.1 .
+        docker image build -t lani06/react:0.0.1P .
         echo "${{ secrets.DOCKERHUBPASSC02231  }}" | docker login -u "pchavesr29@gmail.com" --password-stdin
-        docker push lani06/react:latest
-        docker push lani06/react:0.0.1    
+        docker push lani06/react:latestP
+        docker push lani06/react:0.0.1P    
