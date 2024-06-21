@@ -63,6 +63,13 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+//Variables de Ambiente para JWT
+var jwtGlobal = Environment.GetEnvironmentVariable("JWT_GLOBAL");
+if(string.IsNullOrEmpty(jwtGlobal)){
+    jwtGlobal = "https://localhost:7161";
+}
+
 // Configure JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
@@ -75,8 +82,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "https://localhost:7161",
-            ValidAudience = "https://localhost:7161",
+            ValidIssuer = jwtGlobal,
+            ValidAudience = jwtGlobal,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
         };
     });
@@ -113,14 +120,19 @@ if (app.Environment.IsDevelopment()){
     DB_Connection.ConnectDB();
 }
 
+app.UseRouting();
+
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 //Para el token
 app.UseAuthentication();
 app.UseAuthorization();
 
+
 app.MapControllers();
-app.UseCors(); //builder.Services.AddCors() ya agrega CORS
+//app.UseCors(); //builder.Services.AddCors() ya agrega CORS
 
 //Map SignalR hubs
 app.MapHub<NotificationHub>("/notificationHub");

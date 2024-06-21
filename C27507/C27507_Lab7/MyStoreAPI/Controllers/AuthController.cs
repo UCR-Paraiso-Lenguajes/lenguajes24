@@ -28,17 +28,11 @@ namespace MyStoreAPI.Controllers{
         //lista con los usuarios y sus password (se llena dependiendo del constructor)
         private readonly IEnumerable<LoginModel> listOfAllUsers;
 
-        public authController(IHostEnvironment hostEnvironment){
+        public authController(IHostEnvironment hostEnvironment, IConfiguration configurationApp){            
             this.hostEnvironment = hostEnvironment;
+            //Obtenemos las variables de Ambiente para JWT
+            this.configurationApp = configurationApp;
         }
-
-        //Constructor para los Test
-        // public authController(IHostEnvironment hostEnvironment,IConfiguration configurationApp, int tagNumber){
-
-        //     if(tagNumber != 0) throw new ArgumentException("A");
-        //     this.hostEnvironment = hostEnvironment;
-        //     this.configurationApp = configurationApp;
-        // }
 
         [HttpPost]
         [AllowAnonymous]
@@ -77,15 +71,20 @@ namespace MyStoreAPI.Controllers{
                         new Claim(ClaimTypes.Name, userDataFromUI.userName),                                
                     };
                     //pasamos los roles del usuario al claim general
-                    claims.AddRange(claimsRoleFromUser);    
+                    claims.AddRange(claimsRoleFromUser);
+
+                    var jwtGlobal = Environment.GetEnvironmentVariable("JWT_GLOBAL");
+                    if(string.IsNullOrEmpty(jwtGlobal)){
+                        jwtGlobal = "https://localhost:7161";
+                    }
 
                     var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
                     var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
                     var tokeOptions = new JwtSecurityToken(
-                        issuer: "https://localhost:7161",
-                        audience: "https://localhost:7161",
+                        issuer: jwtGlobal,
+                        audience: jwtGlobal,
                         claims: claims,
-                        expires: DateTime.Now.AddMinutes(3),
+                        expires: DateTime.Now.AddMinutes(30),
                         signingCredentials: signinCredentials
                     );
 

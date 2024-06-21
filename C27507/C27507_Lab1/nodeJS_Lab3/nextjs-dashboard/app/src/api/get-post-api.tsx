@@ -97,7 +97,7 @@ const { default: jwt_decode } = require("jwt-decode");
 
         let todayDate = Date.now() / 1000;
         let tokenLifeTime = tokenFormat.exp;
-        if (tokenLifeTime && tokenLifeTime < todayDate) window.location.reload();        
+        if (tokenLifeTime && tokenLifeTime < todayDate) window.location.reload();
 
         let postConfig = {
             method: "POST",
@@ -213,22 +213,35 @@ const { default: jwt_decode } = require("jwt-decode");
 
     //CRUD
     export async function insertNewProductInDBAsync(newProduct: ProductAPI): Promise<string | boolean | null> {
-        
-        console.log(newProduct);
+                
         let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
         let directionAPI = `${urlByReactEnviroment}/api/ProductManagement/product/insert`;
+
+
+        //Validamos si el token ha expirado
+        let loginToken = sessionStorage.getItem("loginToken");
+        if (!loginToken) {            
+            window.location.reload();
+            return "Default Error";
+        }
+        let tokenFormat = jwtDecode(loginToken);
+
+        let todayDate = Date.now() / 1000;
+        let tokenLifeTime = tokenFormat.exp;
+        if (tokenLifeTime && tokenLifeTime < todayDate) window.location.reload();
+
         //Especificacion POST
         let postConfig = {
             method: "POST",
             headers: {
                 "Accept": "application/json",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${loginToken}`
             },
             body: JSON.stringify(newProduct)
         }            
     
-        try {         
-            console.log("Hola");
+        try {                 
             let responsePost = await fetch(directionAPI,postConfig);            
             if(!responsePost.ok){                                
                 const errorMessage = await responsePost.text();                                

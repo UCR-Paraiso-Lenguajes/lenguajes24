@@ -37,11 +37,7 @@ namespace UT{
 
                 //Llamamos a Store.Instance que cuando se inicializa revisa por si tiene productos y ventas, sino, entonces
                 //llena las tablas
-                _ = Store.Instance;            
-                //Llenamos tablas de pago            
-                //DB_PaymentMethod.InsertPaymentMethod();
-                //Llenamos las tablas productos      
-                //DB_Product.InsertProductsInDB(Store.Instance.defaultListProduct);
+                _ = Store.Instance;                            
                 //Llenamos las tablas de ventas
                 Store.mockDataSales(Store.Instance.Products.ToList());            
         }
@@ -68,8 +64,7 @@ namespace UT{
                 }
             }
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex){
             Console.WriteLine($"Error al borrar las tablas: {ex.Message}");
         }
     }
