@@ -131,10 +131,9 @@ if (app.Environment.IsDevelopment())
 }
 
 
-
+app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors();
-app.UseAuthentication(); // Asegúrate de agregar esta línea
 app.UseAuthorization();
 
 app.MapControllers();
