@@ -75,10 +75,8 @@ if (app.Environment.IsDevelopment())
     string DB_value = Environment.GetEnvironmentVariable("DB");
     if (!String.IsNullOrEmpty(DB_value))
     {
-        Console.WriteLine("variable is not empty", connection);
         connection = DB_value;
     }
-    Console.WriteLine("connection", connection);
     Storage.Init(connection);
 
     app.UseSwagger();
