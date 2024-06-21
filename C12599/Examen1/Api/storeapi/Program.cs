@@ -95,13 +95,19 @@ DataConnection.Init(connection);
 builder.Services.AddScoped<StoreLogic>();
 
 var app = builder.Build();
+CartSave cartSave = new CartSave();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    CampannaDB.CreateMysql();
+    PaymentDB.CreateMysql();
     StoreDB.CreateMysql();
+    cartSave.EnsureComprasTableExistsAsync();
+    cartSave.EnsureItemsTableExistsAsync();
     app.UseSwagger();
     app.UseSwaggerUI();
+   
 }
 
 app.UseHttpsRedirection();
