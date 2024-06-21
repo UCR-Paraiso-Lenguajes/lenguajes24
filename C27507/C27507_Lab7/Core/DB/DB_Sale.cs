@@ -226,10 +226,7 @@ namespace MyStoreAPI.DB{
             try {
                 connectionWithDB = new MySqlConnection(DB_Connection.INIT_CONNECTION_DB());
                 connectionWithDB.Open();
-                transaction = connectionWithDB.BeginTransaction();
-
-                // Log de inicio de inserción
-                Console.WriteLine("Insertando venta...");
+                transaction = connectionWithDB.BeginTransaction();                
 
                 // Hacemos el insert
                 string insertSale = @"
@@ -246,10 +243,7 @@ namespace MyStoreAPI.DB{
                     command.Parameters.AddWithValue("@direction", purchasedCart.Direction);
                     command.Parameters.AddWithValue("@idPayment", purchasedCart.PaymentMethod.payment);
                     command.Parameters.AddWithValue("@dateSale", dateTimeSale);
-
-                    // Log de parámetros
-                    Console.WriteLine($"Parámetros - Total: {purchasedCart.Total}, PurchaseNum: {purchaseNum}, Subtotal: {purchasedCart.Subtotal}, Direction: {purchasedCart.Direction}, IdPayment: {purchasedCart.PaymentMethod.payment}, DateSale: {dateTimeSale}");
-
+                    
                     command.ExecuteNonQuery();
 
                     // Devolver el id de la venta generada (porque es IDENTITY(1,1))
@@ -258,19 +252,14 @@ namespace MyStoreAPI.DB{
                     string selectThisId = "SELECT IdSale FROM Sales WHERE PurchaseNum = @purchaseNum";
                     command.CommandText = selectThisId;
                     command.Parameters.AddWithValue("@purchaseNum", purchaseNum);
-                    thisIdSale = Convert.ToInt32(command.ExecuteScalar());
-
-                    // Log de ID de venta
-                    Console.WriteLine($"ID de venta generada: {thisIdSale}");
+                    thisIdSale = Convert.ToInt32(command.ExecuteScalar());                    
                 }
 
                 DB_SaleLine.InsertSalesLinesTest(connectionWithDB, transaction, thisIdSale, purchaseNum, purchasedCart);
 
                 // Commitemos tanto la inserción en DB_Sale y DB_SaleLine
                 transaction.Commit();
-
-                // Log de éxito
-                Console.WriteLine("Venta insertada y transaction commit realizada.");
+                
             } catch (Exception ex) {
                 transaction.Rollback();
 

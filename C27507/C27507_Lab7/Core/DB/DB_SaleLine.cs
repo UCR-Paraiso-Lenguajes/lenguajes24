@@ -39,7 +39,6 @@ namespace MyStoreAPI.DB
                         command.Parameters.AddWithValue("@originalProductName", actualProductId.name);
                         command.Parameters.AddWithValue("@originalProductPrice", actualProductId.price);                        
                         await command.ExecuteNonQueryAsync();
-                        Console.WriteLine("SaleLine registrada");                            
                     }                                                                    
                 }                      
             }catch (Exception ex){
@@ -69,31 +68,12 @@ namespace MyStoreAPI.DB
                         command.Parameters.AddWithValue("@pricePaid", actualProductId.price);
                         command.Parameters.AddWithValue("@originalProductName", actualProductId.name);
                         command.Parameters.AddWithValue("@originalProductPrice", actualProductId.price);
-                        command.ExecuteNonQuery();
-                        Console.WriteLine("SaleLine registrada");
+                        command.ExecuteNonQuery();         
                     }
                 }
             } catch (Exception ex) {
                 throw new Exception("Error al insertar línea de venta", ex);
             }
         }
-
-
-
-    }
-    
+    }    
 }
-
-
-// string selectIdSale = "SELECT IdSale FROM Sales WHERE PurchaseNum = @purchaseNum";
-// decimal IdSaleFromSelect = 0;                                
-// using (MySqlCommand command = new MySqlCommand(selectIdSale,connectionWithDB)){
-//     command.Parameters.AddWithValue("@purchaseNum",guid);
-//     object existIdSale = command.ExecuteScalar();
-//     if(existIdSale == null){
-//         Console.WriteLine("No se encontró SaleId para el PurchaseNum: " + guid);                        
-//         return;
-//     }
-//     IdSaleFromSelect = Convert.ToInt32(existIdSale);                    
-// }
-//Al existir la venta con ese codigo unico guid(), usamos su ID int para insertarlo en SalesLins

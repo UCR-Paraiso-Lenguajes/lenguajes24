@@ -164,8 +164,7 @@ namespace MyStoreAPI.Models
         //por si se necesitan pruebas de algo. Por eso esta comentada mas arriba
         public static void mockDataSales(List<Product> productsFromDB){
 
-            try{
-                Console.WriteLine("Hola desde mockDataSales");
+            try{                
                 //Generamos ventas
                 //var productsFromDB = Store.Products;            
                 Random rand = new Random();
