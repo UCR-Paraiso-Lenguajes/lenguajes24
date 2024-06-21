@@ -10,10 +10,19 @@ interface Category {
   name: string;
 }
 
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  imageURL: string;
+  category: Category;
+}
+
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [count, setCount] = useState(0);
-  const [productList, setProductList] = useState([]);
+  const [productList, setProductList] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -171,7 +180,7 @@ export default function Home() {
         <div className="Product">
           <img src={product.imageURL} alt={product.name} style={{ width: '50%', height: '50%' }} />
           <h3>{product.name}</h3>
-          <p>{product.description}</p>
+          <p dangerouslySetInnerHTML={{ __html: product.description }} />
           <p>Precio: ${product.price}</p>
           <button onClick={() => handleAddToCart(product.id)} className="Button">Add to Cart</button>
         </div>

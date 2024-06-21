@@ -59,7 +59,7 @@ public class StoreDB
                     imageURL VARCHAR(200) NOT NULL,
                     name VARCHAR(100) NOT NULL,
                     price DECIMAL(10, 2) NOT NULL,
-                    description VARCHAR(200) NOT NULL,
+                    description BLOB NOT NULL,
                     category int NOT NULL
                 );
 
@@ -209,8 +209,8 @@ public class StoreDB
             await connection.OpenAsync();
 
             string query = @"
-                        use store;
-                        SELECT id, imageURL, name, price, description, category FROM products";
+                    use store;
+                    SELECT id, imageURL, name, price, description, category FROM products";
             using (var command = new MySqlCommand(query, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
@@ -221,7 +221,8 @@ public class StoreDB
                         var ImageURL = reader.GetString("imageURL");
                         var Price = reader.GetDecimal("price");
                         var Id = reader.GetInt32("id");
-                        var Description = reader.GetString("description");
+                        byte[] blob = (byte[])reader["description"];
+                        var Description = System.Text.Encoding.UTF8.GetString(blob);
                         var CategoryId = reader.GetInt32("category");
                         products.Add(
                             new Product(Name, ImageURL, Price, Description, Id, category.GetType(CategoryId))
