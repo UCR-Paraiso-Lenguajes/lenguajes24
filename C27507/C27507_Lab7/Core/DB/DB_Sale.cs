@@ -19,6 +19,25 @@ namespace MyStoreAPI.DB{
         public DB_Sale(){            
             DB_SaleLine = new DB_SaleLine();
         }
+
+
+        public static bool SalesInTableExist(){
+            try{
+                using (MySqlConnection connectionWithDB = new MySqlConnection(DB_Connection.INIT_CONNECTION_DB()))
+                {
+                    connectionWithDB.Open();
+                    string numberOfSales = "SELECT COUNT(*) FROM Sales";
+                    using (MySqlCommand command = new MySqlCommand(numberOfSales, connectionWithDB))
+                    {
+                        int count = Convert.ToInt32(command.ExecuteScalar());
+                        return count > 0;
+                    }
+                }
+            }
+            catch (Exception ex){
+                throw;
+            }
+        }
                 
         public async Task<int> InsertSaleAsync(string purchaseNum, DateTime dateTimeSale,Cart purchasedCart){
 
@@ -192,5 +211,78 @@ namespace MyStoreAPI.DB{
             }            
             return registeredSaleWeek;
         }                
+
+
+
+        public int InsertSaleTest(string purchaseNum, DateTime dateTimeSale, Cart purchasedCart) {
+            if (string.IsNullOrEmpty(purchaseNum)) throw new BussinessException($"{nameof(purchaseNum)} no puede ser nulo ni estar vacio");
+            if (dateTimeSale == DateTime.MinValue) throw new BussinessException($"{nameof(dateTimeSale)} es fecha no valida");
+            if (purchasedCart == null) throw new ArgumentException($"{nameof(purchasedCart)} no puede ser nulo");
+
+            MySqlConnection connectionWithDB = null;
+            MySqlTransaction transaction = null;
+            int thisIdSale = 0; // id a devolver
+
+            try {
+                connectionWithDB = new MySqlConnection(DB_Connection.INIT_CONNECTION_DB());
+                connectionWithDB.Open();
+                transaction = connectionWithDB.BeginTransaction();
+
+                // Log de inicio de inserción
+                Console.WriteLine("Insertando venta...");
+
+                // Hacemos el insert
+                string insertSale = @"
+                    INSERT INTO Sales (Total,PurchaseNum, Subtotal, Direction, IdPayment,DateSale)
+                    VALUES (@total, @purchaseNum, @subtotal, @direction, @idPayment,@dateSale);
+                ";
+                using (MySqlCommand command = new MySqlCommand(insertSale, connectionWithDB)) {
+                    // Asociamos las acciones a realizar con una transaction
+                    command.Transaction = transaction;
+
+                    command.Parameters.AddWithValue("@total", purchasedCart.Total);
+                    command.Parameters.AddWithValue("@purchaseNum", purchaseNum);
+                    command.Parameters.AddWithValue("@subtotal", purchasedCart.Subtotal);
+                    command.Parameters.AddWithValue("@direction", purchasedCart.Direction);
+                    command.Parameters.AddWithValue("@idPayment", purchasedCart.PaymentMethod.payment);
+                    command.Parameters.AddWithValue("@dateSale", dateTimeSale);
+
+                    // Log de parámetros
+                    Console.WriteLine($"Parámetros - Total: {purchasedCart.Total}, PurchaseNum: {purchaseNum}, Subtotal: {purchasedCart.Subtotal}, Direction: {purchasedCart.Direction}, IdPayment: {purchasedCart.PaymentMethod.payment}, DateSale: {dateTimeSale}");
+
+                    command.ExecuteNonQuery();
+
+                    // Devolver el id de la venta generada (porque es IDENTITY(1,1))
+                    // Reutilizamos el comando para evitar crear otro solo por un SELECT
+                    command.Parameters.Clear();
+                    string selectThisId = "SELECT IdSale FROM Sales WHERE PurchaseNum = @purchaseNum";
+                    command.CommandText = selectThisId;
+                    command.Parameters.AddWithValue("@purchaseNum", purchaseNum);
+                    thisIdSale = Convert.ToInt32(command.ExecuteScalar());
+
+                    // Log de ID de venta
+                    Console.WriteLine($"ID de venta generada: {thisIdSale}");
+                }
+
+                DB_SaleLine.InsertSalesLinesTest(connectionWithDB, transaction, thisIdSale, purchaseNum, purchasedCart);
+
+                // Commitemos tanto la inserción en DB_Sale y DB_SaleLine
+                transaction.Commit();
+
+                // Log de éxito
+                Console.WriteLine("Venta insertada y transaction commit realizada.");
+            } catch (Exception ex) {
+                transaction.Rollback();
+
+                // Log de error
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            } finally {
+                connectionWithDB.Close();
+            }
+
+            return thisIdSale;
+        }
+
     }    
 }
