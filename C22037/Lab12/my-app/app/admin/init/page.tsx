@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Chart } from 'react-google-charts';
@@ -47,6 +47,7 @@ export default function Init() {
         imageUrl: '',
         categoryId: ''
     });
+    const [errors, setErrors] = useState<string[]>([]);
 
     const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
     let userRole = null;
@@ -212,7 +213,40 @@ export default function Init() {
         }
     };
 
+    const validateProductData = () => {
+        const errors: string[] = [];
+
+        if (!newProduct.name.trim()) {
+            errors.push("Name is required.");
+        }
+
+        if (!newProduct.description.trim()) {
+            errors.push("Description is required.");
+        }
+
+        if (!newProduct.price.trim() || isNaN(Number(newProduct.price)) || Number(newProduct.price) <= 0) {
+            errors.push("Price must be a positive number.");
+        } else if (Number(newProduct.price) > 1000000) {
+            errors.push("Price cannot exceed 1,000,000.");
+        }
+
+        if (!newProduct.imageUrl.trim()) {
+            errors.push("Image URL is required.");
+        }
+
+        if (!newProduct.categoryId.trim()) {
+            errors.push("Category is required.");
+        }
+
+        setErrors(errors);
+        return errors.length === 0;
+    };
+
     const handleAddProduct = async () => {
+        if (!validateProductData()) {
+            return;
+        }
+
         const productData = {
             name: newProduct.name,
             description: newProduct.description,
@@ -388,6 +422,15 @@ export default function Init() {
                                             ))}
                                         </select>
                                     </div>
+                                    {errors.length > 0 && (
+                                        <div className="error-messages">
+                                            <ul>
+                                                {errors.map((error, index) => (
+                                                    <li key={index}>{error}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
                                     <button className="Button" onClick={handleAddProduct}>Submit</button>
                                 </div>
                             )}
