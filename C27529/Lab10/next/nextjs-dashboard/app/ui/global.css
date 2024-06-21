@@ -1,0 +1,411 @@
+/* Globales */
+*::after,
+*::before,
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0 auto;
+	max-width: 1200px;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #333;
+}
+
+.icon-cart {
+	width: 40px;
+	height: 40px;
+	stroke: #000;
+}
+
+.icon-cart:hover {
+	cursor: pointer;
+}
+
+img {
+	max-width: 100%;
+}
+
+/*header*/
+header {
+	display: flex;
+	justify-content: space-between;
+	padding: 30px 0 40px 0;
+}
+
+.container-icon {
+	position: relative;
+}
+
+.count-products {
+	position: absolute;
+	top: 55%;
+	right: 0;
+
+	background-color: #000;
+	color: #fff;
+	width: 25px;
+	height: 25px;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+}
+
+#contador-productos {
+	font-size: 12px;
+}
+
+.container-cart-products {
+	position: absolute;
+	top: 50px;
+	right: 0;
+
+	background-color: #fff;
+	width: 400px;
+	z-index: 1;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+	border-radius: 10px;
+}
+
+.cart-product {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 30px;
+
+	border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.info-cart-product {
+	display: flex;
+	justify-content: space-between;
+	flex: 0.8;
+}
+
+.titulo-producto-carrito {
+	font-size: 20px;
+}
+
+.precio-producto-carrito {
+	font-weight: 700;
+	font-size: 20px;
+	margin-left: 10px;
+}
+
+.cantidad-producto-carrito {
+	font-weight: 400;
+	font-size: 20px;
+}
+
+.icon-close {
+	width: 25px;
+	height: 25px;
+}
+
+.icon-close:hover {
+	stroke: red;
+	cursor: pointer;
+}
+
+.cart-total {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 20px 0;
+	gap: 20px;
+}
+
+.cart-total h3 {
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.total-pagar {
+	font-size: 20px;
+	font-weight: 900;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.hidden-cart {
+	display: none;
+}
+
+/* Main */
+.product {
+	border-radius: 10px;
+}
+
+.product:hover {
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.product img {
+	width: 100%;
+	height: 300px;
+	object-fit: cover;
+	border-radius: 10px 10px 0 0;
+	transition: all 0.5s;
+}
+
+.product figure {
+	overflow: hidden;
+}
+
+.product:hover img {
+	transform: scale(1.2);
+}
+
+.info-product {
+	padding: 15px 30px;
+	line-height: 2;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+
+}
+
+.price {
+	font-size: 18px;
+	font-weight: 900;
+}
+
+.info-product button {
+	border: 1px solid rgb(0, 0, 0);
+	background-color: transparent;
+	color: #000000;
+	padding: 15px 10px;
+	cursor: pointer;
+	border-radius: 8px;
+
+}
+
+
+.cart-empty {
+	padding: 20px;
+	text-align: center;
+	color: #000;
+}
+
+.hidden {
+	display: none;
+}
+
+.btn-payment {
+	border: none;
+	background-color: #000;
+	color: #fff;
+	padding: 15px 0;
+	display: block;
+	width: 100%;
+	margin-top: 10px;
+	font-family: Arial, Helvetica, sans-serif;
+	cursor: pointer;
+	font-size: 16px;
+	transition: all .3s ease;
+}
+
+.btn-clear-all {
+	border: none;
+	background-color: #000;
+	color: #fff;
+	padding: 15px 0;
+	display: block;
+	width: 100%;
+	margin-top: 10px;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	font-family: Arial, Helvetica, sans-serif;
+	cursor: pointer;
+	font-size: 16px;
+	transition: all .3s ease;
+}
+
+.btn-clear-all:hover {
+	background-color: #333;
+	transform: scale(1.03);
+	border-radius: 0;
+}
+
+.secciones {
+	background-color: #dfdfdf;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+
+	max-width: auto;
+	height: auto;
+}
+
+.total-Payment {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	padding: 20px;
+	background-color: #fff;
+	border-top-left-radius: 10px;
+}
+
+.total-container {
+	text-align: left;
+}
+
+.total-pagar {
+	font-size: 24px;
+	font-weight: bold;
+	color: #333;
+}
+
+.btn-cartPayment {
+	border: 1px solid rgb(0, 0, 0);
+	background-color: transparent;
+	color: #000000;
+	padding: 15px 10px;
+	cursor: pointer;
+	border-radius: 8px;
+	text-align: center;
+}
+
+
+.address label {
+	display: block;
+	margin-bottom: 10px;
+	font-weight: bold;
+  }
+  
+  .address input {
+	width: 100%;
+	padding: 8px;
+	margin-top: 4px;
+	margin-bottom: 20px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+  }
+  
+  .address button {
+	padding: 10px 20px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+  }
+  
+  .address button:hover {
+	background-color: #0056b3;
+  }
+  /* styles.css */
+
+.payment-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.payment-options {
+    margin-bottom: 20px;
+}
+
+.payment-options label {
+    margin-right: 20px;
+}
+
+.payment-details {
+    margin-bottom: 20px;
+}
+
+.loading-spinner {
+    margin-bottom: 20px;
+}
+
+.btn-cartPayment {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: transparent;
+    color: #000000;
+    padding: 15px 30px;
+    cursor: pointer;
+    border-radius: 8px;
+    text-align: center;
+}
+
+
+.btn-cartPayment {
+    border: 1px solid rgb(0, 0, 0);
+    background-color: transparent;
+    color: #000000;
+    padding: 15px 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    text-align: center;
+}
+
+
+/* Menu admin*/
+
+/* styles.css */
+.nav-sidebar {
+	width: 250px; /* Ancho del menú lateral */
+	height: 100vh; /* Altura del menú lateral para abarcar toda la altura de la pantalla */
+	background-color: #ffffff; /* Color de fondo del menú lateral (gris claro) */
+	position: fixed; /* Fijar el menú lateral en la posición */
+	top: 0; /* Colocar el menú en la parte superior de la pantalla */
+	left: 0; /* Colocar el menú en el lado izquierdo de la pantalla */
+	overflow-y: auto; /* Habilitar el desplazamiento vertical si el contenido es demasiado largo */
+  }
+  
+  .nav-sidebar .nav-link {
+	padding: 12px 20px; /* Espaciado interno de los enlaces del menú */
+	color: #343a40; /* Color del texto de los enlaces del menú (gris oscuro) */
+	font-size: 16px; /* Tamaño de fuente de los enlaces del menú */
+	font-weight: 500; /* Grosor de la fuente de los enlaces del menú */
+	text-decoration: none; /* Quitar subrayado de los enlaces */
+  }
+  
+  .nav-sidebar .nav-link:hover {
+	background-color: #a1a9b3; /* Color de fondo al pasar el mouse sobre los enlaces (gris claro) */
+  }
+  
+  .nav-sidebar .nav-link.active {
+	background-color: #525c64; /* Color de fondo del enlace activo (gris medio) */
+	color: #fff; /* Color del texto del enlace activo (blanco) */
+  }
+  
+  .nav-sidebar .nav-link.disabled {
+	opacity: 0.6; /* Opacidad del enlace deshabilitado */
+  }
+  
+  .nav-sidebar .nav-heading {
+	padding: 10px 20px; /* Espaciado interno del encabezado del menú */
+	color: #000000; /* Color del texto del encabezado del menú (gris oscuro) */
+	font-size: 18px; /* Tamaño de fuente del encabezado del menú */
+	font-weight: 600; /* Grosor de la fuente del encabezado del menú */
+	background-color: #e9ecef; /* Color de fondo del encabezado del menú (gris claro) */
+	margin-bottom: 10px; /* Margen inferior del encabezado del menú */
+  }
+
+  .gray-background {
+	background-color: #999797; /* Color de fondo gris oscuro */
+  }
+  
+.ProductList {
+	padding: 20px;
+	background-color: #f8f9fa; /* Color de fondo gris claro */
+	border-radius: 5px;
+	box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  }
+  
+/* ProductList.css */
+
+.product-list-container {
+	padding: 20px; /* Espacio interno */
+	margin-left: 20px; /* Margen a la izquierda para respetar la barra lateral */
+	background-color: #ffffff; /* Color de fondo blanco */
+	border: 1px solid #cccccc; /* Borde sólido gris claro */
+	border-radius: 5px; /* Bordes redondeados */
+  }
+  
