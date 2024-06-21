@@ -344,11 +344,11 @@ public sealed class StoreDB
 
 CREATE TABLE IF NOT EXISTS products (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100),
-    description TEXT,
-    price DECIMAL(10, 2),
-    imageURL VARCHAR(255),
-    category INT
+    name VARCHAR(100) NOT NULL,
+    description  BLOB NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    imageURL VARCHAR(255) NOT NULL,
+    category INT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sales (
@@ -465,11 +465,15 @@ VALUES
                 {
                     while (await reader.ReadAsync())
                     {
+                        byte[] blob = (byte[])reader["description"];
+                        string description = System.Text.Encoding.UTF8.GetString(blob);
+
+
                         Product product = new Product
                         {
                             Id = reader.GetInt32("id"),
                             Name = reader.GetString("name"),
-                            Description = reader.GetString("description"),
+                            Description = description,
                             Price = reader.GetDecimal("price"),
                             ImageURL = reader.GetString("imageURL"),
                             Category = category.GetCategoryById(reader.GetInt32("category"))
@@ -510,33 +514,4 @@ VALUES
 
     }
 
-    private async Task<Product> GetProductByIdAsync(int productId)
-    {
-        Product product = null;
-        using (MySqlConnection connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
-        {
-            await connection.OpenAsync();
-            string query = "use store; SELECT * FROM products WHERE id = @productId;";
-            using (var command = new MySqlCommand(query, connection))
-            {
-                command.Parameters.AddWithValue("@productId", productId);
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        product = new Product
-                        {
-                            Id = reader.GetInt32("id"),
-                            Name = reader.GetString("name"),
-                            Description = reader.GetString("description"),
-                            Price = reader.GetDecimal("price"),
-                            ImageURL = reader.GetString("imageURL"),
-                            Category = new Category.ProductCategory { Id = reader.GetInt32("category"), Name = "" }
-                        };
-                    }
-                }
-            }
-        }
-        return product;
-    }
 }
