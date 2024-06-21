@@ -142,7 +142,7 @@ export const Products = () => {
       <div className="col-sm-3">
         <div className='info-product'>
           <h2>{name}</h2>
-          <div className='price'>{description}</div>
+          <div className='price' dangerouslySetInnerHTML={{ __html: description }}></div>
           <div className='price'>Precio: ₡{price}</div>
           <img src={imageURL} alt={name} />
           <button onClick={() => onAddProduct(product)}>Agregar al Carrito</button>
@@ -150,6 +150,7 @@ export const Products = () => {
       </div>
     );
   };
+
 
   return (
     <div className="container-fluid vh-100">
