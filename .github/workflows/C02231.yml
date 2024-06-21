@@ -2,9 +2,9 @@ name: C02231
 
 on:
   push:
-    branches: [ "C02231" ]
+    branches: [ "problemas" ]
   pull_request:
-    branches: [ "C02231" ]
+    branches: [ "problemas" ]
 
 jobs:
   unitTest:
@@ -53,7 +53,7 @@ jobs:
     - name: Build & Push Image
       run: |
         cd  C02231/Api
-        docker image build -t lani06/storeapi:latest .
+        docker image build -t lani06/storeapi:latestP .
         docker image build -t lani06/storeapi:0.0.1 .
         echo "${{ secrets.DOCKERHUBPASSC02231  }}" | docker login -u "pchavesr29@gmail.com" --password-stdin
         docker push lani06/storeapi:latest
@@ -65,7 +65,7 @@ jobs:
     - name: Build & Push Image
       run: |
         cd  C02231/UI/nextjs-dashboard
-        docker image build -t lani06/react:latest .
+        docker image build -t lani06/react:latestP .
         docker image build -t lani06/react:0.0.1 .
         echo "${{ secrets.DOCKERHUBPASSC02231  }}" | docker login -u "pchavesr29@gmail.com" --password-stdin
         docker push lani06/react:latest
