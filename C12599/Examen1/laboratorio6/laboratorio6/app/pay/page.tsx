@@ -179,7 +179,7 @@ const PayPage: React.FC = () => {
             paymentMethod: paymentMethodValue
         };
 
-        const response = await fetch(URL+'/api/Cart', {
+        const response = await fetch(URL+'Cart', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

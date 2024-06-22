@@ -17,7 +17,7 @@ const Page = () => {
   });
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(URL+'/api/store');
+      const response = await fetch(URL+'store');
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -67,7 +67,7 @@ const Page = () => {
       throw new Error('selectedCategories debe ser un array');
     }
 
-    const baseUrl = URL+'/api/Products';
+    const baseUrl = 'https://localhost:7043/api/Products';
     const queryParams = selectedCategories.map(id => `categoryIDs=${id}`).join('&');
     return `${baseUrl}?${queryParams}&search=null`;
   };
@@ -126,7 +126,7 @@ const Page = () => {
     event.preventDefault();
     const query = event.target.q.value.trim();
     const { selectedCategories } = state;
-    let url = URL+'/api/Products';
+    let url = URL+'Products';
     const queryParams = [];
     selectedCategories.forEach(categoryID => {
       queryParams.push(`categoryIDs=${categoryID}`);

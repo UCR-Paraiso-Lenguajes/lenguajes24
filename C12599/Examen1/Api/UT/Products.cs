@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using core;
-using storeapi.Database;
 
+using storeapi.Database;
 namespace UT
 {
     [TestFixture]
@@ -24,8 +24,8 @@ namespace UT
 
             var dbtestDefault = "Server=localhost;Database=lab;Uid=root;Pwd=123456;";
             DataConnection.Init(dbtestDefault);
-            DatabaseInitializer.Initialize();
-            _insertProductsLogic = new InsertProductsLogic(_memoryCache, StoreDB.InsertProduct);
+                        DatabaseInitializer.Initialize();
+
         }
 
         [TearDown]
@@ -41,11 +41,11 @@ namespace UT
             var newProduct = new Product
             {
                 id = 1,
-                Name = "Awesome",
+                Name = "New Product",
                 Price = 99,
-                ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
+                ImageUrl = "http://example.com/image.png",
                 Description = "New Product Description",
-                Category = new Category { _id = 1, _name = "Electronica" }
+                Category = new Category { _id = 1, _name = "New Category" }
             };
 
             // Act
@@ -64,22 +64,22 @@ namespace UT
             var existingProduct = new Product
             {
                 id = 1,
-                Name = "Amazing Product",
-                Price = 29,
-                ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
-                Description = "Big Product",
-                Category = new Category { _id = 1, _name = "Electronica" }
+                Name = "Existing Product",
+                Price = 19,
+                ImageUrl = "http://example.com/image.png",
+                Description = "Existing Product Description",
+                Category = new Category { _id = 1, _name = "Existing Category" }
             };
             _memoryCache.Set("Products", new List<Product> { existingProduct });
 
             var updatedProduct = new Product
             {
                 id = 1,
-                Name = "Amazing Product",
+                Name = "Updated Product",
                 Price = 29,
-                ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
-                Description = "Big Product",
-                Category = new Category { _id = 1, _name = "Electronica" }
+                ImageUrl = "http://example.com/image.png",
+                Description = "Updated Product Description",
+                Category = new Category { _id = 1, _name = "Updated Category" }
             };
 
             // Act
@@ -92,7 +92,7 @@ namespace UT
             Assert.AreEqual(updatedProduct.Price, productInCache.Price);
             Assert.AreEqual(updatedProduct.ImageUrl, productInCache.ImageUrl);
             Assert.AreEqual(updatedProduct.Description, productInCache.Description);
-            Assert.AreEqual(updatedProduct.Category._name, productInCache.Category._name);
+            Assert.AreEqual(updatedProduct.Category.Name, productInCache.Category.Name);
         }
 
         private void InsertProductToList(Product product, List<Product> products)

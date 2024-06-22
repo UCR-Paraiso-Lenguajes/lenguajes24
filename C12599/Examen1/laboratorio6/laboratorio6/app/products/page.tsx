@@ -12,7 +12,7 @@ const Products: React.FC = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch(URL+'/api/store');
+            const response = await fetch(URL+'store');
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
