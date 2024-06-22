@@ -17,11 +17,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(corsBuilder =>
+    options.AddDefaultPolicy(
+    policy =>
     {
-        corsBuilder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
+        policy.WithOrigins("http://localhost:5207", "http://localhost:8080", "http://localhost:3000")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
     });
 });
 
@@ -120,7 +122,6 @@ if (!string.IsNullOrEmpty(security) && security.ToLower() != "false")
     app.UseAuthorization();
 }
 
-
+app.MapHub<CampaignHub>("/campaignHub");
 app.MapControllers();
-
 app.Run();
