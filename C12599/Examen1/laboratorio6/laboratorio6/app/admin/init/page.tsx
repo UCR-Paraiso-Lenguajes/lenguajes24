@@ -1,129 +1,98 @@
 'use client';
-import React, { useState } from 'react';
-import '../ui/globals.css';
-import 'bootstrap/dist/css/bootstrap.css';
-import {jwtDecode} from 'jwt-decode';
-const URL = process.env.NEXT_PUBLIC_API;
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { Menu, X, ShoppingCart } from 'react-feather';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Navbar, Nav } from 'react-bootstrap';
 
-const Admin: React.FC = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    errorMessage: ''
-  });
+interface CustomAccordionItemProps {
+  title: string;
+  href?: string;
+  icon?: React.ReactNode;
+  onClick?: () => void;
+}
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
+const CustomAccordionItem: React.FC<CustomAccordionItemProps> = ({ title, href, icon, onClick }) => {
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const { username, password } = formData;
-
-    const validationResult = validateForm(username, password);
-
-    if (validationResult.isValid) {
-      setFormData({
-        ...formData,
-        errorMessage: ''
-      });
-
-      const response = await fetch(`${URL}/api/Auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userName: username, userPassword: password })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        const decodedToken: any = jwtDecode(data.token);
-        const roles = decodedToken?.roles || [];
-
-        if (!roles.includes('Admin')) {
-          // Store the token in sessionStorage
-          sessionStorage.setItem('authToken', data.token);
-
-          // Redirect the user to the admin page
-          window.location.href = '/admin/init';
-        } else {
-          setFormData({
-            ...formData,
-            errorMessage: 'Los usuarios sin el rol Admin no pueden iniciar sesión.'
-          });
-        }
-      } else {
-        setFormData({
-          ...formData,
-          errorMessage: data.message || 'Usuario o contraseña incorrectos'
-        });
-      }
-    } else {
-      setFormData({
-        ...formData,
-        errorMessage: validationResult.errorMessage
-      });
-    }
-  };
-
-  const validateForm = (username: string, password: string) => {
-    if (!username.trim() || !password.trim()) {
-      return {
-        isValid: false,
-        errorMessage: 'Por favor, complete todos los campos.'
-      };
-    }
-    return {
-      isValid: true,
-      errorMessage: ''
-    };
+  const toggleAccordion = () => {
+    setIsOpen(!isOpen);
   };
 
   return (
-    <div>
-      <h1>Iniciar Sesión</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label className="col-form-label" htmlFor="username">
-            Nombre de Usuario:
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-          />
+    <div className="my-4">
+      <div
+        className="d-flex justify-content-between align-items-center bg-light p-3"
+        style={{ cursor: 'pointer' }}
+        onClick={onClick || toggleAccordion}
+      >
+        <h3 className="mb-0">{title}</h3>
+        {isOpen ? <X /> : <Menu />}
+      </div>
+      {isOpen && (
+        <div className="p-3">
+          <div className="mb-3">
+            <Link href={href || '#'}>
+              <button className="btn btn-secondary btn-sm btn-block">
+                Ir a Ventas
+              </button>
+            </Link>
+          </div>
+          <div className="mb-3"> {/* Add margin-bottom: 20px */}            <Link href="/products"> {/* Enlace a la página de productos */}
+              <button className="btn btn-secondary btn-sm btn-block">
+                Ir a Productos
+              </button>
+            </Link>
+          </div>
+          <div className="mb-3"> {/* Add margin-bottom: 20px */}            <Link href="/campannas"> {/* Enlace a la página de productos */}
+              <button className="btn btn-secondary btn-sm btn-block">
+                Ir a campañas
+              </button>
+            </Link>
+          </div>
         </div>
-        <div>
-          <label className="col-form-label" htmlFor="password">
-            Contraseña:
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="center-button">
-          <button className="btn btn-primary my-4" type="submit">
-            Iniciar Sesión
-          </button>
-        </div>
-      </form>
-      {formData.errorMessage && (
-        <p style={{ color: 'red' }}>{formData.errorMessage}</p>
       )}
     </div>
   );
 };
 
-export default Admin;
+const Init: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [hasToken, setHasToken] = useState(true);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('authToken');
+    if (!token) {
+      setHasToken(false);
+      window.location.href = '/admin';
+    }
+  }, []);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
+  if (!hasToken) {
+    return null; // Render nothing if there's no token
+  }
+
+  return (
+    
+    <div className="container-fluid">
+      <Navbar bg="light" expand="lg">
+        <Navbar.Toggle onClick={toggleMenu} aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav" className={isOpen ? 'show' : ''}>
+          <Nav className="flex-column mt-4">
+            <CustomAccordionItem
+              title="Panel Administracion"
+              href="/ventas"
+              icon={<ShoppingCart />}
+            />
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+    </div>
+  );
+};
+
+export default Init;
