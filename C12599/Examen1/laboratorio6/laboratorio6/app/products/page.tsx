@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from 'react';
 import '../ui/globals.css';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -12,7 +12,7 @@ const Products: React.FC = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch(URL+'store');
+            const response = await fetch(URL + '/api/store');
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
@@ -59,7 +59,7 @@ const Products: React.FC = () => {
                             <td>{product.id}</td>
                             <td>{product.name}</td>
                             <td>{product.price}</td>
-                            <td>{product.description}</td>
+                            <td dangerouslySetInnerHTML={{ __html: product.description }}></td>
                             <td>
                                 <img src={product.imageUrl} alt={product.name} style={{ width: '70px', height: '70px' }} />
                             </td>
