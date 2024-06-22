@@ -8,22 +8,16 @@ RUN apt-get update && apt-get install -y dos2unix
 WORKDIR /app
 
 # Copia el package.json y package-lock.json primero, para aprovechar el cache de Docker
-COPY package*.json ./
 
-RUN npm install
-#RUN npm install chart.js react-chartjs-2 react-google-charts react-modal react-data-table-component
-
-# Copia el resto de los archivos del proyecto
-
-#COPY . .
 
 WORKDIR /app/my-nextjs-app
 
+COPY package*.json ./
+
+RUN npm install
 
 COPY . .
- 
-# Compila la aplicación
-#RUN npm run build
+
 RUN chmod +x write_env.sh
 # Expone el puerto en el que la aplicación se ejecutará
 EXPOSE 3000
