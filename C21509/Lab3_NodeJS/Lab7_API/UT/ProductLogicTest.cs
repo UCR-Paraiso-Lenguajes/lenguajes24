@@ -30,6 +30,7 @@ namespace UT
                 Id = 1,
                 Name = "Iphone",
                 ImageURL = "/img/Iphone.jpg",
+                Description= "Producto prueba",
                 Price = 200,
                 Categoria = new Category(1, "Electrónica") 
             };

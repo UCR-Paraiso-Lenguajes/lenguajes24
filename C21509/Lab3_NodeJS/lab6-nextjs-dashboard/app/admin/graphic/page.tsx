@@ -88,7 +88,7 @@ const Graphic = () => {
   }, [isValidToken, isVerifying, router]);
 
   if (isVerifying || !isValidToken) {
-    return <p>Verifying...</p>; // Optional: some indication that the token is being verified or invalid
+    return <p></p>; 
   }
 
   return (

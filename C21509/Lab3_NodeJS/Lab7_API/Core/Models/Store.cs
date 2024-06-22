@@ -27,6 +27,7 @@ namespace Store_API.Models
                     Id = 1,
                     Name = "Iphone",
                     ImageURL = "/img/Iphone.jpg",
+                    Description= "Producto nuevo",
                     Price = 200M,
                     Categoria = new Category(1, "Electrónica")
                 },
@@ -35,6 +36,7 @@ namespace Store_API.Models
                     Id = 2,
                     Name = "Audifono",
                     ImageURL = "/img/audifonos.jpg",
+                    Description= "Producto nuevo",
                     Price = 100M,
                     Categoria = new Category(1, "Electrónica")
                 },
@@ -43,6 +45,7 @@ namespace Store_API.Models
                     Id = 3,
                     Name = "Mouse",
                     ImageURL = "/img/mouse.jpg",
+                    Description= "Producto nuevo",
                     Price = 35M,
                     Categoria = new Category(2, "Hogar y oficina")
                 },
@@ -51,6 +54,7 @@ namespace Store_API.Models
                     Id = 4,
                     Name = "Pantalla",
                     ImageURL = "/img/Pantalla.jpg",
+                    Description= "Producto nuevo",
                     Price = 68M,
                     Categoria = new Category(3, "Entretenimiento")
                 },
@@ -59,6 +63,7 @@ namespace Store_API.Models
                     Id = 5,
                     Name = "Headphone",
                     ImageURL = "/img/Headphone.jpg",
+                    Description= "Producto nuevo",
                     Price = 35M,
                     Categoria = new Category(3, "Entretenimiento")
                 },
@@ -67,6 +72,7 @@ namespace Store_API.Models
                     Id = 6,
                     Name = "Teclado",
                     ImageURL = "/img/teclado.jpg",
+                    Description= "Producto nuevo",
                     Price = 95M,
                     Categoria = new Category(1, "Electrónica")
                 },
@@ -75,6 +81,7 @@ namespace Store_API.Models
                     Id = 7,
                     Name = "Cable USB",
                     ImageURL = "/img/Cable.jpg",
+                    Description= "Producto nuevo",
                     Price = 10M,
                     Categoria = new Category(4, "Tecnología")
                 },
@@ -83,6 +90,7 @@ namespace Store_API.Models
                     Id = 8,
                     Name = "Chromecast",
                     ImageURL = "/img/Chromecast.jpg",
+                    Description= "Producto nuevo",
                     Price = 150M,
                     Categoria = new Category(4, "Tecnología")
                 }
@@ -91,6 +99,8 @@ namespace Store_API.Models
             List<Product> dbProducts = dbApi.SelectProducts();
 
             Store.Instance = new Store(dbProducts);
+
+            //dbApi.InsertProductsStore(dbProducts);
         }
 
         public void AddNewProductToStore(Product newProduct)

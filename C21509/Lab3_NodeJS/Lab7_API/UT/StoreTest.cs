@@ -18,18 +18,21 @@ namespace Store_API.Tests
                 {
                     Id= 1,
                     Name = "Iphone",
+                    Description= "Producto nuevo",
                     Categoria  = new Category(1, "Electrónica")
                 },
                 new Product
                 {
                     Id= 2,
                     Name = "Audifono",
+                    Description= "Producto nuevo",
                     Categoria  = new Category(1, "Electrónica")
                 },
                 new Product
                 {
                     Id= 3,
                     Name = "Mouse",
+                    Description= "Producto nuevo",
                     Categoria  = new Category(2, "Hogar y oficina")
                 },
             };

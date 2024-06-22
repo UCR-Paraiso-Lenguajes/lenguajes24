@@ -20,7 +20,7 @@ namespace Store_API.Controllers
         }
 
         [HttpPost("product/insert")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> InsertNewProductInStoreAsync([FromBody] Product newProduct)
         {
             try
@@ -39,7 +39,7 @@ namespace Store_API.Controllers
         }
 
         [HttpPost("product/delete")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
        public async Task<IActionResult> DeleteProductInDBAsync([FromBody] Product productToDelete)
         {
             try

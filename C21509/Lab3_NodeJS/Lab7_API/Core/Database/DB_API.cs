@@ -59,6 +59,7 @@ namespace Store_API.Database
                             IdProduct INT AUTO_INCREMENT PRIMARY KEY,
                             Name VARCHAR(255) NOT NULL,
                             ImageURL VARCHAR(255),
+                            Description TEXT,
                             Price DECIMAL(10, 2) NOT NULL,
                             Categoria INT NOT NULL
                         );";
@@ -102,14 +103,15 @@ namespace Store_API.Database
                     foreach (var actualProduct in allProducts)
                     {
                         string insertQuery = @"
-                    INSERT INTO Products (Name, ImageURL, Price, Categoria)
-                    VALUES (@name, @imageURL, @price, @categoria);
+                    INSERT INTO Products (Name, ImageURL, Description, Price, Categoria)
+                    VALUES (@name, @imageURL, @description @price, @categoria);
                 ";
 
                         using (MySqlCommand command = new MySqlCommand(insertQuery, connection))
                         {
                             command.Parameters.AddWithValue("@name", actualProduct.Name);
                             command.Parameters.AddWithValue("@imageURL", actualProduct.ImageURL);
+                             command.Parameters.AddWithValue("@description", actualProduct.Description);
                             command.Parameters.AddWithValue("@price", actualProduct.Price);
                             command.Parameters.AddWithValue("@categoria", actualProduct.Categoria.IdCategory);
 
@@ -134,7 +136,7 @@ namespace Store_API.Database
                 {
                     connection.Open();
                     string selectProducts = @"
-                 SELECT IdProduct, Name, ImageURL, Price, Categoria
+                 SELECT IdProduct, Name, ImageURL, Description, Price, Categoria
                     FROM Products;
                     ";
 
@@ -154,6 +156,7 @@ namespace Store_API.Database
                                     Id = Convert.ToInt32(readerTable["IdProduct"]),
                                     Name = readerTable["Name"].ToString(),
                                     ImageURL = readerTable["ImageURL"].ToString(),
+                                    Description = readerTable["Description"].ToString(),
                                     Price = Convert.ToDecimal(readerTable["Price"]),
                                     Categoria = category
                                 });
@@ -419,8 +422,8 @@ namespace Store_API.Database
                 transaction = await connectionWithDB.BeginTransactionAsync();
 
                 string insertQuery = @"
-                    INSERT INTO Products (Name, ImageUrl, Price, Category)
-                    VALUES (@name, @imageUrl, @price, @idCategory);
+                    INSERT INTO Products (Name, ImageUrl, Description, Price, Category)
+                    VALUES (@name, @imageUrl, @description, @price, @idCategory);
                 ";
 
                 using (MySqlCommand command = new MySqlCommand(insertQuery, connectionWithDB))
@@ -429,6 +432,7 @@ namespace Store_API.Database
 
                     command.Parameters.AddWithValue("@name", insertedProduct.Name);
                     command.Parameters.AddWithValue("@imageUrl", insertedProduct.ImageURL);
+                    command.Parameters.AddWithValue("@description", insertedProduct.Description);
                     command.Parameters.AddWithValue("@price", insertedProduct.Price);
                     command.Parameters.AddWithValue("@idCategory", insertedProduct.Categoria.IdCategory);
                     await command.ExecuteNonQueryAsync();
