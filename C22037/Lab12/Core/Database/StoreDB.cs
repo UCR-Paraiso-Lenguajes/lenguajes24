@@ -81,6 +81,12 @@ public class StoreDB
                     FOREIGN KEY (purchaseNumber) REFERENCES sales(purchase_number)
                 );
 
+                CREATE TABLE IF NOT EXISTS messages (
+                    id CHAR(36) PRIMARY KEY,
+                    content TEXT NOT NULL,
+                    timestamp DATETIME NOT NULL
+                );
+
                 INSERT INTO paymentMethods (paymentId, paymentName)
                 VALUES 
                     (0, 'Cash'),
@@ -232,5 +238,53 @@ public class StoreDB
             }
         }
         return products;
+    }
+
+    public async Task InsertMessageAsync(Message message)
+    {
+        using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                USE store;
+                INSERT INTO messages (id, content, timestamp)
+                VALUES (@id, @content, @timestamp);";
+
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", message.Id);
+                command.Parameters.AddWithValue("@content", message.Content);
+                command.Parameters.AddWithValue("@timestamp", message.Timestamp);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+    }
+
+    public static async Task<IEnumerable<Message>> GetMessagesAsync()
+    {
+        List<Message> messages = new List<Message>();
+
+        using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
+        {
+            await connection.OpenAsync();
+
+            string query = @"
+                USE store;
+                SELECT id, content, timestamp FROM messages;";
+            using (var command = new MySqlCommand(query, connection))
+            {
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var id = reader.GetString("id");
+                        var content = reader.GetString("content");
+                        var timestamp = reader.GetDateTime("timestamp");
+                        messages.Add(new Message { Id = id, Content = content, Timestamp = timestamp });
+                    }
+                }
+            }
+        }
+        return messages;
     }
 }

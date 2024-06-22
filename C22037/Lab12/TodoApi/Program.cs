@@ -1,14 +1,17 @@
 using System.Text;
 using Core;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using TodoApi.Database;
+using TodoApi.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -56,15 +59,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-var app = builder.Build();
+
+
 // Add CORS
-app.UseCors(builder =>
+builder.Services.AddCors(options =>
 {
-    builder.AllowAnyOrigin()
-           .AllowAnyMethod()
-           .AllowAnyHeader();
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://localhost:3000")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials());
 });
 
+// Add SignalR
+builder.Services.AddSignalR();
+
+var app = builder.Build();
 
 string connection = "";
 var value = Environment.GetEnvironmentVariable("DB");
@@ -88,15 +98,15 @@ if(app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
-
-app.UseCors();
-
+app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
-
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<ChatHub>("/chatHub");
+    endpoints.MapControllers();
+});
 
 app.Run();
