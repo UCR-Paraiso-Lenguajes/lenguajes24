@@ -8,11 +8,14 @@ RUN apt-get update && apt-get install -y dos2unix
 WORKDIR /app
 
 # Copia el package.json y package-lock.json primero, para aprovechar el cache de Docker
+COPY package*.json ./
+
+COPY . .
 
 
 WORKDIR /app/my-nextjs-app
 
-COPY package*.json ./
+
 
 RUN npm install
 
