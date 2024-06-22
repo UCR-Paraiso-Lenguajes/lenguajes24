@@ -35,7 +35,7 @@ export default function ProductCrud() {
         { id: 3, name: "Entretenimiento" },
         { id: 4, name: "Tecnología" }
     ]);
-    const [newProduct, setNewProduct] = useState<Omit<Product, 'id' | 'category'> & { category: string, description: string }>({
+    const [newProduct, setNewProduct] = useState<Omit<Product, 'id' | 'category'> & { category: string }>({
         name: '',
         category: '',
         price: 0,
@@ -66,14 +66,11 @@ export default function ProductCrud() {
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-    
+
         if (name === 'price') {
             const newValue = value.replace(/\D/g, ''); 
             const limitedValue = newValue.substring(0, 6); 
             setNewProduct({ ...newProduct, [name]: parseInt(limitedValue) }); 
-        } else if (name === 'description') {
-            const parsedHtml = htmlParser.parse(value);
-            setNewProduct({ ...newProduct, [name]: parsedHtml }); 
         } else {
             setNewProduct({ ...newProduct, [name]: value });
         }
