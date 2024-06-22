@@ -8,10 +8,10 @@ RUN apt-get update && apt-get install -y dos2unix
 WORKDIR /app
 
 # Copia el package.json y package-lock.json primero, para aprovechar el cache de Docker
-COPY package.json ./
-
+COPY package*.json ./
+RUN npm config set legacy-peer-deps true
 RUN npm install
-#RUN npm install chart.js react-chartjs-2 react-google-charts react-modal react-data-table-component
+RUN npm install chart.js react-chartjs-2 react-google-charts react-modal react-data-table-component
 
 # Copia el resto de los archivos del proyecto
 
