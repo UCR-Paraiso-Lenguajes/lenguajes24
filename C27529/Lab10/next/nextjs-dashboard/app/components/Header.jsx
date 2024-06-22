@@ -22,7 +22,7 @@ export const Header = ({ goToPage }) => {
   if (!URL) {
       throw new Error('NEXT_PUBLIC_API_URL is not defined');
   }
-  
+
     useEffect(() => {
         const newConnection = new HubConnectionBuilder()
             .withUrl(`${URL}/Campannas`)
@@ -47,7 +47,7 @@ export const Header = ({ goToPage }) => {
                 newConnection.stop().then(() => console.log('Disconnected from SignalR hub'));
             }
         };
-    }, []);
+   }, [URL]);
 
     const onDeleteProduct = product => {
         const updatedProductos = store.productos.filter(item => item.id !== product.id);
