@@ -39,10 +39,7 @@ const InsertProduct = () => {
 
         if (!productDescription.trim()) {
             formErrors.productDescription = 'La descripción del producto es obligatoria';
-        } else if (productDescription.length < 10 || productDescription.length > 200) {
-            formErrors.productDescription = 'La descripción del producto debe tener entre 10 y 200 caracteres';
-        }
-
+            
         if (!productImage.trim()) {
             formErrors.productImage = 'La URL de la imagen del producto es obligatoria';
         } 
