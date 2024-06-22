@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getInitialCartLocalStorage, saveInitialCartLocalStorage } from '../lib/cart_data_localeStore';
 
+let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7099';
+
 export function useFetchInitialStore({ category, search }: { category: string[], search: string }) {
   const [products, setProducts] = useState([]);
   const cart = getInitialCartLocalStorage();
@@ -8,7 +10,7 @@ export function useFetchInitialStore({ category, search }: { category: string[],
   useEffect(() => {
     async function getProducts() {
       const categoryParams = category.map(c => `category=${encodeURIComponent(c)}`).join('&');
-      const url = `https://localhost:7099/api/Store/Products?${categoryParams}&search=${encodeURIComponent(search)}`;
+      const url = `${environmentUrl}/api/Store/Products?${categoryParams}&search=${encodeURIComponent(search)}`;
 
       const res = await fetch(url);
       if (!res.ok) {

@@ -1,28 +1,26 @@
 import { getCookie } from "cookies-next";
 import { useEffect } from "react";
-import { ProductC } from "../lib/data-definitions";
 
 let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7099';
 
-export function useFetchCreateProduct(product: ProductC | undefined) {
+export function useFetctCreateAd(message: string) {
     useEffect(() => {
-        const postProduct = async () => {
+        const postAd = async () => {
             const token = getCookie('token');
-            const res = await fetch(`${environmentUrl}/api/Product`, {
+            const res = await fetch(`${environmentUrl}/api/Ad`, {
                 method: 'POST',
-                body: JSON.stringify(product),
+                body: JSON.stringify(message),
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 }
             });
             if (!res.ok) {
-                throw new Error('Failed to fetch Create Product.');
+                throw new Error('Failed to fetch Create Ad.');
             }
         }
-
-        if (product !== undefined) {
-            postProduct();
+        if (message !== undefined) {
+            postAd();
         }
-    }, [product]);
+    }, [message]);
 }

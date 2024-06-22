@@ -17,25 +17,29 @@ const options = {
     pageSize: 4,
 };
 
-const Card = () => {
+const Card = ({ onCreateProduct }: { onCreateProduct: any }) => {
     const [category, setCategory] = useState<Category>();
     const [img, setImg] = useState('');
     const [name, setName] = useState('');
-    const [price, setPrice] = useState(0);
-    const [description, setDescription] = useState('');
+    const [price, setPrice] = useState<number | null>(null); const [description, setDescription] = useState('');
     const categoryList: Category[] = useFetchCategoriesList();
     const [product, setProduct] = useState<ProductC>();
+    const [messages, setMessages] = useState<boolean>(false);
     useFetchCreateProduct(product);
 
     const handleSaveProduct = () => {
-        if (name.trim() && img.trim() && price > 0 && description.trim() && category?.uuid) {
-            setProduct({
+        if (name.trim() && img.trim() && price !== null && price > 0 && description.trim() && category?.uuid) {
+            const newProduct: ProductC = {
                 name: name,
                 imageUrl: img,
                 price: price,
-                description,
+                description: description,
                 category: category.uuid
-            });
+            };
+            setProduct(newProduct);
+            onCreateProduct(newProduct);
+        } else {
+            setMessages(true);
         }
     };
 
@@ -69,7 +73,7 @@ const Card = () => {
                         placeholder="Name"
                         type="text"
                         className="input"
-                        required={true}
+                        required
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
@@ -77,28 +81,36 @@ const Card = () => {
                         placeholder="Price"
                         type="number"
                         className="input"
-                        required={true}
-                        value={price}
-                        onChange={(e) => setPrice(Number(e.target.value))}
+                        required
+                        min={0}
+                        value={price !== null ? price : ''}
+                        onChange={(e) => {
+                            const value = e.target.value !== '' ? Number(e.target.value) : null;
+                            if (value !== null && value >= 0) {
+                                setPrice(value);
+                            } else {
+                                setPrice(null);
+                            }
+                        }}
                     />
                     <input
                         placeholder="URL"
                         type="url"
                         className="input"
-                        required={true}
+                        required
                         value={img}
                         onChange={(e) => setImg(e.target.value)}
                     />
                     <textarea
                         placeholder="Description"
                         className="input"
-                        required={true}
+                        required
                         value={description}
-                        maxLength={250}
                         onChange={(e) => setDescription(e.target.value)}
                     />
                     <div className="text-center my-4">
                         <a href="#" className="btn btn-warning" onClick={handleSaveProduct}>Create</a>
+                        {messages && "fields required"}
                     </div>
                 </div>
             </div>
@@ -116,6 +128,13 @@ export default function Products() {
 
 
     const products: Product[] = useFetchInitialStore({ category, search });
+
+    const handleCreateProduct = (newProduct: ProductC) => {
+        const newData = [...data, ["newProduct", newProduct.name, newProduct.description, `<img src='${newProduct.imageUrl}'/>`]];
+        setData(newData);
+        console.log(newProduct.name, newProduct.description, newProduct.imageUrl, newProduct.price, newProduct.category);
+    };
+
     useEffect(() => {
         const tableData = [["ID", "Name", "Description", "IMG"]];
         products.forEach(product => {
@@ -129,7 +148,7 @@ export default function Products() {
             <div className='container-fluid'>
                 <div className='row'>
                     <div className='col-lg-3 col-md-4 col-sm-12 mb-3'>
-                        <Card />
+                        <Card onCreateProduct={handleCreateProduct} />
                     </div>
                     <div className='col-lg-9 col-md-8 col-sm-12'>
                         <Chart

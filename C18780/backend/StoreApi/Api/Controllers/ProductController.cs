@@ -14,6 +14,7 @@ namespace StoreApi
     {
         private readonly IMediator mediator;
         private CategoriesCache categoriesCache;
+        private ProductsCache productsCache = ProductsCache.GetInstance();
         public ProductController(IMediator mediator)
         {
             if (mediator == null)
@@ -62,6 +63,7 @@ namespace StoreApi
                 products.Description,
                 products.Category
                 ));
+            productsCache.setOneProduct(product);
             return product;
         }
 

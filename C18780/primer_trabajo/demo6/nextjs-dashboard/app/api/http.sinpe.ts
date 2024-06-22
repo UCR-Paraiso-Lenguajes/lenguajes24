@@ -1,3 +1,5 @@
+let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7099';
+
 export async function useFetchSinpePurchase(uuidSales: string, confirmationNumber: string) {
 
     let sinpe = {
@@ -5,7 +7,7 @@ export async function useFetchSinpePurchase(uuidSales: string, confirmationNumbe
         "confirmationNumber": confirmationNumber
     }
     try {
-        const res = await fetch('https://localhost:7099/api/Sinpe', {
+        const res = await fetch(`${environmentUrl}/api/Sinpe`, {
             method: 'POST',
             body: JSON.stringify(sinpe),
             headers: {

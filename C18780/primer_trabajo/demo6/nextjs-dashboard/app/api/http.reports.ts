@@ -1,6 +1,8 @@
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
 
+let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7099';
+
 export function useFetchReports(dateTime: Date) {
     const [dailyReports, setDailyReports] = useState([]);
     const [weeklyReports, setWeeklyReports] = useState([]);
@@ -9,7 +11,7 @@ export function useFetchReports(dateTime: Date) {
     useEffect(() => {
         const getReportsSales = async () => {
             const formattedDate = dateTime.toISOString().slice(0, 10);
-            const res = await fetch(`https://localhost:7099/api/Reports/Date?dateTime=${formattedDate}`, {
+            const res = await fetch(`${environmentUrl}/api/Reports/Date?dateTime=${formattedDate}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
