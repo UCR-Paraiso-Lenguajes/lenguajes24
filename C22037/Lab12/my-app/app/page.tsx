@@ -209,7 +209,6 @@ export default function Home() {
     });
 
     setNotifications(updatedNotifications);
-    localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
   };
 
   const Product = ({ product }) => {
