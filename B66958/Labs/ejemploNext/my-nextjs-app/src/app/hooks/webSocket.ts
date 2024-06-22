@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type WebSocketMessage = {
     id: string;
@@ -7,34 +7,24 @@ type WebSocketMessage = {
     sentAt: string;
 };
 
-const useWebSocket = (url: string) => {
-    const socket = useRef<WebSocket | null>(null);
+const useWebSocket = (url: string, setNewMessages: (quantity: number) => void) => {
+    const [messages, setMessages] = useState<WebSocketMessage[]>([]);
 
     useEffect(() => {
-        socket.current = new WebSocket(url);
+        const socket = new WebSocket(url);
 
-        socket.current.onopen = () => {
-            console.log('WebSocket connection established');
-        };
-
-        socket.current.onmessage = (event: MessageEvent) => {
-            try {
-                const message: WebSocketMessage = JSON.parse(event.data);
-                // Handle the incoming notification
-                console.log('New message:', message);
-            } catch (error) {
-                console.error('Error parsing WebSocket message:', error);
-            }
+        socket.onmessage = (event) => {
+            const message: WebSocketMessage = JSON.parse(event.data);
+            setMessages((prevMessages) => [...prevMessages, message]);
+            setNewMessages((prevCount) => prevCount + 1);
         };
 
         return () => {
-            if (socket.current) {
-                socket.current.close();
-            }
+            socket.close();
         };
-    }, [url]);
+    }, [url, setNewMessages]);
 
-    return socket.current;
+    return messages;
 };
 
 export default useWebSocket;

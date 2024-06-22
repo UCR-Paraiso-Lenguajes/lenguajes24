@@ -1,9 +1,15 @@
+'use client'
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import useWebSocket from '../hooks/webSocket';
+import { useState } from 'react';
 
 const NavBar = ({ productCount, toggleCart, searchFunction, setQuery }:
     { productCount: number, toggleCart: (action: boolean) => void, searchFunction: () => void, setQuery: (text: string) => void }) => {
 
+    const [newMessages, setNewMessages] = useState(0);
+    const socket = useWebSocket('ws://localhost:8181', setNewMessages);
 
     function handleQueryChange(event: React.ChangeEvent<HTMLInputElement>) {
         const inputValue = event.target.value;
@@ -45,6 +51,13 @@ const NavBar = ({ productCount, toggleCart, searchFunction, setQuery }:
                                 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 
                                 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 
                                 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+                        </svg>
+                    </button>
+                    <button className="btn btn-outline-success" type="button">
+                        {newMessages}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="30" fill="white" className="bi bi-bell" viewBox="0 0 16 16">
+                            <path d="M8 16a2 2 0 0 1-1.995-1.85L6 14V9a3 3 0 0 1 2.824-2.995L9 6a1 1 0 0 1 2 0v1.005A3.001 3.001 0 0 1 14 10v4l-.005.15A2 2 0 0 1 12 16H8z" />
+                            <path d="M8 0a1.5 1.5 0 0 1 1.356 2.18L8 4.5 6.644 2.18A1.5 1.5 0 0 1 8 0z" />
                         </svg>
                     </button>
                 </div>
