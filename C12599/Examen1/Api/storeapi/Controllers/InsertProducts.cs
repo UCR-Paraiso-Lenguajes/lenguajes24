@@ -68,8 +68,6 @@ namespace storeapi.Controllers
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than zero.")]
         public decimal Price { get; set; }
 
-        [Required]
-        [Url(ErrorMessage = "Invalid URL format.")]
         public string ImageUrl { get; set; }
 
         [Required]
