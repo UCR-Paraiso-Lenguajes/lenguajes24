@@ -246,9 +246,9 @@ public class StoreDB
         {
             await connection.OpenAsync();
             var query = @"
-                USE store;
-                INSERT INTO messages (id, content, timestamp)
-                VALUES (@id, @content, @timestamp);";
+                    USE store;
+                    INSERT INTO messages (id, content, timestamp)
+                    VALUES (@id, @content, @timestamp);";
 
             using (var command = new MySqlCommand(query, connection))
             {

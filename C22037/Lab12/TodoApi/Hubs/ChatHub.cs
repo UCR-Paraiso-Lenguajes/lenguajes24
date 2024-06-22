@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using TodoApi.Database;
 using TodoApi.Models;
 
 namespace TodoApi.Hubs
@@ -10,6 +11,12 @@ namespace TodoApi.Hubs
     public class ChatHub : Hub
     {
         private static List<Message> _messages = new List<Message>();
+        private readonly StoreDB _storeDB;
+
+        public ChatHub(StoreDB storeDB)
+        {
+            _storeDB = storeDB;
+        }
 
         public async Task SendMessage(string messageContent)
         {
@@ -21,6 +28,7 @@ namespace TodoApi.Hubs
             };
 
             _messages.Add(newMessage);
+            await _storeDB.InsertMessageAsync(newMessage);
             await Clients.All.SendAsync("ReceiveMessage", newMessage);
             await SendAllMessages();
         }
