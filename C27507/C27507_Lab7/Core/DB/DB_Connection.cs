@@ -49,7 +49,7 @@ namespace MyStoreAPI{
                     CREATE TABLE IF NOT EXISTS Products (
                         IdProduct INT AUTO_INCREMENT PRIMARY KEY,
                         Name VARCHAR(255) NOT NULL,
-                        ImageUrl VARCHAR(255),
+                        ImageUrl TEXT,
                         Price DECIMAL(10, 2) NOT NULL,
                         Quantity INT NOT NULL,
                         Description TEXT,

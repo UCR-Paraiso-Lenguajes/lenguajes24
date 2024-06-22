@@ -262,9 +262,6 @@ namespace MyStoreAPI.DB{
                 
             } catch (Exception ex) {
                 transaction.Rollback();
-
-                // Log de error
-                Console.WriteLine($"Error: {ex.Message}");
                 throw;
             } finally {
                 connectionWithDB.Close();

@@ -82,9 +82,8 @@ export default function ProductsInfo(){
                         <th>Producto Name</th>
                         <th>Description</th>
                         <th>Category</th>
-                        <th>Price</th>                
-                        <th>Images</th>
-                        <th>Action</th>                
+                        <th>Price</th>
+                        <th>Action</th>
                     </tr>
 
                     {products.map((product,index) => (
@@ -96,7 +95,6 @@ export default function ProductsInfo(){
                             </td>                            
                             <td>{product.category && product.category.name}</td>
                             <td>{product.price}</td>
-                            <td>sdsds</td>                
                             <td className="crud-actions-container">
                                 <button>Edit</button> 
                                 <button>Delete</button>

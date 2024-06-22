@@ -30,7 +30,6 @@ public class ProductsLogic{
         if (filteredProducts ==  null)
             throw new BussinessException($"{nameof(filteredProducts)} no puede ser nulo");        
         return filteredProducts;
-
     }
 
     public IEnumerable<Product> filterProductsBySearchTextAndCategory(string searchText, int[] categoryIds){

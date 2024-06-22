@@ -12,9 +12,14 @@ namespace MyStoreAPI.Business
         public ProductInsertedDelegate onProductInserted;
         
         public async Task<bool> insertProductAsync(Product newProduct,ProductInsertedDelegate onProductInserted){
-            try{
-                await db_product.InsertProductInDBAsync(newProduct);
+            try{                
+                int generatedProductId = await db_product.InsertProductInDBAsync(newProduct);
+
+                if(generatedProductId == -1)
+                    throw new BussinessException("La inserción del nuevo producto ha fallado");
+                
                 //Si no hay errores significa que la inserción en la bd fue exitosa, 
+                newProduct.id = generatedProductId;
                 onProductInserted?.Invoke(newProduct);
                 return true;
 
