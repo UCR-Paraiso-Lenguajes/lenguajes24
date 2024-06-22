@@ -27,7 +27,7 @@ namespace storeapi.Database
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         name VARCHAR(100) not null,
                         price DECIMAL(10, 2) not null,
-                        image VARCHAR(255) not null,
+                        image TEXT not null,
                         description VARCHAR(255) not null,
                         category INT not null
                     )";
