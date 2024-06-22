@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 
 type WebSocketMessage = {
-    id: text;
+    id: string;
     text: string;
     sentAt: string;
 };
