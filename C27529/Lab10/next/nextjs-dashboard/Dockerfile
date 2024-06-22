@@ -10,6 +10,7 @@ WORKDIR /app
 # Copia el package.json y package-lock.json primero, para aprovechar el cache de Docker
 COPY package*.json ./
 RUN npm install
+RUN npm install chart.js react-chartjs-2 react-google-charts react-modal react-data-table-component
 
 COPY . .
 
