@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import '../ui/globals.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 const URL = process.env.NEXT_PUBLIC_API;
 
 const Admin: React.FC = () => {
@@ -32,7 +32,7 @@ const Admin: React.FC = () => {
         errorMessage: ''
       });
 
-      const response = await fetch(`${URL}/api/Auth/login`, {
+      const response = await fetch(URL+'/api/Auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -46,7 +46,7 @@ const Admin: React.FC = () => {
         const decodedToken: any = jwtDecode(data.token);
         const roles = decodedToken?.roles || [];
 
-        if (roles.includes('Admin')) {
+        if (!roles.includes('Admin')) {
           // Store the token in sessionStorage
           sessionStorage.setItem('authToken', data.token);
 

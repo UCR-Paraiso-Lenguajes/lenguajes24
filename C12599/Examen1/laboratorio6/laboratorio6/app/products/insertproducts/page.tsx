@@ -45,9 +45,6 @@ const InsertProduct = () => {
 
         if (!productImage.trim()) {
             formErrors.productImage = 'La URL de la imagen del producto es obligatoria';
-        } else if (!/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/.test(productImage)) {
-            formErrors.productImage = 'La URL de la imagen debe ser válida y terminar en .jpg, .jpeg, .png, o .gif';
-        }
 
         setErrors(formErrors);
         return Object.keys(formErrors).length === 0;

@@ -1,21 +1,21 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import * as signalR from "@microsoft/signalr";
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import '../ui/globals.css';
 const URL = process.env.NEXT_PUBLIC_API;
 
 function Chat() {
-    const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
-    const [messages, setMessages] = useState<string[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const [connection, setConnection] = useState(null);
+    const [messages, setMessages] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchCampaigns = async () => {
-            const response = await fetch(URL+'Campannas');
+            const response = await fetch(`${URL}/api/Campannas`);
             if (response.ok) {
                 const data = await response.json();
-                const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
-                setMessages(campaigns);
+                const campaigns = data.map((campanna) => `Nueva Campaña: ${campanna.contenidoHtml}`);
+                setMessages(campaigns.slice(-3)); // Solo mantenemos los últimos 3 mensajes
             } else {
                 setError('Error al obtener las campañas.');
             }
@@ -23,12 +23,12 @@ function Chat() {
 
         fetchCampaigns();
 
-        const newConnection = new signalR.HubConnectionBuilder()
+        const newConnection = new HubConnectionBuilder()
             .withUrl("http://localhost:7043/chatHub", {
                 withCredentials: true
             })
             .withAutomaticReconnect()
-            .configureLogging(signalR.LogLevel.Information)
+            .configureLogging(LogLevel.Information)
             .build();
 
         const startConnection = async () => {
@@ -50,21 +50,36 @@ function Chat() {
         startConnection();
 
         return () => {
-            if (connection) {
-                connection.stop();
+            if (newConnection) {
+                newConnection.stop();
             }
         };
     }, []);
 
     useEffect(() => {
         if (connection) {
-            connection.on("ReceiveMessage", (user: string, message: string) => {
-                setMessages(prevMessages => [...prevMessages, `${user}: ${message}`]);
-            });
+            const handleReceiveMessage = (user, message) => {
+                setMessages((prevMessages) => {
+                    const newMessages = [...prevMessages, `${user}: ${message}`];
+                    return newMessages.slice(-3); // Solo mantenemos los últimos 3 mensajes
+                });
+            };
 
-            connection.on("UpdateCampaigns", (contenidoHtml: string) => {
-                setMessages(prevMessages => [...prevMessages, `Nueva Campaña: ${contenidoHtml}`]);
-            });
+            const handleUpdateCampaigns = (contenidoHtml) => {
+                setMessages((prevMessages) => {
+                    const newMessages = [...prevMessages, `Nueva Campaña: ${contenidoHtml}`];
+                    return newMessages.slice(-3); // Solo mantenemos los últimos 3 mensajes
+                });
+            };
+
+            connection.on('ReceiveMessage', handleReceiveMessage);
+            connection.on('UpdateCampaigns', handleUpdateCampaigns);
+
+            // Cleanup function to remove event listeners when the component unmounts or connection changes
+            return () => {
+                connection.off('ReceiveMessage', handleReceiveMessage);
+                connection.off('UpdateCampaigns', handleUpdateCampaigns);
+            };
         }
     }, [connection]);
 
@@ -74,7 +89,7 @@ function Chat() {
             {error && <div className="error-message">{error}</div>}
             <ul className="messages-list">
                 {messages.map((message, index) => (
-                    <li key={index} className="message-item">{message}</li>
+                    <li key={index} className="message-item" dangerouslySetInnerHTML={{ __html: message }}></li>
                 ))}
             </ul>
         </div>
