@@ -28,7 +28,7 @@ namespace storeapi.Database
                         name VARCHAR(100) not null,
                         price DECIMAL(10, 2) not null,
                         image TEXT not null,
-                        description VARCHAR(255) not null,
+                        description TEXT not null,
                         category INT not null
                     )";
 
