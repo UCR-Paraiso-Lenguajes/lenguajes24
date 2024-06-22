@@ -12,7 +12,7 @@ COPY package*.json ./
 RUN npm config set legacy-peer-deps true
 RUN npm install
 
-RUN npm install chart.js react-chartjs-2 react-google-charts react-modal react-data-table-component @microsoft/signalr @types/styled-components
+RUN npm install chart.js react-chartjs-2 react-google-charts react-modal react-data-table-component @microsoft/signalr @types/styled-components styled-components
 
 
 # Copia el resto de los archivos del proyecto
