@@ -5,8 +5,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
 const URL = process.env.NEXT_PUBLIC_API;
 
-
-
 const PayPage: React.FC = () => {
     const [cart, setCart] = useState({
         productos: [],
@@ -179,7 +177,7 @@ const PayPage: React.FC = () => {
             paymentMethod: paymentMethodValue
         };
 
-        const response = await fetch(URL+'Cart', {
+        const response = await fetch(URL+'/api/Cart', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
