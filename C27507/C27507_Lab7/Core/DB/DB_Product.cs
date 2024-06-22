@@ -13,6 +13,7 @@ namespace MyStoreAPI.DB
 
 
         //Funciones CRUD
+        //Metodo para la instancia de Store, solo se usa si detecta que no hay productos al construir la app
         public static void InsertProductsInDB(IEnumerable<Product> allProducts){
             try{
                 using (TransactionScope scopeTransaction = new TransactionScope()){
@@ -114,12 +115,13 @@ namespace MyStoreAPI.DB
             }
         }
 
-        public async Task<bool> InsertProductInDBAsync(Product newProduct){
+        public async Task<int> InsertProductInDBAsync(Product newProduct){
             
             if(newProduct == null) throw new ArgumentException($"{nameof(newProduct)} no puede ser nulo");
 
             MySqlConnection connectionWithDB = null;
             MySqlTransaction transaction = null;
+            int idInserted =  -1;
 
             try{
                 connectionWithDB = new MySqlConnection(DB_Connection.INIT_CONNECTION_DB());                
@@ -141,6 +143,10 @@ namespace MyStoreAPI.DB
                     command.Parameters.AddWithValue("@description", newProduct.description);
                     command.Parameters.AddWithValue("@idCategory", newProduct.category.id);
                     await command.ExecuteNonQueryAsync();
+
+                    //Retornamos el id del producto insertado
+                    command.CommandText = "SELECT LAST_INSERT_ID();";
+                    idInserted = Convert.ToInt32(await command.ExecuteScalarAsync());
                 }
                 await transaction.CommitAsync();                
             }catch (Exception ex){ 
@@ -149,8 +155,8 @@ namespace MyStoreAPI.DB
             }finally{                
                 await connectionWithDB.CloseAsync();
             }
-            //Siempre será true, a menos que la inserción en la db falle
-            return true;
+            //Si devuelve -1 es por error
+            return idInserted;
         }
     }
 }

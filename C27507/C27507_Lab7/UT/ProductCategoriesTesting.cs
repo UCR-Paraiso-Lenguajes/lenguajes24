@@ -8,11 +8,12 @@ namespace UT{
     [TestFixture]
     public class ProductCategoriesTesting{
         
-        private ProductsLogic productsLogic; // Declarar productsLogic a nivel de clase
+        private ProductsLogic productsLogic;
 
 
         [SetUp]
         public void SetUp(){
+            TestBase.EnsureInitialized();
             productsLogic = new ProductsLogic();            
         }
 
@@ -66,15 +67,12 @@ namespace UT{
             Assert.AreNotEqual(0,products.Count());
 
 
-            //ID Categoria menor o igual a cero
-            Assert.Throws<BussinessException>(() => productsLogic.filterProductsByCategory(0));
+            //ID Categoria menor a cero, ya que la categoria 0 hace referencia a todas las categorias
             Assert.Throws<BussinessException>(() => productsLogic.filterProductsByCategory(-1));
 
             //ID Categoria que no existe
             Assert.Throws<BussinessException>(() => productsLogic.filterProductsByCategory(10));
-
         }
-
 
         [Test]
         public void getAndFilterProductsBySearchAndCategoryWithSuccess(){

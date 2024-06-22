@@ -49,7 +49,7 @@ namespace MyStoreAPI{
                     CREATE TABLE IF NOT EXISTS Products (
                         IdProduct INT AUTO_INCREMENT PRIMARY KEY,
                         Name VARCHAR(255) NOT NULL,
-                        ImageUrl VARCHAR(255),
+                        ImageUrl TEXT,
                         Price DECIMAL(10, 2) NOT NULL,
                         Quantity INT NOT NULL,
                         Description TEXT,
@@ -99,6 +99,35 @@ namespace MyStoreAPI{
                     command.ExecuteNonQuery();
                     Console.WriteLine("Exito al crear Tablas SalesLines");
                 }
+
+                string createTableNotification = @"
+                CREATE TABLE IF NOT EXISTS Notifications (
+                    Id INT AUTO_INCREMENT PRIMARY KEY,
+                    Title VARCHAR(255) NOT NULL,
+                    Message TEXT NOT NULL,
+                    Creation_Date DATETIME NOT NULL
+                );";
+                using (MySqlCommand command = new MySqlCommand(createTableNotification, connectionWithDB))
+                {
+                    command.Transaction = transaction;
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("Exito al crear Tablas Notificaciones");
+                }
+
+                string createTableNotificationCopy = @"
+                CREATE TABLE IF NOT EXISTS Notification_Copy (
+                    Id INT PRIMARY KEY,
+                    Title VARCHAR(255) NOT NULL,
+                    Message TEXT NOT NULL,                    
+                    Deletion_Date DATETIME NOT NULL
+                );";
+                using (MySqlCommand command = new MySqlCommand(createTableNotificationCopy, connectionWithDB))
+                {
+                    command.Transaction = transaction;
+                    command.ExecuteNonQuery();
+                    Console.WriteLine("Exito al crear Copia de Tabla Notificaciones");
+                }
+
                 //se guardan los cambios realizados en la BD
                 transaction.Commit();
             }

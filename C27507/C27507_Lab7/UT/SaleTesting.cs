@@ -13,7 +13,7 @@ namespace UT{
 
         [SetUp]
         public void SetUp(){
-            
+            TestBase.EnsureInitialized();
             //var productsFromDB = DB.SelectProducts();
             var productsFromDB = Store.Instance.Products;
             someProductsFromDB = new List<Product>();

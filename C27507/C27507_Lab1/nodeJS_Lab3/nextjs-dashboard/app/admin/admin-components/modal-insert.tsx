@@ -57,18 +57,13 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
         setProductPrice('')
         setDescription('');
         setSelectedCategory('');
+        setDefaultImage('');
         setError('');
     }
-
-    //Obtener la url de la imagen seleccionada (opcional)
+   
     const getImageURL = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newImage = e.target.files?.[0];
-        if (newImage) {
-            const imageName = newImage.name;
-            const imagePath = "./img/";
-            const imageURL = imagePath + imageName;
-            setDefaultImage(imageURL);
-        }
+        const url = e.target.value;
+        setDefaultImage(url);
     };
 
 
@@ -82,8 +77,19 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
       return;
     }
 
+    // const isValidURL = (url: string): boolean => {
+    //     try {
+    //         new URL(url);
+    //         return true;
+    //     } catch (_) {
+    //         return false;
+    //     }
+    // };
+
+
+
     let validProductPrice = parseInt(productPrice);
-    if ( isNaN(validProductPrice) || validProductPrice <= 0) {
+    if ( isNaN(validProductPrice) || validProductPrice <= 0 || validProductPrice >= 10000000) {
         setError('Por favor ingrese un precio de producto válido');
         return;
     }
@@ -97,9 +103,9 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
       return;
     }
     
-    if (defaultImage === ''|| !defaultImage) {
-        //Si no se asigna una imagen (es nulo), se usa una por defect
-        setDefaultImage("./img/not_found_img.jpg");                
+    if (!defaultImage || defaultImage === '') {
+        setError('Por favor ingrese una URL adecuada');
+        return;
     }
             
     const newProduct : ProductAPI = {
@@ -188,9 +194,13 @@ export const ModalInsert: React.FC<ModalInsertProps> = ({
                             ))}
                         </select>
                     </label>
+                    
                     <label>
-                        Imágenes:
-                        <input type="file" onChange={getImageURL} />
+                        URL de la imagen:
+                        <input type="url" 
+                                placeholder="Ingresa la URL de la imagen" 
+                                value={defaultImage}
+                                onChange={getImageURL} />
                     </label>
                 </form>
             </Modal.Body>

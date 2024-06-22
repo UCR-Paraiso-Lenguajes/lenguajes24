@@ -23,6 +23,8 @@ import { CategoryAPI } from '@/app/src/models-data/CategoryAPI';
 import { CartShopAPI } from '@/app/src/models-data/CartShopAPI';
 import { getCartShopStorage } from '@/app/src/storage/cart-storage';
 import { ModalInsert } from '../../admin-components/modal-insert';
+import { ModalInsertNotification } from '../../admin-components/modal-insert-notification';
+import { NotificationAPI } from '@/app/src/models-data/NotificationAPI';
 
 //Funciones
 
@@ -30,14 +32,10 @@ import { ModalInsert } from '../../admin-components/modal-insert';
 const htmlToReactParser = new Parser();
 
 
-export default function ProductsInfo(){
+export default function NotificationsInfo(){
 
     //cargamos los datos desde la API (StoreController)    
-    const [products, setProducts] = useState<ProductAPI[]>([]);
-    const [categoryListFromStore, setCategoryListFromStore] = useState<CategoryAPI[]>([]);
-
-
-
+    const [listOfNotifications, setListOfNotifications] = useState<NotificationAPI[]>([]);    
 
     //States del ModalInsert
     const [show, setShow] = useState(false);
@@ -52,8 +50,7 @@ export default function ProductsInfo(){
                 let dataFromStore = await getAllProductsFromAPI();
 
                 if (typeof dataFromStore  === "object" && dataFromStore !== null){
-                    setProducts(dataFromStore.productsFromStore);
-                    setCategoryListFromStore(dataFromStore.categoriesFromStore)
+                    setListOfNotifications(dataFromStore.productsFromStore);                    
                 }
                 
 
@@ -70,7 +67,7 @@ export default function ProductsInfo(){
             <table>
                 <tbody>
                     <tr>
-                        <th colSpan={6}><h1>List of Products</h1></th>
+                        <th colSpan={6}><h1>Notifications History</h1></th>
                     </tr>
                     <tr className="crud-header">
                 
@@ -78,35 +75,31 @@ export default function ProductsInfo(){
                         <th><button onClick={handleShow}>Add New</button></th>
                     </tr>
                     <tr>
-                        <th>Code</th>
-                        <th>Producto Name</th>
-                        <th>Description</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Action</th>
+                        <th>Código</th>
+                        <th>Título</th>
+                        <th>Contenido</th>
+                        <th>Fecha de Creación</th>                        
                     </tr>
 
-                    {products.map((product,index) => (
-                        <tr key={product.id} className="crud-product-info">
-                            <td>{product.id}</td>
-                            <td>{product.name}</td>
+                    {listOfNotifications.map((notify,index) => (
+                        <tr key={notify.id} className="crud-notification-info">
+                            <td>{notify.notifyTitle}</td>                            
                             <td>
-                                {htmlToReactParser.parse(product.description)}
-                            </td>                            
-                            <td>{product.category && product.category.name}</td>
-                            <td>{product.price}</td>
-                            <td className="crud-actions-container">
-                                <button>Edit</button> 
+                                {htmlToReactParser.parse(notify.notifyMessage)}
+                            </td>                                                        
+                            <td>{notify.notifyCreationDate}</td>
+                            <td>sdsds</td>                
+                            <td className="crud-notification-container">
                                 <button>Delete</button>
                             </td>
                         </tr>
                     ))}
                 </tbody> 
             </table>
-            <ModalInsert
+            <ModalInsertNotification
                 show={show}
                 handleClose={handleClose}
-                categoryListFromStore={categoryListFromStore}
+                listOfNotifications={listOfNotifications}
             />
         </>
         //https://vaidrollteam.blogspot.com/2023/03/crud-basico-de-productos-en-php-mysql.html

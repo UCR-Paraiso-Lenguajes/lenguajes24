@@ -42,6 +42,19 @@ namespace MyStoreAPI.Business
             Sale sale = new Sale(saleId,purchaseNum,dateTimeSale,cart);
             return sale;
         }
+
+        public Sale createSaleTest(Cart cart,DateTime dateTimeSale){
+
+            if (cart == null)
+                throw new BussinessException($"{nameof(cart)} no puede ser nulo");            
+            // Utilizamos la lógica del carrito y sus validaciones
+            CartLogic cartLogic = new CartLogic(cart);            
+            cartLogic.validateCart();
+            string purchaseNum = generateRandomPurchaseNum();            
+            int saleId = db_sale.InsertSaleTest(purchaseNum,dateTimeSale,cart);
+            Sale sale = new Sale(saleId,purchaseNum,dateTimeSale,cart);
+            return sale;
+        }
                                                  
         // private async Task<Sale> createSale(Cart cart){            
         //     string purchaseNum = generateRandomPurchaseNum();

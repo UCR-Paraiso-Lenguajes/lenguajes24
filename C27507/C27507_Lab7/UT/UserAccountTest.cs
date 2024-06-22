@@ -32,6 +32,8 @@ namespace UT{
 
         private authController authController;
         private Mock<IHostEnvironment> mockHostEnvironment;
+        private IConfiguration configuration;
+
 
 
         [SetUp]
@@ -39,12 +41,17 @@ namespace UT{
 
             mockHostEnvironment = new Mock<IHostEnvironment>();
             mockHostEnvironment.Setup(e => e.EnvironmentName).Returns("Development");
-            authController = new authController(mockHostEnvironment.Object);
+
+            var inMemorySettings = new Dictionary<string, string> {
+                {"JWT_GLOBAL", "https://localhost:7161"}
+            };
             
-            var configuration = new ConfigurationBuilder()
+            configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(inMemorySettings)
                 .AddJsonFile("appsettings.Development.json")
-                .Build();
-            
+                .Build();                        
+
+            authController = new authController(mockHostEnvironment.Object, configuration);            
             var testUsers = configuration.GetSection("TestUsers").Get<List<TestUser>>();
 
             //Reemplaza a mockdataUsers, ahora usamos los usuarios de appsettings.Development.json

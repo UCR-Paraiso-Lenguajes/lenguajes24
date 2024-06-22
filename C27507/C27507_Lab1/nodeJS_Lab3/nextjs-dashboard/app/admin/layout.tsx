@@ -20,6 +20,7 @@ import VerifyComponent from '../global-components/verify_component';
       <html lang="en">        
         <body>
             <VerifyComponent>{children}</VerifyComponent>
+            {/* {children} */}
         </body>
       </html>
     )

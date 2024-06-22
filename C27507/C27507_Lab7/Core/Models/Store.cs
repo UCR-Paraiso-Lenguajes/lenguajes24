@@ -12,12 +12,12 @@ namespace MyStoreAPI.Models
         public IEnumerable<Product> Products { get; private set; } 
         public IEnumerable<Category> AllProductCategories {get; private set;}
         public int TaxPercentage { get; private set; }
-        public bool StoreConnectedWithDB {get; private set;}                
-
+        public bool StoreConnectedWithDB {get; private set;}
+        
         private Store(){            
             this.TaxPercentage = 13;
             this.AllProductCategories = Categories.Instance.AllProductCategories;
-            this.Products = new List<Product>();                                       
+            this.Products = new List<Product>();            
             //Hacemos de cuenta que se crea con exito las tablas o las reconoce en Program.cs          
             if(!DB_Product.ProductsInTableExist()){
                 List<Product> temporalList = new List<Product>();
@@ -31,17 +31,16 @@ namespace MyStoreAPI.Models
             this.Products = DB_Product.SelectProducts();            
             this.StoreConnectedWithDB = true;
             //Ahora la tienda tendra productos para el StoreController (GET)             
+            
         }
         
         public static readonly Store Instance;
 
         static Store()
-        {            
-                                                
+        {             
             //unica instancia de Store (con los productos y la conexion a la DB)            
             Store.Instance = new Store();                                    
         }
-
 
         //Actualizar la lista en memoria de Store, justo despues de actualizar la DB con el nuevo producto
         public void addNewProductInStore(Product newProduct){
@@ -163,59 +162,65 @@ namespace MyStoreAPI.Models
 
         //Esta funcion es solo para generar ventas automaticas a lo largo de 2 semanas
         //por si se necesitan pruebas de algo. Por eso esta comentada mas arriba
-        public void mockDataAsync(IEnumerable<Product> productsFromDB){
+        public static void mockDataSales(List<Product> productsFromDB){
 
-            //Generamos ventas
-            //var productsFromDB = Store.Products;            
-            Random rand = new Random();            
-            SaleLogic saleLogic = new SaleLogic();           
-            DateTime startDate = new DateTime(2024, 04, 29);
+            try{                
+                //Generamos ventas
+                //var productsFromDB = Store.Products;            
+                Random rand = new Random();
+                SaleLogic saleLogic = new SaleLogic();            
+                DateTime startDate = new DateTime(2024, 04, 29);
 
-            for (int week = 0; week < 2; week++){
+                for (int week = 0; week < 2; week++){
 
-                for (int day = 0; day < 7; day++){
-                    
-                    DateTime currentDate = startDate.AddDays(week * 7 + day);
+                    for (int day = 0; day < 7; day++){
+                        
+                        DateTime currentDate = startDate.AddDays(week * 7 + day);
 
-                    //cantidad de ventas por dia
-                    for (int saleCount = 0; saleCount < 5; saleCount++){            
+                        //cantidad de ventas por dia
+                        for (int saleCount = 0; saleCount < 5; saleCount++){            
 
-                        //cantidad de productos por venta
-                        List<Product> someProductsFromDB = new List<Product>(); 
-                        int countProduct = 0;
+                            //cantidad de productos por venta
+                            List<Product> someProductsFromDB = new List<Product>(); 
+                            int countProduct = 0;
 
-                        //cantidad de productos por venta
-                        while (countProduct < 4){
+                            //cantidad de productos por venta
+                            while (countProduct < 4){
 
-                            // Generamos un índice aleatorio para seleccionar un producto de la lista
-                            int randomIndex = rand.Next(productsFromDB.Count());
-                            Product selectedProduct = productsFromDB.ElementAt(randomIndex);
+                                // Generamos un índice aleatorio para seleccionar un producto de la lista
+                                int randomIndex = rand.Next(productsFromDB.Count());
+                                Product selectedProduct = productsFromDB.ElementAt(randomIndex);
 
-                            // Verificamos si el producto seleccionado ya está en la lista someProductsFromDB
-                            if (!someProductsFromDB.Any(p => p.name == selectedProduct.name)){
-                                someProductsFromDB.Add(selectedProduct);
-                                countProduct++;
+                                // Verificamos si el producto seleccionado ya está en la lista someProductsFromDB
+                                if (!someProductsFromDB.Any(p => p.name == selectedProduct.name)){
+                                    someProductsFromDB.Add(selectedProduct);
+                                    countProduct++;
+                                }
                             }
-                        }
 
-                        decimal subTotal = 0;
-                        decimal total = 0;
-                        foreach (var product in someProductsFromDB){
-                            subTotal += product.price;
-                            total += ( product.price + (product.price * 0.13m / 100));
-                        }
+                            decimal subTotal = 0;
+                            decimal total = 0;
+                            foreach (var product in someProductsFromDB){
+                                subTotal += product.price;
+                                total += ( product.price + (product.price * 0.13m / 100));
+                            }
 
-                        var cartTest = new Cart{
-                            allProduct = someProductsFromDB,
-                            Subtotal = subTotal,
-                            Total = total,
-                            Direction = "Costa Rica",
-                            PaymentMethod = PaymentMethods.paymentMethodsList.First(p => p.payment == PaymentMethodNumber.CASH)
-                        };                        
-                        saleLogic.createSaleAsync(cartTest,currentDate);
+                            var cartTest = new Cart{
+                                allProduct = someProductsFromDB,
+                                Subtotal = subTotal,
+                                Total = total,
+                                Direction = "Costa Rica",
+                                PaymentMethod = PaymentMethods.paymentMethodsList.First(p => p.payment == PaymentMethodNumber.CASH)
+                            };                        
+                            saleLogic.createSaleTest(cartTest,currentDate);
+                        }
                     }
                 }
+            }catch (Exception ex){
+                Console.WriteLine($"Error en mockDataAsync: {ex.Message}");
+                throw;
             }
         }
-    }    
+        
+    }
 }
