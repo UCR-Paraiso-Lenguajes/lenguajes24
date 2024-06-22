@@ -45,6 +45,7 @@ const InsertProduct = () => {
 
         if (!productImage.trim()) {
             formErrors.productImage = 'La URL de la imagen del producto es obligatoria';
+        } 
 
         setErrors(formErrors);
         return Object.keys(formErrors).length === 0;
@@ -70,7 +71,7 @@ const InsertProduct = () => {
             categoryId: productCategory
         };
 
-        const response = await fetch(`${URL}/api/InsertProducts`, {
+        const response = await fetch(URL+'/api/InsertProducts', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -174,3 +175,4 @@ const InsertProduct = () => {
 };
 
 export default InsertProduct;
+
