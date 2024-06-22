@@ -31,11 +31,13 @@ namespace storeapi.Database
                 // Crear la tabla de compras si no existe
                 string createComprasTableQuery = @"
                     CREATE TABLE IF NOT EXISTS Compras (
-                        id INT AUTO_INCREMENT PRIMARY KEY,
-                        purchase_number VARCHAR(50) NOT NULL,
-                        date DATETIME NOT NULL,
-                        total DECIMAL(10, 2) NOT NULL
-                    )";
+                        total DECIMAL(10, 2) NOT NULL,
+                        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        purchaseNumber VARCHAR(255) NOT NULL,
+                        Paymethod INT,
+                        ProductsId VARCHAR(100),
+                        PRIMARY KEY (purchaseNumber)
+                    );";
 
                 using (var command = new MySqlCommand(createComprasTableQuery, connection))
                 {
@@ -53,7 +55,6 @@ namespace storeapi.Database
                 {
                     command.ExecuteNonQuery();
                 }
-
 
                 // Crear la tabla de items si no existe
                 string createItemsTableQuery = @"

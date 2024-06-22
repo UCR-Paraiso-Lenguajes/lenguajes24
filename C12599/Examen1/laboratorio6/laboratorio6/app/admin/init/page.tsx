@@ -1,14 +1,9 @@
 'use client';
-<<<<<<< HEAD
-// pages/admin/init.tsx
-=======
->>>>>>> 7db3e6dc6a25ed39cd942043e984b80b3972d3c7
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, ShoppingCart } from 'react-feather';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navbar, Nav } from 'react-bootstrap';
-import VerifyComponent from '@/app/components/VerifyToken';
 
 interface CustomAccordionItemProps {
   title: string;
@@ -82,7 +77,6 @@ const Init: React.FC = () => {
   }
 
   return (
-    <VerifyComponent>
     
     <div className="container-fluid">
       <Navbar bg="light" expand="lg">
@@ -98,7 +92,6 @@ const Init: React.FC = () => {
         </Navbar.Collapse>
       </Navbar>
     </div>
-    </VerifyComponent>
   );
 };
 
