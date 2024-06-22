@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MySqlConnector;
 using core;
 
@@ -50,6 +50,22 @@ namespace storeapi.Database
                     )";
 
                 using (var command = new MySqlCommand(createCategoriesTableQuery, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+
+                // Crear la tabla de items si no existe
+                string createItemsTableQuery = @"
+                    CREATE TABLE IF NOT EXISTS Items (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        ProductId INT,
+                        PurchaseNumber VARCHAR(255),
+                        Address VARCHAR(255),
+                        Price DECIMAL(10, 2)
+                    );";
+
+                using (var command = new MySqlCommand(createItemsTableQuery, connection))
                 {
                     command.ExecuteNonQuery();
                 }

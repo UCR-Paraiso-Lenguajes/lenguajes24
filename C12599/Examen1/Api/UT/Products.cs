@@ -1,4 +1,4 @@
-﻿// File: UT/InsertProductsLogicTests.cs
+// File: UT/InsertProductsLogicTests.cs
 using NUnit.Framework;
 using Microsoft.Extensions.Caching.Memory;
 using storeapi.Business;

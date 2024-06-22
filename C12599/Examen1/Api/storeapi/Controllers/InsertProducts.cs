@@ -5,6 +5,7 @@ using storeapi.Business;
 using Microsoft.Extensions.Caching.Memory;
 using MySqlConnector;
 using storeapi.Database;
+using System.ComponentModel.DataAnnotations;
 
 namespace storeapi.Controllers
 {
@@ -29,8 +30,15 @@ namespace storeapi.Controllers
                 return BadRequest("Invalid request data.");
             }
 
-            Category category = _categories.GetCategoryById(request.CategoryId);
+            var validationResults = new List<ValidationResult>();
+            var validationContext = new ValidationContext(request);
+            if (!Validator.TryValidateObject(request, validationContext, validationResults, true))
+            {
+                return BadRequest(validationResults);
+            }
 
+            Category category = _categories.GetCategoryById(request.CategoryId);
+        
 
             Product product = new Product
             {
@@ -49,12 +57,28 @@ namespace storeapi.Controllers
 
     public class ProductRequestModel
     {
+        [Required]
         public int Id { get; set; }
+
+        [Required]
+        [StringLength(100, MinimumLength = 1, ErrorMessage = "Name must be between 1 and 100 characters.")]
         public string Name { get; set; }
+
+        [Required]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than zero.")]
         public decimal Price { get; set; }
+
+        [Required]
+        [Url(ErrorMessage = "Invalid URL format.")]
         public string ImageUrl { get; set; }
+
+        [Required]
+        [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string Description { get; set; }
+
+        [Required]
         public int CategoryId { get; set; }
     }
 }
+
 
