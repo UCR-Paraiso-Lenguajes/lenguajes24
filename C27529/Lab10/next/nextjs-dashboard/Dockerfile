@@ -9,6 +9,7 @@ WORKDIR /app
 
 # Copia el package.json y package-lock.json primero, para aprovechar el cache de Docker
 COPY package*.json ./
+RUN npm install
 
 COPY . .
 
@@ -16,8 +17,8 @@ COPY . .
 WORKDIR /app/my-nextjs-app
 
 
-
 RUN npm install
+
 
 COPY . .
 
