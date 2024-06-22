@@ -155,6 +155,7 @@ export default function ProductCrud() {
                                 <th>Nombre del Producto</th>
                                 <th>Categoría</th>
                                 <th>Precio</th>
+                                <th>Descripción</th>
                                 <th>Imagen</th>
                                 <th>Acciones</th>
                             </tr>
