@@ -1,14 +1,16 @@
 using Core;
 using StoreAPI.Database;
-using ApiPlu.Hubs;
+using StoreAPI.Hubs;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-
 using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<CampaignDB>();
+
 
 // Add services to the container.
 
@@ -54,10 +56,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = false,
+            ValidateIssuerSigningKey = false,
             ValidIssuer = "http://localhost:5207",
             ValidAudience = "http://localhost:5207",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
@@ -69,30 +71,21 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
     {
-
-        policy.WithOrigins("http://localhost:3000", "http://localhost:3001")
-                .AllowAnyOrigin()
+        policy.WithOrigins("http://localhost:5207", "http://localhost:8080", "http://localhost:3000")
                 .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+                .AllowCredentials();
     });
 });
 
+// Add SignalR services
+
 var app = builder.Build();
-var hubContext = app.Services.GetService(typeof(IHubContext<ChatHub>));
-Task.Run(async () =>
-{
-    await Task.Delay(10000);
-    await ((IHubContext)hubContext).Clients.All.SendAsync("ReceiveMessage", "aaaaa", "aaaaa");
-    Console.WriteLine($"Message sent: {"aaaaa"}");
-
-});
-
 
 if (app.Environment.IsDevelopment())
 {
     builder.Configuration.AddJsonFile("C:/Users/Lani0/OneDrive/Documents/UCR/Lenguajes/lenguajes24/C02231/Api/StoreAPI/appsettings.json", optional: true, reloadOnChange: true);
     string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString();
-    // var value = Environment.GetEnvironmentVariable("DB");
 
     var DB_value = Environment.GetEnvironmentVariable("DB");
     if (!String.IsNullOrEmpty(DB_value))
@@ -105,17 +98,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 
     StoreDB.CreateMysql();
-
-    Storage.Init(connection);
-
 }
 
-
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
 app.UseCors();
-app.MapHub<ChatHub>("/chatHub");
+app.MapHub<CampaignHub>("/campaignHub");
+app.MapControllers();
 app.Run();
