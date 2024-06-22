@@ -67,7 +67,8 @@ namespace storeapi.Controllers
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than zero.")]
         public decimal Price { get; set; }
-
+        
+        public string ImageUrl { get; set; }
 
         [Required]
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
