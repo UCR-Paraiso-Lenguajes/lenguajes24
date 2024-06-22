@@ -3,40 +3,94 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import Link from 'next/link';
 import '/app/ui/global.css';
-import axios from 'axios';
 import * as signalR from '@microsoft/signalr';
-import { useRouter } from 'next/navigation';
 
 type Message = {
-    id: string;
-    content: string;
-    timestamp: string;
+    id: number;
+    update: string;
+    timestamp: Date;
 };
 
-export default function Campaigns() {
+const URL = process.env.NEXT_PUBLIC_API_URL;
+if (!URL) {
+    throw new Error('NEXT_PUBLIC_API_URL is not defined');
+}
+
+const Campaigns: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
-    const router = useRouter();
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const maxChars = 5000;
+
+    const transformData = (data: any[]): Message[] => {
+        return data.map(item => ({
+            id: Number(item[0]),
+            update: item[1],
+            timestamp: new Date(item[2]) // Convertir a objeto Date
+        }));
+    };
+
+    const fetchMessages = async () => {
+        try {
+            const response = await fetch(`${URL}/api/Campaign`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Datos recibidos de la API:', data);
+                setMessages(transformData(data));
+            } else {
+                setErrorMessage('Error al obtener las campañas.');
+            }
+        } catch (error) {
+            setErrorMessage('Error al obtener las campañas.');
+            console.error('Error fetching messages:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchMessages = async () => {
-            try {
-                const response = await axios.get('/api/messages');
-                setMessages(response.data);
-            } catch (error) {
-                console.error("There was an error fetching the messages!", error);
-            }
-        };
-
         fetchMessages();
 
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl("http://your-websocket-server-url/hub")
+            .withUrl(`${URL}/campaignHub`)
             .configureLogging(signalR.LogLevel.Information)
+            .withAutomaticReconnect()
             .build();
 
-        connection.on("newMessage", (message: Message) => {
-            setMessages(prevMessages => [message, ...prevMessages].slice(0, 3));
+        connection.on("ReceiveCampaignUpdate", (updateString: string) => {
+            try {
+                let update: Message;
+                // Verificar si es una cadena y no un JSON válido
+                if (typeof updateString === 'string') {
+                    const parts = updateString.split(',');
+                    if (parts.length === 3) {
+                        update = {
+                            id: Number(parts[0]),
+                            update: parts[1],
+                            timestamp: new Date(parts[2])
+                        };
+                    } else {
+                        throw new Error('Invalid string format');
+                    }
+                } else {
+                    // Intentar convertir la cadena en un objeto JSON
+                    update = JSON.parse(updateString);
+
+                    // Verificar si el objeto tiene la estructura esperada
+                    if ('id' in update && 'update' in update && 'timestamp' in update) {
+                        update.timestamp = new Date(update.timestamp); // Convertir a objeto Date
+                    } else {
+                        throw new Error('Received update does not have the expected structure');
+                    }
+                }
+                setMessages(prevMessages => [update, ...prevMessages.slice(0, 2)]);
+            } catch (error) {
+                console.error('Error processing update:', error);
+            }
         });
 
         connection.start().catch(err => console.error("Connection error:", err));
@@ -46,24 +100,48 @@ export default function Campaigns() {
         };
     }, []);
 
-    const handleAddMessage = () => {
-        axios.post('/api/messages', { content: newMessage })
-            .then(response => {
-                setNewMessage('');
-            })
-            .catch(error => {
-                console.error("There was an error posting the message!", error);
+    const handleAddMessage = async () => {
+        try {
+            const timestamp = new Date().toISOString(); // Obtener timestamp en UTC
+            const response = await fetch(`${URL}/api/Campaign`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    update: newMessage,
+                    timestamp: timestamp // Enviar el timestamp
+                })
             });
+
+            if (response.ok) {
+                setNewMessage('');
+                await fetchMessages(); // Refrescar la lista después de enviar el mensaje
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        } catch (error) {
+            console.error('There was an error posting the message!', error);
+        }
     };
 
-    const handleDeleteMessage = (id: string) => {
-        axios.delete(`/api/messages/${id}`)
-            .then(response => {
-                setMessages(messages.filter(message => message.id !== id));
-            })
-            .catch(error => {
-                console.error("There was an error deleting the message!", error);
+    const handleDeleteMessage = async (id: number) => {
+        try {
+            const response = await fetch(`${URL}/api/Campaign/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            setMessages(messages.filter(message => message.id !== id));
+        } catch (error) {
+            console.error("There was an error deleting the message!", error);
+        }
     };
 
     return (
@@ -81,20 +159,23 @@ export default function Campaigns() {
                 <div className="col-md-12">
                     <div className="content">
                         <h2>Campaign Messages</h2>
+                        {errorMessage && <div className="text-danger mb-3">{errorMessage}</div>}
                         <div className="mb-3">
                             <textarea
                                 className="form-control"
                                 value={newMessage}
                                 onChange={e => setNewMessage(e.target.value)}
                                 placeholder="Enter new message (max 5000 characters)"
-                                maxLength={5000}
+                                maxLength={maxChars}
                             />
                             <button className="btn btn-success mt-2" onClick={handleAddMessage}>Add Message</button>
                         </div>
                         <ul className="list-group">
-                            {messages.map(message => (
+                            {messages.map((message) => (
                                 <li key={message.id} className="list-group-item d-flex justify-content-between align-items-center">
-                                    <div dangerouslySetInnerHTML={{ __html: message.content }}></div>
+                                    <div>
+                                        <strong>{message.timestamp.toLocaleString()}:</strong> {message.update}
+                                    </div>
                                     <button className="btn btn-danger" onClick={() => handleDeleteMessage(message.id)}>Delete</button>
                                 </li>
                             ))}
@@ -109,4 +190,6 @@ export default function Campaigns() {
             </footer>
         </div>
     );
-}
+};
+
+export default Campaigns;

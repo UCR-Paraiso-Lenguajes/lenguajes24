@@ -126,6 +126,18 @@ public sealed class StoreDB
                     INSERT INTO paymentMethod (id, method_name)
                             VALUES (0, 'Efectivo'), (1, 'Sinpe');
                     
+                   CREATE TABLE messages (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        content TEXT NOT NULL,
+                        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    ) ENGINE=InnoDB;
+
+                    INSERT INTO messages (content, timestamp)
+                    VALUES
+                        ('Hola', '2024-06-22 14:57:35'),
+                        ('Prueba para campaing', '2024-06-22 15:02:18'),
+                        ('Notification prove', '2024-06-22 15:03:38');
+
 
                     INSERT INTO sales (purchase_date, total, payment_method, purchase_number)
                     VALUES 

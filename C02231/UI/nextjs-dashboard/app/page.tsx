@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Form, Dropdown } from 'react-bootstrap';
 import { usePathname, useRouter, useParams, useSearchParams } from 'next/navigation';
+import NotificationsDropdown from './NotificationsDropDown';
 import * as signalR from '@microsoft/signalr';
 import axios from 'axios';
 
@@ -56,41 +57,6 @@ export default function Home() {
     loadData();
   }, []);
 
-  type Message = {
-    id: string;
-    content: string;
-    timestamp: string;
-  };
-
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await axios.get('/api/messages/latest');
-        setMessages(response.data);
-        setUnreadCount(response.data.length);
-      } catch (error) {
-        console.error("Error fetching messages:", error);
-      }
-    };
-
-    fetchMessages();
-
-    const connection = new signalR.HubConnectionBuilder()
-      .withUrl("http://your-signalr-server-url/hub") // Cambia la URL por la correcta de tu servidor
-      .configureLogging(signalR.LogLevel.Information)
-      .build();
-
-    connection.on("newMessage", (message: Message) => {
-      setMessages(prevMessages => [message, ...prevMessages.slice(0, 2)]);
-      setUnreadCount(prevCount => prevCount + 1);
-    });
-
-    connection.start().catch(err => console.error("Connection error:", err));
-
-    return () => {
-      connection.stop().catch(err => console.error("Disconnection error:", err));
-    };
-  }, []);
 
   const [cart, setCart] = useState({
     products: [],
@@ -230,38 +196,30 @@ export default function Home() {
           <div className="col-sm-6 d-flex justify-content-center align-items-center">
             <form className="d-flex justify-content-center" onSubmit={handleSearchSubmit}>
               <input
+                className="form-control me-2"
                 type="search"
-                name="search"
-                style={{ width: '805%' }}
-                placeholder="Book..."
+                placeholder="Buscar productos"
+                aria-label="Buscar productos"
                 value={searchQuery}
                 onChange={handleSearchInputChange}
               />
+              <button className="btn btn-outline-success" type="submit">
+                Buscar
+              </button>
             </form>
-            <Dropdown show={isOpen} onToggle={() => setIsOpen(!isOpen)}>
-              <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-                {selectedCategories.length === 0 ? "Select Categories" : selectedCategories.includes("ALL") ? "ALL" : selectedCategories.map(catId => {
-                  const categoryId = parseInt(catId);
-                  const category = categories.find(cat => cat.idCategory === categoryId);
-                  return category ? category.name : "Select Categories";
-                }).filter(Boolean).join(', ')
-                }
+
+            <Dropdown>
+              <Dropdown.Toggle variant="secondary" id="dropdown-basic" className="mx-3">
+                Categorías
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Form>
-                  <Form.Check
-                    type="checkbox"
-                    label="ALL"
-                    value="0"
-                    checked={selectedCategories.includes("0")}
-                    onChange={handleCategoryChange}
-                  />
-                  {categories && categories.map(category => (
+                  {categories.map((category) => (
                     <Form.Check
                       key={category.idCategory}
                       type="checkbox"
                       label={category.name}
-                      value={category.idCategory}
+                      value={category.idCategory.toString()}
                       checked={selectedCategories.includes(category.idCategory.toString())}
                       onChange={handleCategoryChange}
                     />
@@ -271,40 +229,14 @@ export default function Home() {
             </Dropdown>
           </div>
 
-          <div className="col-sm-2 d-flex justify-content-center align-items-center">
-            <Link href="/admin">
-              <button className="btn btn-success">
-                Admin
-              </button>
-            </Link>
-            <div>
-              <Dropdown onToggle={() => handleMarkAsRead()}>
-                <Dropdown.Toggle variant="success" id="dropdown-notifications">
-                  <img src="https://png.pngtree.com/png-vector/20240521/ourmid/pngtree-free-golden-3d-bell-on-white-background-png-image_12501298.png"
-                    style={{ height: '40px', width: '40px' }} className="img-fluid" />
-                  ({unreadCount})
-                  {//unreadCount > 0 && <span className="badge bg-danger">{unreadCount}</span>
-                  }
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  {messages.map((message, index) => (
-                    <Dropdown.Item key={index}>
-                      {message.content}- {message.timestamp}
-                    </Dropdown.Item>
-                  ))}
-                  <Dropdown.Item as={Link} href="/messages">
-                    Ver todos los mensajes
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </div>
-
-            <div style={{ position: 'absolute', top: '30px', right: '300px', backgroundColor: 'green', borderRadius: '50%', width: '20px', height: '20px', textAlign: 'center', color: 'white' }}>
-              {cart.count}
+          <div className="col-sm-2 d-flex justify-content-end">
+            <div className="d-flex align-items-center justify-content-center">
+              <NotificationsDropdown />
+              <Link href="/admin" className="btn btn-success ml-2">
+                Login
+              </Link>
             </div>
           </div>
-
-
 
           <div className="col-sm-2 d-flex justify-content-end align-items-center">
             <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -320,10 +252,10 @@ export default function Home() {
                 {cart.count}
               </div>
             </div>
-          </div>
-
+          </div>F
         </div>
       </header>
+
 
 
       <div className='container'>
