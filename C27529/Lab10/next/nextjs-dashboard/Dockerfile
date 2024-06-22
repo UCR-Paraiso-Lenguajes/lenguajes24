@@ -9,20 +9,21 @@ WORKDIR /app
 
 # Copia el package.json y package-lock.json primero, para aprovechar el cache de Docker
 COPY package*.json ./
+RUN npm config set legacy-peer-deps true
 RUN npm install
 RUN npm install chart.js react-chartjs-2 react-google-charts react-modal react-data-table-component
 
-COPY . .
+# Copia el resto de los archivos del proyecto
 
+#COPY . .
 
 WORKDIR /app/my-nextjs-app
 
 
-RUN npm install
-
-
 COPY . .
-
+ 
+# Compila la aplicación
+#RUN npm run build
 RUN chmod +x write_env.sh
 # Expone el puerto en el que la aplicación se ejecutará
 EXPOSE 3000
