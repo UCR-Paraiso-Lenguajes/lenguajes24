@@ -12,6 +12,10 @@ export const Products = () => {
     return storedProductList ? JSON.parse(storedProductList) : [];
   });
 
+  const URL = process.env.NEXT_PUBLIC_API_URL;
+if (!URL) {
+    throw new Error('NEXT_PUBLIC_API_URL is not defined');
+}
   const [listNames, setListNames] = useState(() => {
     const storedListNames = localStorage.getItem('listNames');
     return storedListNames ? JSON.parse(storedListNames) : [];
@@ -62,7 +66,7 @@ export const Products = () => {
 
   const loadData = async () => {
     try {
-      const response = await fetch(`http://localhost:5164/api/store`);
+      const response = await fetch(`${URL}/api/store`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
@@ -80,7 +84,7 @@ export const Products = () => {
       const categoriesString = categories.length === 0 ? '0' : categories.join(',');
       const searchTextEncoded = searchText === '' ? '@' : encodeURIComponent(searchText);
 
-      const url = `http://localhost:5164/api/store/products?categoriesString=${categoriesString}&searchText=${searchTextEncoded}`;
+      const url = `${URL}/api/store/products?categoriesString=${categoriesString}&searchText=${searchTextEncoded}`;
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
