@@ -8,8 +8,11 @@ import Carousel from 'react-bootstrap/Carousel';
 import { Dropdown } from "react-bootstrap";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import DOMPurify from 'dompurify';
+import useWebSocket from "./hooks/webSocket";
 
 export default function Home() {
+
+  const socket = useWebSocket('ws://localhost:8181');
 
   const searchParams = useSearchParams()
   const router = useRouter()

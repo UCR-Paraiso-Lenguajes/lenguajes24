@@ -62,7 +62,7 @@ public class MessageData
         return deletedMessage;
 }
 
-    public async Task<IEnumerable<Message>> GetMessages()
+    public async Task<IEnumerable<Message>> GetMessagesAsync()
     {
         string getMessageQuery =
             @"USE andromeda_store;
@@ -70,14 +70,14 @@ public class MessageData
 
         using (SqlConnection connection = new SqlConnection(Db.Instance.DbConnectionString))
         {
-            connection.Open();
+            await connection.OpenAsync();
 
             List<Message> messages = new List<Message>();
             using (SqlCommand command = new SqlCommand(getMessageQuery, connection))
             {
-                using (SqlDataReader reader = command.ExecuteReader())
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         Message message = Message.BuildForDisplay(new Guid(reader[0].ToString()), 
                         Encoding.UTF8.GetString((byte[])reader[1]), reader.GetDateTime(2));
@@ -87,5 +87,35 @@ public class MessageData
             }
             return messages;
         }
+    }
+
+    public async Task<IEnumerable<Message>> GetLastThreeMessagesAsync()
+    {
+        string query = @"
+            USE andromeda_store;
+            SELECT TOP 3 *
+            FROM messages
+            ORDER BY date DESC";
+
+        var messages = new List<Message>();
+
+        using (SqlConnection connection = new SqlConnection(Db.Instance.DbConnectionString))
+        {
+            await connection.OpenAsync();
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        Message message = Message.BuildForDisplay(new Guid(reader[0].ToString()), 
+                        Encoding.UTF8.GetString((byte[])reader[1]), reader.GetDateTime(2));
+                        messages.Add(message);
+                    }
+                }
+            }
+        }
+
+        return messages;
     }
 }
