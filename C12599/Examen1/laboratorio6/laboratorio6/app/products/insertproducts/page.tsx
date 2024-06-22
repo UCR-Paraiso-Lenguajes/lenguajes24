@@ -39,7 +39,7 @@ const InsertProduct = () => {
 
         if (!productDescription.trim()) {
             formErrors.productDescription = 'La descripción del producto es obligatoria';
-            
+
         if (!productImage.trim()) {
             formErrors.productImage = 'La URL de la imagen del producto es obligatoria';
         } 
@@ -170,7 +170,7 @@ const InsertProduct = () => {
         </div>
     );
 };
+};
 
 export default InsertProduct;
-
 
