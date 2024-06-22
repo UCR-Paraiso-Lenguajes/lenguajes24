@@ -84,7 +84,7 @@ public sealed class StoreDB
             connection.Open();
 
 
-            // Create the products table if it does not exist  //;
+            // Create the products table if it does not exist  //;  author VARCHAR(100)  NOT NULL,
             string createTableQuery = @"
 
                     DROP DATABASE IF EXISTS store; 

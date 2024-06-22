@@ -1,16 +1,13 @@
-'use client'
+'use client';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 import '/app/ui/global.css';
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
-import useAuth from '../../useAuth';
 import validator from 'validator';
 
-
 const ProductPage = () => {
-    const isAuthenticated = useAuth();
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [showModal, setShowModal] = useState(false);
@@ -19,6 +16,9 @@ const ProductPage = () => {
     const [isAuthorValid, setIsAuthorValid] = useState(false);
     const [isPriceValid, setIsPriceValid] = useState(false);
     const [isCategoryValid, setIsCategoryValid] = useState(false);
+    const [isImgUrlValid, setIsImgUrlValid] = useState(true); // Nueva validación
+    const [isFormValid, setIsFormValid] = useState(false); // Nuevo estado para la validación del formulario
+    const token = sessionStorage.getItem("authToken");
 
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
@@ -37,24 +37,27 @@ const ProductPage = () => {
     });
 
     useEffect(() => {
-        if (isAuthenticated) {
-            fetchProducts();
+        if (!token) {
+            sessionStorage.removeItem("authToken");
+            return;
         }
-    }, [isAuthenticated]);
+    }, []);
 
     useEffect(() => {
         fetchProducts();
     }, []);
 
+    useEffect(() => {
+        validateForm(); // Validar el formulario cada vez que cambie algún estado
+    }, [newProduct, isNameValid, isAuthorValid, isPriceValid, isCategoryValid, isImgUrlValid]);
+
     const fetchProducts = async () => {
         try {
-            const token = sessionStorage.getItem("sessionToken");
             const response = await fetch(`${URL}/api/Store`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 }
             });
-
             if (!response.ok) {
                 throw new Error('Failed to fetch products: ' + response.statusText);
             }
@@ -82,27 +85,17 @@ const ProductPage = () => {
             }));
             setIsCategoryValid(!!selectedCategory);
         } else if (name === 'ImgUrl') {
-            if (!validator.isURL(value)) {
-                setErrorMessage('The image needs to be a valid URL');
-            } else {
-                setErrorMessage('');
-                setNewProduct(prevState => ({
-                    ...prevState,
-                    [name]: value
-                }));
-            }
+            setNewProduct(prevState => ({
+                ...prevState,
+                [name]: value
+            }));
+            setIsImgUrlValid(true); // Permitir cualquier entrada temporalmente
         } else if (name === 'Price') {
-            if (!validator.isNumeric(value)) {
-                setErrorMessage('El precio debe ser un número');
-                setIsPriceValid(false);
-            } else {
-                setErrorMessage('');
-                setIsPriceValid(true);
-                setNewProduct(prevState => ({
-                    ...prevState,
-                    [name]: value
-                }));
-            }
+            setNewProduct(prevState => ({
+                ...prevState,
+                [name]: value
+            }));
+            setIsPriceValid(true); // Permitir cualquier entrada temporalmente
         } else {
             setNewProduct(prevState => ({
                 ...prevState,
@@ -111,14 +104,36 @@ const ProductPage = () => {
 
             if (name === 'Name') {
                 setIsNameValid(value.trim() !== '');
-            } else if (name === 'Author') {
+            }
+
+            if (name === 'Author') {
                 setIsAuthorValid(value.trim() !== '');
             }
         }
+
+        validateForm(); // Validar el formulario después de cada cambio de entrada
     };
 
+    const validateForm = () => {
+        const isFormValid = isNameValid && isAuthorValid && isPriceValid && isCategoryValid && isImgUrlValid;
+        setIsFormValid(isFormValid);
+    };
 
     const handleAddProduct = async () => {
+        // Validar URL de la imagen y precio antes de enviar
+        if (!validator.isURL(newProduct.ImgUrl)) {
+            setIsImgUrlValid(false);
+            setErrorMessage('La imagen debe ser una URL válida');
+            return;
+        }
+
+        const priceRegex = /^\d+(\.\d{1,3})?$/;
+        if (!priceRegex.test(newProduct.Price) || parseFloat(newProduct.Price) > 100000.000) {
+            setIsPriceValid(false);
+            setErrorMessage('El precio debe ser un número con hasta 3 decimales y menor o igual a 100000.000');
+            return;
+        }
+
         const productData = {
             Name: newProduct.Name,
             Author: newProduct.Author,
@@ -130,13 +145,17 @@ const ProductPage = () => {
             }
         };
 
+        const token = sessionStorage.getItem('authToken');
+        if (!token) {
+            sessionStorage.removeItem("authToken");
+            return;
+        }
+
         try {
-            const token = sessionStorage.getItem("sessionToken");
-            const response = await fetch(`${URL}/api/Product`, {
+            const response = await fetch(`${URL}/api/product`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(productData)
             });
@@ -146,7 +165,6 @@ const ProductPage = () => {
             }
 
             const result = await response.json();
-
             fetchProducts();
             setShowModal(false);
             setNewProduct({
@@ -163,9 +181,7 @@ const ProductPage = () => {
             throw new Error('Error al guardar el producto:', error.message);
         }
     };
-    if (!isAuthenticated) {
-        return null;
-    }
+
     return (
         <div>
             <header className="p-3 text-bg-dark">
@@ -202,7 +218,7 @@ const ProductPage = () => {
                                         <tr key={product.id}>
                                             <td>{product.id}</td>
                                             <td>{product.name}</td>
-                                            <td>{product.author}</td>
+                                            <td dangerouslySetInnerHTML={{ __html: product.author }} />
                                             <td><img src={product.imgUrl} alt={product.name} width="50" /></td>
                                             <td>{product.price}</td>
                                             <td>
@@ -222,6 +238,7 @@ const ProductPage = () => {
                     <h5 className="text-light">Biblioteca de Paula</h5>
                 </div>
             </footer>
+
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Add Product</Modal.Title>
@@ -231,22 +248,22 @@ const ProductPage = () => {
                         <Form.Group>
                             <Form.Label>Name</Form.Label>
                             <Form.Control type="text" name="Name" value={newProduct.Name} onChange={handleInputChange} />
-                            {!isNameValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>The name is required</div>}
+                            {!isNameValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>El nombre es requerido</div>}
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Author</Form.Label>
                             <Form.Control type="text" name="Author" value={newProduct.Author} onChange={handleInputChange} />
-                            {!isAuthorValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>The author is required</div>}
+                            {!isAuthorValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>El autor es requerido</div>}
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Image</Form.Label>
                             <Form.Control type="text" name="ImgUrl" value={newProduct.ImgUrl} onChange={handleInputChange} />
-                            {errorMessage && <div style={{ color: 'red', marginTop: '0.5rem' }}>{errorMessage}</div>}
+                            {!isImgUrlValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>La imagen debe ser una URL válida</div>}
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Price</Form.Label>
                             <Form.Control type="text" name="Price" value={newProduct.Price} onChange={handleInputChange} />
-                            {!isPriceValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>The price most be a number</div>}
+                            {!isPriceValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>El precio debe ser un número con hasta 3 decimales y menor o igual a 100000.000</div>}
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Category</Form.Label>
@@ -258,7 +275,7 @@ const ProductPage = () => {
                                     </option>
                                 ))}
                             </Form.Control>
-                            {!isCategoryValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>The category is required</div>}
+                            {!isCategoryValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>La categoría es requerida</div>}
                         </Form.Group>
                     </Form>
                 </Modal.Body>
@@ -269,13 +286,12 @@ const ProductPage = () => {
                     <Button
                         variant="success"
                         onClick={handleAddProduct}
-                        disabled={!isNameValid || !isAuthorValid || !isPriceValid || !isCategoryValid || errorMessage !== ''}
+                        disabled={!isFormValid} // Deshabilitar el botón si el formulario no es válido
                     >
                         Save
                     </Button>
                 </Modal.Footer>
             </Modal>
-
         </div>
     );
 };

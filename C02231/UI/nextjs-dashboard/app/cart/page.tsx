@@ -9,6 +9,7 @@ export default function CartPage() {
     const cartData = cartDataString ? JSON.parse(cartDataString) : {};
     const [cartUpdated, setCartUpdated] = useState(false);
     const impuesto = 0.13;
+    const impuesto = 0.13;
     const [cart, setCart] = useState({
         products: [],
         subtotal: 0,
@@ -16,7 +17,6 @@ export default function CartPage() {
         cant: 0
     });
 
-    // Define handleRemove outside of handlePrice
     const handleRemove = (id) => {
         if (id == undefined) { throw new Error('The arguments to delete the product cant be null.'); }
 
@@ -31,11 +31,11 @@ export default function CartPage() {
         setCartUpdated(!cartUpdated);
     };
 
-    // Define handleQuantityChange outside of handlePrice
     const handleQuantityChange = (id, cant) => {
         if (cant == undefined || id == undefined) {
             throw new Error('Los argumentos para calcular el precio no pueden ser nulos.');
         }
+        if (cant < 1) {
         if (cant < 1) {
             return; // Evita que la cantidad sea menor que 1
         }
@@ -52,10 +52,6 @@ export default function CartPage() {
     };
 
     useEffect(() => {
-        /* const updatedStore = { ...cart, products: updatedProducts };
-         localStorage.setItem("cartItem", JSON.stringify(updatedStore));
-         setCart(updatedStore);
-         setCartUpdated(!cartUpdated);*/
         const cartItem = JSON.parse(localStorage.getItem('cartItem') || '{}');
         setCart(cartItem);
     }, []);
@@ -71,12 +67,6 @@ export default function CartPage() {
                 total: calculatedTotal
             }));
         }
-        /* else {
-            setCart(prevCart => ({
-                ...prevCart,
-                subtotal: 0,
-                total: 0
-            }));*/
     }, [cart.products]);
 
     var esCarritoVacio = !cartData.products || cartData.products.length === 0;
@@ -145,6 +135,10 @@ export default function CartPage() {
                                 <th className="cart_description item">Author</th>
                                 <th className="cart_unit item text-right">Price</th>
                                 <th className="cart_quantity item text-center">Quantity</th>
+                                <th className="cart_product first_item">Name</th>
+                                <th className="cart_description item">Author</th>
+                                <th className="cart_unit item text-right">Price</th>
+                                <th className="cart_quantity item text-center">Quantity</th>
                                 <th className="cart_total item text-right">Total</th>
                                 <th className="cart_delete last_item">&nbsp;</th>
                             </tr>
@@ -161,7 +155,7 @@ export default function CartPage() {
                                         <p className="product-name">
                                             {item.name}
                                         </p>
-                                        <small>{item.author}</small>
+                                        <small dangerouslySetInnerHTML={{ __html: item.author }} />
                                     </td>
                                     <td className="cart_unit" data-title="Precio unitario">
                                         ₡{item.price}
@@ -205,7 +199,7 @@ export default function CartPage() {
             </div>
             <footer className='footer'>
                 <div className="text-center p-3">
-                    <h5 className="text-light">  Paula's Library </h5>
+                    <h5 className="text-light">Paula's Library</h5>
                 </div>
             </footer>
         </div>

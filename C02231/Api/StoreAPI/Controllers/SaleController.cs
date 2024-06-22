@@ -16,7 +16,7 @@ namespace StoreAPI.Controllers
     public class SaleController : ControllerBase
     {
 
-        [HttpGet, Authorize(Roles = "Admin")]
+        [HttpGet]
         //[Authorize(Roles ="Admin")]
         public async Task<IActionResult> GetSaleAsync([FromQuery] DateTime date)
         {
