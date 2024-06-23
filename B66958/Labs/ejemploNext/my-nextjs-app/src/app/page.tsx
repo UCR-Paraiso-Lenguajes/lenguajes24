@@ -8,6 +8,8 @@ import Carousel from 'react-bootstrap/Carousel';
 import { Dropdown } from "react-bootstrap";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import DOMPurify from 'dompurify';
+import './css/messages.css';
+import WebSocketMessage from "./navbar/WebSocketMessage";
 
 export default function Home() {
 
@@ -27,6 +29,9 @@ export default function Home() {
 
   const [isCartActive, setIsCartActive] = useState(false);
 
+  const [messages, setMessages] = useState<WebSocketMessage[]>([]);
+  const [isMessageListVisible, setMessageListVisible] = useState<boolean>(false);
+
   const [count, setCount] = useState(0);
   const [idList, setIdList] = useState([]);
 
@@ -43,6 +48,10 @@ export default function Home() {
     metodosDePago: [],
     necesitaVerificacion: false
   });
+
+  const toggleMessageList = () => {
+    setMessageListVisible(!isMessageListVisible);
+  };
 
   const categoriesSearchString = Array.isArray(categoriesSearch) ? categoriesSearch.join(',') : categoriesSearch;
   useEffect(() => {
@@ -306,7 +315,17 @@ export default function Home() {
   return (
     <div className="d-grid gap-2">
       <NavBar productCount={count} toggleCart={(action) => toggleCart({ action })}
-        searchFunction={searchProduct} setQuery={setProductQuery} />
+        searchFunction={searchProduct} setQuery={setProductQuery}
+        setMessages={setMessages} toggleMessageList={toggleMessageList} />
+        {isMessageListVisible && (
+                <div className="message-list">
+                    {messages.map(message => (
+                        <div key={message.Id} className="message">
+                            {message.Text}
+                        </div>
+                    ))}
+                </div>
+            )}
       {isCartActive ? <Cart cart={cart} setCart={setCart}
         toggleCart={(action) => toggleCart({ action })} clearProducts={clearProducts} /> : <><MyRow /> <CarouselBootstrap /></>}
       {isErrorShowing ?

@@ -1,13 +1,9 @@
 'use client'
 import { useEffect, useRef, useState } from 'react';
+import WebSocketMessage from '../navbar/WebSocketMessage';
 
-type WebSocketMessage = {
-    id: string;
-    text: string;
-    sentAt: string;
-};
-
-const useWebSocket = (url: string, setNewMessages: (quantity: number) => void) => {
+const useWebSocket = (url: string, setNewMessages: (quantity: number) => void, 
+    setMessagesList: (messages: WebSocketMessage[]) => void ) => {
     const [messages, setMessages] = useState<WebSocketMessage[]>([]);
 
     useEffect(() => {
@@ -16,13 +12,14 @@ const useWebSocket = (url: string, setNewMessages: (quantity: number) => void) =
         socket.onmessage = (event) => {
             const message: WebSocketMessage = JSON.parse(event.data);
             setMessages((prevMessages) => [...prevMessages, message]);
+            setMessagesList((prevMessages) => [...prevMessages, message]);
             setNewMessages((prevCount) => prevCount + 1);
         };
 
         return () => {
             socket.close();
         };
-    }, [url, setNewMessages]);
+    }, [url, setMessagesList, setNewMessages]);
 
     return messages;
 };
