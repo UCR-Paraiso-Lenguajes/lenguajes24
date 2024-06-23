@@ -2,11 +2,19 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Form, Button, Card, FloatingLabel } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
+import AddEditProduct from '../ui/addProduct';
 
 export default function Page() {
     const [isClient, setIsClient] = useState(false);
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('');
+    const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    
+    const handleError = (error) => {
+        setErrorMessage(error);
+        setShowError(true);
+    };
 
     useEffect(() => {
         setIsClient(true);
@@ -28,24 +36,22 @@ export default function Page() {
             });
 
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                handleError(`${response.status} ${response.statusText}`)
             }
 
             const result = await response.json();
-            console.log(result);
-            // Handle the response data as needed
         } catch (error) {
-            console.error('Error:', error);
-            // Handle the error as needed
+            handleError('Error del servidor, por favor, intenta más tarde')
         }
     };
 
     if (!isClient) {
-        return null; // Render nothing on the server-side
+        return null;
     }
 
     return (
         <Container className="d-flex justify-content-center align-items-center vh-100 bg-light">
+            <AddEditProduct show={showModal} onClose={handleCloseModal} onSave={handleSaveProduct} />
             <Card className="shadow-sm" style={{ width: '400px', minHeight: '400px', backgroundColor: '#f8f9fa' }}>
                 <Card.Body className="d-flex flex-column justify-content-center">
                     <Form onSubmit={handleSubmit}>

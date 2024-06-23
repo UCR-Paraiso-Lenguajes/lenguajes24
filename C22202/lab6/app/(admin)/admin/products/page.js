@@ -5,26 +5,41 @@ import { Container, Table, Button, Row, Col } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/solid';
 import AddEditProduct from "@/app/ui/addProduct";
+import ErrorModal from "@/app/ui/ModalError";
 
 function App() {
     const [products, setProducts] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
 
     useEffect(() => {
         fetchData();
     }, []);
 
     const fetchData = async () => {
+        let message = ''
         try {
             const response = await fetch('https://localhost:7194/api/Admin/Products'); // Replace with your API endpoint
             if (!response.ok) {
-                throw new Error('Network response was not ok.');
+                handleError(`${response.status} ${response.statusText}`)
             }
             const data = await response.json();
             setProducts(data);
         } catch (error) {
-            console.error(error);
+            // console.error(error);
+            handleError('Error del servidor, por favor, intenta más tarde')
         }
+    };
+
+    const handleError = (error) => {
+        setErrorMessage(error);
+        setShowError(true);
+    };
+
+    const handleCloseError = () => {
+        setShowError(false);
     };
 
     const handleAddProduct = () => {
@@ -47,17 +62,18 @@ function App() {
                 body: JSON.stringify(formData)
             });
             if (!response.ok) {
-                throw new Error('Network response was not ok.');
+                handleError(`${response.status} ${response.statusText}`)
             }
             fetchData();
         } catch (error) {
-            console.error(error);
+            handleError('Error del servidor, por favor, intenta más tarde')
         }
     };
 
     return (
         <Container>
             <AddEditProduct show={showModal} onClose={handleCloseModal} onSave={handleSaveProduct} />
+            <ErrorModal show={showError} handleClose={handleCloseError} errorMessage={errorMessage} />
             <h1>Products</h1>
             <Row className="mb-3">
                 <Col className="text-end">
