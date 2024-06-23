@@ -9,6 +9,7 @@ namespace KEStoreApi
     public string Name { get; set; }
     public decimal Price { get; set; }
     public string ImageUrl { get; set; }
+    public string Description { get; set; }    
     public int Quantity { get; set; }
     public int CategoriaId { get; set; }
      public bool IsDeleted { get; set; }
@@ -20,7 +21,8 @@ namespace KEStoreApi
                 Name = this.Name,
                 Price = this.Price,
                 ImageUrl = this.ImageUrl,
-                Quantity = this.Quantity,
+                Description = this.Description,
+                Quantity = this.Quantity
             };
         }
 

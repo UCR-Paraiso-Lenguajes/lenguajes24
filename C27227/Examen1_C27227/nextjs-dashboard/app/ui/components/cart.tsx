@@ -25,7 +25,6 @@ const Cart_Store: React.FC = () => {
 
   const [cartEmpty, setCartEmpty] = useState(!dataObject.products || dataObject.products.length === 0);
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [cartUpdated, setCartUpdated] = useState(false);
   const [productQuantities, setProductQuantities] = useState(() => {
     const quantities = {};
     if (dataObject && dataObject.products) {
@@ -40,7 +39,7 @@ const Cart_Store: React.FC = () => {
     if (dataObject && dataObject.products) {
       handlePrice(productQuantities);
     }
-  }, [cartUpdated, productQuantities]);
+  }, []);
 
   const handleContinueBuy = () => {
     setShowAddressForm(true);
@@ -66,8 +65,13 @@ const Cart_Store: React.FC = () => {
     const updatedProducts = dataObject.products.filter((product) => product.id !== id);
     const updatedCart = { ...dataObject, products: updatedProducts };
     localStorage.setItem('tienda', JSON.stringify(updatedCart));
-    setCartUpdated(!cartUpdated);
     setCartEmpty(updatedProducts.length === 0);
+    setProductQuantities((prevQuantities) => {
+      const newQuantities = { ...prevQuantities };
+      delete newQuantities[id];
+      handlePrice(newQuantities);
+      return newQuantities;
+    });
   };
 
   const updateStore = (subtotal, subtotalImpuesto, total, newQuantities) => {
@@ -82,7 +86,6 @@ const Cart_Store: React.FC = () => {
       },
     };
     localStorage.setItem("tienda", JSON.stringify(carritoActualizado));
-    setCartUpdated(!cartUpdated);
   };
 
   const handleQuantityChange = (productId, action) => {
