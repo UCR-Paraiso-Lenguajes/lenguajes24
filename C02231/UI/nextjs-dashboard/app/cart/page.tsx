@@ -9,7 +9,6 @@ export default function CartPage() {
     const cartData = cartDataString ? JSON.parse(cartDataString) : {};
     const [cartUpdated, setCartUpdated] = useState(false);
     const impuesto = 0.13;
-    const impuesto = 0.13;
     const [cart, setCart] = useState({
         products: [],
         subtotal: 0,
@@ -35,7 +34,6 @@ export default function CartPage() {
         if (cant == undefined || id == undefined) {
             throw new Error('Los argumentos para calcular el precio no pueden ser nulos.');
         }
-        if (cant < 1) {
         if (cant < 1) {
             return; // Evita que la cantidad sea menor que 1
         }
@@ -93,7 +91,7 @@ export default function CartPage() {
                         <thead>
                             <tr>
                                 <th className="cart_product first_item">Name</th>
-                                <th className="cart_description item">Author</th>
+                                <th className="cart_description item">Description</th>
                                 <th className="cart_unit item text-right">Price</th>
                                 <th className="cart_quantity item text-center">Quantity</th>
                                 <th className="cart_total item text-right">Total</th>
@@ -132,13 +130,10 @@ export default function CartPage() {
                         <thead>
                             <tr>
                                 <th className="cart_product first_item">Name</th>
-                                <th className="cart_description item">Author</th>
+                                <th className="cart_description item">Description</th>
                                 <th className="cart_unit item text-right">Price</th>
                                 <th className="cart_quantity item text-center">Quantity</th>
-                                <th className="cart_product first_item">Name</th>
-                                <th className="cart_description item">Author</th>
-                                <th className="cart_unit item text-right">Price</th>
-                                <th className="cart_quantity item text-center">Quantity</th>
+                        
                                 <th className="cart_total item text-right">Total</th>
                                 <th className="cart_delete last_item">&nbsp;</th>
                             </tr>
@@ -155,7 +150,7 @@ export default function CartPage() {
                                         <p className="product-name">
                                             {item.name}
                                         </p>
-                                        <small dangerouslySetInnerHTML={{ __html: item.author }} />
+                                        <small dangerouslySetInnerHTML={{ __html: item.description }} />
                                     </td>
                                     <td className="cart_unit" data-title="Precio unitario">
                                         ₡{item.price}

@@ -84,7 +84,7 @@ public sealed class StoreDB
             connection.Open();
 
 
-            // Create the products table if it does not exist  //;  author VARCHAR(100)  NOT NULL,
+            // Create the products table if it does not exist  //;  description VARCHAR(100)  NOT NULL,
             string createTableQuery = @"
 
                     DROP DATABASE IF EXISTS store; 
@@ -94,7 +94,7 @@ public sealed class StoreDB
                     CREATE TABLE IF NOT EXISTS products (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         name VARCHAR(100)  NOT NULL,
-                        author VARCHAR(100)  NOT NULL,
+                        description TEXT  NOT NULL,
                         price DECIMAL(10, 2)  NOT NULL,
                         idCategory INT  NOT NULL,
                         imgUrl VARCHAR(255)  NOT NULL
@@ -102,7 +102,8 @@ public sealed class StoreDB
 
                     CREATE TABLE IF NOT EXISTS paymentMethod (
                         id INT PRIMARY KEY NOT NULL,
-                        method_name VARCHAR(50) NOT NULL
+                        method_name VARCHAR(50) NOT NULL,
+                        active BOOLEAN NOT NULL DEFAULT FALSE 
                         );
                     
                     CREATE TABLE IF NOT EXISTS sales (
@@ -126,10 +127,11 @@ public sealed class StoreDB
                     INSERT INTO paymentMethod (id, method_name)
                             VALUES (0, 'Efectivo'), (1, 'Sinpe');
                     
-                   CREATE TABLE messages (
+                  CREATE TABLE messages (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         content TEXT NOT NULL,
-                        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        active BOOLEAN NOT NULL DEFAULT FALSE 
                     ) ENGINE=InnoDB;
 
                     INSERT INTO messages (content, timestamp)
@@ -186,13 +188,13 @@ public sealed class StoreDB
                     foreach (Product product in products)
                     {
                         string insertProductQuery = @"
-                                INSERT INTO products (name, author, price, idCategory, imgUrl)
-                                VALUES (@name, @author, @price, @idCategory , @imgUrl);";
+                                INSERT INTO products (name, description, price, idCategory, imgUrl)
+                                VALUES (@name, @description, @price, @idCategory , @imgUrl);";
 
                         using (var insertCommand = new MySqlCommand(insertProductQuery, connection, transaction))
                         {
                             insertCommand.Parameters.AddWithValue("@name", product.Name);
-                            insertCommand.Parameters.AddWithValue("@author", product.Author);
+                            insertCommand.Parameters.AddWithValue("@description", product.Description);
                             insertCommand.Parameters.AddWithValue("@price", product.Price);
                             insertCommand.Parameters.AddWithValue("@idCategory", product.ProductCategory.IdCategory);
                             insertCommand.Parameters.AddWithValue("@imgUrl", product.ImgUrl);

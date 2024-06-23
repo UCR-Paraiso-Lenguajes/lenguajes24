@@ -1,54 +1,50 @@
+'use client';
 import React, { useState, useEffect } from 'react';
 import { Dropdown, Badge } from 'react-bootstrap';
 import * as signalR from '@microsoft/signalr';
+import { HubConnectionBuilder } from '@microsoft/signalr';
 
 const NotificationsDropdown = () => {
-  const [messages, setMessages] = useState([]);
+  const [apiMessages, setApiMessages] = useState<string[]>([]);
+  const [campaignMessages, setCampaignMessages] = useState<string[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const [connection, setConnection] = useState(null);
-  const [error, setError] = useState(null);
-  const [reconnectInterval, setReconnectInterval] = useState(1000); // Retry reconnect every 1 second
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
 
   const URL = process.env.NEXT_PUBLIC_API_URL;
   if (!URL) {
     throw new Error('NEXT_PUBLIC_API_URL is not defined');
   }
 
-  // Effect to handle initial fetch and SignalR connection
+  // Fetch initial messages from the API
   useEffect(() => {
     const fetchMessages = async () => {
       try {
         const response = await fetch(`${URL}/api/Campaign`);
         if (response.ok) {
           const data = await response.json();
-          console.log('Datos recibidos de la API:', data);
-
           if (Array.isArray(data)) {
-            const campaigns = data.map((campaign, index) => {
-              if (Array.isArray(campaign) && campaign.length > 1) {
-                return `New campaign: ${campaign[1]}`;
-              } else {
-                console.error(`Campaña sin detalles en el índice ${index}`, campaign);
-                return 'Campaña sin detalles';
-              }
+            const campaigns = data.map((campaign) => {
+              return `New campaign: ${campaign[1]}`;
             });
-            setMessages(campaigns.slice(-3)); // Solo mantenemos los últimos 3 mensajes
+            setApiMessages(campaigns.slice(-3)); // Keep the last 3 messages from the API
           } else {
-            setError('Respuesta de la API en un formato inesperado.');
+            console.error('Unexpected API response format:', data);
           }
         } else {
-          setError('Error al obtener las campañas.');
+          console.error('Failed to fetch campaigns from API:', response.statusText);
         }
       } catch (err) {
-        console.error('Error al obtener las campañas:', err);
-        setError('Error al obtener las campañas.');
+        console.error('Error fetching campaigns from API:', err);
       }
     };
 
     fetchMessages();
+  }, [URL]);
 
-    const newConnection = new signalR.HubConnectionBuilder()
+  // Setup SignalR connection and event listeners
+  useEffect(() => {
+    const newConnection = new HubConnectionBuilder()
       .withUrl(`${URL}/campaignHub`, {
         withCredentials: true,
       })
@@ -59,18 +55,16 @@ const NotificationsDropdown = () => {
     const startConnection = async () => {
       try {
         await newConnection.start();
-        console.log("Connected to SignalR Hub.");
+        console.log('Connected to SignalR Hub.');
         setConnection(newConnection);
       } catch (err) {
-        console.error("SignalR Connection Error: ", err);
-        console.log("Retrying connection in", reconnectInterval, "ms...");
-        setTimeout(startConnection, reconnectInterval);
+        console.error('SignalR Connection Error: ', err);
       }
     };
 
     newConnection.onclose(() => {
-      setError('Conexión cerrada. Intentando reconectar...');
-      setTimeout(startConnection, reconnectInterval);
+      console.error('SignalR connection closed. Attempting to reconnect...');
+      setTimeout(startConnection, 1000); // Retry connection every 1 second
     });
 
     startConnection();
@@ -80,37 +74,23 @@ const NotificationsDropdown = () => {
         newConnection.stop();
       }
     };
-  }, [URL, reconnectInterval]);
+  }, [URL]);
 
-  // Effect to handle message updates from SignalR
   useEffect(() => {
-    if (connection) {
-      debugger;
-      const handleReceiveMessage = (user, message) => {
-        setMessages((prevMessages) => {
-          const newMessages = [...prevMessages, `${user}: ${message}`];
-          return newMessages.slice(-3); // Solo mantenemos los últimos 3 mensajes
-        });
-        setUnreadCount((prevCount) => prevCount + 1);
-      };
+    if (!connection) return;
 
-      const handleUpdateCampaigns = (contenidoHtml) => {
-        setMessages((prevMessages) => {
-          const newMessages = [...prevMessages, `Nueva Campaña: ${contenidoHtml}`];
-          return newMessages.slice(-3); // Solo mantenemos los últimos 3 mensajes
-        });
-        setUnreadCount((prevCount) => prevCount + 1);
-      };
+    const handleReceiveCampaignUpdate = (message) => {
+      console.log('Received message from socket:', message);
+      const updateMessage = `New campaign: ${message}`;
+      setCampaignMessages((prevMessages) => [updateMessage, ...prevMessages.slice(0, 2)]);
+      setUnreadCount((prevCount) => prevCount + 1);
+    };
 
-      connection.on('ReceiveMessage', handleReceiveMessage);
-      connection.on('UpdateCampaigns', handleUpdateCampaigns);
+    connection.on('ReceiveCampaignUpdate', handleReceiveCampaignUpdate);
 
-      // Cleanup function to remove event listeners when the component unmounts or connection changes
-      return () => {
-        connection.off('ReceiveMessage', handleReceiveMessage);
-        connection.off('UpdateCampaigns', handleUpdateCampaigns);
-      };
-    }
+    return () => {
+      connection.off('ReceiveCampaignUpdate', handleReceiveCampaignUpdate);
+    };
   }, [connection]);
 
   const handleMarkAsRead = () => {
@@ -118,26 +98,39 @@ const NotificationsDropdown = () => {
   };
 
   return (
-    <Dropdown show={isOpen} onToggle={() => setIsOpen(!isOpen)} onClick={handleMarkAsRead}>
+    <Dropdown show={isOpen} onToggle={() => setIsOpen(!isOpen)}>
       <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-        <img src="https://png.pngtree.com/png-vector/20240521/ourmid/pngtree-free-golden-3d-bell-on-white-background-png-image_12501298.png"
-          style={{ height: '40px', width: '40px' }} className="img-fluid" />
+        <img
+          src="https://png.pngtree.com/png-vector/20240521/ourmid/pngtree-free-golden-3d-bell-on-white-background-png-image_12501298.png"
+          style={{ height: '40px', width: '40px' }}
+          className="img-fluid"
+          alt="Notification bell"
+        />
         <i className="fa fa-bell" aria-hidden="true"></i>
         {unreadCount > 0 && (
           <Badge bg="danger">{unreadCount}</Badge>
         )}
       </Dropdown.Toggle>
       <Dropdown.Menu>
-        {messages.map((message, index) => (
-          <Dropdown.Item key={index}>
-            <div>
-              {message}
-              <small className="text-muted d-block">
-                {new Date().toLocaleString()}
-              </small>
-            </div>
+        {[...apiMessages].reverse().slice(-3).map((message, index) => ( // Only show the last 3 messages
+          <Dropdown.Item key={`api-${index}`}>
+            <div dangerouslySetInnerHTML={{ __html: message }} />
+            <small className="text-muted d-block">
+              {new Date().toLocaleString()}
+            </small>
           </Dropdown.Item>
         ))}
+        {[...campaignMessages].reverse().slice(-3).map((message, index) => ( // Only show the last 3 messages
+          <Dropdown.Item key={`campaign-${index}`}>
+            <div dangerouslySetInnerHTML={{ __html: message }} />
+            <small className="text-muted d-block">
+              {new Date().toLocaleString()}
+            </small>
+          </Dropdown.Item>
+        ))}
+        <Dropdown.Item onClick={handleMarkAsRead}>
+          Marcar como leído
+        </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );

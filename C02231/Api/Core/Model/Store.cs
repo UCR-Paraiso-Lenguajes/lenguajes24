@@ -49,7 +49,7 @@ public sealed class Store
                     int.TryParse(row["idCategory"], out int idCategory))
                 {
                     string name = row["name"];
-                    string author = row["author"];
+                    string description = row["description"];
                     string imageUrl = row["imgUrl"];
 
                     Category category = Categories.Instance.GetCategories().SingleOrDefault(c => c.IdCategory == idCategory);
@@ -59,7 +59,7 @@ public sealed class Store
                         Product product = new Product
                         (
                             name,
-                            author, 
+                            description, 
                             imageUrl,
                             price,
                             category,

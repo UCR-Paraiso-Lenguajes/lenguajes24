@@ -4,11 +4,12 @@ import 'bootstrap/dist/css/bootstrap.css';
 import Link from 'next/link';
 import '/app/ui/global.css';
 import * as signalR from '@microsoft/signalr';
+import { HubConnectionBuilder } from '@microsoft/signalr';
 
 type Message = {
     id: number;
     update: string;
-    timestamp: Date;
+    timestamp: string; // Cambiado a string para mantener el formato ISO
 };
 
 const URL = process.env.NEXT_PUBLIC_API_URL;
@@ -20,14 +21,22 @@ const Campaigns: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState<string>('');
+    const [connection, setConnection] = useState(null);
     const maxChars = 5000;
 
+    const isValidDate = (date: any): boolean => {
+        return !isNaN(Date.parse(date));
+    };
+
     const transformData = (data: any[]): Message[] => {
-        return data.map(item => ({
-            id: Number(item[0]),
-            update: item[1],
-            timestamp: new Date(item[2]) // Convertir a objeto Date
-        }));
+        return data.map(item => {
+            const timestamp = isValidDate(item[2]) ? new Date(item[2]).toISOString() : new Date().toISOString();
+            return {
+                id: Number(item[0]),
+                update: item[1],
+                timestamp: timestamp
+            };
+        });
     };
 
     const fetchMessages = async () => {
@@ -51,38 +60,32 @@ const Campaigns: React.FC = () => {
             console.error('Error fetching messages:', error);
         }
     };
-
     useEffect(() => {
         fetchMessages();
 
-        const connection = new signalR.HubConnectionBuilder()
+        const newConnection = new HubConnectionBuilder()
             .withUrl(`${URL}/campaignHub`)
-            .configureLogging(signalR.LogLevel.Information)
             .withAutomaticReconnect()
             .build();
 
-        connection.on("ReceiveCampaignUpdate", (updateString: string) => {
+        newConnection.on("ReceiveCampaignUpdate", (updateString) => {
             try {
-                let update: Message;
-                // Verificar si es una cadena y no un JSON válido
+                let update;
                 if (typeof updateString === 'string') {
                     const parts = updateString.split(',');
-                    if (parts.length === 3) {
+                    if (parts.length === 10) {
                         update = {
                             id: Number(parts[0]),
                             update: parts[1],
-                            timestamp: new Date(parts[2])
+                            timestamp: isValidDate(parts[2]) ? new Date(parts[2]).toISOString() : new Date().toISOString()
                         };
                     } else {
                         throw new Error('Invalid string format');
                     }
                 } else {
-                    // Intentar convertir la cadena en un objeto JSON
                     update = JSON.parse(updateString);
-
-                    // Verificar si el objeto tiene la estructura esperada
                     if ('id' in update && 'update' in update && 'timestamp' in update) {
-                        update.timestamp = new Date(update.timestamp); // Convertir a objeto Date
+                        update.timestamp = isValidDate(update.timestamp) ? new Date(update.timestamp).toISOString() : new Date().toISOString();
                     } else {
                         throw new Error('Received update does not have the expected structure');
                     }
@@ -93,12 +96,15 @@ const Campaigns: React.FC = () => {
             }
         });
 
-        connection.start().catch(err => console.error("Connection error:", err));
+        newConnection.start()
+            .then(() => console.log('Connected to the campaign hub'))
+            .catch(err => console.error('Error connecting to campaign hub:', err));
 
         return () => {
-            connection.stop().catch(err => console.error("Disconnection error:", err));
+            newConnection.stop();
         };
     }, []);
+
 
     const handleAddMessage = async () => {
         try {
@@ -109,6 +115,7 @@ const Campaigns: React.FC = () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    id: 0,
                     update: newMessage,
                     timestamp: timestamp // Enviar el timestamp
                 })
@@ -143,6 +150,15 @@ const Campaigns: React.FC = () => {
             console.error("There was an error deleting the message!", error);
         }
     };
+    /* const handleDeleteMessage = async (id) => {
+         if (connection) {
+             try {
+                 await connection.invoke('DeleteMessage', id);
+             } catch (error) {
+                 console.error('Error deleting message:', error);
+             }
+         }
+     };*/
 
     return (
         <div>
@@ -174,7 +190,7 @@ const Campaigns: React.FC = () => {
                             {messages.map((message) => (
                                 <li key={message.id} className="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
-                                        <strong>{message.timestamp.toLocaleString()}:</strong> {message.update}
+                                        <strong>{new Date(message.timestamp).toLocaleString()}:</strong> <span dangerouslySetInnerHTML={{ __html: message.update }} />
                                     </div>
                                     <button className="btn btn-danger" onClick={() => handleDeleteMessage(message.id)}>Delete</button>
                                 </li>

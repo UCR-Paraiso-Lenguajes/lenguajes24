@@ -24,7 +24,7 @@ export default function Home() {
   if (!URL) {
     throw new Error('NEXT_PUBLIC_API_URL is not defined');
   }
-
+  const message = { count: 3 }; 
   const createQueryString = useCallback(
     (name: string, values: string[]) => {
       const params = new URLSearchParams();
@@ -230,9 +230,9 @@ export default function Home() {
           </div>
 
           <div className="col-sm-2 d-flex justify-content-end">
-            <div className="d-flex align-items-center justify-content-center">
+            <div className="d-flex align-items-center justify-content-center" >
               <NotificationsDropdown />
-              <Link href="/admin" className="btn btn-success ml-2">
+              <Link href="/admin" className="btn btn-secondary ml-2"style={{margin: '10px' }}>
                 Login
               </Link>
             </div>
@@ -252,14 +252,14 @@ export default function Home() {
                 {cart.count}
               </div>
             </div>
-          </div>F
+          </div>
         </div>
       </header>
 
 
 
       <div className='container'>
-        <h2 className='text-left mt-5 mb-5'>List of Books</h2>
+        <h2 className='text-left mt-2 mb-2'>Bookstore</h2>
 
         <div className="container" style={{ display: 'flex', flexWrap: 'wrap' }}>
           {storeProducts && storeProducts.products && storeProducts.products.map(item => (
@@ -295,7 +295,7 @@ const Products = ({ product, handleAddToCart }) => {
   if (product === undefined || product === "") throw new Error('The product is empty.');
 
   if (product.productCategory.idCategory !== 10) {
-    const { id, name, author, imgUrl, price } = product;
+    const { id, name, description, imgUrl, price } = product;
 
     return (
       <div className="row my-3">
@@ -305,7 +305,7 @@ const Products = ({ product, handleAddToCart }) => {
             <div className="card-body">
               <div className='text-center'>
                 <h4>{name}</h4>
-                <p>Author: <span dangerouslySetInnerHTML={{ __html: author }} /></p>
+                <p>Description: <span dangerouslySetInnerHTML={{ __html: description }} /></p>
                 <p>Price: ₡{price}</p>
                 <button className="btn btn-dark" onClick={() => handleAddToCart(product)}>Add to Cart</button>
               </div>
@@ -371,7 +371,7 @@ const CarruselComponent = ({ carrusel, handleAddToCart }) => {
               <img className="d-block w-100" src={carruselItem.imgUrl} width="100%" alt={carruselItem.name} />
               <div className="carousel-caption d-none d-md-block" style={{ color: 'black' }}>
                 <h5>{carruselItem.name}</h5>
-                <p>{carruselItem.author}</p>
+                <p>{carruselItem.description}</p>
                 <p>{carruselItem.price}</p>
                 <button className="btn btn-dark" onClick={() => handleAddToCart(carruselItem)}>Add to Cart</button>
               </div>

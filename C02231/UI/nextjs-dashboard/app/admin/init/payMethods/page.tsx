@@ -6,18 +6,9 @@ import '/app/ui/global.css';
 import useAuth from '../../useAuth';
 
 export default function PaymentMethods() {
-    const isAuthenticated = useAuth();
+  
 
-    useEffect(() => {
-        if (isAuthenticated) {
-        }
-    }, [isAuthenticated]);
-
-    
-
-    if (!isAuthenticated) {
-        return null;
-    }
+ 
     return (
         <div>
             <header className="p-3 text-bg-dark">
