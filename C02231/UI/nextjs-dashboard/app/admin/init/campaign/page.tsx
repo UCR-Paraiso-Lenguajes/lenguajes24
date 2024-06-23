@@ -50,14 +50,13 @@ const Campaigns: React.FC = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Datos recibidos de la API:', data);
                 setMessages(transformData(data));
             } else {
                 setErrorMessage('Error al obtener las campañas.');
             }
         } catch (error) {
             setErrorMessage('Error al obtener las campañas.');
-            console.error('Error fetching messages:', error);
+            throw new Error('Error fetching messages:', error);
         }
     };
     useEffect(() => {
@@ -92,7 +91,7 @@ const Campaigns: React.FC = () => {
                 }
                 setMessages(prevMessages => [update, ...prevMessages.slice(0, 2)]);
             } catch (error) {
-                console.error('Error processing update:', error);
+                throw new Error('Error processing update:', error);
             }
         });
 
@@ -128,7 +127,7 @@ const Campaigns: React.FC = () => {
                 throw new Error('Network response was not ok');
             }
         } catch (error) {
-            console.error('There was an error posting the message!', error);
+            throw new Error('There was an error posting the message!', error);
         }
     };
 
@@ -147,19 +146,10 @@ const Campaigns: React.FC = () => {
 
             setMessages(messages.filter(message => message.id !== id));
         } catch (error) {
-            console.error("There was an error deleting the message!", error);
+            throw new Error("There was an error deleting the message!", error);
         }
     };
-    /* const handleDeleteMessage = async (id) => {
-         if (connection) {
-             try {
-                 await connection.invoke('DeleteMessage', id);
-             } catch (error) {
-                 console.error('Error deleting message:', error);
-             }
-         }
-     };*/
-
+  
     return (
         <div>
             <header className="p-3 text-bg-dark">

@@ -29,13 +29,13 @@ const NotificationsDropdown = () => {
             });
             setApiMessages(campaigns.slice(-3)); // Keep the last 3 messages from the API
           } else {
-            console.error('Unexpected API response format:', data);
+            throw new Error('Unexpected API response format:', data);
           }
         } else {
-          console.error('Failed to fetch campaigns from API:', response.statusText);
+          throw new Error('Failed to fetch campaigns from API:', response.statusText);
         }
       } catch (err) {
-        console.error('Error fetching campaigns from API:', err);
+        throw new Error('Error fetching campaigns from API:', err);
       }
     };
 
