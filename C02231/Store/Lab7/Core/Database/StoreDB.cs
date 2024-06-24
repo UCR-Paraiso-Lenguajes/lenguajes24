@@ -13,327 +13,72 @@ public sealed class StoreDB
 
         var products = new List<Product>{
 
-        new Product
-        {
-            Name = "Cinder",
-            Author = "Marissa Meyer",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781250768889_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 9500,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 3),
-            Id = 1
-        },
-
-       new Product
-       {
-           Name = "Scarlet",
-           Author = "Marissa Meyer",
-           ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781250768896_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-           Price = 9500,
-           ProductCategory = categoryList.Single(category => category.IdCategory == 3),
-           Id = 2
-       },
-
-       new Product
-       {
-           Name = "Cress",
-           Author = "Marissa Meyer",
-           ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781250768902_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-           Price = 9500,
-           ProductCategory = categoryList.Single(category => category.IdCategory == 3),
-           Id = 3
-       },
-
-        new Product
-        {
-            Name = "Winter",
-            Author = "Marissa Meyer",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781250768926_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 11900,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 3),
-            Id = 4
-        },
-
-        new Product
-        {
-            Name = "Fairest",
-            Author = "Marissa Meyer",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781250774057_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 8700,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 3),
-            Id = 5
-        },
-
-        new Product
-        {
-            Name = "La Sociedad de la Nieve",
-            Author = "Pablo Vierci",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9786070794162_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 12800,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 6),
-            Id = 6
-        },
-
-        new Product
-        {
-            Name = "En Agosto nos vemos",
-            Author = "Gabriel García Márquez",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9786073911290_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 14900,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 7),
-            Id = 7
-        },
-
-        new Product
-        {
-            Name = "El estrecho sendero entre deseos",
-            Author = "Patrick Rothfuss",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9789585457935_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 12800,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 7),
-            Id = 8
-        },
-
-        new Product
-        {
-            Name = "Alas de Sangre",
-            Author = "Rebecca Yarros",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9788408279990_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 19800,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 1),
-            Id = 9
-        },
-
-       new Product
-       {
-           Name = "Corona de Medianoche",
-           Author = "Sarah J. Mass",
-           ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9786073143691_1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-           Price = 15800,
-           ProductCategory = categoryList.Single(category => category.IdCategory == 4),
-           Id = 10
-       },
-
-       new Product
-       {
-           Name = "Carta de Amor a los Muertos",
-           Author = "Ava Dellaira",
-           ImgUrl = "https://m.media-amazon.com/images/I/41IETN4YxGL._SY445_SX342_.jpg",
-           Price = 8900,
-           ProductCategory = categoryList.Single(category => category.IdCategory == 2),
-           Id = 11
-       },
-
-        new Product
-        {
-            Name = "Alicia en el país de las Maravillas",
-            Author = "Lewis Carrol",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9788415618713_1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 7900,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 7),
-            Id = 0
-        },
-         new Product
-         {
-             Name = "Alicia a través del Espejo",
-             Author = "Lewis Carrol",
-             ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9788417430429_1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-             Price = 7900,
-             ProductCategory = categoryList.Single(category => category.IdCategory == 7),
-             Id = 12
-         },
-       new Product
-       {
-           Name = "Crecent City 1 House Of Earth And Blood",
-           Author = "Sarah J. Maas",
-           ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781635574043_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-           Price = 19800,
-           ProductCategory = categoryList.Single(category => category.IdCategory == 7),
-           Id = 13
-       },
-        new Product
-        {
-            Name = "Crescent City 2 House Of Sky And Breath",
-            Author = "Sarah J. Maas",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781635574074_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 19800,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 7),
-            Id = 14
-        },
-        new Product
-        {
-            Name = "Crescent City 3 House Of Flame And Shadow",
-            Author = "Sarah J. Maas",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781635574104_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 19800,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 7),
-            Id = 15
-        },
-        new Product
-        {
-            Name = "Harry Potter And The Sorcerers Stone",
-            Author = "J.K Rowling",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878929_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 9900,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 1),
-            Id = 16
-        },
-        new Product
-        {
-            Name = "Harry Potter And The Chamber Of Secrets",
-            Author = "J.K Rowling",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878936_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 9900,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 1),
-            Id = 17
-        },
-        new Product
-        {
-            Name = "Harry Potter And The Prisoner Of Azkaban",
-            Author = "J.K Rowling",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878943_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 9900,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 1),
-            Id = 18
-        },
-        new Product
-        {
-            Name = "Harry Potter And The Goblet Of Fire",
-            Author = "J.K Rowling",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878950_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 11900,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 1),
-            Id = 19
-        },
-        new Product
-        {
-            Name = "Harry Potter And The Order Of The Phoenix",
-            Author = "J.K Rowling",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878967_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 11900,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 1),
-            Id = 20
-        },
-         new Product
-         {
-             Name = "Harry Potter And The Half-Blood Prince",
-             Author = "J.K Rowling",
-             ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878974_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-             Price = 11900,
-             ProductCategory = categoryList.Single(category => category.IdCategory == 1),
-             Id = 21
-         },
-         new Product
-         {
-             Name = "Harry Potter And The Deathly Hallows",
-             Author = "J.K Rowling",
-             ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878981_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-             Price = 12800,
-             ProductCategory = categoryList.Single(category => category.IdCategory == 1),
-             Id = 22
-         },
-         new Product
-         {
-             Name = "The Hunger Games",
-             Author = "Suzzane Collins",
-             ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9780439023528_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-             Price = 11900,
-             ProductCategory = categoryList.Single(category => category.IdCategory == 9),
-             Id = 23
-         },
-        new Product
-        {
-            Name = "Catching Fire",
-            Author = "Suzzane Collins",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9780545586177_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 11900,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 9),
-            Id = 24
-        },
-        new Product
-        {
-            Name = "Mockingjay",
-            Author = "Suzzane Collins",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9780545663267_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 11900,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 9),
-            Id = 25
-        },
-        new Product
-        {
-            Name = "Ballad Of Songbirds And Snakes",
-            Author = "Suzzane Collins",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781339016573_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 11900,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 9),
-            Id = 26
-        },
-          new Product
-          {
-              Name = "Kingkiller Chronicle 1 The Name Of The Wind",
-              Author = "Patrick Rothfuss",
-              ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9780756404741_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-              Price = 8700,
-              ProductCategory = categoryList.Single(category => category.IdCategory == 8),
-              Id = 27
-          },
-          new Product
-          {
-              Name = "Kingkiller 2 The Wise Mans Fear",
-              Author = "Patrick Rothfuss",
-              ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9780756404734_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-              Price = 11900,
-              ProductCategory = categoryList.Single(category => category.IdCategory == 8),
-              Id = 28
-          },
-          new Product
-          {
-              Name = "Slow Regard Of Silent Things",
-              Author = "Patrick Rothfuss",
-              ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9780756411329_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-              Price = 11900,
-              ProductCategory = categoryList.Single(category => category.IdCategory == 8),
-              Id = 29
-          },
-        new Product
-        {
-            Name = "Girl On The Train",
-            Author = "Paula Hawkins",
-            ImgUrl = "https://www.libreriainternacional.com/media/catalog/product/9/7/9781594634024_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
-            Price = 13900,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 5),
-            Id = 30
-        },
-         new Product
-        {
-            Name = "Bookmarks",
-            Author = "Perfect for not to lose where your story goes",
-            ImgUrl = "1.png",
-            Price = 9500,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 10),
-            Id = 31
-        },
-
-        new Product
-        {
-            Name = "Pins",
-            Author = "Adding a touch of literary flair to any outfit or accessory",
-            ImgUrl = "2.png",
-            Price = 9500,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 10),
-            Id = 32
-        },
-
-        new Product
-        {
-            Name = "Necklace",
-            Author = "A beautifull Necklace for all day wear",
-            ImgUrl = "3.png",
-            Price = 9500,
-            ProductCategory = categoryList.Single(category => category.IdCategory == 10),
-            Id = 33
-        }
+        new Product("Cinder", "Marissa Meyer","https://www.libreriainternacional.com/media/catalog/product/9/7/9781250768889_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+           9500 ,categoryList.Single(category => category.IdCategory == 3),1),
+        new Product("Scarlet", "Marissa Meyer", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781250768896_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        9500, categoryList.Single(category => category.IdCategory == 3), 2),
+        new Product("Cress", "Marissa Meyer", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781250768902_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        9500, categoryList.Single(category => category.IdCategory == 3), 3),
+        new Product("Winter", "Marissa Meyer", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781250768926_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        11900, categoryList.Single(category => category.IdCategory == 3), 4),
+        new Product("Fairest", "Marissa Meyer", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781250774057_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        8700, categoryList.Single(category => category.IdCategory == 3), 5),
+        new Product("La Sociedad de la Nieve", "Pablo Vierci", "https://www.libreriainternacional.com/media/catalog/product/9/7/9786070794162_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        12800, categoryList.Single(category => category.IdCategory == 6), 6),
+        new Product("En Agosto nos vemos", "Gabriel García Márquez", "https://www.libreriainternacional.com/media/catalog/product/9/7/9786073911290_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        14900, categoryList.Single(category => category.IdCategory == 7), 7),
+        new Product("El estrecho sendero entre deseos", "Patrick Rothfuss", "https://www.libreriainternacional.com/media/catalog/product/9/7/9789585457935_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        12800, categoryList.Single(category => category.IdCategory == 7), 8),
+        new Product("Alas de Sangre", "Rebecca Yarros", "https://www.libreriainternacional.com/media/catalog/product/9/7/9788408279990_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        19800, categoryList.Single(category => category.IdCategory == 1), 9),
+        new Product("Corona de Medianoche", "Sarah J. Mass", "https://www.libreriainternacional.com/media/catalog/product/9/7/9786073143691_1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        15800, categoryList.Single(category => category.IdCategory == 4), 10),
+        new Product("Carta de Amor a los Muertos", "Ava Dellaira", "https://m.media-amazon.com/images/I/41IETN4YxGL._SY445_SX342_.jpg",
+        8900, categoryList.Single(category => category.IdCategory == 2), 11),
+        new Product("Alicia en el país de las Maravillas", "Lewis Carrol", "https://www.libreriainternacional.com/media/catalog/product/9/7/9788415618713_1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        7900, categoryList.Single(category => category.IdCategory == 7), 0),
+        new Product("Alicia a través del Espejo", "Lewis Carrol", "https://www.libreriainternacional.com/media/catalog/product/9/7/9788417430429_1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        7900, categoryList.Single(category => category.IdCategory == 7), 12),
+        new Product("Crecent City 1 House Of Earth And Blood", "Sarah J. Maas", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781635574043_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        19800, categoryList.Single(category => category.IdCategory == 7), 13),
+        new Product("Crescent City 2 House Of Sky And Breath", "Sarah J. Maas", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781635574074_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        19800, categoryList.Single(category => category.IdCategory == 7), 14),
+        new Product("Crescent City 3 House Of Flame And Shadow", "Sarah J. Maas", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781635574104_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        19800, categoryList.Single(category => category.IdCategory == 7), 15),
+        new Product("Harry Potter And The Sorcerers Stone", "J.K Rowling", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878929_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        9900, categoryList.Single(category => category.IdCategory == 1), 16),
+        new Product("Harry Potter And The Chamber Of Secrets", "J.K Rowling", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878936_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        9900, categoryList.Single(category => category.IdCategory == 1), 17),
+        new Product("Harry Potter And The Prisoner Of Azkaban", "J.K Rowling", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878943_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        9900, categoryList.Single(category => category.IdCategory == 1), 18),
+        new Product("Harry Potter And The Goblet Of Fire", "J.K Rowling", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878950_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        11900, categoryList.Single(category => category.IdCategory == 1), 19),
+        new Product("Harry Potter And The Order Of The Phoenix", "J.K Rowling", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878967_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        11900, categoryList.Single(category => category.IdCategory == 1), 20),
+        new Product("Harry Potter And The Half-Blood Prince", "J.K Rowling", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878974_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        11900, categoryList.Single(category => category.IdCategory == 1), 21),
+        new Product("Harry Potter And The Deathly Hallows", "J.K Rowling", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781338878981_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        12800, categoryList.Single(category => category.IdCategory == 1), 22),
+        new Product("The Hunger Games", "Suzzane Collins", "https://www.libreriainternacional.com/media/catalog/product/9/7/9780439023528_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        11900, categoryList.Single(category => category.IdCategory == 9), 23),
+        new Product("Catching Fire", "Suzzane Collins", "https://www.libreriainternacional.com/media/catalog/product/9/7/9780545586177_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        11900, categoryList.Single(category => category.IdCategory == 9), 24),
+        new Product("Mockingjay", "Suzzane Collins", "https://www.libreriainternacional.com/media/catalog/product/9/7/9780545663267_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        11900, categoryList.Single(category => category.IdCategory == 9), 25),
+        new Product("Ballad Of Songbirds And Snakes", "Suzzane Collins", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781339016573_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        11900, categoryList.Single(category => category.IdCategory == 9), 26),
+        new Product("Kingkiller Chronicle 1 The Name Of The Wind", "Patrick Rothfuss", "https://www.libreriainternacional.com/media/catalog/product/9/7/9780756404741_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        8700, categoryList.Single(category => category.IdCategory == 8), 27),
+        new Product("Kingkiller 2 The Wise Mans Fear", "Patrick Rothfuss", "https://www.libreriainternacional.com/media/catalog/product/9/7/9780756404734_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        11900, categoryList.Single(category => category.IdCategory == 8), 28),
+        new Product("Slow Regard Of Silent Things", "Patrick Rothfuss", "https://www.libreriainternacional.com/media/catalog/product/9/7/9780756411329_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        11900, categoryList.Single(category => category.IdCategory == 8), 29),
+        new Product("Girl On The Train", "Paula Hawkins", "https://www.libreriainternacional.com/media/catalog/product/9/7/9781594634024_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1320&width=1000",
+        13900, categoryList.Single(category => category.IdCategory == 5), 30),
+        new Product ("Bookmarks", "Perfect for not to lose where your story goes", "1.png",9500, categoryList.Single(category => category.IdCategory == 10), 31),
+        new Product("Pins", "Adding a touch of literary flair to any outfit or accessory", "2.png", 9500, categoryList.Single(category => category.IdCategory == 10), 32),
+        new Product ( "Necklace", "A beautifull Necklace for all day wear", "3.png", 9500, categoryList.Single(category => category.IdCategory == 10), 33)
       };
-
 
 
         using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
@@ -473,7 +218,7 @@ public sealed class StoreDB
             }
         }
     }
-    internal static List<Dictionary<string, string>> RetrieveDatabaseInfo()
+    internal static async Task<List<Dictionary<string, string>>> RetrieveDatabaseInfoAsync()
     {
         List<Dictionary<string, string>> databaseInfo = new List<Dictionary<string, string>>();
 

@@ -37,6 +37,17 @@ namespace StoreApi.Cache
                 throw new ArgumentException("The products list cannot be empty.");
             }
         }
+        public void setOneProduct(Product product)
+        {
+            if (productDictionary.ContainsKey(product.Category))
+            {
+                productDictionary[product.Category].Add(product);
+            }
+            else
+            {
+                productDictionary.Add(product.Category, new List<Product> { product });
+            }
+        }
         public IEnumerable<Product> GetProduct(Guid category)
         {
             if (category == Guid.Empty && !productDictionary.ContainsKey(category))

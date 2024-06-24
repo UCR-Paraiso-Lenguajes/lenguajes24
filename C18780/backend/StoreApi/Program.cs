@@ -27,6 +27,7 @@ builder.Services.AddScoped<ISinpeRepository, SinpeRepository>();
 builder.Services.AddScoped<IDailySalesRepository, DailySalesRepository>();
 builder.Services.AddScoped<IWeeklySalesRepository, WeeklySalesRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IAdRepository, AdRepository>();
 
 // Registra los manejadores de MediatR específicos
 builder.Services.AddTransient<IRequestHandler<GetProductListQuery, List<Product>>, GetProductListHandler>();
@@ -55,6 +56,10 @@ builder.Services.AddTransient<IRequestHandler<GetCategoryListQuery, IEnumerable<
 builder.Services.AddTransient<IRequestHandler<CreateCategoryCommand, Category>, CreateCategoryHandler>();
 builder.Services.AddTransient<IRequestHandler<DeleteCategoryCommand, int>, DeleteCategoryHandler>();
 
+builder.Services.AddTransient<IRequestHandler<CreateAdCommand, Ad>, CreateAdHandler>();
+builder.Services.AddTransient<IRequestHandler<GetAdByIdQuery, Ad>, GetAdByIdHandler>();
+builder.Services.AddTransient<IRequestHandler<GetAdListQuery, IEnumerable<Ad>>, GetAdListHandler>();
+builder.Services.AddTransient<IRequestHandler<DeleteAdCommand, int>, DeleteAdHandler>();
 
 //Add services to controllers
 builder.Services.AddTransient<CategoryController>();
@@ -123,6 +128,14 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("DefaultConnection").Value.ToString();
+
+    var DB_value = Environment.GetEnvironmentVariable("DB");
+    if (!String.IsNullOrEmpty(DB_value))
+    {
+        connection = DB_value;
+    }
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }

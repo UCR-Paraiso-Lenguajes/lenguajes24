@@ -1,0 +1,9 @@
+Correr el mysql
+docker run --name store-mysql -e MYSQL_ROOT_PASSWORD=123456 -d -p 3306:3306 mysql:latest
+
+Correr el api 
+docker run -d -p 8080:8080 --name api zjean42/api:latest
+Unable to find image 'zjean42/api:latest'
+
+cargar la imagen del api
+docker build -t api -f Dockerfile .

@@ -32,3 +32,11 @@ export type Category = {
     uuid: UUID;
     name: string;
 }
+
+export type ProductC = {
+    name: string,
+    imageUrl: string,
+    price: number,
+    description: string,
+    category: string
+}

@@ -1,5 +1,6 @@
 import { getInitialCartLocalStorage } from '../lib/cart_data_localeStore';
 
+let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7099';
 
 export async function useFetchCartPurchase() {
     const cart = getInitialCartLocalStorage();
@@ -10,7 +11,7 @@ export async function useFetchCartPurchase() {
         "paymentMethod": cart.cart.methodPayment
     }
     try {
-        const res = await fetch('https://localhost:7099/api/Cart', {
+        const res = await fetch(`${environmentUrl}/api/Cart`, {
             method: 'POST',
             body: JSON.stringify(purchase),
             headers: {

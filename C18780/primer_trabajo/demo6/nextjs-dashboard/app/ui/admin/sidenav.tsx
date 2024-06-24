@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartLine, faCartFlatbed, faPowerOff, faHome, faBars } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faCartFlatbed, faPowerOff, faHome, faBars, faMessage } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { deleteCookie } from "cookies-next";
 import { useRouter } from 'next/navigation';
@@ -31,7 +31,15 @@ const SideNav = () => {
                         </span>
                     </li>
                 </Link>
-                <Link href="/admin/init">
+                <Link href="/admin/init/ad">
+                    <li className="nav">
+                        <FontAwesomeIcon icon={faMessage} className="fa-icon me-2" />
+                        <span className={`text-hidden ${isMenuOpen ? '' : 'hidden'}`}>
+                            ad
+                        </span>
+                    </li>
+                </Link>
+                <Link href="/admin/init/products">
                     <li className="nav">
                         <FontAwesomeIcon icon={faCartFlatbed} className="fa-icon me-2" />
                         <span className={`text-hidden ${isMenuOpen ? '' : 'hidden'}`}>

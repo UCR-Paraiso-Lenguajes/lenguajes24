@@ -12,7 +12,7 @@ namespace StoreApi.Handler
         {
             if (productRepository == null)
             {
-                throw new ArgumentException("Illegal action, studentRepository is invalid.");
+                throw new ArgumentException("Illegal action, productRepository is invalid.");
             }
             _productRepository = productRepository;
         }

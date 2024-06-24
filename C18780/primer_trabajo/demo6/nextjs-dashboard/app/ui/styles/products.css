@@ -81,6 +81,11 @@ body {
     padding-right: 1rem;
 }
 
+.specifications-content img {
+    max-width: 100%; /* Establece el tamaño máximo de la imagen al ancho del contenedor */
+    height: 100%; /* Permite que la imagen conserve su relación de aspecto */
+}
+
 .btn {
     font-size: 1rem;
     font-weight: 500;

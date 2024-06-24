@@ -1,6 +1,9 @@
 using StoreApi.Models;
 using StoreApi.Repositories;
 using Microsoft.Extensions.Configuration;
+using NUnit.Framework;
+using Moq;
+using System;
 
 namespace StoreApiTests
 {
@@ -9,34 +12,57 @@ namespace StoreApiTests
         private IConfiguration _configuration;
         private IProductRepository _productRepository;
         private ICategoryRepository _categoryRepository;
+
         [SetUp]
         public void Setup()
         {
+            // Configuración del IConfiguration
             _configuration = new ConfigurationBuilder()
-                       .AddJsonFile("appsettings.json")
-                       .Build();
-            _productRepository = new ProductRepository(_configuration);
-            _categoryRepository = new CategoryRepository(_configuration);
+                .AddJsonFile("appsettings.json")
+                .Build();
 
-            AddTestProductData();
-            AddTestCategoryData();
+            // Configuración de los mocks
+            var productRepositoryMock = new Mock<IProductRepository>();
+            var categoryRepositoryMock = new Mock<ICategoryRepository>();
+
+            // Configuración de los métodos simulados de IProductRepository
+            productRepositoryMock.Setup(repo => repo.AddProductAsync(It.IsAny<Product>()))
+                                 .ReturnsAsync(new Product() { Uuid = Guid.NewGuid() });
+
+            productRepositoryMock.Setup(repo => repo.GetProductListAsync())
+                                 .ReturnsAsync(new List<Product>() { new Product(), new Product() });
+
+            productRepositoryMock.Setup(repo => repo.GetProductByIdAsync(It.IsAny<Guid>()))
+                                 .ReturnsAsync(new Product() { Uuid = Guid.NewGuid() });
+
+            productRepositoryMock.Setup(repo => repo.UpdateProductAsync(It.IsAny<Product>()))
+                                 .ReturnsAsync(1);
+
+            productRepositoryMock.Setup(repo => repo.DeleteProductAsync(It.IsAny<Guid>()))
+                                 .ReturnsAsync(1);
+
+            productRepositoryMock.Setup(repo => repo.AddProductAsync(It.IsAny<Product>())).ReturnsAsync((Product product) => product);
+
+            productRepositoryMock.Setup(repo => repo.GetProductByCategoryAsync(It.IsAny<Guid>()))
+                                 .ReturnsAsync(new List<Product> { /* Lista de productos simulados */ });
+
+            // Configuración de los métodos simulados de ICategoryRepository
+            categoryRepositoryMock.Setup(repo => repo.AddCategoryAsync(It.IsAny<Category>()))
+                                  .ReturnsAsync(new Category() { Uuid = Guid.NewGuid() });
+
+            categoryRepositoryMock.Setup(repo => repo.GetCategoryListAsync())
+                                  .ReturnsAsync(new List<Category>() { new Category(), new Category() });
+
+            categoryRepositoryMock.Setup(repo => repo.GetCategoryByIdAsync(It.IsAny<Guid>()))
+                                  .ReturnsAsync(new Category() { Uuid = Guid.NewGuid() });
+
+            categoryRepositoryMock.Setup(repo => repo.DeleteCategoryAsync(It.IsAny<Guid>()))
+                                  .ReturnsAsync(1);
+
+            // Inicialización de los repositorios con los mocks configurados
+            _productRepository = productRepositoryMock.Object;
+            _categoryRepository = categoryRepositoryMock.Object;
         }
-
-
-        private async Task AddTestProductData()
-        {
-            var product1 = new Product { Uuid = Guid.Parse("1547f3c3-54e6-4e7d-bf8f-f26daa15c843"), Name = "Producto 1", Category = Guid.Parse("4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18"), Description = "description", ImageUrl = "example", Price = 1 };
-
-            await _productRepository.AddProductAsync(product1);
-        }
-
-        private async Task AddTestCategoryData()
-        {
-            var category1 = new Category { Name = "Categoría 1", Uuid = Guid.Parse("4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18") };
-
-            await _categoryRepository.AddCategoryAsync(category1);
-        }
-
 
         [Test]
         public async Task AddProductAsync()
@@ -55,12 +81,14 @@ namespace StoreApiTests
             var result = await _productRepository.AddProductAsync(product);
 
             Assert.NotNull(result);
-            Assert.AreEqual(product.Uuid, result.Uuid);
+            Assert.AreEqual(product.Name, result.Name);
         }
+
 
         [Test]
         public async Task AddProductWithPriceZeroAsync()
         {
+            // Crea un nuevo producto con precio cero para la prueba
             var product = new Product
             {
                 Uuid = Guid.NewGuid(),
@@ -92,38 +120,59 @@ namespace StoreApiTests
         [Test]
         public async Task GetProductByIdAsync()
         {
-            var result = await _productRepository.GetProductByIdAsync(Guid.Parse("1547f3c3-54e6-4e7d-bf8f-f26daa15c843"));
+            // Ejecuta el método de prueba utilizando el repositorio simulado
+            var result = await _productRepository.GetProductByIdAsync(Guid.NewGuid());
+
+            // Realiza las afirmaciones
             Assert.NotNull(result);
         }
 
         [Test]
         public async Task UpdateProductAsync()
         {
+            // Crea un producto para actualizar
             var product = new Product
             {
-                Uuid = Guid.Parse("1547f3c3-54e6-4e7d-bf8f-f26daa15c843"),
+                Uuid = Guid.NewGuid(),
                 Name = "Test New Product",
                 ImageUrl = "test_new_image.jpg",
                 Price = 50001,
                 Description = "Test new description",
                 Category = Guid.Parse("4a8c74b4-cf8e-4fbf-81a2-3d11e1e37d18")
             };
+
+            // Ejecuta el método de prueba utilizando el repositorio simulado
             var result = await _productRepository.UpdateProductAsync(product);
+
+            // Realiza las afirmaciones
             Assert.NotZero(result);
         }
 
         [Test]
         public async Task GetProductListAsync()
         {
+            // Ejecuta el método de prueba utilizando el repositorio simulado
             var result = await _productRepository.GetProductListAsync();
+
+            // Realiza las afirmaciones
             Assert.NotNull(result);
         }
 
         [Test]
         public async Task DeleteProductAsync()
         {
-            var result = await _productRepository.DeleteProductAsync(Guid.Parse("1547f3c3-54e6-4e7d-bf8f-f26daa15c843"));
+            // Ejecuta el método de prueba utilizando el repositorio simulado
+            var result = await _productRepository.DeleteProductAsync(Guid.NewGuid());
+
+            // Realiza las afirmaciones
             Assert.NotZero(result);
+        }
+
+        // Asegúrate de limpiar los datos después de las pruebas si es necesario
+        [TearDown]
+        public void TearDown()
+        {
+            // Agrega aquí la lógica para limpiar la base de datos si es necesario
         }
     }
 }

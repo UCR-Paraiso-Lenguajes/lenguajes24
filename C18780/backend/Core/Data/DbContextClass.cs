@@ -15,7 +15,7 @@ namespace StoreApi.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySQL(Configuration.GetConnectionString("DefaultConnection"));
+            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
         }
 
         public DbSet<Product> Product { get; set; }
@@ -23,5 +23,6 @@ namespace StoreApi.Data
         public DbSet<Sales> Sales { get; set; }
         public DbSet<Sinpe> Sinpe { get; set; }
         public DbSet<Category> Category { get; set; }
+        public DbSet<Ad> Ad { get; set; }
     }
 }
