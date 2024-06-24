@@ -161,7 +161,6 @@ export default function MyCart() {
             initialCart.cart.products.push(product);
             initialCart.cart.subtotal = initialCart.cart.subtotal + product.price;
             initialCart.cart.total = initialCart.cart.subtotal + initialCart.cart.subtotal * initialCart.cart.taxPercentage;
-            window.location.reload();
             saveInitialCartLocalStorage(initialCart);
         }
     }
@@ -170,7 +169,6 @@ export default function MyCart() {
             initialCart.cart.subtotal = initialCart.cart.subtotal - product.price;
             initialCart.cart.total = initialCart.cart.subtotal + initialCart.cart.subtotal * initialCart.cart.taxPercentage;
             initialCart.cart.products.splice(initialCart.cart.products.findIndex(item => item.uuid === product.uuid), 1);
-            window.location.reload();
             saveInitialCartLocalStorage(initialCart);
         }
     }

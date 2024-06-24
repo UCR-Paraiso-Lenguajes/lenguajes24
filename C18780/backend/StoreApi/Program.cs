@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using StoreApi;
@@ -12,8 +13,11 @@ using StoreApi.Repositories;
 using System.Configuration;
 using System.Reflection;
 using System.Text;
+using SignalRWebpack.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSignalR();
 
 // Add services to the container.
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
@@ -69,11 +73,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
     {
-        builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+        builder.WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
     }));
+
+//builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+//    {
+//        builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+//    }));
 
 builder.Services.AddSwaggerGen(setup =>
 {
@@ -124,6 +135,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         });
 
 var app = builder.Build();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.MapHub<ChatHub>("/hub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
