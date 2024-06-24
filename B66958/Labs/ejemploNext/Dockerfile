@@ -14,9 +14,9 @@ COPY ./write_env.sh ./
 RUN chmod +x write_env.sh
 
 EXPOSE 3000
-RUN npm run build
 
 RUN dos2unix write_env.sh && chmod +x write_env.sh
+RUN npm run build
 CMD ./write_env.sh && npm start
 
 #docker build -t alvaroui11 .
