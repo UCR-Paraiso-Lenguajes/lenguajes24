@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace geekstore_api.Controllers
 {
@@ -11,6 +15,11 @@ namespace geekstore_api.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private static readonly List<TestUser> TestUsers = new List<TestUser>
+        {
+            new TestUser { UserName = "jaziel", UserPassword = "12345", UserRoles = new [] { "Admin", "User" } },
+        };
+
         private readonly IConfiguration _configuration;
 
         public AuthController(IConfiguration configuration)
@@ -25,19 +34,6 @@ namespace geekstore_api.Controllers
             public IEnumerable<string> UserRoles { get; set; }
         }
 
-        private List<TestUser> GetTestUsers()
-        {
-            return new List<TestUser>
-            {
-                new TestUser
-                {
-                    UserName = "jaziel",
-                    UserPassword = "12345",
-                    UserRoles = new List<string> { "Admin", "User" }
-                },
-            };
-        }
-
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> LoginAsync([FromBody] LoginModel user)
@@ -47,30 +43,27 @@ namespace geekstore_api.Controllers
                 throw new ArgumentNullException(nameof(user), "El usuario no se encuentra definido");
             }
 
-            var testUsers = GetTestUsers();
-            var secretKey = _configuration.GetValue<string>("Jwt:SecretKey");
+            var testUser = TestUsers.FirstOrDefault(u => u.UserName == user.UserName && u.UserPassword == user.Password);
 
-            foreach (var testUser in testUsers)
+            if (testUser != null)
             {
-                if (user.UserName == testUser.UserName && user.Password == testUser.UserPassword)
-                {
-                    var claims = testUser.UserRoles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
-                    claims.Add(new Claim(ClaimTypes.Name, testUser.UserName));
+                var claims = testUser.UserRoles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
+                claims.Add(new Claim(ClaimTypes.Name, testUser.UserName));
 
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-                    var signinCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                    var tokenOptions = new JwtSecurityToken(
-                        issuer: "https://localhost:5001",
-                        audience: "https://localhost:5001",
-                        claims: claims,
-                        expires: DateTime.Now.AddMinutes(2),
-                        signingCredentials: signinCredentials
-                    );
+                var secretKey = "TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"; // Opcional: puedes obtenerlo de alguna otra fuente segura
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+                var signinCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                var tokeOptions = new JwtSecurityToken(
+                    issuer: "https://localhost:5001",
+                    audience: "https://localhost:5001",
+                    claims: claims,
+                    expires: DateTime.Now.AddMinutes(2),
+                    signingCredentials: signinCredentials
+                );
 
-                    var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
 
-                    return Ok(new AuthenticatedResponse { Token = tokenString });
-                }
+                return Ok(new AuthenticatedResponse { Token = tokenString });
             }
 
             return Unauthorized();
@@ -79,18 +72,12 @@ namespace geekstore_api.Controllers
 
     public class LoginModel
     {
-        public string? UserName { get; set; }
-        public string? Password { get; set; }
-
-        public LoginModel(string username, string password)
-        {
-            this.UserName = username;
-            this.Password = password;
-        }
+        public string UserName { get; set; }
+        public string Password { get; set; }
     }
 
     public class AuthenticatedResponse
     {
-        public string? Token { get; set; }
+        public string Token { get; set; }
     }
 }

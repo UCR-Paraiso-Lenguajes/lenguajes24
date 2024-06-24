@@ -41,7 +41,7 @@ const Login = () => {
       setError('Complete la información por favor.');
     } else {
       try {
-        const response = await fetch(URLConection + "/api/auth/login", {
+        const response = await fetch(URLConection+"/api/auth/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

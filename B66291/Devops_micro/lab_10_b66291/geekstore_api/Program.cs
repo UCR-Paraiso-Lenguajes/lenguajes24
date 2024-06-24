@@ -9,10 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 // Add CORS
 builder.Services.AddCors(options =>
 {
@@ -24,17 +20,27 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Configure JWT Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "https://localhost:5001",
+            ValidAudience = "https://localhost:5001",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
+        };
+    });
 
-///seguridad
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+// Configure Swagger/OpenAPI
 builder.Services.AddSwaggerGen(setup =>
 {
     // Include 'SecurityScheme' to use JWT Authentication
-    var jwtSecurityScheme = new OpenApiSecurityScheme  //schema usado
+    var jwtSecurityScheme = new OpenApiSecurityScheme
     {
         BearerFormat = "JWT",
         Name = "JWT Authentication",
@@ -42,7 +48,6 @@ builder.Services.AddSwaggerGen(setup =>
         Type = SecuritySchemeType.Http,
         Scheme = JwtBearerDefaults.AuthenticationScheme,
         Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
-
         Reference = new OpenApiReference
         {
             Id = JwtBearerDefaults.AuthenticationScheme,
@@ -57,49 +62,28 @@ builder.Services.AddSwaggerGen(setup =>
         { jwtSecurityScheme, Array.Empty<string>() }
     });
 
+    // Add other Swagger configurations if needed
 });
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) //agrego n cantidad de autentificaciones
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-        options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true, //quien crea la validacion
-            ValidateAudience = true,   //hacia quien se dirige
-            ValidateLifetime = true,   //el tiempo de vida que 
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = "https://localhost:5001",
-            ValidAudience = "https://localhost:5001",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
-        };
-    });
-
-
-///seguridad
-
 
 var app = builder.Build();
 
- if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+    string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDB").Value.ToString();
+
+    string DB_value = Environment.GetEnvironmentVariable("DB");
+    if (!String.IsNullOrEmpty(DB_value))
     {
-        builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-        string connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDB").Value.ToString();
-
-        string DB_value = Environment.GetEnvironmentVariable("DB");
-        if (! String.IsNullOrEmpty(DB_value) )
-        {
-            Console.WriteLine("variable is not empty", connection);
-            connection = DB_value;
-        }
-        Console.WriteLine("connection", connection);
-        Storage.Init(connection) ;
-
-        app.UseSwagger();
-        app.UseSwaggerUI();
-
-        StoreDb.CrearDatosSync();
+        connection = DB_value;
     }
+    Storage.Init(connection);
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+    StoreDb.CrearDatosSync();
+}
 
 app.UseHttpsRedirection();
 
