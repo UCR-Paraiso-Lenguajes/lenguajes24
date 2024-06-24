@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Dropdown, Badge } from 'react-bootstrap';
 import * as signalR from '@microsoft/signalr';
 import { HubConnectionBuilder } from '@microsoft/signalr';
@@ -25,7 +25,7 @@ const NotificationsDropdown = () => {
           const data = await response.json();
           if (Array.isArray(data)) {
             const campaigns = data.map((campaign) => {
-              return `New campaign: ${campaign[1]}`;
+              return `Campaign: ${campaign[1]}`;
             });
             setApiMessages(campaigns.slice(-3)); // Keep the last 3 messages from the API
           } else {
@@ -76,12 +76,13 @@ const NotificationsDropdown = () => {
     };
   }, [URL]);
 
+
   useEffect(() => {
     if (!connection) return;
 
     const handleReceiveCampaignUpdate = (message) => {
       console.log('Received message from socket:', message);
-      const updateMessage = `New campaign: ${message}`;
+      const updateMessage = `Campaign: ${message}`;
       setCampaignMessages((prevMessages) => [updateMessage, ...prevMessages.slice(0, 2)]);
       setUnreadCount((prevCount) => prevCount + 1);
     };
@@ -92,6 +93,28 @@ const NotificationsDropdown = () => {
       connection.off('ReceiveCampaignUpdate', handleReceiveCampaignUpdate);
     };
   }, [connection]);
+
+
+  const handleDeleteMessage = useCallback(async (id: number) => {
+    try {
+      const response = await fetch(`${URL}/api/Campaign/Delete/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      // Update local state to remove the deleted message
+      setCampaignMessages((prevMessages) => prevMessages.filter(message => message.id !== id));
+    } catch (error) {
+      console.error("There was an error deleting the message!", error);
+    }
+  }, [URL]);
+
 
   const handleMarkAsRead = () => {
     setUnreadCount(0);
@@ -126,7 +149,8 @@ const NotificationsDropdown = () => {
             <small className="text-muted d-block">
               {new Date().toLocaleString()}
             </small>
-          </Dropdown.Item>
+            <button onClick={() => handleDeleteMessage(message.id)}>Delete</button>
+          </Dropdown.Item >
         ))}
         <Dropdown.Item onClick={handleMarkAsRead}>
           Marcar como leído

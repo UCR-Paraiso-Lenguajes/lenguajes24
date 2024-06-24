@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,  } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import Link from 'next/link';
 import '/app/ui/global.css';
@@ -21,7 +21,6 @@ const Campaigns: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState<string>('');
-    const [connection, setConnection] = useState(null);
     const maxChars = 5000;
 
     const isValidDate = (date: any): boolean => {
@@ -133,8 +132,8 @@ const Campaigns: React.FC = () => {
 
     const handleDeleteMessage = async (id: number) => {
         try {
-            const response = await fetch(`${URL}/api/Campaign/${id}`, {
-                method: 'DELETE',
+            const response = await fetch(`${URL}/api/Campaign/Delete/${id}`, {
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }

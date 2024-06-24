@@ -30,12 +30,27 @@ namespace StoreAPI.Controllers
             await _campaignHubContext.Clients.All.SendAsync("ReceiveCampaignUpdate", update.Update);
             return Ok(new { Message = "Update sent" });
         }
-       
+
         [HttpGet]
         public async Task<IActionResult> GetLatestMessages()
         {
             var messages = await _campaignDB.GetLatestMessagesAsync();
             return Ok(messages);
+        }
+
+        // POST: api/Campaign/Delete/5
+        [HttpPost("Delete/{id}")]
+        public async Task<IActionResult> DeleteMessage(int id)
+        {
+            try
+            {
+                await _campaignDB.LogicalDeleteAsync(id);
+                return Ok("Message deleted successfully (logically).");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error deleting message: {ex.Message}");
+            }
         }
     }
 }

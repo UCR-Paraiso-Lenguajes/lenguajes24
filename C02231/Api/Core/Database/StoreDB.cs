@@ -97,7 +97,7 @@ public sealed class StoreDB
                         description TEXT  NOT NULL,
                         price DECIMAL(10, 2)  NOT NULL,
                         idCategory INT  NOT NULL,
-                        imgUrl VARCHAR(255)  NOT NULL
+                        imgUrl VARCHAR(500)  NOT NULL
                     );
 
                     CREATE TABLE IF NOT EXISTS paymentMethod (
@@ -131,7 +131,7 @@ public sealed class StoreDB
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         content TEXT NOT NULL,
                         timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        active BOOLEAN NOT NULL DEFAULT FALSE 
+                        active BOOLEAN NOT NULL DEFAULT TRUE 
                     ) ENGINE=InnoDB;
 
                     INSERT INTO messages (content, timestamp)

@@ -71,7 +71,7 @@ export default function InitPage() {
                                 <button className="btn btn-dark mb-3">Payment Methods</button>
                             </Link>
                             <Link href="/admin/init/campaign">
-                                <button className="btn btn-dark mb-3 ">Campañas</button>
+                                <button className="btn btn-dark mb-3 ">Campaign</button>
                             </Link>
 
 

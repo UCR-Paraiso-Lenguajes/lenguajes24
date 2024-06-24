@@ -51,11 +51,11 @@ namespace StoreAPI.Database
         {
             List<string[]> messages = new List<string[]>();
 
-            using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
+            using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))//DESC LIMIT 3
             {
                 await connection.OpenAsync();
 
-                string selectQuery = "SELECT id, content, timestamp FROM messages ORDER BY timestamp DESC LIMIT 3;";
+                string selectQuery = "SELECT id, content, timestamp FROM messages WHERE active = TRUE  ORDER BY timestamp ;";
 
                 using (var command = new MySqlCommand(selectQuery, connection))
                 using (var reader = await command.ExecuteReaderAsync())
@@ -65,10 +65,10 @@ namespace StoreAPI.Database
                         int fieldCount = reader.FieldCount;
                         string[] row = new string[fieldCount];
                         for (int i = 0; i < fieldCount; i++)
-                            {
-                                row[i] = reader.GetValue(i).ToString();
-                            }
-                        
+                        {
+                            row[i] = reader.GetValue(i).ToString();
+                        }
+
                         messages.Add(row);
                     }
                 }
@@ -76,6 +76,23 @@ namespace StoreAPI.Database
 
             return messages;
         }
+
+        public async Task LogicalDeleteAsync(int messageId)
+        {
+            using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
+            {
+                await connection.OpenAsync();
+
+                string updateQuery = "UPDATE messages SET active = FALSE WHERE id = @messageId";
+
+                using (var command = new MySqlCommand(updateQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@messageId", messageId);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
 
     }
 }
