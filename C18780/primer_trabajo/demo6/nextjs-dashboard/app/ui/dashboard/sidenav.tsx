@@ -37,6 +37,7 @@ const Notification = ({ notification }: { notification: Ad[] }) => {
       <div className="dropdown">
         <button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           <FontAwesomeIcon icon={faBell} className="fa-icon me-2" />
+          {notification.length >= 0 && notification.length <= 3 ? `${notification.length}` : "3"}
         </button>
         <ul className="dropdown-menu dropdown-menu-dark" style={{ pointerEvents: 'none' }}>
           {notification.map((notification, index) => (
