@@ -88,13 +88,9 @@ export function useSignalRGetAds() {
         });
 
         connection.start()
-            .then(() => console.log("SignalR Connected"))
-            .catch(err => console.error("Error while establishing connection: ", err));
 
         return () => {
             connection.stop()
-                .then(() => console.log("SignalR Disconnected"))
-                .catch(err => console.error("Error while disconnecting: ", err));
         };
     }, []);
 
