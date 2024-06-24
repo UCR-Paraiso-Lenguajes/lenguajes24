@@ -21,6 +21,8 @@ export default function Products() {
     const handleShow = () => setShow(true);
     const categoriesArePresent = categories !== undefined && categories.length > 0;
 
+    let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
+
     interface Product {
         id: string,
         description: string,
@@ -61,7 +63,7 @@ export default function Products() {
         };
         var token = sessionStorage.getItem("sessionToken");
         try {
-            const res = await fetch('https://localhost:7151/api/product', {
+            const res = await fetch(`${environmentUrl}/api/product`, {
                 method: 'POST',
                 body: JSON.stringify(newProduct),
                 headers: {
@@ -75,13 +77,14 @@ export default function Products() {
             }
             else { setErrorMessage("Error al realizar la compra"); }
         } catch (error) {
-            setErrorMessage(error);
+            setErrorMessage(String(error));
         }
         setShow(false);
+        setIsErrorShowing(true)
     };
 
     async function getData() {
-        const res = await fetch('https://localhost:7151/api/store');
+        const res = await fetch(`${environmentUrl}/api/store`);
         if (!res.ok) {
             throw new Error('Failed to fetch data');
         }
@@ -102,7 +105,7 @@ export default function Products() {
                 }));
                 setData(formattedData);
             } catch (error) {
-                setErrorMessage(error)
+                setErrorMessage(String(error))
                 setIsErrorShowing(true)
             }
         };
@@ -120,7 +123,7 @@ export default function Products() {
                 <Row className="mb-4">
                     <Col className="d-flex justify-content-end">
                         <Button variant="primary" onClick={handleShow}>
-                            <FaPlus /> {/* Add the icon here */}
+                            <FaPlus />
                         </Button>
                     </Col>
                 </Row>
@@ -213,7 +216,7 @@ export default function Products() {
                         }
                     >
                         <Alert variant="danger" onClose={() => setIsErrorShowing(false)} dismissible>
-                            <Alert.Heading>Error</Alert.Heading>
+                            <Alert.Heading>Información</Alert.Heading>
                             <p>{errorMessage.toString()}</p>
                         </Alert>
                     </div > : ''

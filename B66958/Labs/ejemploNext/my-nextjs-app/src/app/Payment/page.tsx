@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useState } from "react";
 import Alert from 'react-bootstrap/Alert';
 
@@ -17,6 +18,8 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
         EFECTIVO = 0,
         SINPE = 1
     }
+
+    let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
 
     useEffect(() => {
         setCart(cart => ({
@@ -56,7 +59,7 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
         }
 
         try {
-            const res = await fetch('https://localhost:7151/api/cart', {
+            const res = await fetch(`${environmentUrl}/api/cart`, {
                 method: 'POST',
                 body: JSON.stringify(purchaseToPersist),
                 headers: {
@@ -71,7 +74,7 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
             }
             else { setMessage("Error al realizar la compra"); setAlertType(1) }
         } catch (error) {
-            setMessage(error);
+            setMessage(String(error));
             setAlertType(1)
         } finally {
             setIsMessageShowing(true);

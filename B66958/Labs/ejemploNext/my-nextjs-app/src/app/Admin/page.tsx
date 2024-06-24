@@ -10,6 +10,8 @@ export default function LogIn() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
+    let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
+
     const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);
     };
@@ -27,21 +29,21 @@ export default function LogIn() {
         await authenticateUser();
     }
 
-    async function authenticateUser(){
+    async function authenticateUser() {
         try {
-            const response = await fetch('https://localhost:7151/api/auth/login', {
+            const response = await fetch(`${environmentUrl}/api/auth/login`, {
                 method: 'POST',
                 headers: {
-                  'Content-Type': 'application/json',
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                  name: username,
-                  password: password,
+                    name: username,
+                    password: password,
                 }),
-              })
-        
+            })
+
             if (!response.ok) setError('Inicio de sesión incorrecto')
-            else{
+            else {
                 var tokenString = await response.json();
                 var token = tokenString.token
                 sessionStorage.removeItem("sessionToken");
@@ -51,11 +53,11 @@ export default function LogIn() {
                 var decodedToken = decodeToken(token);
                 var expiracyDate = decodedToken?.exp;
                 sessionStorage.setItem("expiracyToken", String(expiracyDate));
-                
+
                 window.location.href = "/Admin/init";
             }
         } catch (error) {
-            setError(error);
+            setError(String(error));
         } finally {
         }
     }

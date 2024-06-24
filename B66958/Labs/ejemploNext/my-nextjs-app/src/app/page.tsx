@@ -52,6 +52,8 @@ export default function Home() {
   const toggleMessageList = () => {
     setMessageListVisible(!isMessageListVisible);
   };
+  
+  let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
 
   const categoriesSearchString = Array.isArray(categoriesSearch) ? categoriesSearch.join(',') : categoriesSearch;
   useEffect(() => {
@@ -61,22 +63,16 @@ export default function Home() {
       let urlToFilterQuery = urlToFilterCategories ? (searchedQuerie ? `&${searchedQuerie}` : '') : (searchedQuerie ? `?${searchedQuerie}` : '')
       if (categoriesSearch)
         setSelectedCategories(categoriesSearch);
-      const fetchUrl = 'https://localhost:7151/api/store/products' + urlToFilterCategories + urlToFilterQuery;
+      const fetchUrl = `${environmentUrl}/api/store/products` + urlToFilterCategories + urlToFilterQuery;
       const fetchData = async () => {
-        /* try { */
         const res = await fetch(fetchUrl, {
           method: 'GET',
           headers: {
             'content-type': 'application/json'
           }
         });
-        console.log(urlToFilterCategories, urlToFilterQuery)
         var productsForQuerySearch = await res.json();
         setProducts(productsForQuerySearch);
-        /* } catch (error) {
-          setErrorMessage(error)
-          setIsErrorShowing(true)
-        } */
       };
       fetchData();
     } else {
@@ -85,7 +81,7 @@ export default function Home() {
           const result = await getData();
           setProducts(result.productsInStore);
         } catch (error) {
-          setErrorMessage(error)
+          setErrorMessage(String(error))
           setIsErrorShowing(true)
         }
       };
@@ -204,7 +200,7 @@ export default function Home() {
 
   async function getData() {
     try {
-      const res = await fetch('https://localhost:7151/api/store');
+      const res = await fetch(`${environmentUrl}/api/store`);
       if (!res.ok) {
         throw new Error('Failed to fetch data');
       }
