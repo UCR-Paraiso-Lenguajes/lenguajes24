@@ -12,17 +12,12 @@ namespace MyStoreAPI.Business
         
         public NotificationLogic(){
             this.db_notify = new DB_Notification();
-
         }
-
         public async Task<IEnumerable<Notification>> getNotificationFromDBAsync(){
-
-            var notifications  = await db_notify.getNotificationsForUsersAsync();
-
-            if(notifications  == null || !notifications .Any())
-                throw new BussinessException($"{nameof(notifications )} no puede ser nulo o vacío");
-            return notifications; 
-
+            IEnumerable<Notification> notificationsForUsers  = await db_notify.getNotificationsForUsersAsync();
+            if(notificationsForUsers  == null || !notificationsForUsers.Any())
+                throw new BussinessException($"{nameof(notificationsForUsers )} no puede ser nulo o vacío");
+            return notificationsForUsers; 
         }
     }
 }

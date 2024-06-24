@@ -1,4 +1,5 @@
 using MyStoreAPI;
+using Core;
 using Microsoft.Extensions.Configuration;
 //para OpenApiSecurityScheme, OpenApiSecurityRequirement, etc. (de swagger)
 using Microsoft.OpenApi.Models; 
@@ -50,6 +51,10 @@ builder.Services.AddSwaggerGen(setup =>
 
 // Add SignalR service
 builder.Services.AddSignalR();
+
+// Inyectamos NotificationLogic para el NotificacionController para no tener problemas con
+//los test
+//builder.Services.AddScoped<NotificationLogic>();
 
 
 //Configure CORS

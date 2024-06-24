@@ -15,7 +15,7 @@ import '../../src/css/fonts_awesome/css/all.min.css'
 import { mock } from 'node:test';
 import { ProductAPI } from '@/app/src/models-data/ProductAPI';
 import { CategoryAPI } from '@/app/src/models-data/CategoryAPI';
-import { insertNewProductInDBAsync } from '@/app/src/api/get-post-api';
+import { insertNewNotificationInDBAsync, insertNewProductInDBAsync } from '@/app/src/api/get-post-api';
 import { AlertShop } from '@/app/global-components/generic_overlay';
 import { NotificationAPI } from '@/app/src/models-data/NotificationAPI';
 
@@ -24,19 +24,17 @@ import { NotificationAPI } from '@/app/src/models-data/NotificationAPI';
 //Creamos la interfaz que deben seguir los props (o parametros) para el componente Modal
 interface ModalInsertProps {
     show: boolean;
-    handleClose: () => void;
-    listOfNotifications: CategoryAPI[];
+    handleClose: () => void;    
 }
   
 export const ModalInsertNotification: React.FC<ModalInsertProps> = ({ 
     show,
-    handleClose,
-    listOfNotifications
+    handleClose    
 }) => {
     
     //Atributos del producto nuevo
     const [notificationTitle, setNotificationTitle] = useState('');
-    const [notificationMessage, setNotificationMessage] = useState('');
+    const [notificationMessage, setNotificationMessage] = useState('');    
     const [error, setError] = useState('');
 
     //gestionamiento para los alert de boostrap
@@ -47,6 +45,12 @@ export const ModalInsertNotification: React.FC<ModalInsertProps> = ({
     
     function closeAlertShop(): void {
         setShowAlert(false);     
+    }
+    function callAlertShop (alertType:string,alertTitle:string,alertInfo:string): void {
+        setAlertTitle(alertTitle);
+        setAlertInfo(alertInfo);
+        setAlertType(alertType)
+        setShowAlert(true);
     }
             
     const deleteNewNotificationInfo = () => {
@@ -69,25 +73,33 @@ export const ModalInsertNotification: React.FC<ModalInsertProps> = ({
       setError('Por favor ingrese un mensaje de notificación válido');
       return;
     }
+    
+    //La fecha cuando se envia la Notificacion
+    const notificationCreationDate = new Date().toISOString();
                         
     const newNotification : NotificationAPI = {
 
-        id: 0,
-        title: notificationTitle,
-        message: notificationMessage
+        notifyId: 0,
+        notifyTitle: notificationTitle,
+        notifyMessage: notificationMessage,
+        notifyCreationDate: notificationCreationDate,
+        notifyStatus: 1
     }
    
     deleteNewNotificationInfo();
         
     try{        
-        let dataFromStore = await insertNewNotificationInDBAsync(newNotification);
+        let response = await insertNewNotificationInDBAsync(newNotification);
 
-        if (typeof dataFromStore  === "boolean" && dataFromStore !== null){
-            callAlertShop("success","Inserción Exitosa","La nueva notificación " + newNotification.title  + "fue agregada con éxito a la base de datos");
-        
-        }else{
-            callAlertShop("danger","Inserción Fallida","La notificación " + newNotification.title  + "no pudo ser agregada")
-        
+        if (typeof response === "string") {
+            // Si la respuesta es un mensaje de error
+            callAlertShop("danger", "Inserción Fallida", response);
+        } else if (response === true) {
+            //Si es true desde la API
+            callAlertShop("success", "Inserción Exitosa", `La nueva notificación "${newNotification.notifyTitle}" fue agregada con éxito a la base de datos`);
+        } else {
+            // Respuesta inesperada
+            callAlertShop("danger", "Error Inesperado", "Ocurrió un error inesperado al insertar la notificación");
         }
     } catch (error) {                
         throw new Error('Failed to fetch data:' + error);
@@ -151,7 +163,3 @@ export const ModalInsertNotification: React.FC<ModalInsertProps> = ({
     </>
   );
 };
-
-function callAlertShop(arg0: string, arg1: string, arg2: string) {
-    throw new Error('Function not implemented.');
-}

@@ -19,7 +19,5 @@ namespace MyStoreAPI.Controllers{
             //para los clientes
             await Clients.All.SendAsync("Receive",listOfnotifications);
         }
-
     }
-
 }
