@@ -1,4 +1,3 @@
-﻿//investigacion
 using System;
 using System.Collections.Generic;
 using storeapi.Database;
@@ -21,6 +20,10 @@ namespace storeapi.Models
                 {
                     throw new ArgumentException("ContenidoHtml must not be null or empty.");
                 }
+                if (value.Length > 5000)
+                {
+                    throw new ArgumentException("ContenidoHtml must not exceed 5000 characters.");
+                }
                 _contenidoHtml = value;
             }
         }
@@ -42,19 +45,20 @@ namespace storeapi.Models
 
         public static IEnumerable<Campanna> LoadCampannasFromDatabase()
         {
-            List<string[]> campannaData = CampannaDB.RetrieveCampannas();
+            IEnumerable<string[]> campannaData = CampannaDB.RetrieveCampannas();
             List<Campanna> campannas = new List<Campanna>();
 
             foreach (string[] row in campannaData)
             {
                 if (ValidateCampannaRow(row))
                 {
-                    int id = int.Parse(row[0]);
-                    string contenidoHtml = row[1];
-                    DateTime createdAt = DateTime.Parse(row[2]);
-                    bool estado = bool.Parse(row[3]);
-                    if (estado)
+                    try
                     {
+                        int id = int.Parse(row[0]);
+                        string contenidoHtml = row[1];
+                        DateTime createdAt = DateTime.Parse(row[2]);
+                        bool estado = bool.Parse(row[3]);
+
                         Campanna campanna = new Campanna
                         {
                             Id = id,
@@ -64,6 +68,11 @@ namespace storeapi.Models
                         };
 
                         campannas.Add(campanna);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Manejar excepción según sea necesario
+                        Console.WriteLine($"Error processing row: {ex.Message}");
                     }
                 }
             }
@@ -83,7 +92,7 @@ namespace storeapi.Models
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(row[1]))
+            if (string.IsNullOrWhiteSpace(row[1]) || row[1].Length > 5000)
             {
                 return false;
             }
@@ -102,3 +111,4 @@ namespace storeapi.Models
         }
     }
 }
+
