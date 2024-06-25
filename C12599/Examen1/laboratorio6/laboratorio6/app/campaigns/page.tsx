@@ -15,7 +15,7 @@ function Chat() {
             if (response.ok) {
                 const data = await response.json();
                 const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
-                setMessages(campaigns.slice(-3)); // Only keep the last 3 messages
+                setMessages(campaigns.slice(-3)); // Solo mantener los últimos 3 mensajes
             } else {
                 setError('Error al obtener las campañas.');
             }
@@ -31,8 +31,8 @@ function Chat() {
             .configureLogging(signalR.LogLevel.Information)
             .build();
 
-        const startConnection = () => {
-            newConnection.start()
+        const startConnection = async () => {
+            await newConnection.start()
                 .then(() => {
                     setConnection(newConnection);
                     setError(null);
@@ -62,7 +62,7 @@ function Chat() {
             const handleReceiveMessage = (user: string, message: string) => {
                 setMessages(prevMessages => {
                     const newMessages = [...prevMessages, `${user}: ${message}`];
-                    return newMessages.slice(-3); // Only keep the last 3 messages
+                    return newMessages.slice(-3); // Solo mantener los últimos 3 mensajes
                 });
             };
 
@@ -70,13 +70,11 @@ function Chat() {
                 setMessages(prevMessages => {
                     let newMessages;
                     if (estado) {
-                        // If the status is true, add the message
                         newMessages = [...prevMessages, `Nueva Campaña: ${contenidoHtml}`];
                     } else {
-                        // If the status is false, remove the corresponding message
                         newMessages = prevMessages.filter(msg => msg !== `Nueva Campaña: ${contenidoHtml}`);
                     }
-                    return newMessages.slice(-3); // Only keep the last 3 messages
+                    return newMessages.slice(-3); // Solo mantener los últimos 3 mensajes
                 });
             };
 
@@ -104,3 +102,4 @@ function Chat() {
 }
 
 export default Chat;
+
