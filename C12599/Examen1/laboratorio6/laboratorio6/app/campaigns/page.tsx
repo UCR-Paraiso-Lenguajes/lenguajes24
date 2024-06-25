@@ -1,3 +1,4 @@
+//investigacion
 'use client';
 import React, { useEffect, useState } from 'react';
 import * as signalR from "@microsoft/signalr";
@@ -11,12 +12,16 @@ function Chat() {
 
     useEffect(() => {
         const fetchCampaigns = async () => {
-            const response = await fetch(URL+'Campannas');
-            if (response.ok) {
-                const data = await response.json();
-                const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
-                setMessages(campaigns);
-            } else {
+            try {
+                const response = await fetch(URL + '/api/Campannas');
+                if (response.ok) {
+                    const data = await response.json();
+                    const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
+                    setMessages(campaigns.slice(-3)); // Only keep the last 3 messages
+                } else {
+                    setError('Error al obtener las campañas.');
+                }
+            } catch (error) {
                 setError('Error al obtener las campañas.');
             }
         };
@@ -24,7 +29,7 @@ function Chat() {
         fetchCampaigns();
 
         const newConnection = new signalR.HubConnectionBuilder()
-            .withUrl("http://localhost:7043/chatHub", {
+            .withUrl(URL + "/StoreHub", {
                 withCredentials: true
             })
             .withAutomaticReconnect()
@@ -50,21 +55,42 @@ function Chat() {
         startConnection();
 
         return () => {
-            if (connection) {
-                connection.stop();
+            if (newConnection) {
+                newConnection.stop();
             }
         };
     }, []);
 
     useEffect(() => {
         if (connection) {
-            connection.on("ReceiveMessage", (user: string, message: string) => {
-                setMessages(prevMessages => [...prevMessages, `${user}: ${message}`]);
-            });
+            const handleReceiveMessage = (user: string, message: string) => {
+                setMessages(prevMessages => {
+                    const newMessages = [...prevMessages, `${user}: ${message}`];
+                    return newMessages.slice(-3); // Only keep the last 3 messages
+                });
+            };
 
-            connection.on("UpdateCampaigns", (contenidoHtml: string) => {
-                setMessages(prevMessages => [...prevMessages, `Nueva Campaña: ${contenidoHtml}`]);
-            });
+            const handleUpdateCampaigns = (contenidoHtml: string, estado: boolean) => {
+                setMessages(prevMessages => {
+                    let newMessages;
+                    if (estado) {
+                        // If the status is true, add the message
+                        newMessages = [...prevMessages, `Nueva Campaña: ${contenidoHtml}`];
+                    } else {
+                        // If the status is false, remove the corresponding message
+                        newMessages = prevMessages.filter(msg => msg !== `Nueva Campaña: ${contenidoHtml}`);
+                    }
+                    return newMessages.slice(-3); // Only keep the last 3 messages
+                });
+            };
+
+            connection.on("ReceiveMessage", handleReceiveMessage);
+            connection.on("UpdateCampaigns", handleUpdateCampaigns);
+
+            return () => {
+                connection.off("ReceiveMessage", handleReceiveMessage);
+                connection.off("UpdateCampaigns", handleUpdateCampaigns);
+            };
         }
     }, [connection]);
 
@@ -74,7 +100,7 @@ function Chat() {
             {error && <div className="error-message">{error}</div>}
             <ul className="messages-list">
                 {messages.map((message, index) => (
-                    <li key={index} className="message-item">{message}</li>
+                    <li key={index} className="message-item" dangerouslySetInnerHTML={{ __html: message }}></li>
                 ))}
             </ul>
         </div>

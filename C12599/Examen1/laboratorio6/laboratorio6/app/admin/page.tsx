@@ -46,7 +46,7 @@ const Admin: React.FC = () => {
         const decodedToken: any = jwtDecode(data.token);
         const roles = decodedToken?.roles || [];
 
-        if (roles.includes('Admin')) {
+        if (!roles.includes('Admin')) {
           // Store the token in sessionStorage
           sessionStorage.setItem('authToken', data.token);
 

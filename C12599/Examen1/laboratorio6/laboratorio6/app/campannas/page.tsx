@@ -1,3 +1,4 @@
+//investigacion
 'use client';
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -8,6 +9,7 @@ interface Campanna {
   id: number;
   contenidoHtml: string;
   createdAt: string;
+  estado: boolean;
 }
 
 const Campannas: React.FC = () => {
@@ -18,7 +20,7 @@ const Campannas: React.FC = () => {
 
   const fetchCampannas = async () => {
     const token = sessionStorage.getItem('authToken');
-    const response = await fetch(URL+'Campannas', {
+    const response = await fetch(`${URL}/api/Campannas`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -27,6 +29,7 @@ const Campannas: React.FC = () => {
     if (response.ok) {
       const data = await response.json();
       setCampannas(data);
+      localStorage.setItem('messageCount', data.length.toString());
     } else {
       setErrorMessage('Error al obtener las campañas.');
     }
@@ -40,7 +43,7 @@ const Campannas: React.FC = () => {
     const value = e.target.value;
     if (value.length <= maxChars) {
       setHtmlContent(value);
-      setErrorMessage(''); // Clear error message if within limit
+      setErrorMessage('');
     } else {
       setErrorMessage(`Se ha excedido el límite de caracteres de ${maxChars}.`);
     }
@@ -55,20 +58,38 @@ const Campannas: React.FC = () => {
     }
 
     const token = sessionStorage.getItem('authToken');
-    const response = await fetch(URL+'Campannas', {
+    const response = await fetch(`${URL}/api/Campannas`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ contenidoHtml: htmlContent }), // Make sure the property name matches the model
+      body: JSON.stringify({ contenidoHtml: htmlContent, estado: true }),
     });
 
     if (response.ok) {
-      setHtmlContent(''); // Clear the text area
-      await fetchCampannas(); // Refresh the list after submission
+      setHtmlContent('');
+      await fetchCampannas();
     } else {
       setErrorMessage('Error al enviar el mensaje.');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    const token = sessionStorage.getItem('authToken');
+    const response = await fetch(`${URL}/api/Campannas/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id: id, estado: false }),
+    });
+
+    if (response.ok) {
+      await fetchCampannas();
+    } else {
+      setErrorMessage('Error al eliminar la campaña.');
     }
   };
 
@@ -83,14 +104,23 @@ const Campannas: React.FC = () => {
             <th>ID</th>
             <th>Contenido HTML</th>
             <th>Fecha de creación</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {campannas.map((campanna) => (
             <tr key={campanna.id}>
               <td>{campanna.id}</td>
-              <td>{campanna.contenidoHtml}</td>
+              <td dangerouslySetInnerHTML={{ __html: campanna.contenidoHtml }}></td>
               <td>{new Date(campanna.createdAt).toLocaleString()}</td>
+              <td>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => handleDelete(campanna.id)}
+                >
+                  Eliminar
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

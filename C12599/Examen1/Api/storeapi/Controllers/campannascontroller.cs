@@ -11,9 +11,9 @@ namespace storeapi
     [Route("api/[controller]")]
     public class CampannasController : ControllerBase
     {
-        private readonly IHubContext<ChatHub> _hubContext;
+        private readonly IHubContext<StoreHub> _hubContext;
 
-        public CampannasController(IHubContext<ChatHub> hubContext)
+        public CampannasController(IHubContext<StoreHub> hubContext)
         {
             _hubContext = hubContext;
         }
@@ -27,9 +27,24 @@ namespace storeapi
             }
 
             CampannaDB.InsertCampanna(campanna);
-            await _hubContext.Clients.All.SendAsync("UpdateCampaigns", campanna.ContenidoHtml);
+            await _hubContext.Clients.All.SendAsync("UpdateCampaigns", campanna.ContenidoHtml, campanna.Estado);
 
-            return Ok(campanna); // Returns the received object as confirmation
+            return Ok(campanna);
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdateCampannaEstado(int id, [FromBody] Campanna campanna)
+        {
+            if (campanna == null || id != campanna.Id)
+            {
+                return BadRequest("Invalid campanna object or ID");
+            }
+
+            CampannaDB.UpdateCampannaEstado(id, campanna.Estado);
+            Campanna updatedCampanna = CampannaDB.GetCampannaById(id);
+            await _hubContext.Clients.All.SendAsync("UpdateCampaigns", updatedCampanna.ContenidoHtml, updatedCampanna.Estado);
+
+            return Ok(campanna);
         }
 
         [HttpGet]

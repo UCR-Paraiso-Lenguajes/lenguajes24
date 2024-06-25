@@ -1,8 +1,10 @@
-﻿using System;
+﻿//investigacion
+using System;
 using System.Collections.Generic;
 using MySqlConnector;
 using storeapi.Models;
 using core;
+
 
 namespace storeapi.Database
 {
@@ -12,7 +14,7 @@ namespace storeapi.Database
 
         public static void CreateMysql()
         {
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
                 connection.Open();
 
@@ -20,6 +22,7 @@ namespace storeapi.Database
                     CREATE TABLE IF NOT EXISTS Campannas (
                         Id INT AUTO_INCREMENT PRIMARY KEY,
                         ContenidoHtml TEXT NOT NULL,
+                        estado BOOLEAN,
                         CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     ) ENGINE=InnoDB";
 
@@ -37,13 +40,34 @@ namespace storeapi.Database
                 connection.Open();
 
                 string insertQuery = @"
-                    INSERT INTO Campannas (ContenidoHtml)
-                    VALUES (@ContenidoHtml)";
+                    INSERT INTO Campannas (ContenidoHtml, estado)
+                    VALUES (@ContenidoHtml, @Estado)";
 
                 using (var insertCommand = new MySqlCommand(insertQuery, connection))
                 {
                     insertCommand.Parameters.AddWithValue("@ContenidoHtml", campanna.ContenidoHtml);
+                    insertCommand.Parameters.AddWithValue("@Estado", campanna.Estado);
                     insertCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public static void UpdateCampannaEstado(int id, bool estado)
+        {
+            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            {
+                connection.Open();
+
+                string updateQuery = @"
+                    UPDATE Campannas
+                    SET estado = @Estado
+                    WHERE Id = @Id";
+
+                using (var updateCommand = new MySqlCommand(updateQuery, connection))
+                {
+                    updateCommand.Parameters.AddWithValue("@Estado", estado);
+                    updateCommand.Parameters.AddWithValue("@Id", id);
+                    updateCommand.ExecuteNonQuery();
                 }
             }
         }
@@ -56,7 +80,7 @@ namespace storeapi.Database
             {
                 connection.Open();
 
-                string sql = "SELECT Id, ContenidoHtml, CreatedAt FROM Campannas";
+                string sql = "SELECT Id, ContenidoHtml, CreatedAt, estado FROM Campannas WHERE estado = true";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -77,6 +101,44 @@ namespace storeapi.Database
             }
 
             return campannas;
+        }
+
+        public static Campanna GetCampannaById(int id)
+        {
+            Campanna campanna = null;
+
+            if (id <= 0)
+            {
+                throw new ArgumentException("ID must be a positive number.");
+            }
+
+            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            {
+                connection.Open();
+
+                string sql = "SELECT Id, ContenidoHtml, CreatedAt, estado FROM Campannas WHERE Id = @Id";
+
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            campanna = new Campanna
+                            {
+                                Id = reader.GetInt32(0),
+                                ContenidoHtml = reader.GetString(1),
+                                CreatedAt = reader.GetDateTime(2),
+                                Estado = reader.GetBoolean(3)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return campanna;
         }
     }
 }

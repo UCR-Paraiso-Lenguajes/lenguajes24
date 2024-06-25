@@ -1,4 +1,5 @@
-﻿using System;
+﻿//investigacion
+using System;
 using System.Collections.Generic;
 using storeapi.Database;
 
@@ -6,9 +7,10 @@ namespace storeapi.Models
 {
     public class Campanna
     {
-        public int Id { get; set; } // Id is now a settable property
+        public int Id { get; set; }
 
         private string _contenidoHtml = string.Empty;
+        private bool _estado;
 
         public string ContenidoHtml
         {
@@ -23,15 +25,19 @@ namespace storeapi.Models
             }
         }
 
-        public DateTime CreatedAt { get; set; } // New property for timestamp
+        public bool Estado
+        {
+            get => _estado;
+            set => _estado = value;
+        }
 
-        // Constructor to initialize the properties except Id
+        public DateTime CreatedAt { get; set; }
+
         public Campanna(string contenidoHtml)
         {
             ContenidoHtml = contenidoHtml;
         }
 
-        // Parameterless constructor for serialization/deserialization
         public Campanna() { }
 
         public static IEnumerable<Campanna> LoadCampannasFromDatabase()
@@ -46,15 +52,19 @@ namespace storeapi.Models
                     int id = int.Parse(row[0]);
                     string contenidoHtml = row[1];
                     DateTime createdAt = DateTime.Parse(row[2]);
-
-                    Campanna campanna = new Campanna
+                    bool estado = bool.Parse(row[3]);
+                    if (estado)
                     {
-                        Id = id,
-                        ContenidoHtml = contenidoHtml,
-                        CreatedAt = createdAt
-                    };
+                        Campanna campanna = new Campanna
+                        {
+                            Id = id,
+                            ContenidoHtml = contenidoHtml,
+                            CreatedAt = createdAt,
+                            Estado = estado
+                        };
 
-                    campannas.Add(campanna);
+                        campannas.Add(campanna);
+                    }
                 }
             }
 
@@ -63,7 +73,7 @@ namespace storeapi.Models
 
         private static bool ValidateCampannaRow(string[] row)
         {
-            if (row.Length != 3)
+            if (row.Length != 4)
             {
                 return false;
             }
@@ -79,6 +89,11 @@ namespace storeapi.Models
             }
 
             if (!DateTime.TryParse(row[2], out _))
+            {
+                return false;
+            }
+
+            if (!bool.TryParse(row[3], out _))
             {
                 return false;
             }
