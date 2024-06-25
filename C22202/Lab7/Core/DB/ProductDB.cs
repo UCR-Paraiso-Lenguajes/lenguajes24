@@ -48,7 +48,7 @@ public sealed class ProductDB
             }
         }
     }
-    public static void insertProduct(Product product, Action<Product> value)
+    public static async void insertProduct(Product product, Action<Product> value)
     {
         string connectionString = Storage.Instance.ConnectionString;
         using (var connection = new MySqlConnection(connectionString))
@@ -73,7 +73,7 @@ public sealed class ProductDB
                         insertCommand.Parameters.AddWithValue("@price", product.price);
                         insertCommand.Parameters.AddWithValue("@imgSource", product.imgSource);
                         insertCommand.Parameters.AddWithValue("@category", product.category);
-                        insertCommand.ExecuteNonQuery();
+                        await insertCommand.ExecuteNonQueryAsync();
                     }
 
 
