@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Fleck;
 using System.Text.Json;
+using Fleck;
 using Microsoft.Extensions.Logging;
 
 namespace ApiLab7;
@@ -9,19 +9,19 @@ public class WebSocketService
 {
     private WebSocketServer _server;
     private List<IWebSocketConnection> _wsConnections = new List<IWebSocketConnection>();
-    private MessageData _messageData;
+    private CampaignData _campaignData;
 
     public WebSocketService(string url)
     {
         _server = new WebSocketServer(url);
-        _messageData = new MessageData();
+        _campaignData = new CampaignData();
 
         _server.Start(ws =>
         {
             ws.OnOpen = async () =>
             {
                 _wsConnections.Add(ws);
-                await SendInitialMessages(ws);
+                await SendInitialCampaigns(ws);
             };
 
             ws.OnClose = () =>
@@ -44,13 +44,13 @@ public class WebSocketService
         }
     }
 
-    private async Task SendInitialMessages(IWebSocketConnection ws)
+    private async Task SendInitialCampaigns(IWebSocketConnection ws)
     {
-        var lastMessages = await _messageData.GetLastThreeMessagesAsync();
-        foreach (var message in lastMessages)
+        var lastCampaigns = await _campaignData.GetLastThreeCampaignsAsync();
+        foreach (var campaign in lastCampaigns)
         {
-            var jsonMessage = JsonSerializer.Serialize(message);
-            ws.Send(jsonMessage);
+            var jsonCampaign = JsonSerializer.Serialize(campaign);
+            ws.Send(jsonCampaign);
         }
     }
 

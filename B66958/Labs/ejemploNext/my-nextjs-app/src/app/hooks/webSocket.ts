@@ -11,9 +11,15 @@ const useWebSocket = (url: string, setNewMessages: (quantity: number) => void,
 
         socket.onmessage = (event) => {
             const message: WebSocketMessage = JSON.parse(event.data);
-            setMessages((prevMessages) => [...prevMessages, message]);
-            setMessagesList((prevMessages) => [...prevMessages, message]);
-            setNewMessages((prevCount) => prevCount + 1);
+            if(message.Enabled){
+                setMessages((prevMessages) => [...prevMessages, message]);
+                setMessagesList((prevMessages) => [...prevMessages, message]);
+                setNewMessages((prevCount) => prevCount + 1);
+            }else{
+                setNewMessages((prevCount) => prevCount - 1);
+                setMessages((prevMessages) => prevMessages.filter(msg => msg.Id !== message.Id));
+                setMessagesList((prevMessages) => prevMessages.filter(msg => msg.Id !== message.Id));
+            }
         };
 
         return () => {
