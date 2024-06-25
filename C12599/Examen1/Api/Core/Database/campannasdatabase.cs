@@ -1,10 +1,8 @@
-﻿//investigacion
 using System;
 using System.Collections.Generic;
 using MySqlConnector;
 using storeapi.Models;
 using core;
-
 
 namespace storeapi.Database
 {
@@ -35,7 +33,7 @@ namespace storeapi.Database
 
         public static void InsertCampanna(Campanna campanna)
         {
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
                 connection.Open();
 
@@ -54,7 +52,7 @@ namespace storeapi.Database
 
         public static void UpdateCampannaEstado(int id, bool estado)
         {
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
                 connection.Open();
 
@@ -72,11 +70,11 @@ namespace storeapi.Database
             }
         }
 
-        public static List<string[]> RetrieveCampannas()
+        public static IEnumerable<string[]> RetrieveCampannas()
         {
-            List<string[]> campannas = new List<string[]>();
+            var campannas = new List<string[]>();
 
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
                 connection.Open();
 
@@ -112,7 +110,7 @@ namespace storeapi.Database
                 throw new ArgumentException("ID must be a positive number.");
             }
 
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+            using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
                 connection.Open();
 
@@ -142,3 +140,4 @@ namespace storeapi.Database
         }
     }
 }
+
