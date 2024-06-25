@@ -1,4 +1,3 @@
-//investigacion
 'use client';
 import React, { useEffect, useState } from 'react';
 import * as signalR from "@microsoft/signalr";
@@ -12,16 +11,12 @@ function Chat() {
 
     useEffect(() => {
         const fetchCampaigns = async () => {
-            try {
-                const response = await fetch(URL + '/api/Campannas');
-                if (response.ok) {
-                    const data = await response.json();
-                    const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
-                    setMessages(campaigns.slice(-3)); // Only keep the last 3 messages
-                } else {
-                    setError('Error al obtener las campañas.');
-                }
-            } catch (error) {
+            const response = await fetch(URL + '/api/Campannas');
+            if (response.ok) {
+                const data = await response.json();
+                const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
+                setMessages(campaigns.slice(-3)); // Only keep the last 3 messages
+            } else {
                 setError('Error al obtener las campañas.');
             }
         };
@@ -36,15 +31,16 @@ function Chat() {
             .configureLogging(signalR.LogLevel.Information)
             .build();
 
-        const startConnection = async () => {
-            try {
-                await newConnection.start();
-                setConnection(newConnection);
-                setError(null);
-            } catch (err) {
-                setError('Error al conectar con el servidor. Intentando reconectar...');
-                setTimeout(() => startConnection(), 5000);
-            }
+        const startConnection = () => {
+            newConnection.start()
+                .then(() => {
+                    setConnection(newConnection);
+                    setError(null);
+                })
+                .catch(() => {
+                    setError('Error al conectar con el servidor. Intentando reconectar...');
+                    setTimeout(() => startConnection(), 5000);
+                });
         };
 
         newConnection.onclose(() => {

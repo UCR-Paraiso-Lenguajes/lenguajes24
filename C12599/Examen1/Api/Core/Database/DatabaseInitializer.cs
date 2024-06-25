@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MySqlConnector;
 using core;
 
@@ -63,9 +63,7 @@ namespace storeapi.Database
                         ProductId INT,
                         PurchaseNumber VARCHAR(255),
                         Address VARCHAR(255),
-                        Price DECIMAL(10, 2),
-                        FOREIGN KEY (ProductId) REFERENCES products(id),
-                        FOREIGN KEY (PurchaseNumber) REFERENCES Compras(purchaseNumber)
+                        Price DECIMAL(10, 2)
                     );";
 
                 using (var command = new MySqlCommand(createItemsTableQuery, connection))

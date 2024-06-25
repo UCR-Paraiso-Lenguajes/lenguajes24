@@ -5,8 +5,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
 const URL = process.env.NEXT_PUBLIC_API;
 
-
-
 const PayPage: React.FC = () => {
     const [cart, setCart] = useState({
         productos: [],

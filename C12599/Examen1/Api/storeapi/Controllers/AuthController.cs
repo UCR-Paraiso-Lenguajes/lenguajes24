@@ -51,8 +51,8 @@ namespace storeapi.Controllers
                     var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
                     var tokenOptions = new JwtSecurityToken(
-                        issuer: "https://localhost:7043",
-                        audience: "https://localhost:7043",
+                        issuer: "http://localhost:7043",
+                        audience: "http://localhost:7043",
                         claims: claims,
                         expires: DateTime.Now.AddDays(30),
                         signingCredentials: signinCredentials
