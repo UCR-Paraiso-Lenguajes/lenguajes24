@@ -84,8 +84,10 @@ public class StoreDB
                 CREATE TABLE IF NOT EXISTS messages (
                     id CHAR(36) PRIMARY KEY,
                     content TEXT NOT NULL,
-                    timestamp DATETIME NOT NULL
+                    timestamp DATETIME NOT NULL,
+                    deleted BOOLEAN NOT NULL DEFAULT FALSE
                 );
+
 
                 INSERT INTO paymentMethods (paymentId, paymentName)
                 VALUES 
@@ -246,19 +248,21 @@ public class StoreDB
         {
             await connection.OpenAsync();
             var query = @"
-                    USE store;
-                    INSERT INTO messages (id, content, timestamp)
-                    VALUES (@id, @content, @timestamp);";
+                USE store;
+                INSERT INTO messages (id, content, timestamp, deleted)
+                VALUES (@id, @content, @timestamp, @deleted);";
 
             using (var command = new MySqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@id", message.Id);
                 command.Parameters.AddWithValue("@content", message.Content);
                 command.Parameters.AddWithValue("@timestamp", message.Timestamp);
+                command.Parameters.AddWithValue("@deleted", false);
                 await command.ExecuteNonQueryAsync();
             }
         }
     }
+
 
     public static async Task<IEnumerable<Message>> GetMessagesAsync()
     {
@@ -287,4 +291,24 @@ public class StoreDB
         }
         return messages;
     }
+
+    public async Task MarkMessageAsDeletedAsync(string messageId)
+    {
+        using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
+        {
+            await connection.OpenAsync();
+            var query = @"
+                USE store;
+                UPDATE messages
+                SET deleted = TRUE
+                WHERE id = @id;";
+
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", messageId);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+    }
+
 }

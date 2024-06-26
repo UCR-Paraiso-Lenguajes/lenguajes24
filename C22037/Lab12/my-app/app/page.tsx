@@ -88,22 +88,21 @@ export default function Home() {
     setNotifications(storedNotifications);
 
     const connection = new HubConnectionBuilder()
-      .withUrl("http://localhost:5087/chatHub")
+      .withUrl("http://localhost:5087/campaignHub")
       .withAutomaticReconnect()
       .build();
 
     connection.start()
       .then(() => {
         console.log("Connection to SignalR hub established");
-        connection.invoke("SendRecentMessages");
-      })
-      .catch(err => console.error('Error connecting to SignalR hub:', err));
+        connection.invoke("SendRecentMessagesAsync");
+      });
 
-    connection.on('ReceiveRecentMessages', (messages) => {
+    connection.on('ReceiveRecentMessagesAsync', (messages) => {
       setNotifications(messages.map(msg => ({ id: msg.id, message: msg.content, read: false })));
     });
 
-    connection.on('ReceiveAllMessages', (messages) => {
+    connection.on('ReceiveAllMessagesAsync', (messages) => {
       setNotifications(messages.map(msg => ({ id: msg.id, message: msg.content, read: false })));
     });
 

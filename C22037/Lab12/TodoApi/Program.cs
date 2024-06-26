@@ -106,7 +106,7 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapHub<ChatHub>("/chatHub");
+    endpoints.MapHub<CampaignHub>("/campaignHub");
     endpoints.MapControllers();
 });
 

@@ -61,15 +61,13 @@ export default function Init() {
 
     useEffect(() => {
         const newConnection = new HubConnectionBuilder()
-            .withUrl("http://localhost:5087/chatHub")
+            .withUrl("http://localhost:5087/campaignHub")
             .withAutomaticReconnect()
             .build();
 
-        newConnection.start()
-            .then(() => console.log('Connected to the campaign hub'))
-            .catch(err => console.error('Error connecting to campaign hub:', err));
+        newConnection.start();
 
-        newConnection.on("ReceiveAllMessages", (messages) => {
+        newConnection.on("ReceiveAllMessagesAsync", (messages) => {
             setMessages(messages);
         });
 
@@ -204,7 +202,7 @@ export default function Init() {
 
         try {
             if (connection) {
-                await connection.invoke("SendMessage", newMessage);
+                await connection.invoke("SendMessageAsync", newMessage);
                 setNewMessage('');
             }
         } catch (error) {
@@ -219,7 +217,7 @@ export default function Init() {
 
         try {
             if (connection) {
-                await connection.invoke("DeleteMessage", messageId);
+                await connection.invoke("DeleteMessageAsync", messageId);
             }
         } catch (error) {
             throw new Error("Error deleting message.");
