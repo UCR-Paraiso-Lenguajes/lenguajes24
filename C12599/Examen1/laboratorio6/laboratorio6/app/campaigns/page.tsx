@@ -24,7 +24,7 @@ function Chat() {
         fetchCampaigns();
 
         const newConnection = new signalR.HubConnectionBuilder()
-            .withUrl(URL + "/StoreHub", {
+            .withUrl(URL + "/CampaignHub", {
                 withCredentials: true
             })
             .withAutomaticReconnect()
@@ -58,6 +58,17 @@ function Chat() {
     }, []);
 
     useEffect(() => {
+        const fetchCampaigns = async () => {
+            const response = await fetch(URL + '/api/Campannas');
+            if (response.ok) {
+                const data = await response.json();
+                const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
+                setMessages(campaigns.slice(-3)); // Solo mantener los últimos 3 mensajes
+            } else {
+                setError('Error al obtener las campañas.');
+            }
+        };
+
         if (connection) {
             const handleReceiveMessage = (user: string, message: string) => {
                 setMessages(prevMessages => {
@@ -67,15 +78,7 @@ function Chat() {
             };
 
             const handleUpdateCampaigns = (contenidoHtml: string, estado: boolean) => {
-                setMessages(prevMessages => {
-                    let newMessages;
-                    if (estado) {
-                        newMessages = [...prevMessages, `Nueva Campaña: ${contenidoHtml}`];
-                    } else {
-                        newMessages = prevMessages.filter(msg => msg !== `Nueva Campaña: ${contenidoHtml}`);
-                    }
-                    return newMessages.slice(-3); // Solo mantener los últimos 3 mensajes
-                });
+                fetchCampaigns(); // Obtener la lista completa de campañas
             };
 
             connection.on("ReceiveMessage", handleReceiveMessage);
@@ -102,4 +105,3 @@ function Chat() {
 }
 
 export default Chat;
-
