@@ -55,15 +55,13 @@ const NotificationsDropdown = () => {
     const startConnection = async () => {
       try {
         await newConnection.start();
-        console.log('Connected to SignalR Hub.');
         setConnection(newConnection);
       } catch (err) {
-        console.error('SignalR Connection Error: ', err);
+        throw new Error('SignalR Connection Error: ', err);
       }
     };
 
     newConnection.onclose(() => {
-      console.error('SignalR connection closed. Attempting to reconnect...');
       setTimeout(startConnection, 1000); // Retry connection every 1 second
     });
 
@@ -76,12 +74,10 @@ const NotificationsDropdown = () => {
     };
   }, [URL]);
 
-
   useEffect(() => {
     if (!connection) return;
 
     const handleReceiveCampaignUpdate = (message) => {
-      console.log('Received message from socket:', message);
       const updateMessage = `Campaign: ${message}`;
       setCampaignMessages((prevMessages) => [updateMessage, ...prevMessages.slice(0, 2)]);
       setUnreadCount((prevCount) => prevCount + 1);
@@ -93,7 +89,6 @@ const NotificationsDropdown = () => {
       connection.off('ReceiveCampaignUpdate', handleReceiveCampaignUpdate);
     };
   }, [connection]);
-
 
   const handleDeleteMessage = useCallback(async (id: number) => {
     try {
@@ -108,16 +103,41 @@ const NotificationsDropdown = () => {
         throw new Error('Network response was not ok');
       }
 
-      // Update local state to remove the deleted message
       setCampaignMessages((prevMessages) => prevMessages.filter(message => message.id !== id));
     } catch (error) {
-      console.error("There was an error deleting the message!", error);
+      throw new Error("There was an error deleting the message!", error);
     }
   }, [URL]);
 
-
   const handleMarkAsRead = () => {
     setUnreadCount(0);
+  };
+
+  const renderMessage = (message) => {
+    const youtubeRegex = /(https?:\/\/(www\.)?youtube\.com\/watch\?v=|https?:\/\/youtu\.be\/)([a-zA-Z0-9_-]+)/;
+    const match = message.match(youtubeRegex);
+
+    if (match) {
+      const videoId = match[3];
+      const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+      return (
+        <div key={message}>
+          <iframe
+            width="100%"
+            height="315"
+            src={embedUrl}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+      );
+    }
+
+    return (
+      <div dangerouslySetInnerHTML={{ __html: message }} />
+    );
   };
 
   return (
@@ -135,22 +155,21 @@ const NotificationsDropdown = () => {
         )}
       </Dropdown.Toggle>
       <Dropdown.Menu>
-        {[...apiMessages].reverse().slice(-3).map((message, index) => ( // Only show the last 3 messages
+        {[...apiMessages].reverse().slice(-3).map((message, index) => ( 
           <Dropdown.Item key={`api-${index}`}>
-            <div dangerouslySetInnerHTML={{ __html: message }} />
+            {renderMessage(message)}
             <small className="text-muted d-block">
               {new Date().toLocaleString()}
             </small>
           </Dropdown.Item>
         ))}
-        {[...campaignMessages].reverse().slice(-3).map((message, index) => ( // Only show the last 3 messages
+        {[...campaignMessages].reverse().slice(-3).map((message, index) => (
           <Dropdown.Item key={`campaign-${index}`}>
-            <div dangerouslySetInnerHTML={{ __html: message }} />
+            {renderMessage(message)}
             <small className="text-muted d-block">
               {new Date().toLocaleString()}
             </small>
-            <button onClick={() => handleDeleteMessage(message.id)}>Delete</button>
-          </Dropdown.Item >
+          </Dropdown.Item>
         ))}
         <Dropdown.Item onClick={handleMarkAsRead}>
           Marcar como leído

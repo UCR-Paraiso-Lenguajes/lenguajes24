@@ -47,15 +47,15 @@ namespace StoreAPI.Database
                 }
             }
         }
-        public async Task<List<string[]>> GetLatestMessagesAsync()
+        public async Task<IEnumerable<string[]>> GetLatestMessagesAsync()
         {
-            List<string[]> messages = new List<string[]>();
+            var messages = new List<string[]>();
 
-            using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))//DESC LIMIT 3
+            using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
             {
                 await connection.OpenAsync();
 
-                string selectQuery = "SELECT id, content, timestamp FROM messages WHERE active = TRUE  ORDER BY timestamp ;";
+                string selectQuery = "SELECT id, content, timestamp, active FROM messages WHERE active = TRUE ORDER BY timestamp;";
 
                 using (var command = new MySqlCommand(selectQuery, connection))
                 using (var reader = await command.ExecuteReaderAsync())
@@ -63,7 +63,7 @@ namespace StoreAPI.Database
                     while (await reader.ReadAsync())
                     {
                         int fieldCount = reader.FieldCount;
-                        string[] row = new string[fieldCount];
+                        var row = new string[fieldCount];
                         for (int i = 0; i < fieldCount; i++)
                         {
                             row[i] = reader.GetValue(i).ToString();

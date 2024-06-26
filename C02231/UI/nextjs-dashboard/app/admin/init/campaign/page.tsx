@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect,  } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import Link from 'next/link';
 import '/app/ui/global.css';
@@ -58,6 +58,7 @@ const Campaigns: React.FC = () => {
             throw new Error('Error fetching messages:', error);
         }
     };
+    
     useEffect(() => {
         fetchMessages();
 
@@ -103,7 +104,6 @@ const Campaigns: React.FC = () => {
         };
     }, []);
 
-
     const handleAddMessage = async () => {
         try {
             const timestamp = new Date().toISOString(); // Obtener timestamp en UTC
@@ -148,7 +148,37 @@ const Campaigns: React.FC = () => {
             throw new Error("There was an error deleting the message!", error);
         }
     };
-  
+
+    const renderMessage = (message: Message) => {
+        const youtubeRegex = /(https?:\/\/(www\.)?youtube\.com\/watch\?v=|https?:\/\/youtu\.be\/)([a-zA-Z0-9_-]+)/;
+        const match = message.update.match(youtubeRegex);
+
+        if (match) {
+            const videoId = match[3];
+            const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            return (
+                <div key={message.id}>
+                    <iframe
+                        width="100%"
+                        height="315"
+                        src={embedUrl}
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                    ></iframe>
+                </div>
+            );
+        }
+
+        return (
+            <div key={message.id}>
+                <strong>{new Date(message.timestamp).toLocaleString()}:</strong>
+                <span dangerouslySetInnerHTML={{ __html: message.update }} />
+            </div>
+        );
+    };
+
     return (
         <div>
             <header className="p-3 text-bg-dark">
@@ -179,7 +209,7 @@ const Campaigns: React.FC = () => {
                             {messages.map((message) => (
                                 <li key={message.id} className="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
-                                        <strong>{new Date(message.timestamp).toLocaleString()}:</strong> <span dangerouslySetInnerHTML={{ __html: message.update }} />
+                                        {renderMessage(message)}
                                     </div>
                                     <button className="btn btn-danger" onClick={() => handleDeleteMessage(message.id)}>Delete</button>
                                 </li>
@@ -188,7 +218,7 @@ const Campaigns: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <footer className="footer" style={{ position: 'fixed', bottom: '0', width: '100%', zIndex: '9999' }}>
+            <footer className="footer">
                 <div className="text-center p-3">
                     <h5 className="text-light">Biblioteca de Paula</h5>
                 </div>

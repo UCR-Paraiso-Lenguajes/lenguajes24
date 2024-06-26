@@ -11,7 +11,7 @@ namespace StoreAPI.models
         public int Id { get; set; }
         public string Update { get; set; }
         public DateTime Timestamp { get; set; }
-        public bool Active { get; set; } // Asegúrate de tener esta propiedad para reflejar el estado activo
+        public bool Active { get; set; } 
 
         public Campaign(string update)
         {
@@ -19,13 +19,12 @@ namespace StoreAPI.models
             Timestamp = DateTime.UtcNow;
         }
 
-        // Constructor sin parámetros para la serialización/deserialización
         public Campaign() { }
 
         public static async Task<IEnumerable<Campaign>> LoadCampannasFromDatabaseAsync()
         {
             var campaignDB = new CampaignDB();
-            List<string[]> campannaData = await campaignDB.GetLatestMessagesAsync();
+            IEnumerable<string[]> campannaData = await campaignDB.GetLatestMessagesAsync();
             List<Campaign> campannas = new List<Campaign>();
 
             foreach (string[] row in campannaData)
@@ -37,16 +36,15 @@ namespace StoreAPI.models
                         int id = int.Parse(row[0]);
                         string update = row[1];
                         DateTime dateTime = DateTime.Parse(row[2]);
-                        bool active = bool.Parse(row[3]); // Asegúrate de tener la columna 'active' en tu consulta SQL
-
-                        if (active) // Solo agregar campañas activas a la lista
+                        bool active = bool.Parse(row[3]); 
+                        if (active) 
                         {
                             Campaign campanna = new Campaign
                             {
                                 Id = id,
                                 Update = update,
                                 Timestamp = dateTime,
-                                Active = active // Asegúrate de que la clase Campaign tenga una propiedad 'Active'
+                                Active = active 
                             };
 
                             campannas.Add(campanna);
