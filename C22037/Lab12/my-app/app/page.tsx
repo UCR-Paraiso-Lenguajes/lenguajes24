@@ -94,7 +94,6 @@ export default function Home() {
 
     connection.start()
       .then(() => {
-        console.log("Connection to SignalR hub established");
         connection.invoke("SendRecentMessagesAsync");
       });
 
