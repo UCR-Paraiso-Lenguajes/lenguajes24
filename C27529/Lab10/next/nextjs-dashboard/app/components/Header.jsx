@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import "bootstrap/dist/css/bootstrap.min.css"; // Importar CSS de Bootstrap
+import "bootstrap/dist/css/bootstrap.min.css";
 import { HubConnectionBuilder } from '@microsoft/signalr';
 
 export const Header = ({ goToPage }) => {
@@ -17,38 +17,38 @@ export const Header = ({ goToPage }) => {
         return { productos: [], carrito: { subtotal: 0, total: 0 } };
     });
 
-    
-  const URL = process.env.NEXT_PUBLIC_API_URL;
-  if (!URL) {
-      throw new Error('NEXT_PUBLIC_API_URL is not defined');
-  }
+    const URL = process.env.NEXT_PUBLIC_API_URL;
+    if (!URL) {
+        throw new Error('NEXT_PUBLIC_API_URL is not defined');
+    }
 
     useEffect(() => {
-        const newConnection = new HubConnectionBuilder()
-            .withUrl(`${URL}/Campannas`)
-            .withAutomaticReconnect()
-            .build();
+        const connectToHub = async () => {
+            const connection = new HubConnectionBuilder()
+                .withUrl(process.env.NEXT_PUBLIC_API_URL + '/notificationHub')
+                .withAutomaticReconnect()
+                .build();
 
-        newConnection.start()
-            .then(() => {
-                console.log('Connected to SignalR hub');
-                setConnection(newConnection);
+            connection.on("ReceiveMessages", (receivedMessages) => {
+                setMessages(receivedMessages);
+            });
 
-                // Escuchar actualizaciones de mensajes
-                newConnection.on("UpdateMessages", (receivedMessages) => {
-                    setMessages(receivedMessages);
-                    setNewMessages(receivedMessages.length);
-                });
-            })
-            .catch(err => console.error('Error connecting to SignalR hub:', err));
-
-        return () => {
-            if (newConnection) {
-                newConnection.stop().then(() => console.log('Disconnected from SignalR hub'));
+            try {
+                await connection.start();
+                console.log('Connected to the Notification Hub');
+            } catch (error) {
+                console.error('Connection failed: ', error);
             }
         };
-   }, [URL]);
 
+        connectToHub();
+
+        return () => {
+            if (connection) {
+                connection.stop();
+            }
+        };
+    }, []);
     const onDeleteProduct = product => {
         const updatedProductos = store.productos.filter(item => item.id !== product.id);
         const updatedSubtotal = store.carrito.subtotal - product.price;
@@ -154,7 +154,7 @@ export const Header = ({ goToPage }) => {
                         strokeWidth="1.5"
                         stroke="currentColor"
                         className="icon-campaign"
-                        style={{ width: '32px', height: '32px' }} // Ajusta el tamaño del icono
+                        style={{ width: '32px', height: '32px' }}
                     >
                         <path
                             strokeLinecap="round"
@@ -167,7 +167,7 @@ export const Header = ({ goToPage }) => {
                     </div>
                 </div>
                 {campaignActive && (
-                    <div className={`container-campaign-messages ${campaignActive ? '' : 'hidden-campaign'}`}>
+                    <div className={`container-campaign-messages ${campaignActive ? '' : 'hidden-campaign'}`} style={{ maxHeight: '300px', overflowY: 'auto' }}>
                         {messages.length > 0 ? (
                             <div className='campaign-messages'>
                                 {messages.map((message, index) => (

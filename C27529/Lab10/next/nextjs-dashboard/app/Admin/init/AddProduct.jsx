@@ -13,6 +13,12 @@ function AddProduct() {
   });
   const token = sessionStorage.getItem('token');
 
+
+  const URL = process.env.NEXT_PUBLIC_API_URL;
+  if (!URL) {
+    throw new Error('NEXT_PUBLIC_API_URL is not defined');
+  }
+
   const addToLocalStorage = (product) => {
     let products = JSON.parse(localStorage.getItem('productList')) || [];
     products.push(product);
@@ -40,7 +46,7 @@ function AddProduct() {
     };
 
     try {
-      const response = await fetch('http://localhost:5164/api/Product', {
+      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/api/Product', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

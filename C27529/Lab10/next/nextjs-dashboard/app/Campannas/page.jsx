@@ -3,17 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export const Page = () => {
+const Page = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState({ content: '' });
     const [connection, setConnection] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    
-  const URL = process.env.NEXT_PUBLIC_API_URL;
-  if (!URL) {
-      throw new Error('NEXT_PUBLIC_API_URL is not defined');
-  }
-  
+    const URL = process.env.NEXT_PUBLIC_API_URL;
+    if (!URL) {
+        throw new Error('NEXT_PUBLIC_API_URL is not defined');
+    }
+
     useEffect(() => {
         const newConnection = new HubConnectionBuilder()
             .withUrl(`${URL}/Campannas`)
@@ -24,7 +24,6 @@ export const Page = () => {
             .then(() => console.log('Connected to the campaign hub'))
             .catch(err => console.error('Error connecting to campaign hub:', err));
 
-        // Escuchar actualizaciones de mensajes
         newConnection.on("UpdateMessages", (receivedMessages) => {
             setMessages(receivedMessages);
         });
@@ -32,9 +31,12 @@ export const Page = () => {
         setConnection(newConnection);
 
         return () => {
-            newConnection.stop();
+            if (newConnection) {
+                newConnection.off("UpdateMessages");
+                newConnection.stop();
+            }
         };
-    }, []);
+    }, [URL]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -43,12 +45,33 @@ export const Page = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (connection && newMessage.content.trim()) {
+        if (isSubmitting) return;
+
+        if (newMessage.content.trim()) {
+            setIsSubmitting(true);
+
             try {
-                await connection.invoke('SendCampaignMessage', newMessage.content);
-                setNewMessage({ content: '' });  // Clear the form upon submission
+                const response = await fetch(`${URL}/api/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newMessage.content) 
+                });
+
+                if (response.ok) {
+                    const message = await response.json();
+                    if (connection) {
+                        await connection.invoke('SendCampaignMessage', message.content, message.id);
+                    }
+                    setNewMessage({ content: '' });
+                } else {
+                    console.error('Failed to add message');
+                }
             } catch (error) {
                 console.error('Error sending message:', error);
+            } finally {
+                setIsSubmitting(false);
             }
         }
     };
@@ -78,7 +101,7 @@ export const Page = () => {
                         placeholder="Enter campaign content"
                     />
                 </div>
-                <button type="submit" className="btn btn-primary">Create Campaign</button>
+                <button type="submit" className="btn btn-primary" disabled={isSubmitting}>Create Campaign</button>
             </form>
             <div className="list-group">
                 {messages.map((message) => (

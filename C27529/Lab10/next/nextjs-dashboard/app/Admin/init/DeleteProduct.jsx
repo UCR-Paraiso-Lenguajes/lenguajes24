@@ -5,17 +5,24 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function DeleteProduct() {
   const [productList, setProductList] = useState([]);
 
+
+ 
+  const URL = process.env.NEXT_PUBLIC_API_URL;
+  if (!URL) {
+    throw new Error('NEXT_PUBLIC_API_URL is not defined');
+  }
+
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await fetch('http://localhost:5164/api/store');
+        const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/api/store');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
         const json = await response.json();
         if (!json) throw new Error('Failed to fetch data, null response');
-        
-        setProductList(json.products); 
+
+        setProductList(json.products);
         localStorage.setItem('productList', JSON.stringify(json.products));
       } catch (error) {
         throw new Error('Error loading data:', error);
