@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using storeapi.Database;
 
 namespace storeapi.Models
 {
@@ -16,13 +15,9 @@ namespace storeapi.Models
             get => _contenidoHtml;
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
+                if (!ValidateContenidoHtml(value))
                 {
-                    throw new ArgumentException("ContenidoHtml must not be null or empty.");
-                }
-                if (value.Length > 5000)
-                {
-                    throw new ArgumentException("ContenidoHtml must not exceed 5000 characters.");
+                    throw new ArgumentException("ContenidoHtml must not be null, empty, or exceed 5000 characters.");
                 }
                 _contenidoHtml = value;
             }
@@ -31,7 +26,14 @@ namespace storeapi.Models
         public bool Estado
         {
             get => _estado;
-            set => _estado = value;
+            set
+            {
+                if (!ValidateEstado(value))
+                {
+                    throw new ArgumentException("Estado must be a valid boolean value.");
+                }
+                _estado = value;
+            }
         }
 
         public DateTime CreatedAt { get; set; }
@@ -39,48 +41,23 @@ namespace storeapi.Models
         public Campanna(string contenidoHtml)
         {
             ContenidoHtml = contenidoHtml;
+            Estado = true; // Default value
+            CreatedAt = DateTime.UtcNow; // Default value
         }
 
         public Campanna() { }
 
-        public static IEnumerable<Campanna> LoadCampannasFromDatabase()
+        public static bool ValidateContenidoHtml(string contenidoHtml)
         {
-            IEnumerable<string[]> campannaData = CampannaDB.RetrieveCampannas();
-            List<Campanna> campannas = new List<Campanna>();
-
-            foreach (string[] row in campannaData)
-            {
-                if (ValidateCampannaRow(row))
-                {
-                    try
-                    {
-                        int id = int.Parse(row[0]);
-                        string contenidoHtml = row[1];
-                        DateTime createdAt = DateTime.Parse(row[2]);
-                        bool estado = bool.Parse(row[3]);
-
-                        Campanna campanna = new Campanna
-                        {
-                            Id = id,
-                            ContenidoHtml = contenidoHtml,
-                            CreatedAt = createdAt,
-                            Estado = estado
-                        };
-
-                        campannas.Add(campanna);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Manejar excepción según sea necesario
-                        Console.WriteLine($"Error processing row: {ex.Message}");
-                    }
-                }
-            }
-
-            return campannas;
+            return !string.IsNullOrWhiteSpace(contenidoHtml) && contenidoHtml.Length <= 5000;
         }
 
-        private static bool ValidateCampannaRow(string[] row)
+        public static bool ValidateEstado(bool estado)
+        {
+            return estado == true || estado == false;
+        }
+
+        public static bool ValidateCampannaRow(string[] row)
         {
             if (row.Length != 4)
             {
@@ -92,7 +69,7 @@ namespace storeapi.Models
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(row[1]) || row[1].Length > 5000)
+            if (!ValidateContenidoHtml(row[1]))
             {
                 return false;
             }
