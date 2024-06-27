@@ -1,6 +1,6 @@
 'use client';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import NavBar from "./navbar/page";
 import Cart from './Cart/page';
 import Alert from 'react-bootstrap/Alert';
@@ -8,6 +8,7 @@ import Carousel from 'react-bootstrap/Carousel';
 import { Dropdown } from "react-bootstrap";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import DOMPurify from 'dompurify';
+import { CartState } from "./types/Cart";
 
 export default function Home() {
 
@@ -31,7 +32,7 @@ export default function Home() {
   const [idList, setIdList] = useState([]);
 
   const [cartLoaded, setCartLoaded] = useState(false);
-  const [cart, setCart] = useState({
+  const [cart, setCart] = useState<CartState>({
     carrito: {
       productos: [],
       subtotal: 0,
@@ -299,7 +300,7 @@ export default function Home() {
     );
   }
 
-  return (
+  return ( <Suspense fallback={<div>Loading...</div>}>
     <div className="d-grid gap-2">
       <NavBar productCount={count} toggleCart={(action) => toggleCart({ action })}
         searchFunction={searchProduct} setQuery={setProductQuery} />
@@ -321,5 +322,6 @@ export default function Home() {
         </div> : ''
       }
     </div>
+    </Suspense>
   );
 }

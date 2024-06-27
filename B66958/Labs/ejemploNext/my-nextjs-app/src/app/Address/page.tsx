@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import PaymentForm from "../Payment/page";
+import { CartState } from "../types/Cart";
 
 const AddressForm = ({ handleAddressForm, cart, setCart, clearProducts }:
     {
-        handleAddressForm: () => void, cart: any,
-        setCart: (cart: any) => void, clearProducts: () => void
+        handleAddressForm: () => void, cart: CartState,
+        setCart: (cart: CartState) => void, clearProducts: () => void
     }) => {
     const [showPaymentForm, setShowPaymentForm] = useState(false);
 

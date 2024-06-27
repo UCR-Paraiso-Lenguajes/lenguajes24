@@ -1,9 +1,10 @@
 'use client'
 import { useEffect, useState } from "react";
 import Alert from 'react-bootstrap/Alert';
+import { CartState } from "../types/Cart";
 
 const PaymentForm = ({ cart, setCart, clearProducts }:
-    { cart: any, setCart: (cart: any) => void, clearProducts: () => void }) => {
+    { cart: CartState, setCart: (cart: CartState) => void, clearProducts: () => void }) => {
 
     const [isMessageShowing, setIsMessageShowing] = useState(false);
     const [message, setMessage] = useState('');
