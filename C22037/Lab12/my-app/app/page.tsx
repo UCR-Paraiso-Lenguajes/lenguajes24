@@ -1,8 +1,9 @@
-"use client"; // Para utilizar el cliente en lugar del servidor
+"use client";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../public/styles.css";
 import { useState, useEffect } from "react";
-import { Carousel } from 'react-bootstrap';
+import { Carousel, Dropdown } from 'react-bootstrap';
+import { HubConnectionBuilder } from '@microsoft/signalr';
 import Link from 'next/link';
 
 interface Category {
@@ -19,6 +20,12 @@ interface Product {
   category: Category;
 }
 
+interface Notification {
+  id: number;
+  message: string;
+  read: boolean;
+}
+
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [count, setCount] = useState(0);
@@ -26,6 +33,7 @@ export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
@@ -75,6 +83,31 @@ export default function Home() {
     localStorage.setItem('cart', JSON.stringify(initialCart));
 
     loadData();
+
+    const storedNotifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+    setNotifications(storedNotifications);
+
+    const connection = new HubConnectionBuilder()
+      .withUrl(URL + "/campaignHub")
+      .withAutomaticReconnect()
+      .build();
+
+    connection.start()
+      .then(() => {
+        connection.invoke("SendRecentMessagesAsync");
+      });
+
+    connection.on('ReceiveRecentMessagesAsync', (messages) => {
+      setNotifications(messages.map(msg => ({ id: msg.id, message: msg.content, read: false })));
+    });
+
+    connection.on('ReceiveAllMessagesAsync', (messages) => {
+      setNotifications(messages.map(msg => ({ id: msg.id, message: msg.content, read: false })));
+    });
+
+    return () => {
+      connection.stop();
+    };
   }, []);
 
   const updateUrl = (searchQuery, selectedCategory) => {
@@ -168,6 +201,17 @@ export default function Home() {
     } catch (error) {
       throw new Error('Error fetching data.');
     }
+  };
+
+  const handleNotificationClick = (notificationId) => {
+    const updatedNotifications = notifications.map(notification => {
+      if (notification.id === notificationId) {
+        return { ...notification, read: true };
+      }
+      return notification;
+    });
+
+    setNotifications(updatedNotifications);
   };
 
   const Product = ({ product }) => {
@@ -283,6 +327,29 @@ export default function Home() {
             </div>
           </div>
           <div className="col-sm-4 d-flex justify-content-end">
+            <div className="position-relative">
+              <Dropdown>
+                <Dropdown.Toggle as="a" bsPrefix="notification-toggle">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" className="bi bi-bell" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6" />
+                  </svg>
+                  {notifications.filter(notification => !notification.read).length > 0 && (
+                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                      {notifications.filter(notification => !notification.read).length}
+                    </span>
+                  )}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  <Dropdown.Header>Notifications</Dropdown.Header>
+                  {notifications.map(notification => (
+                    <Dropdown.Item key={notification.id} onClick={() => handleNotificationClick(notification.id)}>
+                      <div className={notification.read ? '' : 'font-weight-bold'} dangerouslySetInnerHTML={{ __html: notification.message }}></div>
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
             <Link href="/cart">
               <div className="position-relative">
                 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" className="bi bi-bag" viewBox="0 0 16 16">

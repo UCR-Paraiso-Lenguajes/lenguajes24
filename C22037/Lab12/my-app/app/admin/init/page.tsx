@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import DataTable from 'react-data-table-component';
+import { HubConnectionBuilder } from '@microsoft/signalr';
 
 interface CustomJwtPayload {
     exp: number;
@@ -28,6 +29,12 @@ interface Product {
     category: Category;
 }
 
+interface Message {
+    id: number;
+    content: string;
+    timestamp: string;
+}
+
 export default function Init() {
     const router = useRouter();
     const [selectedOption, setSelectedOption] = useState('');
@@ -39,7 +46,6 @@ export default function Init() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [showDeleteProducts, setShowDeleteProducts] = useState(false);
     const [showInsertProducts, setShowInsertProducts] = useState(false);
-    const URL = process.env.NEXT_PUBLIC_API_URL;
     const [newProduct, setNewProduct] = useState({
         name: '',
         description: '',
@@ -47,7 +53,30 @@ export default function Init() {
         imageUrl: '',
         categoryId: ''
     });
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [newMessage, setNewMessage] = useState('');
+    const URL = process.env.NEXT_PUBLIC_API_URL;
     const [errors, setErrors] = useState<string[]>([]);
+    const [connection, setConnection] = useState(null);
+
+    useEffect(() => {
+        const newConnection = new HubConnectionBuilder()
+            .withUrl(URL + "/campaignHub")
+            .withAutomaticReconnect()
+            .build();
+
+        newConnection.start();
+
+        newConnection.on("ReceiveAllMessagesAsync", (messages) => {
+            setMessages(messages);
+        });
+
+        setConnection(newConnection);
+
+        return () => {
+            newConnection.stop();
+        };
+    }, []);
 
     const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
     let userRole = null;
@@ -166,6 +195,35 @@ export default function Init() {
         }
     };
 
+    const handleSendMessage = async () => {
+        if (!newMessage.trim() || newMessage.length > 5000) {
+            return;
+        }
+
+        try {
+            if (connection) {
+                await connection.invoke("SendMessageAsync", newMessage);
+                setNewMessage('');
+            }
+        } catch (error) {
+            throw new Error('Error sending message.');
+        }
+    };
+
+    const handleDeleteMessage = async (messageId: number) => {
+        if (!confirm('Are you sure you want to delete this message?')) {
+            return;
+        }
+
+        try {
+            if (connection) {
+                await connection.invoke("DeleteMessageAsync", messageId);
+            }
+        } catch (error) {
+            throw new Error("Error deleting message.");
+        }
+    };
+
     useEffect(() => {
         if (showDeleteProducts) {
             fetchProducts();
@@ -254,7 +312,7 @@ export default function Init() {
             imageUrl: newProduct.imageUrl,
             category: parseInt(newProduct.categoryId)
         };
-    
+
         try {
             const response = await fetch(URL + '/api/product/store/add', {
                 method: 'POST',
@@ -264,15 +322,15 @@ export default function Init() {
                 },
                 body: JSON.stringify(productData)
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to add product.');
             }
-    
+
             const data = await response.json();
-    
+
             const updatedProducts = data.products;
-    
+
             const storeData = JSON.parse(localStorage.getItem('store') || '{}');
             storeData.products = updatedProducts;
             localStorage.setItem('store', JSON.stringify(storeData));
@@ -287,7 +345,7 @@ export default function Init() {
         } catch (error) {
             throw new Error('Error adding product.');
         }
-    };    
+    };
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNewProduct({ ...newProduct, name: e.target.value });
@@ -352,6 +410,7 @@ export default function Init() {
                     <div>
                         <button className="Button" onClick={() => { setSelectedOption("Products"); setShowDeleteProducts(false); setShowInsertProducts(false); }}>Products</button>
                         <button className="Button" onClick={() => setSelectedOption("Reports")}>Reports</button>
+                        <button className="Button" onClick={() => setSelectedOption("Campaigns")}>Campaigns</button>
                     </div>
                 </div>
 
@@ -467,6 +526,44 @@ export default function Init() {
                                         title: "Weekly Sales",
                                     }}
                                 />
+                            </div>
+                        </div>
+                    )}
+                    {selectedOption === "Campaigns" && (
+                        <div>
+                            <h2>Campaigns</h2>
+                            <div className="chat-container">
+                                {messages.length > 0 ? (
+                                    <table className="message-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Message</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {messages.map(message => (
+                                                <tr key={message.id} className="message-row">
+                                                    <td dangerouslySetInnerHTML={{ __html: message.content }}></td>
+                                                    <td>
+                                                        <button onClick={() => handleDeleteMessage(message.id)}>Delete</button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                ) : (
+                                    <p>No messages.</p>
+                                )}
+                            </div>
+                            <div className="message-input">
+                                <textarea
+                                    placeholder="Type your message here..."
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    maxLength={5000}
+                                />
+                                <button onClick={handleSendMessage}>Send</button>
                             </div>
                         </div>
                     )}
