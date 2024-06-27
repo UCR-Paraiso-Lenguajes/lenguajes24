@@ -1,3 +1,4 @@
+'use client';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
@@ -5,7 +6,7 @@ const NavBar = ({ productCount, toggleCart, searchFunction, setQuery }:
     { productCount: number, toggleCart: (action: boolean) => void, searchFunction: () => void, setQuery: (text: string) => void }) => {
 
 
-    function handleQueryChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value;
         setQuery(inputValue);
     }

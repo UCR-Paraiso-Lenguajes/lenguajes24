@@ -209,7 +209,7 @@ export default function Home() {
     return `?${queryString}`;
   }
 
-  function searchProduct() {
+  const searchProduct = () => {
     if (!productQuery) {
       setErrorMessage('Por favor ingrese una consulta');
       setIsErrorShowing(true);
