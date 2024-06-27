@@ -1,6 +1,5 @@
 'use client';
 import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import Link from 'next/link';
 import '/app/ui/global.css';
 import React, { useState, useEffect } from 'react';
@@ -13,12 +12,12 @@ const ProductPage = () => {
     const [showModal, setShowModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [isNameValid, setIsNameValid] = useState(false);
-    const [isAuthorValid, setIsAuthorValid] = useState(false);
+    const [isDescriptionValid, setIsDescriptionValid] = useState(false);
     const [isPriceValid, setIsPriceValid] = useState(false);
     const [isCategoryValid, setIsCategoryValid] = useState(false);
     const [isImgUrlValid, setIsImgUrlValid] = useState(true); // Nueva validación
     const [isFormValid, setIsFormValid] = useState(false); // Nuevo estado para la validación del formulario
-    const token = sessionStorage.getItem("authToken");
+    //const token = sessionStorage.getItem("authToken");
 
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
@@ -27,7 +26,7 @@ const ProductPage = () => {
 
     const [newProduct, setNewProduct] = useState({
         Name: '',
-        Author: '',
+        Description: '',
         ImgUrl: '',
         Price: '',
         ProductCategory: {
@@ -36,12 +35,6 @@ const ProductPage = () => {
         }
     });
 
-    useEffect(() => {
-        if (!token) {
-            sessionStorage.removeItem("authToken");
-            return;
-        }
-    }, []);
 
     useEffect(() => {
         fetchProducts();
@@ -49,7 +42,7 @@ const ProductPage = () => {
 
     useEffect(() => {
         validateForm(); // Validar el formulario cada vez que cambie algún estado
-    }, [newProduct, isNameValid, isAuthorValid, isPriceValid, isCategoryValid, isImgUrlValid]);
+    }, [newProduct, isNameValid, isDescriptionValid, isPriceValid, isCategoryValid, isImgUrlValid]);
 
     const fetchProducts = async () => {
         try {
@@ -106,8 +99,8 @@ const ProductPage = () => {
                 setIsNameValid(value.trim() !== '');
             }
 
-            if (name === 'Author') {
-                setIsAuthorValid(value.trim() !== '');
+            if (name === 'Description') {
+                setIsDescriptionValid(value.trim() !== '');
             }
         }
 
@@ -115,18 +108,21 @@ const ProductPage = () => {
     };
 
     const validateForm = () => {
-        const isFormValid = isNameValid && isAuthorValid && isPriceValid && isCategoryValid && isImgUrlValid;
+        const isFormValid = isNameValid && isDescriptionValid && isPriceValid && isCategoryValid && isImgUrlValid;
         setIsFormValid(isFormValid);
     };
 
     const handleAddProduct = async () => {
         // Validar URL de la imagen y precio antes de enviar
-        if (!validator.isURL(newProduct.ImgUrl)) {
+        const imageOrVideoRegex = /\.(jpeg|jpg|png|gif)$/i;
+        const youtubeRegex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/;
+
+        if (!validator.isURL(newProduct.ImgUrl) ||
+            (!imageOrVideoRegex.test(newProduct.ImgUrl) && !youtubeRegex.test(newProduct.ImgUrl))) {
             setIsImgUrlValid(false);
-            setErrorMessage('La imagen debe ser una URL válida');
+            setErrorMessage('La imagen debe ser una URL válida que termine en .jpeg, .jpg, .png, .gif, o un video de YouTube válido');
             return;
         }
-
         const priceRegex = /^\d+(\.\d{1,3})?$/;
         if (!priceRegex.test(newProduct.Price) || parseFloat(newProduct.Price) > 100000.000) {
             setIsPriceValid(false);
@@ -136,7 +132,7 @@ const ProductPage = () => {
 
         const productData = {
             Name: newProduct.Name,
-            Author: newProduct.Author,
+            Description: newProduct.Description,
             ImgUrl: newProduct.ImgUrl,
             Price: parseFloat(newProduct.Price),
             ProductCategory: {
@@ -144,12 +140,6 @@ const ProductPage = () => {
                 IdCategory: newProduct.ProductCategory.IdCategory
             }
         };
-
-        const token = sessionStorage.getItem('authToken');
-        if (!token) {
-            sessionStorage.removeItem("authToken");
-            return;
-        }
 
         try {
             const response = await fetch(`${URL}/api/product`, {
@@ -169,7 +159,7 @@ const ProductPage = () => {
             setShowModal(false);
             setNewProduct({
                 Name: '',
-                Author: '',
+                Description: '',
                 ImgUrl: '',
                 Price: '',
                 ProductCategory: {
@@ -207,7 +197,7 @@ const ProductPage = () => {
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
-                                        <th>Author</th>
+                                        <th>Description</th>
                                         <th>Image</th>
                                         <th>Price</th>
                                         <th>Category</th>
@@ -218,7 +208,7 @@ const ProductPage = () => {
                                         <tr key={product.id}>
                                             <td>{product.id}</td>
                                             <td>{product.name}</td>
-                                            <td dangerouslySetInnerHTML={{ __html: product.author }} />
+                                            <td dangerouslySetInnerHTML={{ __html: product.description }} />
                                             <td><img src={product.imgUrl} alt={product.name} width="50" /></td>
                                             <td>{product.price}</td>
                                             <td>
@@ -251,9 +241,9 @@ const ProductPage = () => {
                             {!isNameValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>El nombre es requerido</div>}
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label>Author</Form.Label>
-                            <Form.Control type="text" name="Author" value={newProduct.Author} onChange={handleInputChange} />
-                            {!isAuthorValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>El autor es requerido</div>}
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control as="textarea" name="Description" value={newProduct.Description} onChange={handleInputChange} />
+                            {!isDescriptionValid && <div style={{ color: 'red', marginTop: '0.5rem' }}>La descripción es requerida</div>}
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Image</Form.Label>

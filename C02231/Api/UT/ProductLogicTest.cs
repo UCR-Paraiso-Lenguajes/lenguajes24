@@ -50,7 +50,7 @@ namespace UT
       var product = new Product
       {
         Name = "Test Product",
-        Author = "Test Author",
+        Description = "Test Description",
         ImgUrl = "http://example.com/img.png",
         Price = 100,
         ProductCategory = categoryList.Single(category => category.IdCategory == 8)

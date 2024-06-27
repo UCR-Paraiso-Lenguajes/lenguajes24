@@ -67,7 +67,7 @@ export default function CartPage() {
         }
     }, [cart.products]);
 
-    var esCarritoVacio = cartData.products.length === 0;
+    var esCarritoVacio = !cartData.products || cartData.products.length === 0;
     if (esCarritoVacio) {
         return (
             <div>
@@ -87,7 +87,19 @@ export default function CartPage() {
                 </header>
 
                 <div className='total'>
-                    <span>Your cart is empty</span>
+                    <table id="cart_summary" className="table table-bordered stock-management-on">
+                        <thead>
+                            <tr>
+                                <th className="cart_product first_item">Name</th>
+                                <th className="cart_description item">Description</th>
+                                <th className="cart_unit item text-right">Price</th>
+                                <th className="cart_quantity item text-center">Quantity</th>
+                                <th className="cart_total item text-right">Total</th>
+                                <th className="cart_delete last_item">&nbsp;</th>
+
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         );
@@ -118,9 +130,10 @@ export default function CartPage() {
                         <thead>
                             <tr>
                                 <th className="cart_product first_item">Name</th>
-                                <th className="cart_description item">Author</th>
+                                <th className="cart_description item">Description</th>
                                 <th className="cart_unit item text-right">Price</th>
                                 <th className="cart_quantity item text-center">Quantity</th>
+                        
                                 <th className="cart_total item text-right">Total</th>
                                 <th className="cart_delete last_item">&nbsp;</th>
                             </tr>
@@ -137,7 +150,7 @@ export default function CartPage() {
                                         <p className="product-name">
                                             {item.name}
                                         </p>
-                                        <small dangerouslySetInnerHTML={{ __html: item.author }} />
+                                        <small dangerouslySetInnerHTML={{ __html: item.description }} />
                                     </td>
                                     <td className="cart_unit" data-title="Precio unitario">
                                         ₡{item.price}
@@ -157,6 +170,7 @@ export default function CartPage() {
                                     <td className="cart_delete text-center" data-title="Borrar">
                                         <button className="btn btn-dark" onClick={() => handleRemove(item.id)}>Delete</button>
                                     </td>
+
                                 </tr>
                             ))}
                         </tbody>
@@ -168,7 +182,7 @@ export default function CartPage() {
                 <div style={{ backgroundColor: 'white', margin: '100' }}>
                     <h2>Subtotal: ₡{cart.subtotal ? cart.subtotal.toFixed(2) : '0.00'}</h2>
                     <h2 className='my-3'>Taxes 13%: ₡{(cart.total ? (cart.total - cart.subtotal).toFixed(2) : '0.00')}</h2>
-                    <h2 className='my-3'>Total: ₡{cart.total ? cart.total.toFixed(2) : '0.00'}</h2>
+                    <h2 className='my-3'>Total: ₡{cart.total ? cart.total.toFixed(2) : '0.00'} </h2>
                     {cart && cart.products && cart.products.length > 0 ? (
                         <Link href="/payment">
                             <button className="btn btn-success" style={{ display: 'flex', justifyContent: 'left' }}>Click to Buy</button>

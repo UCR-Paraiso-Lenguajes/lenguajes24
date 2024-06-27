@@ -212,10 +212,6 @@ export default function PaymentPage() {
                     <label htmlFor="paymentMethod">Payment Method:</label>
                     <select id="paymentMethod" className="form-control" value={cart.paymentMethod} onChange={handlePaymentMethodChange}>
                         <option value="">Select Payment Method</option>
-                        <option value="cash">Cash</option>
-                            <option value="sinpe">Sinpe</option>
-                            <option value="sinpe">Sinpe</option>
-                            <option value="cash">Cash</option>
                         <option value="sinpe">Sinpe</option>
                             <option value="cash">Cash</option>
                     </select>

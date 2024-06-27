@@ -4,7 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Form, Dropdown } from 'react-bootstrap';
 import { usePathname, useRouter, useParams, useSearchParams } from 'next/navigation';
-
+import NotificationsDropdown from './NotificationsDropDown';
+import * as signalR from '@microsoft/signalr';
+import axios from 'axios';
 
 export default function Home() {
   const [storeProducts, setStoreProducts] = useState([]);
@@ -14,13 +16,15 @@ export default function Home() {
   const [filteredProducts, setFilteredProducts] = useState<string[]>([]);
   const [categories, setCategories] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
   const URL = process.env.NEXT_PUBLIC_API_URL;
   if (!URL) {
     throw new Error('NEXT_PUBLIC_API_URL is not defined');
   }
-
+  const message = { count: 3 }; 
   const createQueryString = useCallback(
     (name: string, values: string[]) => {
       const params = new URLSearchParams();
@@ -172,6 +176,11 @@ export default function Home() {
   };
 
 
+  const handleMarkAsRead = () => {
+    setUnreadCount(0);
+  };
+
+
   return (
 
     <main className="flex min-h-screen flex-col p-6" style={{ backgroundColor: 'silver' }}>
@@ -180,45 +189,37 @@ export default function Home() {
         <div className="row" style={{ color: 'gray' }}>
           <div className="col-sm-2">
             <Link href="/">
-              <img src="Logo1.jpg" style={{ height: '75px', width: '200px', margin: '1.4rem' }} className="img-fluid" />
+              <img src="https://i.ibb.co/bLZLVwd/Logo1.jpg" style={{ height: '75px', width: '200px', margin: '1.4rem' }} className="img-fluid" />
             </Link>
           </div>
 
           <div className="col-sm-6 d-flex justify-content-center align-items-center">
             <form className="d-flex justify-content-center" onSubmit={handleSearchSubmit}>
               <input
+                className="form-control me-2"
                 type="search"
-                name="search"
-                style={{ width: '805%' }}
-                placeholder="Book..."
+                placeholder="Buscar productos"
+                aria-label="Buscar productos"
                 value={searchQuery}
                 onChange={handleSearchInputChange}
               />
+              <button className="btn btn-outline-success" type="submit">
+                Buscar
+              </button>
             </form>
-            <Dropdown show={isOpen} onToggle={() => setIsOpen(!isOpen)}>
-              <Dropdown.Toggle variant="secondary" id="dropdown-basic">
-                {selectedCategories.length === 0 ? "Select Categories" : selectedCategories.includes("ALL") ? "ALL" : selectedCategories.map(catId => {
-                  const categoryId = parseInt(catId);
-                  const category = categories.find(cat => cat.idCategory === categoryId);
-                  return category ? category.name : "Select Categories";
-                }).filter(Boolean).join(', ')
-                }
+
+            <Dropdown>
+              <Dropdown.Toggle variant="secondary" id="dropdown-basic" className="mx-3">
+                Categorías
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Form>
-                  <Form.Check
-                    type="checkbox"
-                    label="ALL"
-                    value="0"
-                    checked={selectedCategories.includes("0")}
-                    onChange={handleCategoryChange}
-                  />
-                  {categories && categories.map(category => (
+                  {categories.map((category) => (
                     <Form.Check
                       key={category.idCategory}
                       type="checkbox"
                       label={category.name}
-                      value={category.idCategory}
+                      value={category.idCategory.toString()}
                       checked={selectedCategories.includes(category.idCategory.toString())}
                       onChange={handleCategoryChange}
                     />
@@ -228,15 +229,14 @@ export default function Home() {
             </Dropdown>
           </div>
 
-          <div className="col-sm-2 d-flex justify-content-center align-items-center">
-            <Link href="/admin">
-              <button className="btn btn-success">
-                Admin
-              </button>
-            </Link>
+          <div className="col-sm-2 d-flex justify-content-end">
+            <div className="d-flex align-items-center justify-content-center" >
+              <NotificationsDropdown />
+              <Link href="/admin" className="btn btn-secondary ml-2"style={{margin: '10px' }}>
+                Login
+              </Link>
+            </div>
           </div>
-
-
 
           <div className="col-sm-2 d-flex justify-content-end align-items-center">
             <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -253,13 +253,13 @@ export default function Home() {
               </div>
             </div>
           </div>
-
         </div>
       </header>
 
 
+
       <div className='container'>
-        <h2 className='text-left mt-5 mb-5'>List of Books</h2>
+        <h2 className='text-left mt-2 mb-2'>Bookstore</h2>
 
         <div className="container" style={{ display: 'flex', flexWrap: 'wrap' }}>
           {storeProducts && storeProducts.products && storeProducts.products.map(item => (
@@ -295,7 +295,7 @@ const Products = ({ product, handleAddToCart }) => {
   if (product === undefined || product === "") throw new Error('The product is empty.');
 
   if (product.productCategory.idCategory !== 10) {
-    const { id, name, author, imgUrl, price } = product;
+    const { id, name, description, imgUrl, price } = product;
 
     return (
       <div className="row my-3">
@@ -305,7 +305,7 @@ const Products = ({ product, handleAddToCart }) => {
             <div className="card-body">
               <div className='text-center'>
                 <h4>{name}</h4>
-                <p>Author: <span dangerouslySetInnerHTML={{ __html: author }} /></p>
+                <p>Description: <span dangerouslySetInnerHTML={{ __html: description }} /></p>
                 <p>Price: ₡{price}</p>
                 <button className="btn btn-dark" onClick={() => handleAddToCart(product)}>Add to Cart</button>
               </div>
@@ -371,7 +371,7 @@ const CarruselComponent = ({ carrusel, handleAddToCart }) => {
               <img className="d-block w-100" src={carruselItem.imgUrl} width="100%" alt={carruselItem.name} />
               <div className="carousel-caption d-none d-md-block" style={{ color: 'black' }}>
                 <h5>{carruselItem.name}</h5>
-                <p>{carruselItem.author}</p>
+                <p>{carruselItem.description}</p>
                 <p>{carruselItem.price}</p>
                 <button className="btn btn-dark" onClick={() => handleAddToCart(carruselItem)}>Add to Cart</button>
               </div>

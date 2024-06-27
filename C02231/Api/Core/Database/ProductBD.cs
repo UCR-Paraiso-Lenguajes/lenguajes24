@@ -21,13 +21,13 @@ namespace StoreAPI.Database
                     try
                     {
                         string insertQuery = @"
-                        INSERT INTO products (name, author, price, idCategory, imgURL)
-                        VALUES (@name, @author, @price, @idCategory, @imgURL);";
+                        INSERT INTO products (name, description, price, idCategory, imgURL)
+                        VALUES (@name, @description, @price, @idCategory, @imgURL);";
 
                         using (var insertCommand = new MySqlCommand(insertQuery, connection, transaction))
                         {
                             insertCommand.Parameters.AddWithValue("@name", product.Name);
-                            insertCommand.Parameters.AddWithValue("@author", product.Author);
+                            insertCommand.Parameters.AddWithValue("@description", product.Description);
                             insertCommand.Parameters.AddWithValue("@price", product.Price);
                             insertCommand.Parameters.AddWithValue("@idCategory", product.ProductCategory.IdCategory);
                             insertCommand.Parameters.AddWithValue("@imgURL", product.ImgUrl);

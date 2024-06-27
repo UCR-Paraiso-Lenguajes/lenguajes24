@@ -5,7 +5,7 @@ public class Product : ICloneable
     [Required]
     public string Name { get; set; }
     [Required]
-    public string Author { get; set; }
+    public string Description { get; set; }
     [Required]
     public string ImgUrl { get; set; }
     [Required]
@@ -15,16 +15,16 @@ public class Product : ICloneable
     [Required]
     public Category ProductCategory { get; set; }
 
-    public Product(string name, string author, string imgUrl, decimal price, Category category, int id)
+    public Product(string name, string description, string imgUrl, decimal price, Category category, int id)
     {
         if (string.IsNullOrEmpty(name)) throw new ArgumentException($"{nameof(name)} cannot be null or empty.");
-        if (string.IsNullOrEmpty(author)) throw new ArgumentException($"{nameof(author)} cannot be null or empty.");
+        if (string.IsNullOrEmpty(description)) throw new ArgumentException($"{nameof(description)} cannot be null or empty.");
         if (string.IsNullOrEmpty(imgUrl)) throw new ArgumentException($"{nameof(imgUrl)} cannot be null or empty.");
         if (price < 0) throw new ArgumentException($"{nameof(price)} must be greater than zero.");
         if (id < 0) throw new ArgumentException($"{nameof(id)} must be greater than zero.");
 
         Name = name;
-        Author = author;
+        Description = description;
         ImgUrl = imgUrl;
         Price = price;
         Id = id;
@@ -37,7 +37,7 @@ public class Product : ICloneable
     // Implementation of the ICloneable interface
     public object Clone()
     {
-        return new Product(this.Name, this.Author, this.ImgUrl, this.Price, this.ProductCategory, this.Id);
+        return new Product(this.Name, this.Description, this.ImgUrl, this.Price, this.ProductCategory, this.Id);
     }
 }
 

@@ -1,22 +1,29 @@
 using Core;
 using StoreAPI.Database;
+using StoreAPI.Hubs;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<CampaignDB>();
+
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(corsBuilder =>
+    options.AddDefaultPolicy(
+    policy =>
     {
-        corsBuilder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
+        policy.WithOrigins("http://localhost:5207", "http://localhost:8080", "http://localhost:3000")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
     });
 });
 
@@ -115,7 +122,6 @@ if (!string.IsNullOrEmpty(security) && security.ToLower() != "false")
     app.UseAuthorization();
 }
 
-
+app.MapHub<CampaignHub>("/campaignHub");
 app.MapControllers();
-
 app.Run();

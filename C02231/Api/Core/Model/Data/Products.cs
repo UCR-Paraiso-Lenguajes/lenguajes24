@@ -30,7 +30,7 @@ public class Products
     {
         if (product == null) throw new ArgumentException("The product can't be null");
         if (product.Name == null || product.Name == "") throw new ArgumentException("The product's name should be provided");
-        if (product.Author == null || product.Author == "") throw new ArgumentException("The product's description should be provided");
+        if (product.Description == null || product.Description == "") throw new ArgumentException("The product's description should be provided");
         if (product.ImgUrl == null || product.ImgUrl == "") throw new ArgumentException("The product's description should be provided");
         if (product.Price <= 0) throw new ArgumentException("The product's price should be above 0");
         if (product.ProductCategory.IdCategory <= 0) throw new ArgumentException("The product's category should be above 0");
@@ -170,23 +170,23 @@ public class Products
             int mid = left + (right - left) / 2;
             //int comparison = string.Compare(sortedProducts[mid].Name, keywords, StringComparison.OrdinalIgnoreCase);
             bool nameContainsKeywords = sortedProducts[mid].Name.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase);
-            bool authorContainsKeywords = sortedProducts[mid].Author.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase);
+            bool descriptionContainsKeywords = sortedProducts[mid].Description.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase);
 
             // No buscamos una coincidencia exacta, sino el primer punto de inserción
-            if (nameContainsKeywords || authorContainsKeywords)
+            if (nameContainsKeywords || descriptionContainsKeywords)
             {
                 foundMatch = true;
                 matchingProducts.Add(sortedProducts[mid]);
 
                 // Buscar hacia la izquierda y derecha para encontrar todos los productos coincidentes
                 int temp = mid;
-                while (--temp >= 0 && (sortedProducts[temp].Name.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase) || sortedProducts[temp].Author.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase)))
+                while (--temp >= 0 && (sortedProducts[temp].Name.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase) || sortedProducts[temp].Description.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase)))
                 {
                     matchingProducts.Add(sortedProducts[temp]);
                 }
 
                 temp = mid;
-                while (++temp < sortedProducts.Count && (sortedProducts[temp].Name.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase) || sortedProducts[temp].Author.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase)))
+                while (++temp < sortedProducts.Count && (sortedProducts[temp].Name.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase) || sortedProducts[temp].Description.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase)))
                 {
                     matchingProducts.Add(sortedProducts[temp]);
                 }
@@ -207,7 +207,7 @@ public class Products
         {
             foreach (var product in sortedProducts)
             {
-                if (product.Name.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase) || product.Author.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase))
+                if (product.Name.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase) || product.Description.Contains(searchKeywords, StringComparison.OrdinalIgnoreCase))
                 {
                     matchingProducts.Add(product);
                 }
