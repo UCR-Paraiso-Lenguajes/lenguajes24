@@ -1,5 +1,6 @@
 'use client'
 
+'use client';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import useWebSocket from '../hooks/webSocket';
@@ -16,7 +17,7 @@ const NavBar = ({ productCount, toggleCart, searchFunction, setQuery, setMessage
     const [newMessages, setNewMessages] = useState(0);
     const socket = useWebSocket('ws://localhost:8181', setNewMessages, setMessages);
 
-    function handleQueryChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value;
         setQuery(inputValue);
     }

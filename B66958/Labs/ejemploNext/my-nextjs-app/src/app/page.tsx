@@ -1,6 +1,6 @@
 'use client';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import NavBar from "./navbar/page";
 import Cart from './Cart/page';
 import Alert from 'react-bootstrap/Alert';
@@ -8,6 +8,7 @@ import Carousel from 'react-bootstrap/Carousel';
 import { Dropdown } from "react-bootstrap";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import DOMPurify from 'dompurify';
+import { CartState } from "./types/Cart";
 import './css/messages.css';
 import WebSocketMessage from "./navbar/WebSocketMessage";
 
@@ -36,7 +37,7 @@ export default function Home() {
   const [idList, setIdList] = useState([]);
 
   const [cartLoaded, setCartLoaded] = useState(false);
-  const [cart, setCart] = useState({
+  const [cart, setCart] = useState<CartState>({
     carrito: {
       productos: [],
       subtotal: 0,
@@ -125,13 +126,14 @@ export default function Home() {
     if (cartLoaded) {
       localStorage.setItem('cart', JSON.stringify(cart));
     }
-    setCount(cart.carrito.productos.length);
+    setCount(cart?.carrito?.productos?.length ?? 0);
   }, [cart, cartLoaded]);
 
-  function clearProducts() {
+  const clearProducts = () => {
+    console.log("pasa")
     localStorage.removeItem('cart');
     setIdList([]);
-    setCart(cart => ({
+    const updatedCart: CartState = {
       ...cart,
       carrito: {
         ...cart.carrito,
@@ -142,7 +144,8 @@ export default function Home() {
         metodoDePago: 0
       },
       necesitaVerificacion: false
-    }));
+    }
+    setCart(updatedCart);
   }
 
   function productAlreadyAdded({ product }) {
@@ -218,7 +221,7 @@ export default function Home() {
     return `?${queryString}`;
   }
 
-  function searchProduct() {
+  const searchProduct = () => {
     if (!productQuery) {
       setErrorMessage('Por favor ingrese una consulta');
       setIsErrorShowing(true);
@@ -282,7 +285,9 @@ export default function Home() {
           </div>
         </div>
         <div className="row justify-content-md-center">
+        <Suspense fallback={<div>Loading...</div>}>
           {products.map(product => <Product key={product.uuid} product={product} handleAddToCart={handleAddToCart} />)}
+          </Suspense>
         </div>
       </>
     );
@@ -291,6 +296,7 @@ export default function Home() {
   const CarouselBootstrap = () => {
     return (
       <Carousel>
+        <Suspense fallback={<div>Loading...</div>}>
         {products.map(product =>
           <Carousel.Item key={product.uuid}>
             <img
@@ -304,11 +310,12 @@ export default function Home() {
               <button type="button" className="btn btn-light" onClick={() => handleAddToCart({ product })}>Comprar</button>
             </Carousel.Caption>
           </Carousel.Item>)}
+          </Suspense>
       </Carousel>
     );
   }
 
-  return (
+  return ( <Suspense fallback={<div>Loading...</div>}>
     <div className="d-grid gap-2">
       <NavBar productCount={count} toggleCart={(action) => toggleCart({ action })}
         searchFunction={searchProduct} setQuery={setProductQuery}
@@ -340,5 +347,6 @@ export default function Home() {
         </div> : ''
       }
     </div>
+    </Suspense>
   );
 }

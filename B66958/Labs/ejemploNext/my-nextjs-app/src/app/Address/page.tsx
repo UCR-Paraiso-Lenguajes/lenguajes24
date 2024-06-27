@@ -1,24 +1,27 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import PaymentForm from "../Payment/page";
+import { CartState } from "../types/Cart";
 
 const AddressForm = ({ handleAddressForm, cart, setCart, clearProducts }:
     {
-        handleAddressForm: () => void, cart: any,
-        setCart: (cart: any) => void, clearProducts: () => void
+        handleAddressForm: () => void, cart: CartState,
+        setCart: (cart: CartState) => void, clearProducts: () => void
     }) => {
     const [showPaymentForm, setShowPaymentForm] = useState(false);
 
-    function handleAddressChange(event: any) {
+    const handleAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value;
-        setCart(cart => ({
+        const updatedCart: CartState = {
             ...cart,
             carrito: {
-                ...cart.carrito,
-                direccionEntrega: inputValue
+              ...cart.carrito,
+              direccionEntrega: inputValue
             }
-        }));
+          };
+        
+          setCart(updatedCart);
     }
 
     function handlePaymentChange(show: boolean) {
@@ -34,10 +37,10 @@ const AddressForm = ({ handleAddressForm, cart, setCart, clearProducts }:
                             <label htmlFor="exampleFormControlInput1">Dirección:</label>
                             <input type="text" className="form-control"
                                 id="exampleFormControlInput1" placeholder="Ingrese su dirección"
-                                value={cart.carrito.direccionEntrega} onChange={handleAddressChange} />
+                                value={cart?.carrito?.direccionEntrega || ''} onChange={handleAddressChange} />
                             <div className="d-flex w-100 justify-content-center">
                                 <a className="btn btn-primary mr-2" onClick={() => handleAddressForm()}>Atrás</a>
-                                <button className="btn btn-primary" disabled={!cart.carrito.direccionEntrega}
+                                <button className="btn btn-primary" disabled={(cart?.carrito ? !cart.carrito.direccionEntrega : true)}
                                     onClick={() => handlePaymentChange(true)}>Continuar</button>
                             </div>
                         </div>
