@@ -61,7 +61,7 @@ export default function Init() {
 
     useEffect(() => {
         const newConnection = new HubConnectionBuilder()
-            .withUrl("http://localhost:5087/campaignHub")
+            .withUrl(URL + "/campaignHub")
             .withAutomaticReconnect()
             .build();
 

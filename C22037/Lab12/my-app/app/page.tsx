@@ -88,7 +88,7 @@ export default function Home() {
     setNotifications(storedNotifications);
 
     const connection = new HubConnectionBuilder()
-      .withUrl("http://localhost:5087/campaignHub")
+      .withUrl(URL + "/campaignHub")
       .withAutomaticReconnect()
       .build();
 
