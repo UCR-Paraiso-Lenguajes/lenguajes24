@@ -23,15 +23,18 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
     let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
 
     useEffect(() => {
-        setCart(cart => ({
+        if (cart?.carrito) {
+          const updatedCart: CartState = {
             ...cart,
             carrito: {
-                ...cart.carrito,
-                metodoDePago: cart.carrito.metodoDePago ? cart.carrito.metodoDePago : PaymentMethod.EFECTIVO
-            }
-        }));
-        setSelectedIndex((cart.carrito.metodoDePago === PaymentMethod.SINPE) ? 1 : 0);
-    }, []);
+              ...cart.carrito,
+              metodoDePago: cart.carrito.metodoDePago ?? PaymentMethod.EFECTIVO,
+            },
+          };
+          setCart(updatedCart);
+          setSelectedIndex(cart.carrito.metodoDePago === PaymentMethod.SINPE ? 1 : 0);
+        }
+    }, []);      
 
     function handleConfirmationNumber(event) {
         setConfirmationNumber(event.target.value);
@@ -40,15 +43,17 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
     function handleSelectPayment(event: any) {
         const selectedPaymentMethod = parseInt(event.target.value, 10);
         setSelectedIndex(event.target.selectedIndex);
-        setCart(cart => ({
-            ...cart,
-            carrito: {
-                ...cart.carrito,
-                metodoDePago: selectedPaymentMethod
-            },
-            necesitaVerificacion: true
-        }));
-    }
+        const updatedCart: CartState = {
+          ...cart,
+          carrito: {
+            ...cart.carrito,
+            metodoDePago: selectedPaymentMethod,
+          },
+          necesitaVerificacion: true,
+        };
+        
+        setCart(updatedCart);
+    }      
 
     async function persistPurchase() {
 
@@ -82,11 +87,11 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
         }
     }
 
-    async function finishPurchase() {
+    const finishPurchase = async () => {
         setFinishedSale(true);
         setConfirmationNumber('');
-        clearProducts();
         await persistPurchase();
+        clearProducts();
     }
 
     const Efectivo = () => {
@@ -117,9 +122,9 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
                 <h3>Métodos de pago</h3>
                 <div className="form-group">
                     <select className="form-control" onChange={handleSelectPayment}
-                        value={cart.carrito.metodoDePago} disabled={finishedSale}>
-                        {cart.metodosDePago
-                            .sort((a, b) => a - b)
+                        value={cart?.carrito?.metodoDePago ?? ''} disabled={finishedSale}>
+                        {cart?.metodosDePago
+                            ?.sort((a, b) => a - b)
                             .map((method: number, index: number) => (
                                 <option key={index} value={method}>
                                     {PaymentMethod[method]}

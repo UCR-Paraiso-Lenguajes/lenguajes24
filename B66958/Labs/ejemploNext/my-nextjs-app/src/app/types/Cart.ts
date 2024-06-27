@@ -1,5 +1,5 @@
 export interface CartItem {
-    id: string;
+    uuid: string;
   }
   
 export interface Carrito {

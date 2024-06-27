@@ -30,6 +30,9 @@ const nextConfig = {
     // Ignore TypeScript errors during the build process
     ignoreBuildErrors: true,
   },
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
 };
 
 export default nextConfig;

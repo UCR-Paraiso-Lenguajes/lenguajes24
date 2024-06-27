@@ -117,13 +117,14 @@ export default function Home() {
     if (cartLoaded) {
       localStorage.setItem('cart', JSON.stringify(cart));
     }
-    setCount(cart.carrito.productos.length);
+    setCount(cart?.carrito?.productos?.length ?? 0);
   }, [cart, cartLoaded]);
 
-  function clearProducts() {
+  const clearProducts = () => {
+    console.log("pasa")
     localStorage.removeItem('cart');
     setIdList([]);
-    setCart(cart => ({
+    const updatedCart: CartState = {
       ...cart,
       carrito: {
         ...cart.carrito,
@@ -134,7 +135,8 @@ export default function Home() {
         metodoDePago: 0
       },
       necesitaVerificacion: false
-    }));
+    }
+    setCart(updatedCart);
   }
 
   function productAlreadyAdded({ product }) {
@@ -274,7 +276,9 @@ export default function Home() {
           </div>
         </div>
         <div className="row justify-content-md-center">
+        <Suspense fallback={<div>Loading...</div>}>
           {products.map(product => <Product key={product.uuid} product={product} handleAddToCart={handleAddToCart} />)}
+          </Suspense>
         </div>
       </>
     );
@@ -283,6 +287,7 @@ export default function Home() {
   const CarouselBootstrap = () => {
     return (
       <Carousel>
+        <Suspense fallback={<div>Loading...</div>}>
         {products.map(product =>
           <Carousel.Item key={product.uuid}>
             <img
@@ -296,6 +301,7 @@ export default function Home() {
               <button type="button" className="btn btn-light" onClick={() => handleAddToCart({ product })}>Comprar</button>
             </Carousel.Caption>
           </Carousel.Item>)}
+          </Suspense>
       </Carousel>
     );
   }
