@@ -1,69 +1,65 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using storeapi.Database;
 
 namespace storeapi.Models
 {
     public class Campanna
     {
-        public int Id { get; set; } // Id is now a settable property
+        public int Id { get; set; }
 
         private string _contenidoHtml = string.Empty;
+        private bool _estado;
 
         public string ContenidoHtml
         {
             get => _contenidoHtml;
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
+                if (!ValidateContenidoHtml(value))
                 {
-                    throw new ArgumentException("ContenidoHtml must not be null or empty.");
+                    throw new ArgumentException("ContenidoHtml must not be null, empty, or exceed 5000 characters.");
                 }
                 _contenidoHtml = value;
             }
         }
 
-        public DateTime CreatedAt { get; set; } // New property for timestamp
+        public bool Estado
+        {
+            get => _estado;
+            set
+            {
+                if (!ValidateEstado(value))
+                {
+                    throw new ArgumentException("Estado must be a valid boolean value.");
+                }
+                _estado = value;
+            }
+        }
 
-        // Constructor to initialize the properties except Id
+        public DateTime CreatedAt { get; set; }
+
         public Campanna(string contenidoHtml)
         {
             ContenidoHtml = contenidoHtml;
+            Estado = true; // Default value
+            CreatedAt = DateTime.UtcNow; // Default value
         }
 
-        // Parameterless constructor for serialization/deserialization
         public Campanna() { }
 
-        public static IEnumerable<Campanna> LoadCampannasFromDatabase()
+        public static bool ValidateContenidoHtml(string contenidoHtml)
         {
-            List<string[]> campannaData = CampannaDB.RetrieveCampannas();
-            List<Campanna> campannas = new List<Campanna>();
-
-            foreach (string[] row in campannaData)
-            {
-                if (ValidateCampannaRow(row))
-                {
-                    int id = int.Parse(row[0]);
-                    string contenidoHtml = row[1];
-                    DateTime createdAt = DateTime.Parse(row[2]);
-
-                    Campanna campanna = new Campanna
-                    {
-                        Id = id,
-                        ContenidoHtml = contenidoHtml,
-                        CreatedAt = createdAt
-                    };
-
-                    campannas.Add(campanna);
-                }
-            }
-
-            return campannas;
+            return !string.IsNullOrWhiteSpace(contenidoHtml) && contenidoHtml.Length <= 5000;
         }
 
-        private static bool ValidateCampannaRow(string[] row)
+        public static bool ValidateEstado(bool estado)
         {
-            if (row.Length != 3)
+            return estado == true || estado == false;
+        }
+
+        public static bool ValidateCampannaRow(string[] row)
+        {
+            if (row.Length != 4)
             {
                 return false;
             }
@@ -73,7 +69,7 @@ namespace storeapi.Models
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(row[1]))
+            if (!ValidateContenidoHtml(row[1]))
             {
                 return false;
             }
@@ -83,7 +79,13 @@ namespace storeapi.Models
                 return false;
             }
 
+            if (!bool.TryParse(row[3], out _))
+            {
+                return false;
+            }
+
             return true;
         }
     }
 }
+

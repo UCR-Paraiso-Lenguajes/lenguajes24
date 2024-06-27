@@ -1,3 +1,4 @@
+//PROGRAM
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -100,7 +101,7 @@ CartSave cartSave = new CartSave();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    CampannaDB.CreateMysql();
+    CampannaDB.CreateMysqlAsync();
     PaymentDB.CreateMysql();
     StoreDB.CreateMysql();
     cartSave.EnsureComprasTableExistsAsync();
@@ -115,7 +116,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors();
 
-app.MapHub<ChatHub>("/chatHub");
+app.MapHub<CampaignHub>("/CampaignHub");
 
 app.MapControllers();
 app.Run();

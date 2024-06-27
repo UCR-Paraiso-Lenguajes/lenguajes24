@@ -1,21 +1,21 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import * as signalR from "@microsoft/signalr";
 import '../ui/globals.css';
 const URL = process.env.NEXT_PUBLIC_API;
 
 function Chat() {
-    const [connection, setConnection] = useState(null);
-    const [messages, setMessages] = useState([]);
-    const [error, setError] = useState(null);
+    const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+    const [messages, setMessages] = useState<string[]>([]);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchCampaigns = async () => {
-            const response = await fetch(`${URL}/api/Campannas`);
+            const response = await fetch(URL + '/api/Campannas');
             if (response.ok) {
                 const data = await response.json();
-                const campaigns = data.map((campanna) => `Nueva Campaña: ${campanna.contenidoHtml}`);
-                setMessages(campaigns.slice(-3)); // Solo mantenemos los últimos 3 mensajes
+                const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
+                setMessages(campaigns.slice(-3)); // Solo mantener los últimos 3 mensajes
             } else {
                 setError('Error al obtener las campañas.');
             }
@@ -23,23 +23,24 @@ function Chat() {
 
         fetchCampaigns();
 
-        const newConnection = new HubConnectionBuilder()
-            .withUrl("http://localhost:7043/chatHub", {
+        const newConnection = new signalR.HubConnectionBuilder()
+            .withUrl(URL + "/CampaignHub", {
                 withCredentials: true
             })
             .withAutomaticReconnect()
-            .configureLogging(LogLevel.Information)
+            .configureLogging(signalR.LogLevel.Information)
             .build();
 
         const startConnection = async () => {
-            try {
-                await newConnection.start();
-                setConnection(newConnection);
-                setError(null);
-            } catch (err) {
-                setError('Error al conectar con el servidor. Intentando reconectar...');
-                setTimeout(() => startConnection(), 5000);
-            }
+            await newConnection.start()
+                .then(() => {
+                    setConnection(newConnection);
+                    setError(null);
+                })
+                .catch(() => {
+                    setError('Error al conectar con el servidor. Intentando reconectar...');
+                    setTimeout(() => startConnection(), 5000);
+                });
         };
 
         newConnection.onclose(() => {
@@ -57,28 +58,35 @@ function Chat() {
     }, []);
 
     useEffect(() => {
+        const fetchCampaigns = async () => {
+            const response = await fetch(URL + '/api/Campannas');
+            if (response.ok) {
+                const data = await response.json();
+                const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
+                setMessages(campaigns.slice(-3)); // Solo mantener los últimos 3 mensajes
+            } else {
+                setError('Error al obtener las campañas.');
+            }
+        };
+
         if (connection) {
-            const handleReceiveMessage = (user, message) => {
-                setMessages((prevMessages) => {
+            const handleReceiveMessage = (user: string, message: string) => {
+                setMessages(prevMessages => {
                     const newMessages = [...prevMessages, `${user}: ${message}`];
-                    return newMessages.slice(-3); // Solo mantenemos los últimos 3 mensajes
+                    return newMessages.slice(-3); // Solo mantener los últimos 3 mensajes
                 });
             };
 
-            const handleUpdateCampaigns = (contenidoHtml) => {
-                setMessages((prevMessages) => {
-                    const newMessages = [...prevMessages, `Nueva Campaña: ${contenidoHtml}`];
-                    return newMessages.slice(-3); // Solo mantenemos los últimos 3 mensajes
-                });
+            const handleUpdateCampaigns = (contenidoHtml: string, estado: boolean) => {
+                fetchCampaigns(); // Obtener la lista completa de campañas
             };
 
-            connection.on('ReceiveMessage', handleReceiveMessage);
-            connection.on('UpdateCampaigns', handleUpdateCampaigns);
+            connection.on("ReceiveMessage", handleReceiveMessage);
+            connection.on("UpdateCampaigns", handleUpdateCampaigns);
 
-            // Cleanup function to remove event listeners when the component unmounts or connection changes
             return () => {
-                connection.off('ReceiveMessage', handleReceiveMessage);
-                connection.off('UpdateCampaigns', handleUpdateCampaigns);
+                connection.off("ReceiveMessage", handleReceiveMessage);
+                connection.off("UpdateCampaigns", handleUpdateCampaigns);
             };
         }
     }, [connection]);
