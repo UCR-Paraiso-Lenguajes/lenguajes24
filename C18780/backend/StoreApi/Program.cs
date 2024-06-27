@@ -81,11 +81,6 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
             .AllowCredentials();
     }));
 
-//builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
-//    {
-//        builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
-//    }));
-
 builder.Services.AddSwaggerGen(setup =>
 {
     // Include 'SecurityScheme' to use JWT Authentication
