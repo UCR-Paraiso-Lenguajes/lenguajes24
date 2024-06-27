@@ -91,12 +91,10 @@ builder.Services.AddScoped<SaleLogic>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 
-    // Swagger UI setup for development
     app.UseSwagger();
     app.UseSwaggerUI();
 
@@ -107,8 +105,17 @@ if (app.Environment.IsDevelopment())
     {
         connection = DB_value;
     }
-    DatabaseConfiguration.Init(connection);
-    DatabaseStore.Store_MySql();
+    Console.WriteLine("Connection String: " + connection);
+
+    try
+    {
+        DatabaseConfiguration.Init(connection);
+        DatabaseStore.Store_MySql();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Error initializing database: " + ex.Message);
+    }
 }
 
 app.UseHttpsRedirection();
