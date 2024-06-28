@@ -134,7 +134,7 @@ var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.MapHub<ChatHub>("/hub");
+app.MapHub<CampaignHub>("/hub");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

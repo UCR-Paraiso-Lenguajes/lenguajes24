@@ -15,9 +15,9 @@ namespace StoreApi
     public sealed class AdController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IHubContext<ChatHub> _hubContext;
+        private readonly IHubContext<CampaignHub> _hubContext;
 
-        public AdController(IMediator mediator, IHubContext<ChatHub> hubContext)
+        public AdController(IMediator mediator, IHubContext<CampaignHub> hubContext)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
