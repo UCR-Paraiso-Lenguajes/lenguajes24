@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using MyStoreAPI.Business;
 using MyStoreAPI.DB;
 using MyStoreAPI.Models;
+using MyStoreAPI.Controllers;
 using Core;
 
 //JWT Authentication
@@ -15,6 +16,14 @@ namespace MyStoreAPI.Controllers
     [ApiController]
     public class CampaignManagementController : ControllerBase{
         
+
+        private readonly NotificationHub _notificationHub;
+
+         public CampaignManagementController(NotificationHub notificationHub){
+            _notificationHub = notificationHub;
+        }
+
+
         [HttpPost("campaign/insert")]
         //[Authorize(Roles = "Admin, Operator")]
 
@@ -23,6 +32,10 @@ namespace MyStoreAPI.Controllers
             try{
                 CampaignLogic campaignLogic = new CampaignLogic();                                
                 await campaignLogic.createNewNotificationAsync(newNotify);
+
+                NotificationHub notificationHub = new NotificationHub();
+                
+                await _notificationHub.SendNotificationAsync(newNotify);
                 return Ok(true);
             }
             catch (BussinessException ex){                
@@ -30,7 +43,7 @@ namespace MyStoreAPI.Controllers
             }
             catch (Exception ex){                                             
                 //Otros posibles errores
-                return StatusCode(500, "Ha ocurrido un error al generar la notificación. Por favor inténtalo más tarde.");
+                return StatusCode(500, "Ha ocurrido un error al generar la notificación. Por favor inténtalo más tarde." + ex);
             }
         }
 

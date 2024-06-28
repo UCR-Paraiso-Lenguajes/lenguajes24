@@ -51,22 +51,38 @@ builder.Services.AddSwaggerGen(setup =>
 
 // Add SignalR service
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<NotificationHub>();
 
-// Inyectamos NotificationLogic para el NotificacionController para no tener problemas con
+
+// Inyectamos NotificationHub para el CampaignManagementController para no tener problemas con
 //los test
-//builder.Services.AddScoped<NotificationLogic>();
+builder.Services.AddSingleton<NotificationHub>();
 
 
 //Configure CORS
+// builder.Services.AddCors(options =>
+// {
+//     options.AddDefaultPolicy(builder =>
+//     {
+//         builder.AllowAnyOrigin()
+//                .AllowAnyMethod()
+//                .AllowAnyHeader();
+//     });
+// });
+
+//nueva
+// Configure CORS
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.AllowAnyOrigin()
+        builder.WithOrigins("http://localhost:3000")
                .AllowAnyMethod()
-               .AllowAnyHeader();
+               .AllowAnyHeader()
+               .AllowCredentials();
     });
 });
+
 
 
 //Variables de Ambiente para JWT
@@ -140,6 +156,13 @@ app.MapControllers();
 //app.UseCors(); //builder.Services.AddCors() ya agrega CORS
 
 //Map SignalR hubs
+app.UseCors(builder =>
+{
+    builder.WithOrigins("http://localhost:3000")
+           .AllowAnyMethod()
+           .AllowAnyHeader()
+           .AllowCredentials();
+});
 app.MapHub<NotificationHub>("/notificationHub");
     //nombre del dominio<-/hub 
 app.Run();
