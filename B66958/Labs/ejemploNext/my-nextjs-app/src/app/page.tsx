@@ -56,6 +56,13 @@ export default function Home() {
   
   let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
 
+  const cleanHTML = (html : string) => {
+    return DOMPurify.sanitize(html, {
+      ADD_TAGS: ['iframe'],
+      ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling']
+    });
+  };
+
   const categoriesSearchString = Array.isArray(categoriesSearch) ? categoriesSearch.join(',') : categoriesSearch;
   useEffect(() => {
     if (categoriesSearch.length !== 0 || querySearch !== null) {
@@ -232,7 +239,7 @@ export default function Home() {
 
   const Product = ({ product, handleAddToCart }) => {
     const { uuid, name, description, imageUrl, price } = product;
-    const sanitizedDescription = DOMPurify.sanitize(description);
+    const sanitizedDescription = cleanHTML(description);
     return (
       <div className="card" style={{ width: '20rem' }}>
         <div className="col">
@@ -324,7 +331,7 @@ export default function Home() {
                 <div className="message-list">
                     {messages.map(message => (
                         <div key={message.Id} className="message">
-                            {message.Text}
+                          <span dangerouslySetInnerHTML={{ __html: cleanHTML(message.Text) }} />
                         </div>
                     ))}
                 </div>
