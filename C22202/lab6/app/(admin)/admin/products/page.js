@@ -28,7 +28,6 @@ function App() {
             const data = await response.json();
             setProducts(data);
         } catch (error) {
-            // console.error(error);
             handleError('Error del servidor, por favor, intenta más tarde')
         }
     };
@@ -51,7 +50,6 @@ function App() {
     };
 
     const handleSaveProduct = async (formData) => {
-        console.log(formData)
 
         try {
             const response = await fetch('https://localhost:7194/api/Admin/Product', {
