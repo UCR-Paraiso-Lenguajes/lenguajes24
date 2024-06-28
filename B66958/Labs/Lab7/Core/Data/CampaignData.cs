@@ -71,7 +71,7 @@ public class CampaignData
     {
         string getCampaignsQuery =
             @"USE andromeda_store;
-            SELECT * FROM campaigns";
+            SELECT id, message, date, enabled FROM campaigns";
 
         using (SqlConnection connection = new SqlConnection(Db.Instance.DbConnectionString))
         {
@@ -103,7 +103,7 @@ public class CampaignData
         string query =
             @"
             USE andromeda_store;
-            SELECT TOP 3 *
+            SELECT TOP 3 id, message, date, enabled
             FROM campaigns
             WHERE enabled = 1
             ORDER BY date DESC";

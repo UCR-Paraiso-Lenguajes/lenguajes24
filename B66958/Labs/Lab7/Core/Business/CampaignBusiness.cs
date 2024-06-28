@@ -13,6 +13,8 @@ public class CampaignBusiness
     {
         if (String.IsNullOrEmpty(text))
             throw new ArgumentException("The text cannot be empty");
+        if (text.Length > 5000)
+            throw new ArgumentException("The text cannot exceed 5000 characters");
         var campaign = Campaign.BuildForStorage(text);
         await campaignData.InsertCampaignAsync(campaign);
         return campaign;

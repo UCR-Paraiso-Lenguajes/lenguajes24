@@ -21,6 +21,8 @@ public class Campaign
     {
         if (String.IsNullOrEmpty(text))
             throw new ArgumentNullException("The text cannot be empty");
+        if (text.Length > 5000)
+            throw new ArgumentException("The text cannot exceed 5000 characters");
         var id = Guid.NewGuid();
         var date = DateTime.Now;
         return new Campaign(id, text, date, true);
@@ -32,6 +34,8 @@ public class Campaign
             throw new ArgumentNullException("The id cannot be null");
         if (String.IsNullOrEmpty(text))
             throw new ArgumentNullException("The text cannot be empty");
+        if (text.Length > 5000)
+            throw new ArgumentException("The text cannot exceed 5000 characters");
         return new Campaign(id, text, date, enabled);
     }
 }

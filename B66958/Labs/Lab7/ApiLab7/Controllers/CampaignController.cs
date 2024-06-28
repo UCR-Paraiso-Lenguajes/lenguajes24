@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ApiLab7.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]"), Authorize(Roles = "Admin")]
     public class CampaignsController : ControllerBase
     {
         private readonly WebSocketService _webSocketService;
