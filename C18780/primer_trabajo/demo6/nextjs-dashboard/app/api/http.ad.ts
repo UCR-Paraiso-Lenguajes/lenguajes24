@@ -1,26 +1,98 @@
 import { getCookie } from "cookies-next";
-import { useEffect } from "react";
+import { UUID } from "crypto";
+import { useEffect, useState } from "react";
+import { Ad } from "../lib/data-definitions";
+import * as signalR from '@microsoft/signalr';
 
 let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7099';
 
-export function useFetctCreateAd(message: string) {
+export function useFetchDeleteAd(id: UUID | null) {
     useEffect(() => {
-        const postAd = async () => {
+        if (id) {
+            const deleteAd = async () => {
+                const token = getCookie('token');
+                const res = await fetch(`${environmentUrl}/api/Ad/?uuid=${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (!res.ok) {
+                    throw new Error('Failed to fetch Delete Ad.');
+                }
+            }
+            deleteAd();
+        }
+    }, [id]);
+
+}
+
+export function useFetchGetAd() {
+    const [message, setMessage] = useState<Ad[]>([]);
+    useEffect(() => {
+        const getAd = async () => {
             const token = getCookie('token');
             const res = await fetch(`${environmentUrl}/api/Ad`, {
-                method: 'POST',
-                body: JSON.stringify(message),
+                method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 }
             });
             if (!res.ok) {
-                throw new Error('Failed to fetch Create Ad.');
+                throw new Error('Failed to fetch Get Ad.');
+            }
+            const data = await res.json();
+            setMessage(data);
+        }
+        getAd();
+    }, []);
+    return { message };
+}
+
+export function useFetchCreateAd(message: string) {
+    useEffect(() => {
+        if (message.trim()) {
+            const postAd = async () => {
+                const token = getCookie('token');
+                const res = await fetch(`${environmentUrl}/api/Ad`, {
+                    method: 'POST',
+                    body: JSON.stringify(message),
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (!res.ok) {
+                    throw new Error('Failed to fetch Create Ad.');
+                }
+            }
+            if (message !== undefined) {
+                postAd();
             }
         }
-        if (message !== undefined) {
-            postAd();
-        }
     }, [message]);
+}
+
+export function useSignalRGetAds() {
+    const [message, setMessage] = useState<Ad[]>([]);
+
+    useEffect(() => {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(`${environmentUrl}/hub`)
+            .build();
+
+        connection.on("AdCreated", (ad: Ad) => {
+            setMessage(prevMessages => [...prevMessages, ad]);
+        });
+
+        connection.start()
+
+        return () => {
+            connection.stop()
+        };
+    }, []);
+
+    return { message };
 }

@@ -1,23 +1,18 @@
 'use client';
-import {
-  UserGroupIcon,
-  ShoppingCartIcon,
-} from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
 
-// Map of links to display in the side navigation.
-// Depending on the size of the application, this would be stored in a database.
 interface LinkItem {
   name: string;
   href: string;
-  icon: any;
 }
 
 const links: LinkItem[] = [
   {
-    name: 'Cart', href: '/dashboard/cart', icon: ShoppingCartIcon,
+    name: 'Cart', href: '/dashboard/cart',
   },
 ];
 
@@ -27,7 +22,6 @@ export default function NavLinks({ countCart }: { countCart: number }) {
   return (
     <>
       {links.map((link, index) => {
-        const LinkIcon = link.icon;
         const className = index === 0 ? "nav-item active" : "nav-item";
         
         const count = index === links.length - 1 ? countCart : "";
@@ -42,9 +36,8 @@ export default function NavLinks({ countCart }: { countCart: number }) {
                 },
               )}
             >
-              <LinkIcon className="linkIcon" />
+              <FontAwesomeIcon icon={faCartShopping} className="fa-icon me-2" />
               <span className="cart-count">{count}</span>
-              <p className="linkName">{link.name}</p>
             </Link >
           </ul >
         );

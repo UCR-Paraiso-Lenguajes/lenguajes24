@@ -8,6 +8,12 @@ export type Product = {
     price: number;
 }
 
+export type Ad = {
+    uuid: UUID;
+    date: Date;
+    message: string;
+}
+
 export type MethodPayment = {
     method: boolean;
 }

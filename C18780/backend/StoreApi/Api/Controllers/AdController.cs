@@ -1,6 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using SignalRWebpack.Hubs;
 using StoreApi.Cache;
 using StoreApi.Commands;
 using StoreApi.Models;
@@ -13,21 +15,21 @@ namespace StoreApi
     public sealed class AdController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public AdController(IMediator mediator)
+        private readonly IHubContext<CampaignHub> _hubContext;
+
+        public AdController(IMediator mediator, IHubContext<CampaignHub> hubContext)
         {
-            if (mediator == null)
-            {
-                throw new ArgumentException("Illegal action, the mediator is being touched. The mediator is null and void.");
-            }
-            _mediator = mediator;
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
         }
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IEnumerable<Ad>> GetAdListAsync()
         {
-            var ad = await _mediator.Send(new GetAdListQuery());
+            var ads = await _mediator.Send(new GetAdListQuery());
 
-            return ad;
+            return ads;
         }
 
         [HttpPost, Authorize(Roles = "Operator")]
@@ -37,6 +39,8 @@ namespace StoreApi
                 message,
                 DateTime.Today
             ));
+
+            await _hubContext.Clients.All.SendAsync("AdCreated", ad);
 
             return ad;
         }

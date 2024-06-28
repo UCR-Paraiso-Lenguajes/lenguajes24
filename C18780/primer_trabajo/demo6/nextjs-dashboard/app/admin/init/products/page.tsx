@@ -21,7 +21,8 @@ const Card = ({ onCreateProduct }: { onCreateProduct: any }) => {
     const [category, setCategory] = useState<Category>();
     const [img, setImg] = useState('');
     const [name, setName] = useState('');
-    const [price, setPrice] = useState<number | null>(null); const [description, setDescription] = useState('');
+    const [price, setPrice] = useState<number | null>(null); 
+    const [description, setDescription] = useState('');
     const categoryList: Category[] = useFetchCategoriesList();
     const [product, setProduct] = useState<ProductC>();
     const [messages, setMessages] = useState<boolean>(false);
@@ -132,7 +133,6 @@ export default function Products() {
     const handleCreateProduct = (newProduct: ProductC) => {
         const newData = [...data, ["newProduct", newProduct.name, newProduct.description, `<img src='${newProduct.imageUrl}'/>`]];
         setData(newData);
-        console.log(newProduct.name, newProduct.description, newProduct.imageUrl, newProduct.price, newProduct.category);
     };
 
     useEffect(() => {

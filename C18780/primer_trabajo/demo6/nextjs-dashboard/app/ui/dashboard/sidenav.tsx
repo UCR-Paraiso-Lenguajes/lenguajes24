@@ -3,10 +3,13 @@ import NavLinks from '@/app/ui/dashboard/nav-links'; // componente que contiene 
 import Abacaxi from '@/app/ui/abacaxi-logo'; // muestra el logotipo de la aplicación
 import "bootstrap/dist/css/bootstrap.min.css";
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import '../../ui/styles/nav.css';
 import { useFetchCategoriesList } from '@/app/api/http.category';
-import { Category } from '@/app/lib/data-definitions';
+import { Ad, Category } from '@/app/lib/data-definitions';
 import { useState } from 'react';
+import { useFetchGetAd, useSignalRGetAds } from '@/app/api/http.ad';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBell } from '@fortawesome/free-solid-svg-icons';
+import './dropdawn.css';
 
 const Categories = ({ categories, onAddCategory }: { categories: Category[], onAddCategory: any }) => {
   const [nameCategory, setNameCategory] = useState<string>("Category");
@@ -14,7 +17,7 @@ const Categories = ({ categories, onAddCategory }: { categories: Category[], onA
     <li className="nav-item dropdown">
       <div className="dropdown">
         <button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          {nameCategory.localeCompare("Category") === 0 || nameCategory.localeCompare("All") === 0 ? "Category" :`Category: ${nameCategory}`}
+          {nameCategory.localeCompare("Category") === 0 || nameCategory.localeCompare("All") === 0 ? "Category" : `Category: ${nameCategory}`}
         </button>
         <ul className="dropdown-menu dropdown-menu-dark">
           {categories.map((category, index) => (
@@ -27,6 +30,30 @@ const Categories = ({ categories, onAddCategory }: { categories: Category[], onA
     </li>
   );
 }
+
+const Notification = ({ notification }: { notification: Ad[] }) => {
+  return (
+    <li className="nav-item dropdown">
+      <div className="dropdown">
+        <button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <FontAwesomeIcon icon={faBell} className="fa-icon me-2" />
+          {notification.length >= 0 && notification.length <= 3 ? `${notification.length}` : "3"}
+        </button>
+        <ul className="dropdown-menu dropdown-menu-dark" style={{ pointerEvents: 'none' }}>
+          {notification.map((notification, index) => (
+            <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
+              <a className={`dropdown-item`} href="#">
+                <div className="specifications-content" dangerouslySetInnerHTML={{ __html: notification.message }} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </li>
+  );
+}
+
+
 
 const Search = ({ onAddSearch }: { onAddSearch: any }) => {
   const [newSearch, setNewSearch] = useState<string>();
@@ -63,6 +90,8 @@ const Search = ({ onAddSearch }: { onAddSearch: any }) => {
 
 export default function SideNav({ countCart = 0, onAddCategory, onAddSearch }: { countCart: number, onAddCategory: any, onAddSearch: any }) {
   const categories = useFetchCategoriesList();
+  const notification = useSignalRGetAds();
+ 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <Link href="/dashboard">
@@ -80,12 +109,11 @@ export default function SideNav({ countCart = 0, onAddCategory, onAddSearch }: {
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
         <ul className="navbar-nav mr-auto">
           <Search onAddSearch={onAddSearch} />
-
           <Categories categories={categories} onAddCategory={onAddCategory} />
-
           <li className="nav-item">
             <NavLinks countCart={countCart} />
           </li>
+          <Notification notification={notification.message} />
         </ul>
       </div>
     </nav >
