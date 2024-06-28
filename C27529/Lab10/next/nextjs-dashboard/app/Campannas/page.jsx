@@ -20,21 +20,20 @@ const Page = () => {
             .withAutomaticReconnect()
             .build();
 
+       newConnection.on("UpdateMessages", (receivedMessages) => {
+        setMessages(receivedMessages);
+       }
+      );
+
         newConnection.start()
             .then(() => console.log('Connected to the campaign hub'))
             .catch(err => console.error('Error connecting to campaign hub:', err));
 
-        newConnection.on("UpdateMessages", (receivedMessages) => {
-            setMessages(receivedMessages);
-        });
-
         setConnection(newConnection);
 
         return () => {
-            if (newConnection) {
-                newConnection.off("UpdateMessages");
-                newConnection.stop();
-            }
+            newConnection.off("UpdateMessages");
+            newConnection.stop();
         };
     }, [URL]);
 
@@ -42,6 +41,7 @@ const Page = () => {
         const { name, value } = e.target;
         setNewMessage({ ...newMessage, [name]: value });
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -56,13 +56,17 @@ const Page = () => {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(newMessage.content) 
+                    body: JSON.stringify(newMessage.content)
                 });
 
-                if (response.ok) {
-                    const message = await response.json();
+                if (response.status == "200") {
+                    console.log(connection.connectionStarted);
+
                     if (connection) {
-                        await connection.invoke('SendCampaignMessage', message.content, message.id);
+                        if (connection ) {
+                            await connection.send('SendCampaignMessage', newMessage.id, newMessage.content);
+                            setNewMessage({ content: '' });
+                        }
                     }
                     setNewMessage({ content: '' });
                 } else {

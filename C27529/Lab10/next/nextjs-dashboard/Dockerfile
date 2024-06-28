@@ -26,7 +26,7 @@ COPY . .
  
 # Compila la aplicación
 #RUN npm run build
-RUN chmod +x write_env.sh
+RUN chmod +x  write_env.sh
 # Expone el puerto en el que la aplicación se ejecutará
 EXPOSE 3000
 

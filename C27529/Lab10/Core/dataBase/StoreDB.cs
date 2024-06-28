@@ -520,38 +520,57 @@ public sealed class StoreDB
 
     }
 
-
     public static async Task<int> AddMessageAsync(string content)
+{
+    using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
     {
-        using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
+        await connection.OpenAsync();
+        using (var transaction = await connection.BeginTransactionAsync())
         {
-            await connection.OpenAsync();
-            using (var transaction = await connection.BeginTransactionAsync())
+            try
             {
-                try
+                // Llama al método pasando la conexión y transacción
+                var existingId = await CheckIfMessageExists(content, connection, transaction);
+                if (existingId != null)
                 {
-                    string query = "use store; INSERT INTO messages (content) VALUES (@content); SELECT LAST_INSERT_ID();";
-                    using (var command = new MySqlCommand(query, connection, transaction))
-                    {
-                        command.Parameters.AddWithValue("@content", content);
-                        await command.ExecuteNonQueryAsync();
-
-                        // Obtener el ID del mensaje recién insertado
-                        int messageId = Convert.ToInt32(await command.ExecuteScalarAsync());
-
-                        // Confirmar la transacción
-                        await transaction.CommitAsync();
-                        return messageId;
-                    }
+                    transaction.Commit();
+                    return existingId.Value;
                 }
-                catch (Exception ex)
+
+                string query = "INSERT INTO messages (content) VALUES (@content); SELECT LAST_INSERT_ID();";
+                using (var command = new MySqlCommand(query, connection))
                 {
-                    await transaction.RollbackAsync();
-                    throw;
+                    command.Transaction = transaction;
+                    command.Parameters.AddWithValue("@content", content);
+                    var messageId = Convert.ToInt32(await command.ExecuteScalarAsync());
+                    transaction.Commit();
+                    return messageId;
                 }
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
             }
         }
     }
+}
+
+private static async Task<int?> CheckIfMessageExists(string content, MySqlConnection connection, MySqlTransaction transaction)
+{
+    string query = "use store; SELECT id FROM messages WHERE content = @content LIMIT 1;";
+    using (var command = new MySqlCommand(query, connection))
+    {
+        command.Transaction = transaction;
+        command.Parameters.AddWithValue("@content", content);
+        var result = await command.ExecuteScalarAsync();
+        if (result != DBNull.Value && result != null)
+        {
+            return Convert.ToInt32(result);
+        }
+        return null;
+    }
+}
 
     public static async Task<List<Dictionary<string, object>>> GetLastThreeMessagesAsync()
     {
@@ -559,7 +578,7 @@ public sealed class StoreDB
         using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
         {
             await connection.OpenAsync();
-            string query = "use store;  SELECT id, content FROM messages ORDER BY created_at DESC LIMIT 3;";
+            string query = "use store; SELECT id, content FROM messages ORDER BY created_at DESC LIMIT 3;";
             using (var command = new MySqlCommand(query, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
@@ -576,7 +595,34 @@ public sealed class StoreDB
                 }
             }
         }
-        messages.Reverse(); // Revertir el orden para que los mensajes más recientes estén al final
+        messages.Reverse();
+        return messages;
+    }
+
+    public static async Task<List<Dictionary<string, object>>> GetMessagesByContentAsync(string content)
+    {
+        var messages = new List<Dictionary<string, object>>();
+        using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
+        {
+            await connection.OpenAsync();
+            string query = "use store; SELECT id, content FROM messages WHERE content = @content;";
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@content", content);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var message = new Dictionary<string, object>
+                            {
+                                { "id", reader.GetInt32("id") },
+                                { "content", reader.GetString("content") }
+                            };
+                        messages.Add(message);
+                    }
+                }
+            }
+        }
         return messages;
     }
 }

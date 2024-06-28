@@ -25,17 +25,20 @@ export const Header = ({ goToPage }) => {
     useEffect(() => {
         const connectToHub = async () => {
             const connection = new HubConnectionBuilder()
-                .withUrl(process.env.NEXT_PUBLIC_API_URL + '/notificationHub')
+                .withUrl(`${URL}/Campannas`)
                 .withAutomaticReconnect()
                 .build();
 
-            connection.on("ReceiveMessages", (receivedMessages) => {
+            connection.on("UpdateMessages", (receivedMessages) => {
                 setMessages(receivedMessages);
-            });
+                setNewMessages(receivedMessages.length);
+            }
+        );
 
             try {
                 await connection.start();
                 console.log('Connected to the Notification Hub');
+                setConnection(connection);
             } catch (error) {
                 console.error('Connection failed: ', error);
             }
@@ -49,6 +52,7 @@ export const Header = ({ goToPage }) => {
             }
         };
     }, []);
+
     const onDeleteProduct = product => {
         const updatedProductos = store.productos.filter(item => item.id !== product.id);
         const updatedSubtotal = store.carrito.subtotal - product.price;
