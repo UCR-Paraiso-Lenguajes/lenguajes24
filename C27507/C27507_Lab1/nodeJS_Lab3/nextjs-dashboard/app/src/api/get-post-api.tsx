@@ -9,8 +9,6 @@ import { useRouter } from 'next/navigation';
 
 import { jwtDecode } from 'jwt-decode';
 import { CartShopAPI } from "../models-data/CartShopAPI";
-import { ProductWithoutCategoryAPI } from "../models-data/ProductWithoutCategoryAPI";
-import { CartShopWithoutCategoryAPI } from "../models-data/CartShopWithoutCategoryAPI";
 import { stringify } from "querystring";
 import { NotificationAPI } from "../models-data/NotificationAPI";
 

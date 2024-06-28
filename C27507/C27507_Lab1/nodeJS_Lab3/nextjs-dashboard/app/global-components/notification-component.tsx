@@ -16,10 +16,14 @@ import '../src/css/fonts_awesome/css/all.min.css'
 const htmlToReactParser = new Parser();
 export const NotificationComponent = () => {
   
-  //Lista de todas las notificaciones que se han recibido
-  const [notifications, setNotifications] = useState<NotificationAPI[]>([]);
+  const loadNotificationsFromLocalStorage = (): NotificationAPI[] => {
+    const storedNotifications = localStorage.getItem("notify");
+    return storedNotifications ? JSON.parse(storedNotifications) : [];
+  };
+  const [notifications, setNotifications] = useState<NotificationAPI[]>(loadNotificationsFromLocalStorage);
   const [notifyModalOpen, setNotifyModal] = useState(false);
-
+  
+  process.env.NEXT_PUBLIC_NODE_ENV
 
   useEffect(() => {
     const connection = new HubConnectionBuilder()
@@ -35,14 +39,16 @@ export const NotificationComponent = () => {
 
     connection.on("Receive", (notification: NotificationAPI) => {
       //Se actualiza la lista
-      console.log('Notificación recibida:', notification);
-      setNotifications(prevNotifications => [...prevNotifications, notification]);
+      // Actualizar el estado local y localStorage con las últimas 3 notificaciones
+      const updatedNotifications = [...notifications, notification].slice(-3);
+      setNotifications(updatedNotifications);
+      localStorage.setItem('notify', JSON.stringify(updatedNotifications));
     });
 
     return () => {
       connection.stop();
     };
-  }, []);
+  }, [notifications]);
 
   //Manejar el modal
   const toggleModal = () => {
@@ -52,6 +58,7 @@ export const NotificationComponent = () => {
   //Borrar todas las notifiaciones
   const clearNotifications = () => {
     setNotifications([]);
+    localStorage.removeItem("notify");
   };
 
 
@@ -71,18 +78,16 @@ export const NotificationComponent = () => {
           <div className="notify-modal-content">
             <span className="close" onClick={toggleModal}>&times;</span>
             <h2>Notificaciones Recibidas</h2>
-            <ul>            
-              {notifications.map(notification => (
-                <li key={notification.notifyId}>
-                  <div className="notification-item">
-                    <h5>Título: {notification.notifyTitle}</h5>
-                    <p className="html-message">Mensaje: {htmlToReactParser.parse(notification.notifyMessage)}</p>
-                    {/* https://www.youtube.com/watch?v=g-kQv8EUI88 */}
-                    <p>Fecha: {notification.notifyCreationDate}</p>
-                  </div>
-                </li>
+            <div className="list-notify">
+              {notifications.map(notification => (                
+                <div key={notification.notifyId} className="notification-item">
+                  <h5>Título: {notification.notifyTitle}</h5>
+                  <p className="html-message">Mensaje: {htmlToReactParser.parse(notification.notifyMessage)}</p>
+                  {/* https://www.youtube.com/watch?v=g-kQv8EUI88 */}
+                  <p>Fecha: {notification.notifyCreationDate}</p>
+                </div>
               ))}
-            </ul>
+            </div>
             <button onClick={clearNotifications}>Limpiar bandeja</button>
           </div>
         </div>

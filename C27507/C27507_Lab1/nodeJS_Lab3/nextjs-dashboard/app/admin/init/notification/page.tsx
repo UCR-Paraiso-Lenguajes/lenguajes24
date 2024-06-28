@@ -10,12 +10,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './../../../src/css/demoCSS.css'
 import './../../../src/css/products_info.css'
 import './../../../src/css/fonts_awesome/css/all.min.css'
+
+//Interfaces
 import { deleteNotificationInDBAsync, getAllNotificationsAdmin, getAllProductsFromAPI } from '@/app/src/api/get-post-api';
-import { ProductAPI } from '@/app/src/models-data/ProductAPI';
-import { CategoryAPI } from '@/app/src/models-data/CategoryAPI';
-import { CartShopAPI } from '@/app/src/models-data/CartShopAPI';
-import { getCartShopStorage } from '@/app/src/storage/cart-storage';
-import { ModalInsert } from '../../admin-components/modal-insert';
 import { ModalInsertNotification } from '../../admin-components/modal-insert-notification';
 import { NotificationAPI } from '@/app/src/models-data/NotificationAPI';
 import { AlertShop } from '@/app/global-components/generic_overlay';
@@ -89,13 +86,13 @@ export default function NotificationsInfo(){
 
                 const updatedNotifications = listOfNotifications.filter(notification => notification.notifyId !== notifyId);
                 setListOfNotifications(updatedNotifications);
-                callAlertShop("success", "Eliminación Exitosa", `La notificación con ID ${notifyId} fue eliminada correctamente`);
+                callAlertShop("success", "Eliminación Exitosa", `La notificación con ID ${notifyId} fue desactivada correctamente`);
 
             } else {                
-                callAlertShop("danger", "Error Inesperado", "Ocurrió un error inesperado al intentar eliminar la notificación");
+                callAlertShop("danger", "Error Inesperado", "Ocurrió un error inesperado al intentar desactivar la notificación");
             }
         } catch (error) {            
-            callAlertShop("danger", "Error al borrar notificación", "La notificación no pudo ser borrada. Por favor, inténtelo más tarde.");
+            callAlertShop("danger", "Error al borrar notificación", "La notificación no pudo ser desactivada. Por favor, inténtelo más tarde.");
         }
     };
 
@@ -114,8 +111,7 @@ export default function NotificationsInfo(){
                     </tr>
                     <tr>
                         <th>Code</th>
-                        <th>Title</th>
-                        <th>Content</th>
+                        <th>Title</th>                        
                         <th>Creation Date</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -125,13 +121,10 @@ export default function NotificationsInfo(){
                     {listOfNotifications.map((notify,index) => (
                         <tr key={notify.notifyId} className="crud-notification-info">
                             <td>{notify.notifyId}</td>
-                            <td>{notify.notifyTitle}</td>
-                            <td>
-                                {htmlToReactParser.parse(notify.notifyMessage)}
-                            </td>                                                        
+                            <td>{notify.notifyTitle}</td>                            
                             <td>{notify.notifyCreationDate}</td>
                             <td>{notify.notifyStatus === 1 ? 'Avaliable' : 'Deleted'}</td>
-                            <td className="crud-notification-container">                                
+                            <td className="crud-notification-container td-notify-html">
                                 {notify.notifyStatus === 1 && (
                                     <button onClick={() => deleteNotification(notify.notifyId)}>Delete</button>
                                 )}
