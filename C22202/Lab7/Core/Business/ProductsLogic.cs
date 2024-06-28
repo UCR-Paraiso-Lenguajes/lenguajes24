@@ -1,10 +1,11 @@
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using ShopApi.Models;
 
 public class ProductsLogic
 {
     public IEnumerable<Product> products { get; }
-    private Dictionary<int, List<Product>> productsDictionary;
+    private Dictionary<int, List<Product>> productsDictionary { get; }
 
     private ProductsLogic(IEnumerable<Product> products, Dictionary<int, List<Product>> productsDictionary)
     {
@@ -38,13 +39,14 @@ public class ProductsLogic
 
         List<Product> resultados = new List<Product>();
 
-        Product searchProduct = new Product{
+        Product searchProduct = new Product
+        {
             name = search,
             id = 1,
             imgSource = "",
             price = 0,
             category = 0
-            };
+        };
         int index = productosOrdenados.BinarySearch(searchProduct, new ProductoComparer());
 
         if (index < 0)
@@ -75,7 +77,7 @@ public class ProductsLogic
     {
         if (categoryIds.Count <= 0) throw new ArgumentException($"The {nameof(categoryIds)} number must be greater than 0");
 
-        if(categoryIds.Contains(0)) return this.products;
+        if (categoryIds.Contains(0)) return this.products;
 
         List<Product> products = new List<Product>();
         foreach (int item in categoryIds)
@@ -83,29 +85,56 @@ public class ProductsLogic
             this.productsDictionary.TryGetValue(item, out var productsTmp);
             if (productsTmp == null) productsTmp = new List<Product>();
             products.AddRange(productsTmp);
-            
+
         }
         return products;
+    }
+
+    Action<Product> addProductAction = (prod) => {
+        int id = Instance.products.Last().id + 1;
+        prod.id = id;
+        List<Product> productsTmp = (List<Product>)Instance.products;
+        productsTmp.Add(prod);
+
+        Dictionary<int, List<Product>> productsDictionaryTmp = Instance.productsDictionary;
+        Instance.addProductToDic(prod, productsDictionaryTmp);
+
+        Instance = new ProductsLogic(productsTmp, productsDictionaryTmp);
+    };
+
+    public void addProduct(Product product)
+    {
+        ProductDB.insertProduct(product, addProductAction);
+    }
+
+    private void addProductToDic(Product product, Dictionary<int, List<Product>> dictionary)
+    {
+        if (!dictionary.TryGetValue(product.category, out var categoryProducts))
+        {
+            categoryProducts = new List<Product>();
+            dictionary[product.category] = categoryProducts;
+        }
+        categoryProducts.Add(product);
     }
 
 }
 
 public class ProductoComparer : IComparer<Product>
+{
+    public int Compare(Product? x, Product? y)
     {
-        public int Compare(Product? x, Product? y)
+        if (x == null && y == null)
         {
-            if (x == null && y == null)
-            {
-                return 0;
-            }
-            if (x == null)
-            {
-                return -1;
-            }
-            if (y == null)
-            {
-                return 1;
-            }
-            return string.Compare(x.name, y.name, StringComparison.OrdinalIgnoreCase);
+            return 0;
         }
+        if (x == null)
+        {
+            return -1;
+        }
+        if (y == null)
+        {
+            return 1;
+        }
+        return string.Compare(x.name, y.name, StringComparison.OrdinalIgnoreCase);
     }
+}

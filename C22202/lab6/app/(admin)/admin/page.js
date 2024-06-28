@@ -11,7 +11,7 @@ export default function Page() {
     const handleShow = () => setShow(true);
 
     useEffect(() => {
-        setShow(true)
+        setShow(false)
       }, [])
 
     return (

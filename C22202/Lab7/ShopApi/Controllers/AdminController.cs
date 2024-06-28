@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.Models;
 
@@ -15,10 +16,11 @@ namespace ShopApi.Controllers
         }
 
         [HttpPost("Product")]
-        public IActionResult PutProduct([FromBody] Product product)
+        public IActionResult PostProduct([FromBody] Product product)
         {
-            var response = new {purchaseNumber=product};
-            return Ok(response);
+            // ProductDB.insertProduct(product, ProductsLogic.Instance.addProduct(product));
+            ProductsLogic.Instance.addProduct(product);
+            return Ok();
         }
 
     }
