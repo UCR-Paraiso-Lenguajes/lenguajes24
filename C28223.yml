@@ -4,13 +4,11 @@ services:
   mysql:
     image: mysql:latest
     container_name: mysql
+    hostname: mysql
     environment:
       - MYSQL_ROOT_PASSWORD=123456
     ports:
       - "3306:3306"
-#    networks:
-#      internal_net:
-#        ipv4_address: 192.168.1.10
     command: >
       bash -c "
         docker-entrypoint.sh mysqld &
@@ -23,26 +21,29 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - demo
 
   ui:
     image: bulan506/lenguajes2024ui:0.0.1
     container_name: ui
+    hostname: ui
     environment:
       #- API=192.168.1.12:57600
-      - NEXT_PUBLIC_API=http://10.59.19.211:8080      
+      - NEXT_PUBLIC_API=http://localhost:8080      
     ports:
       - "3000:3000"
-#    networks:
-#      internal_net:
-#        ipv4_address: 192.168.1.11
+    networks:
+      - demo
 
   api:
     image: bulan506/lenguajes2024api:0.0.1
     container_name: api
+    hostname: api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       #- mysql=192.168.1.10:3306
-      - DB=Server=10.59.19.211;Database=store;Uid=root;Pwd=123456
+      - DB=Server=mysql;Database=store;Uid=root;Pwd=123456
     ports:
       - "8080:8080"
 #    networks:
@@ -51,11 +52,11 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-#    entrypoint: ["./wait-for-it.sh", "mysql:3306", "--", "sh", "-c", "sleep 5 && your_api_start_command_here"]
+    networks:
+      - demo
+
 
 networks:
-  internal_net:
+  demo:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 192.168.1.0/24
+

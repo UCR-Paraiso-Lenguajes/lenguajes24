@@ -16,35 +16,34 @@ services:
         mysql -u root -p123456 -e 'CREATE DATABASE IF NOT EXISTS store;' && 
         wait
       "
-    networks:
-      - demo
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -p123456 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - demo
 
   ui:
-    image: jjj23/ui:0.0.1 
+    image: kensc/lenguajes2024ui:0.0.1
     container_name: ui
     hostname: ui
     environment:
       #- API=192.168.1.12:57600
-      - NEXT_PUBLIC_API_URL=http://localhost:8080      
+      - NEXT_PUBLIC_API=http://localhost:8080   
     ports:
       - "3000:3000"
     networks:
       - demo
-    restart: "never"
 
   api:
-    image: jjj23/api:0.0.1
+    image: kensc/lenguajes2024api:0.0.1
     container_name: api
     hostname: api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       #- mysql=192.168.1.10:3306
-      - DB=Server=mysql;Database=mysql;Uid=root;Pwd=123456
+      - DB="Server=mysql;Database=store;Uid=root;Pwd=123456;"
     ports:
       - "8080:8080"
     depends_on:

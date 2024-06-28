@@ -4,21 +4,32 @@ services:
   ui:
     image: eisenheimdiego/store_fe:latest
     container_name: ui
+    hostname: ui
     environment:
       #- API=192.168.1.12:57600
-      - NODE_ENV=10.59.19.211:8080      
+      - NODE_ENV=localhost:8080      
     ports:
       - "3000:3000"
+    restart: "never"
+    #command: npm uninstall next && npm install next && npm run build && npm run start
+    #command: bash -c "npm run build && npm start"
+    #command: cp .env .env.production && npm start
+    networks:
+      - demo
 
   api:
     image: eisenheimdiego/store_api:latest
     container_name: api
+    hostname: api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "8080:8080"
-    depends_on:
-      mysql:
-        condition: service_healthy
+    restart: "never"
 #    entrypoint: ["./wait-for-it.sh", "mysql:3306", "--", "sh", "-c", "sleep 5 && your_api_start_command_here"]
+    networks:
+      - demo
 
+networks:
+  demo:
+    driver: bridge
