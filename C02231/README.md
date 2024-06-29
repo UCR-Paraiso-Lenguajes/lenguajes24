@@ -83,35 +83,35 @@ C --> E{Cache}
 
 ---
 
-# Main Page
+**Main Page**
 Refers to the main page of the website.
 
-## Controllers
+**Controllers**
 The controllers are responsible for handling user requests and processing them. They interact with models and views to complete tasks.
 
-## StoreDB
+**StoreDB**
 Represents the database where the system's information is stored.
 
-## SaleDB
+**SaleDB**
 Represents the database where purchases are stored.
 
-## SaleReport
+**SaleReport**
 This class is responsible for generating sales reports.
 
-## SaleReportLogic
+**SaleReportLogic**
 This class provides the logic for generating sales reports.
 
-## StoreLogic
+**StoreLogic**
 This class provides the logic for interacting with the store database.
 
-## Data Flow
+**Data Flow**
 1. The user makes a request to the main page.
 2. The controllers receive the request and process it.
 3. The controllers interact with the models to retrieve or modify data in the database.
 4. The controllers interact with the views to generate the response to the user.
 5. The views send the response to the user.
 
-## Main Functions of the System
+**Main Functions of the System**
 - Store and retrieve product information.
 - Generate sales reports.
 - Manage user purchases.
@@ -157,5 +157,3 @@ This class provides the logic for interacting with the store database.
 - The store displays the messages.
 
 #### End
-
----
