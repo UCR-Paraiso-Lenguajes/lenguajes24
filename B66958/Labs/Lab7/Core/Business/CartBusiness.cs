@@ -66,6 +66,10 @@ public class CartBusiness
             throw new ArgumentException("A payment method should be provided");
     }
 
+    private void ValidateAddress(String address){
+        
+    }
+
     private void ValidateSale(Sale sale)
     {
         if (sale.Products.Count() == 0)
