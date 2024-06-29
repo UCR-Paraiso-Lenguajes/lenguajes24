@@ -25,21 +25,19 @@ namespace MyStoreAPI.Controllers
 
 
         [HttpPost("campaign/insert")]
-        //[Authorize(Roles = "Admin, Operator")]
+        [Authorize(Roles = "Admin, Operator")]
 
         public async Task<IActionResult> CreateNotificationAsync([FromBody] Notification newNotify){
 
             try{
-                CampaignLogic campaignLogic = new CampaignLogic();                                
-                await campaignLogic.createNewNotificationAsync(newNotify);
-
-                NotificationHub notificationHub = new NotificationHub();
-                
-                await _notificationHub.SendNotificationAsync(newNotify);
+                CampaignLogic campaignLogic = new CampaignLogic();
+                Notification insertedNotification = await campaignLogic.createNewNotificationAsync(newNotify);
+                Console.WriteLine(insertedNotification.notifyId);
+                await _notificationHub.SendNotificationAsync(insertedNotification);                                
                 return Ok(true);
             }
             catch (BussinessException ex){                
-                return StatusCode(501, "Ha ocurrido un error al generar la notificación. Por favor inténtalo más tarde.");
+                return StatusCode(501, "Ha ocurrido un error al generar la notificación. Por favor inténtalo más tarde." + ex);
             }
             catch (Exception ex){                                             
                 //Otros posibles errores
@@ -48,7 +46,7 @@ namespace MyStoreAPI.Controllers
         }
 
         [HttpDelete("campaign/delete/{idNotification}")]
-        //[Authorize(Roles = "Admin, Operator")]
+        [Authorize(Roles = "Admin, Operator")]
 
         public async Task<IActionResult> DeleteNotificationAsync( int idNotification){
             
@@ -56,6 +54,9 @@ namespace MyStoreAPI.Controllers
                 CampaignLogic campaignLogic = new CampaignLogic();
                 
                 await campaignLogic.deleteNotificationAsync(idNotification);
+
+                await _notificationHub.NotifyIdDeletionAsync(idNotification);
+
                 return Ok(true);
             }
             catch (BussinessException ex){                
@@ -68,8 +69,6 @@ namespace MyStoreAPI.Controllers
         }
 
         [HttpGet("campaign/select")]
-        //[Authorize(Roles = "Admin, Operator")]
-
         public async Task<IActionResult> SelectNotificationAsync(){
 
             try{

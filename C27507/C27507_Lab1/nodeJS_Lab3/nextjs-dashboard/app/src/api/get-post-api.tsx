@@ -284,27 +284,26 @@ const { default: jwt_decode } = require("jwt-decode");
 
 
         //Validamos si el token ha expirado
-        // let loginToken = sessionStorage.getItem("loginToken");
-        // if (!loginToken) {            
-        //     window.location.reload();
-        //     return "Default Error";
-        // }
-        // let tokenFormat = jwtDecode(loginToken);
+        let loginToken = sessionStorage.getItem("loginToken");
+        if (!loginToken) {            
+            window.location.reload();
+            return "Default Error";
+        }
+        let tokenFormat = jwtDecode(loginToken);
 
-        // let todayDate = Date.now() / 1000;
-        // let tokenLifeTime = tokenFormat.exp;
-        // if (tokenLifeTime && tokenLifeTime < todayDate) window.location.reload();
-        //'Authorization': `Bearer ${loginToken}`
+        let todayDate = Date.now() / 1000;
+        let tokenLifeTime = tokenFormat.exp;
+        if (tokenLifeTime && tokenLifeTime < todayDate) window.location.reload();        
         //Especificacion POST
         let postConfig = {
             method: "POST",
             headers: {
                 "Accept": "application/json",
-                "Content-Type": "application/json"          
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${loginToken}`
             },
             body: JSON.stringify(newNotification)
-        }
-        console.log(newNotification);
+        }    
     
         try {                 
             let responsePost = await fetch(directionAPI,postConfig);            
@@ -325,16 +324,16 @@ const { default: jwt_decode } = require("jwt-decode");
         let directionAPI = `${urlByReactEnviroment}/api/CampaignManagement/campaign/delete/${idNotification}`;
 
         //Validamos si el token ha expirado
-        // let loginToken = sessionStorage.getItem("loginToken");
-        // if (!loginToken) {            
-        //     window.location.reload();
-        //     return "Default Error";
-        // }
-        // let tokenFormat = jwtDecode(loginToken);
+        let loginToken = sessionStorage.getItem("loginToken");
+        if (!loginToken) {            
+            window.location.reload();
+            return "Default Error";
+        }
+        let tokenFormat = jwtDecode(loginToken);
 
-        // let todayDate = Date.now() / 1000;
-        // let tokenLifeTime = tokenFormat.exp;
-        // if (tokenLifeTime && tokenLifeTime < todayDate) window.location.reload();
+        let todayDate = Date.now() / 1000;
+        let tokenLifeTime = tokenFormat.exp;
+        if (tokenLifeTime && tokenLifeTime < todayDate) window.location.reload();
 
         //Especificacion POST
         let deleteConfig  = {
@@ -342,6 +341,7 @@ const { default: jwt_decode } = require("jwt-decode");
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${loginToken}`
             }            
         }            
     

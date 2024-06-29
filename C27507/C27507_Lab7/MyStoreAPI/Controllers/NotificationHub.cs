@@ -19,5 +19,10 @@ namespace MyStoreAPI.Controllers{
             //para los clientes
             await Clients.All.SendAsync("Receive",currentNotify);
         }
+
+        public async Task NotifyIdDeletionAsync(int notificationDeletedId){
+ 
+            await Clients.All.SendAsync("Delete",notificationDeletedId);
+        }
     }
 }

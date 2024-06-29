@@ -138,9 +138,11 @@ namespace MyStoreAPI.DB{
             }            
         }
 
-        public async Task InsertNotificationAsync(Notification newNotification){
+        public async Task<Notification> InsertNotificationAsync(Notification newNotification){
             
             if(newNotification == null) throw new ArgumentException($"{nameof(newNotification)} no puede ser nulo");
+
+            Notification insertedNotification = null;
 
             MySqlConnection connectionWithDB = null;
             MySqlTransaction transaction = null;
@@ -168,9 +170,18 @@ namespace MyStoreAPI.DB{
                     int thisIdNotification = 0;
                     string selectLastInsertedId = "SELECT LAST_INSERT_ID();";
                     using (MySqlCommand idCommand = new MySqlCommand(selectLastInsertedId, connectionWithDB)){
-                        idCommand.Transaction = transaction; // Asociar al mismo transaction
+                        idCommand.Transaction = transaction;
+                        object result = await idCommand.ExecuteScalarAsync();
                         thisIdNotification = Convert.ToInt32(await idCommand.ExecuteScalarAsync());
+
+                        // Creamos una nueva instancia de Notification con el ID asignado
+                        var notifyId = thisIdNotification;
+                        var notifyTitle = newNotification.notifyTitle;
+                        var  notifyMessage = newNotification.notifyMessage;
+                        var notifyCreationDate = newNotification.notifyCreationDate;
+                        insertedNotification = new Notification(notifyId,notifyTitle,notifyMessage,notifyCreationDate,1);
                     }                    
+
                     await transaction.CommitAsync();
                 }               
             }catch(Exception ex){
@@ -180,8 +191,8 @@ namespace MyStoreAPI.DB{
 
             }finally{
                 await connectionWithDB.CloseAsync();
-            }            
+            }
+            return newNotification;
         }
-        
     }
 }

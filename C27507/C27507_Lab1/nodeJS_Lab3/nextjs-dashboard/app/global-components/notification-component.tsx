@@ -16,6 +16,7 @@ import '../src/css/fonts_awesome/css/all.min.css'
 const htmlToReactParser = new Parser();
 export const NotificationComponent = () => {
   
+  //Precargamos las notifiaciones que no se hayan limpiado desde la bandeja o que el admin haya borrado
   const loadNotificationsFromLocalStorage = (): NotificationAPI[] => {
     const storedNotifications = localStorage.getItem("notify");
     return storedNotifications ? JSON.parse(storedNotifications) : [];
@@ -26,24 +27,31 @@ export const NotificationComponent = () => {
   process.env.NEXT_PUBLIC_NODE_ENV
 
   useEffect(() => {
+    const baseUrl = process.env.NEXT_PUBLIC_NODE_ENV || "https://localhost:7161";
     const connection = new HubConnectionBuilder()
-      .withUrl("https://localhost:7161/notificationHub")
+      .withUrl(`${baseUrl}/notificationHub`)
       .withAutomaticReconnect()
       .build();
 
-    connection.start()
-      .then(() => {
-        console.log('Conexión establecida con SignalR Hub');
-      })
-      .catch(err => console.error('Error al conectar con SignalR Hub:', err));
+    connection.start()      
 
+    //Actualizamos en la lista
     connection.on("Receive", (notification: NotificationAPI) => {
       //Se actualiza la lista
       // Actualizar el estado local y localStorage con las últimas 3 notificaciones
       const updatedNotifications = [...notifications, notification].slice(-3);
       setNotifications(updatedNotifications);
-      localStorage.setItem('notify', JSON.stringify(updatedNotifications));
+      localStorage.setItem('notify', JSON.stringify(updatedNotifications));      
     });
+
+    //Eliminamos de la lista
+    connection.on("Delete", (idNotification: number) => {
+      // Se eliminar la notificación con el ID especificado      
+      const updatedNotifications = notifications.filter(notification => notification.notifyId !== idNotification);
+      setNotifications(updatedNotifications);
+      localStorage.setItem('notify', JSON.stringify(updatedNotifications));      
+    });
+
 
     return () => {
       connection.stop();
@@ -83,7 +91,6 @@ export const NotificationComponent = () => {
                 <div key={notification.notifyId} className="notification-item">
                   <h5>Título: {notification.notifyTitle}</h5>
                   <p className="html-message">Mensaje: {htmlToReactParser.parse(notification.notifyMessage)}</p>
-                  {/* https://www.youtube.com/watch?v=g-kQv8EUI88 */}
                   <p>Fecha: {notification.notifyCreationDate}</p>
                 </div>
               ))}

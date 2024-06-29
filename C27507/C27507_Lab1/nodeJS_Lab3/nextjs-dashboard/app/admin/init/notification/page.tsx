@@ -68,9 +68,7 @@ export default function NotificationsInfo(){
     }, []);
 
     const deleteNotification = async (notifyId: number) => {
-        try {
-            console.log("ID Notification: " + notifyId);
-            console.log("Tipo: " + typeof + notifyId);
+        try {            
           
             if (!notifyId || notifyId <= 0) {
                 callAlertShop("danger", "Datos incorrectos", "Los datos de la notificación que intentas borrar no son válidos. Inténtelo más tarde");

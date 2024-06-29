@@ -15,15 +15,19 @@ namespace MyStoreAPI.Business
         }
 
 
-        public async Task createNewNotificationAsync(Notification newNotify){
+        public async Task<Notification> createNewNotificationAsync(Notification newNotify){
                         
             if(newNotify == null)
                 throw new BussinessException($"{nameof(newNotify)} no puede ser nulo");
 
             if (newNotify.notifyCreationDate == DateTime.MinValue) 
-                throw new BussinessException($"{nameof(newNotify.notifyCreationDate)} es fecha no valida");                
+                throw new BussinessException($"{nameof(newNotify.notifyCreationDate)} es fecha no valida");
+            
+            Notification insertedNotification = await db_notification.InsertNotificationAsync(newNotify);
+            if(insertedNotification == null)
+                throw new BussinessException($"{nameof(insertedNotification)} no puede ser nulo");
 
-            await db_notification.InsertNotificationAsync(newNotify);            
+            return insertedNotification;
         }
 
         public async Task deleteNotificationAsync(int notifyToDelete){
