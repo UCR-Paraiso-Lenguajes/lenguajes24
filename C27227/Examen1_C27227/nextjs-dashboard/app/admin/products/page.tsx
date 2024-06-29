@@ -73,7 +73,7 @@ const Products: React.FC = () => {
         throw new Error('Failed to fetch data');
       }
     } catch (error) {
-      console.error("Error fetching store data:", error);
+      throw new Error(`Error fetching store data: ${error.message}`);
     }
   };
 
@@ -106,6 +106,14 @@ const Products: React.FC = () => {
       setErrors(formErrors);
       return;
     }
+
+    // Verificar si el producto ya existe
+    const existingProduct = productList.find(product => product.name.toLowerCase() === form.name.toLowerCase());
+    if (existingProduct) {
+      setErrors({ name: 'El producto ya existe. No se puede insertar un producto duplicado.' });
+      return;
+    }
+
     try {
       const response = await fetch(`${URLConection}/admin/producto`, {
         method: 'POST',
@@ -118,16 +126,15 @@ const Products: React.FC = () => {
 
       if (response.ok) {
         setForm({ id: 0, name: '', imageUrl: '', price: '', quantity: 1, categoriaId: 0, categoriaNombre: '', description: '' });
+        setErrors({});
         setShowModal(false);
         fetchStoreData();
       } else {
         const errorResponseText = await response.text();
-        console.error("Error response text:", errorResponseText);
-        throw new Error('Error en el servidor');
+        throw new Error(`Error en el servidor: ${errorResponseText}`);
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
-      alert(`Error al enviar los datos: ${error.message}`);
+      throw new Error(`Error submitting form: ${error.message}`);
     }
   };
 
@@ -150,12 +157,10 @@ const Products: React.FC = () => {
         fetchStoreData();
       } else {
         const errorResponseText = await response.text();
-        console.error("Error response text:", errorResponseText);
-        throw new Error('Error en el servidor');
+        throw new Error(`Error en el servidor: ${errorResponseText}`);
       }
     } catch (error) {
-      console.error("Error deleting product:", error);
-      alert(`Error al eliminar el producto: ${error.message}`);
+      throw new Error(`Error deleting product: ${error.message}`);
     }
   };
 
