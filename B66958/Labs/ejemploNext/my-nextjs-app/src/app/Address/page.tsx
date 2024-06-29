@@ -13,33 +13,29 @@ const AddressForm = ({ handleAddressForm, cart, setCart, clearProducts }:
         setCart: (cart: CartState) => void, clearProducts: () => void
     }) => {
     const [showPaymentForm, setShowPaymentForm] = useState(false);
-    const [inputValue, setInputValue] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [alertType, setAlertType] = useState(0);
 
     const handleAddressSelect = (address: string) => {
-        if(validateAddressFormat(address)){
-            setInputValue(address);
-            setIsModalOpen(false);
-        }else{
-            setMessage("La dirección seleccionada debe indicar la ciudad, el cantón, la provincia y el código postal");
-            setAlertType(1);
-        }
-    };
-
-    const handleAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const inputValue = event.target.value;
+      if (validateAddressFormat(address)) {
         const updatedCart: CartState = {
-            ...cart,
-            carrito: {
-              ...cart.carrito,
-              direccionEntrega: inputValue
-            }
-          };
-        
-          setCart(updatedCart);
-    }
+          ...cart,
+          carrito: {
+            ...cart.carrito,
+            direccionEntrega: address,
+          },
+        };
+
+        setCart(updatedCart);
+        setIsModalOpen(false);
+      } else {
+        setMessage(
+          "La dirección seleccionada debe indicar la ciudad, el cantón, la provincia y el código postal"
+        );
+        setAlertType(1);
+      }
+    };
 
     function handlePaymentChange(show: boolean) {
         setShowPaymentForm(show);
@@ -62,21 +58,13 @@ const AddressForm = ({ handleAddressForm, cart, setCart, clearProducts }:
                 <input
                   type="text"
                   className="form-control"
-                  value={inputValue}
+                  value={cart?.carrito?.direccionEntrega ?? ''}
                   placeholder="Ingrese su dirección"
                   onClick={() => setIsModalOpen(true)}
                   readOnly
                   required
                 />
                 {isModalOpen && <AddressModal onSelect={handleAddressSelect} />}
-                <input
-                  type="text"
-                  className="form-control w-100"
-                  id="exampleFormControlInput1"
-                  placeholder="Ingrese indicaciones exactas"
-                  value={cart?.carrito?.direccionEntrega || ""}
-                  onChange={handleAddressChange}
-                />
                 <div className="d-flex w-100 justify-content-center">
                   <a
                     className="btn btn-primary mr-2"
@@ -87,7 +75,7 @@ const AddressForm = ({ handleAddressForm, cart, setCart, clearProducts }:
                   <button
                     className="btn btn-primary"
                     disabled={
-                      cart?.carrito ? (cart.carrito.direccionEntrega.length < 5) : true
+                      cart?.carrito ? !cart.carrito?.direccionEntrega : true
                     }
                     onClick={() => handlePaymentChange(true)}
                   >
