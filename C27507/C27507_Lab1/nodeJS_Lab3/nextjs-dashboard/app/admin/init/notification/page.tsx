@@ -5,26 +5,17 @@ import {useEffect} from 'react';
 //para renderizar html en React
 import { Parser } from 'html-to-react';
 
-
-
-
-import { useRouter } from 'next/router';
-import Dropdown from 'react-bootstrap/Dropdown';
-
-
 //Recursos
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './../../../src/css/demoCSS.css'
 import './../../../src/css/products_info.css'
 import './../../../src/css/fonts_awesome/css/all.min.css'
-import { getAllProductsFromAPI } from '@/app/src/api/get-post-api';
-import { ProductAPI } from '@/app/src/models-data/ProductAPI';
-import { CategoryAPI } from '@/app/src/models-data/CategoryAPI';
-import { CartShopAPI } from '@/app/src/models-data/CartShopAPI';
-import { getCartShopStorage } from '@/app/src/storage/cart-storage';
-import { ModalInsert } from '../../admin-components/modal-insert';
+
+//Interfaces
+import { deleteNotificationInDBAsync, getAllNotificationsAdmin, getAllProductsFromAPI } from '@/app/src/api/get-post-api';
 import { ModalInsertNotification } from '../../admin-components/modal-insert-notification';
 import { NotificationAPI } from '@/app/src/models-data/NotificationAPI';
+import { AlertShop } from '@/app/global-components/generic_overlay';
 
 //Funciones
 
@@ -41,25 +32,67 @@ export default function NotificationsInfo(){
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    //gestionamiento para los alert de boostrap
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertInfo,setAlertInfo] = useState("");
+    const [alertTitle,setAlertTitle] = useState("");
+    const [alertType,setAlertType] = useState("");
+
+    function closeAlertShop(): void {
+        setShowAlert(false);     
+    }
+    function callAlertShop (alertType:string,alertTitle:string,alertInfo:string): void {
+        setAlertTitle(alertTitle);
+        setAlertInfo(alertInfo);
+        setAlertType(alertType)
+        setShowAlert(true);
+    }
     
 
     //Llamamos los productos desde Store    
     useEffect(() => {
-        const loadDataProductAPI = async ()=>{
+        const loadNotificationsAPI = async ()=>{
             try{            
-                let dataFromStore = await getAllProductsFromAPI();
+                let dataFromStore = await getAllNotificationsAdmin();
 
                 if (typeof dataFromStore  === "object" && dataFromStore !== null){
-                    setListOfNotifications(dataFromStore.productsFromStore);                    
+                    setListOfNotifications(dataFromStore);
                 }
-                
-
-            } catch (error) {                
-                throw new Error('Failed to fetch data:' + error);
-            }
+            } catch (error) {
+                callAlertShop("danger","Error al obtener datos","Hubo un error al intentar obtener los mensajes de la campana  de notificaciones")
+            }                    
+            
         }  
-        loadDataProductAPI();
+        loadNotificationsAPI();
     }, []);
+
+    const deleteNotification = async (notifyId: number) => {
+        try {            
+          
+            if (!notifyId || notifyId <= 0) {
+                callAlertShop("danger", "Datos incorrectos", "Los datos de la notificación que intentas borrar no son válidos. Inténtelo más tarde");
+                return;
+            }
+        
+            const response = await deleteNotificationInDBAsync(notifyId);
+    
+            if (typeof response === "string") {
+    
+                callAlertShop("danger", "Eliminación Fallida", response);
+            } else if (response === true) {                    
+
+                const updatedNotifications = listOfNotifications.filter(notification => notification.notifyId !== notifyId);
+                setListOfNotifications(updatedNotifications);
+                callAlertShop("success", "Eliminación Exitosa", `La notificación con ID ${notifyId} fue desactivada correctamente`);
+
+            } else {                
+                callAlertShop("danger", "Error Inesperado", "Ocurrió un error inesperado al intentar desactivar la notificación");
+            }
+        } catch (error) {            
+            callAlertShop("danger", "Error al borrar notificación", "La notificación no pudo ser desactivada. Por favor, inténtelo más tarde.");
+        }
+    };
 
 
     return (
@@ -75,22 +108,24 @@ export default function NotificationsInfo(){
                         <th><button onClick={handleShow}>Add New</button></th>
                     </tr>
                     <tr>
-                        <th>Código</th>
-                        <th>Título</th>
-                        <th>Contenido</th>
-                        <th>Fecha de Creación</th>                        
+                        <th>Code</th>
+                        <th>Title</th>                        
+                        <th>Creation Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+
                     </tr>
 
                     {listOfNotifications.map((notify,index) => (
-                        <tr key={notify.id} className="crud-notification-info">
+                        <tr key={notify.notifyId} className="crud-notification-info">
+                            <td>{notify.notifyId}</td>
                             <td>{notify.notifyTitle}</td>                            
-                            <td>
-                                {htmlToReactParser.parse(notify.notifyMessage)}
-                            </td>                                                        
                             <td>{notify.notifyCreationDate}</td>
-                            <td>sdsds</td>                
-                            <td className="crud-notification-container">
-                                <button>Delete</button>
+                            <td>{notify.notifyStatus === 1 ? 'Avaliable' : 'Deleted'}</td>
+                            <td className="crud-notification-container td-notify-html">
+                                {notify.notifyStatus === 1 && (
+                                    <button onClick={() => deleteNotification(notify.notifyId)}>Delete</button>
+                                )}
                             </td>
                         </tr>
                     ))}
@@ -98,11 +133,10 @@ export default function NotificationsInfo(){
             </table>
             <ModalInsertNotification
                 show={show}
-                handleClose={handleClose}
-                listOfNotifications={listOfNotifications}
+                handleClose={handleClose}                
             />
-        </>
-        //https://vaidrollteam.blogspot.com/2023/03/crud-basico-de-productos-en-php-mysql.html
+            <AlertShop alertTitle={alertTitle} alertInfo={alertInfo} alertType={alertType} showAlert={showAlert} onClose={closeAlertShop}/>
+        </>        
     );
 
 }

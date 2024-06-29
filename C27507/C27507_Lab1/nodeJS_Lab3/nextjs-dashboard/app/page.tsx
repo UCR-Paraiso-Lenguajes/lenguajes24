@@ -15,6 +15,8 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { PaymentMethod, PaymentMethodNumber } from './src/models-data/PaymentMethodAPI';
 import { ProductAPI } from './src/models-data/ProductAPI';
 import { CartShopAPI } from './src/models-data/CartShopAPI';
+import { CategoryAPI } from './src/models-data/CategoryAPI';
+import { NotificationComponent } from './global-components/notification-component';
 //Recursos
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './src/css/demoCSS.css'
@@ -22,7 +24,6 @@ import './src/css/fonts_awesome/css/all.min.css'
 //Funciones
 import { getCartShopStorage } from './src/storage/cart-storage';
 import { getAllProductsFromAPI, getProductsByCategory,getProductsBySearchTextAndCategory } from './src/api/get-post-api';
-import { CategoryAPI } from './src/models-data/CategoryAPI';
 
 
 function Page() {     
@@ -238,9 +239,11 @@ function Page() {
       </div>      
       <footer>@ Derechos Reservados 2024</footer>     
       <CartShop
-            myCartInStorage={myCartInStorage}  
-            setMyCartInStorage={setMyCartInStorage}                             
-        />                
+            myCartInStorage={myCartInStorage}
+            setMyCartInStorage={setMyCartInStorage}
+            
+        />
+        <NotificationComponent/>
     </main>
   );
 }

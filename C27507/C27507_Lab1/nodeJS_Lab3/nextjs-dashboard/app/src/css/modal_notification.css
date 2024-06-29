@@ -1,0 +1,53 @@
+/* Menu Modal del carrito */
+
+.product-menu-cart div{
+	width: 100%;
+	height: auto;	
+	margin: 50px 0;
+}
+
+.product-menu-cart br{
+	width: 100%;
+	color: black;
+	font-size: large;
+}
+
+.product-menu-cart img{
+	width: 100%;
+	height: 100px;		
+	object-fit: contain;
+}
+
+.product-menu-cart p{
+	text-align: center;
+	margin-right: 1,2rem;
+}
+.product-menu-cart button{
+	width: 100%;
+	background: orange;
+	color: white;	
+	padding: 0.5rem;	
+}
+
+.product-menu-cart span, .total-price-container  span{
+	color: orange;
+}
+
+.modal-footer {
+	position: sticky;
+	bottom: 0;
+	background-color: white; /* Ajusta el color de fondo según tu diseño */
+  }
+
+.total-price-container{		
+	background: white;
+	position: sticky;
+	bottom: 71px;
+	padding: 0 1.2rem;
+	font-weight: bolder;
+}
+
+.total-price-cart{	
+	text-align: right;
+
+}

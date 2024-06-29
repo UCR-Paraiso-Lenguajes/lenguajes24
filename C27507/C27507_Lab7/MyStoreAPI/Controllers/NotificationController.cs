@@ -25,9 +25,9 @@ namespace MyStoreAPI.Controllers
         private NotificationLogic notificationLogic;
 
         //Con la instancia de IHuContext ahora se pueden manejar los metodos de NotificationHub
-        public NotificationController(IHubContext<NotificationHub> notificationHubContext,NotificationLogic notificationLogic){
+        public NotificationController(IHubContext<NotificationHub> notificationHubContext){
             this.notificationHubContext = notificationHubContext;
-            this.notificationLogic = notificationLogic;
+            notificationLogic = new NotificationLogic();
         }
 
         [HttpPost]
@@ -41,25 +41,12 @@ namespace MyStoreAPI.Controllers
                 return Ok();
             }
             catch (BussinessException ex){                
-                return StatusCode(501, "Por el momento no hay notificaciones que mostrar");
+                return StatusCode(501, "Por el momento no hay notificaciones que mostrar" + ex);
             }
             catch (Exception ex){                                             
                 //Otros posibles errores
-                return StatusCode(500, "Por el momento no hay notificaciones que mostrar");
-            }
-            
-
-            // try{
-            //     IEnumerable<Notification> listOfnotifications = await notificationLogic.getNotificationFromDBAsync();                
-
-            // }
-            // catch (BussinessException ex){                
-            //     return StatusCode(501, "Por el momento no hay notificaciones");
-            // }
-            // catch (Exception ex){                                             
-            //     //Otros posibles errores
-            //     return StatusCode(500, "Por el momento no hay notificaciones");
-            // }
+                return StatusCode(500, "Por el momento no hay notificaciones que mostrar" + ex);
+            }            
         }
     }
 }
