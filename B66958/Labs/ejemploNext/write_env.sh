@@ -8,4 +8,7 @@ fi
 # Write the environment variable to the .env file
 echo "NEXT_PUBLIC_NODE_ENV=$NODE_ENV" > .env
 
+# Write the environment variable to the .env.production file
+echo "NEXT_PUBLIC_NODE_ENV=$NODE_ENV" > .env.production
+
 echo ".env file updated with NEXT_PUBLIC_NODE_ENV=$NODE_ENV"
