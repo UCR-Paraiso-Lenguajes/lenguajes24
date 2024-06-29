@@ -198,19 +198,19 @@ export default function Home() {
               <input
                 className="form-control me-2"
                 type="search"
-                placeholder="Buscar productos"
-                aria-label="Buscar productos"
+                placeholder="Search products"
+                aria-label="Search products"
                 value={searchQuery}
                 onChange={handleSearchInputChange}
               />
               <button className="btn btn-outline-success" type="submit">
-                Buscar
+                Search
               </button>
             </form>
 
             <Dropdown>
               <Dropdown.Toggle variant="secondary" id="dropdown-basic" className="mx-3">
-                Categorías
+                Categories
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Form>
@@ -282,7 +282,7 @@ export default function Home() {
 
       <footer className='footer'>
         <div className="text-center p-3">
-          <h5 className="text-light">  Paula's Library</h5>
+          <h5 className="text-light">Paula's Library</h5>
         </div>
       </footer>
 

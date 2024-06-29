@@ -1,93 +1,69 @@
-# Página Web: Tienda de Libros
-Paula Chaves Rivera C02231
+# Web Pages: Book Store
+**Developer:** Paula Chaves Rivera C02231
 
-## Diagramas:
+---
 
-## Diagrama de Actividad
+The purpose of this project is to develop an online store using React and Next.js. It allows users the shopping experience of viewing products, adding them to a shopping cart, searching by category, name, and description, and checking out.
 
-**__Flujo de Compras__**
+## Features
+- Product catalog
+- Shopping cart
+- Checkout process
+- Inventory management
+- Payment method management
+- Campaigns
 
-Flowchart TD
+---
 
-    A[Inicio] --> B[Usuario entra a la página]
+## Diagrams:
 
-    B --> C[Selecciona los libros]
+### Activity Diagram
 
-    C --> D[Libros se ingresan al carrito]
-
-    D --> E[Usuario hace clic en el botón del carrito]
-
-    E --> F[Pestaña del carrito]
-
-    F --> G[Muestra el precio total y botón "Continuar"]
-
-    G --> H[Usuario hace clic en "Continuar"]
-
-    H --> I[Ingresar dirección de entrega]
-
-    I --> J[Seleccionar método de pago]
-
-    J --> K{Método de pago}
-
-    K --> |SINPE| L[Ingresar número de recibo SINPE]
-
-    L --> M[Botón "Confirmar pago"]
-
-    K --> |Cash| N[Botón "Confirmar pago"]
-
-    M --> O[Página de confirmación]
-
-    N --> O[Página de confirmación]
-
-    O --> P[Muestra el número de compra]
-
-    P --> Q[Botón "Finalizar compra"]
-
-    Q --> R[Fin]
+**Purchasing Flow**
 
 ![Flujo de Compra](Images/DiagramaCompra.jpeg)
 
-## Diagrama Paquetes
+### Diagram Packages
 
 ![Paquetes](Images/Paquetes.jpeg)
 
-**Front-end:**
+---
 
-El front-end de la aplicación está construido con React y se compone de varios componentes organizados en diferentes carpetas.
+# Front-end
 
-<ul>
-<li>page.tsx: Este componente principal renderiza la página principal de la aplicación.
-<li>admin: Este componente representa la sección de administración de la aplicación y contiene subcomponentes para diferentes tareas administrativas:
-<li>cart: Este componente se encarga de mostrar el carrito de compras del usuario.
-<li>confirm: Este componente es para confirmar el pedido del usuario.
-<li>payment: Este componente es para procesar el pago del pedido del usuario e ingresar datos de compra.
-</ul>
+The front-end of the application is built with React and consists of several components organized in different folders.
 
+- `page.tsx`: This main component renders the application's main page.
+- `admin`: This component represents the administration section of the application and contains subcomponents for different administrative tasks.
+- `cart`: This component is responsible for displaying the user's shopping cart.
+- `confirm`: This component is for confirming the user's order.
+- `payment`: This component is for processing the user's order payment and entering purchase data.
 
-**Back-end:**
+---
 
-El paquete principal contiene la lógica principal del negocio de la aplicación.
+# Back-end
 
-<ul>
-<li>Core: Este subpaquete contine las clases y funciones centrales para la aplicación.
-<li>Business: Este subpaquete contine clases y funciones relacionadas con las reglas de negocio de la aplicación.
-<li>Database: Este subpaquete contine clases y funciones para interactuar con la base de datos.
-<li>Model: Este subpaquete contine clases que representan los modelos de datos de la aplicación.
-<li>StoreApi: Este subpaquete contine controladores de API para enviar y recibir datos de front-end.
-<li>Controller: Este subpaquete contine clases que implementan los controladores de API específicos.
-<li>UT: Este subpaquete contiene las pruebas unitarias para el código del back-end.
-</ul>
+The main package contains the core business logic of the application.
 
-**Dependencias:**
+- `Core`: This subpackage contains the core classes and functions for the application.
+- `Business`: This subpackage contains classes and functions related to the business rules of the application.
+- `Database`: This subpackage contains classes and functions for interacting with the database.
+- `Model`: This subpackage contains classes that represent the application's data models.
+- `StoreApi`: This subpackage contains API controllers for sending and receiving data from the front-end.
+- `Controller`: This subpackage contains classes that implement specific API controllers.
+- `UT`: This subpackage contains unit tests for the back-end code.
 
-<ul>
-<li>El front-end depende del back-end para obtener datos y realizar acciones.
-<li>Los componentes del front-end se comunican con el back-end a través de API.
-<li>El back-end depende de la base de datos para almacenar y recuperar datos.
-</ul>
+---
 
+# Dependencies
 
-## Diagrama Estructura de la aplicación
+- The front-end depends on the back-end to fetch data and perform actions.
+- Front-end components communicate with the back-end through APIs.
+- The back-end depends on the database to store and retrieve data.
+
+---
+
+## Application Structure Diagram
 
 ![Fetch](Images/Fetch.jpeg)
 
@@ -99,39 +75,87 @@ B --> D{Store}
 
 C --> E{Cache}
 
+---
 
-**Diagrama de Clase**
+## Class Diagram
 
 ![Clases](Images/Clases.jpeg)
 
-**Pagina Principal:** Se refiere a la página principal del sitio web.
+---
 
-**Controllers:** Los controladores son responsables de manejar las solicitudes del usuario y procesarlas. Interaccionan con los modelos y las vistas para completar las tareas.
+# Main Page
+Refers to the main page of the website.
 
-**StoreDB:** Representa la base de datos donde se almacena la información del sistema.
+## Controllers
+The controllers are responsible for handling user requests and processing them. They interact with models and views to complete tasks.
 
-**SaleDB:** Representa la base de datos donde se almacenan las compras.
+## StoreDB
+Represents the database where the system's information is stored.
 
-**SaleReport:** Esta clase se encarga de generar informes de ventas.
+## SaleDB
+Represents the database where purchases are stored.
 
-**SaleReportLogic:** Esta clase proporciona la lógica para generar informes de ventas.
+## SaleReport
+This class is responsible for generating sales reports.
 
-**StoreLogic:** Esta clase proporciona la lógica para interactuar con la base de datos de la tienda.
+## SaleReportLogic
+This class provides the logic for generating sales reports.
 
+## StoreLogic
+This class provides the logic for interacting with the store database.
 
-**Flujo de datos:**
-<ul>
-<li>El usuario realiza una solicitud a la página principal.
-<li>Los controladores reciben la solicitud y la procesan.
-<li>Los controladores interactúan con los modelos para obtener o modificar datos de la base de datos.
-<li>Los controladores interactúan con las vistas para generar la respuesta al usuario.
-<li>Las vistas envían la respuesta al usuario.
-</ul>
+## Data Flow
+1. The user makes a request to the main page.
+2. The controllers receive the request and process it.
+3. The controllers interact with the models to retrieve or modify data in the database.
+4. The controllers interact with the views to generate the response to the user.
+5. The views send the response to the user.
 
-__Funciones principales del sistema:__
+## Main Functions of the System
+- Store and retrieve product information.
+- Generate sales reports.
+- Manage user purchases.
 
-<ul>
-<li> Almacenar y recuperar información de productos.
-<li> Generar informes de ventas.
-<li> Gestionar las compras de los usuarios.
-</ul>
+---
+
+## Campaign Activity Diagram
+
+![Campaign](Images/Campaign.png)
+
+### 1. Admin
+
+#### Start
+- The admin opens the campaigns module (`/campannas`).
+
+#### Create Message
+- The admin fills out the message form.
+- The admin submits the form.
+- The server saves the message in the database.
+- The server notifies connected clients via WebSockets.
+
+#### Delete Message
+- The admin selects a message to delete.
+- The server deletes the message from the database.
+- The server notifies connected clients via WebSockets.
+
+#### End
+
+### 2. Client
+
+#### Start
+- The client connects to the store.
+- The store connects to the WebSocket server.
+
+#### Receive Message
+- The server sends a notification of a new message.
+- The client increments the message counter.
+
+#### View Messages
+- The client clicks on the message icon.
+- The store requests the last 3 messages from the server.
+- The server sends the messages.
+- The store displays the messages.
+
+#### End
+
+---
