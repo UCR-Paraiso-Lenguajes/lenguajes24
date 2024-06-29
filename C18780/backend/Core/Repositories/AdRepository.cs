@@ -48,5 +48,13 @@ namespace StoreApi.Repositories
                 return await dbContext.Ad.ToListAsync();
             }
         }
+
+        public async Task<List<Ad>> GetLatestAdsAsync(int count)
+        {
+            using (var dbContext = new DbContextClass(_configuration))
+            {
+                return await dbContext.Ad.OrderByDescending(x => x.Date).Take(count).ToListAsync();
+            }
+        }
     }
 }

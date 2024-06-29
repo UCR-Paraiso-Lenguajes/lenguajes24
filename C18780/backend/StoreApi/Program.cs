@@ -64,6 +64,7 @@ builder.Services.AddTransient<IRequestHandler<CreateAdCommand, Ad>, CreateAdHand
 builder.Services.AddTransient<IRequestHandler<GetAdByIdQuery, Ad>, GetAdByIdHandler>();
 builder.Services.AddTransient<IRequestHandler<GetAdListQuery, IEnumerable<Ad>>, GetAdListHandler>();
 builder.Services.AddTransient<IRequestHandler<DeleteAdCommand, int>, DeleteAdHandler>();
+builder.Services.AddTransient<IRequestHandler<GetLatestAdsQuery, IEnumerable<Ad>>, GetLatestAdsHandler>();
 
 //Add services to controllers
 builder.Services.AddTransient<CategoryController>();

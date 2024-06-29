@@ -6,7 +6,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { useFetchCategoriesList } from '@/app/api/http.category';
 import { Ad, Category } from '@/app/lib/data-definitions';
 import { useState } from 'react';
-import { useFetchGetAd, useSignalRGetAds } from '@/app/api/http.ad';
+import { useFecthGetLatestAds, useFetchGetAd, useSignalRGetAds } from '@/app/api/http.ad';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
 import './dropdawn.css';
@@ -32,24 +32,46 @@ const Categories = ({ categories, onAddCategory }: { categories: Category[], onA
 }
 
 const Notification = ({ notification }: { notification: Ad[] }) => {
+  let messages = useFecthGetLatestAds(3).message;
+  messages = [...messages, ...notification];
   return (
     <li className="nav-item dropdown">
       <div className="dropdown">
         <button className="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           <FontAwesomeIcon icon={faBell} className="fa-icon me-2" />
-          {notification.length >= 0 && notification.length <= 3 ? `${notification.length}` : "3"}
+          {messages.length >= 0 && messages.length}
         </button>
         <ul className="dropdown-menu dropdown-menu-dark" style={{ pointerEvents: 'none' }}>
-          {notification.map((notification, index) => (
+          {messages.length ? messages.map((notification, index) => (
             <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
-              <a className={`dropdown-item`} href="#">
-                <div className="specifications-content" dangerouslySetInnerHTML={{ __html: notification.message }} />
-              </a>
+
+              <div className='container'>
+                <div className='row'>
+                  <span>{new Date(notification.date).toLocaleDateString('es-Es', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                  </span>
+                </div>
+                <div className='row'>
+                  <a className={`dropdown-item`} href="#">
+                    <div className="specifications-content" dangerouslySetInnerHTML={{ __html: notification.message }} />
+                  </a>
+                </div>
+              </div>
             </li>
-          ))}
+          )) : <img
+            src="https://i.imgur.com/bUJ3Z0Y.png"
+            style={{
+              width: '100px',
+              height: '100px'
+            }}
+          />}
         </ul>
-      </div>
-    </li>
+      </div >
+    </li >
   );
 }
 
@@ -91,7 +113,7 @@ const Search = ({ onAddSearch }: { onAddSearch: any }) => {
 export default function SideNav({ countCart = 0, onAddCategory, onAddSearch }: { countCart: number, onAddCategory: any, onAddSearch: any }) {
   const categories = useFetchCategoriesList();
   const notification = useSignalRGetAds();
- 
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <Link href="/dashboard">

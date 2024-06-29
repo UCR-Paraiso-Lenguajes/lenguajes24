@@ -150,7 +150,6 @@ const InterestingProducts = ({ products, onAdd }: { products: Product[] | null, 
 export default function MyCart() {
     const category: string[] = ["All"];
     const search = "none";
-    const initialStore = useFetchInitialStore({ category, search });
     const [initialCart, setInitialCart] = useState<Cart>();
     useEffect(() => {
         const cartFromLocalStorage = getInitialCartLocalStorage();
@@ -211,7 +210,7 @@ export default function MyCart() {
 
                         <Support />
 
-                        <InterestingProducts onAdd={handleAddToCart} products={initialStore} />
+                        
                     </div>
                 </div>
             </div>
