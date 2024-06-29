@@ -17,7 +17,7 @@ builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", // Create a named policy
-        builder => builder.WithOrigins("http://localhost:3000") // Replace with the actual client URL
+        builder => builder.WithOrigins("http://localhost:3000","http://localhost:8080","http://localhost:http://localhost:5164") // Replace with the actual client URL
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials()); // Allow credentials
@@ -58,8 +58,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "https://localhost:5164",
-            ValidAudience = "https://localhost:5164",
+            ValidIssuer = "http://localhost:5164",
+            ValidAudience = "http://localhost:5164",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
         };
     });
