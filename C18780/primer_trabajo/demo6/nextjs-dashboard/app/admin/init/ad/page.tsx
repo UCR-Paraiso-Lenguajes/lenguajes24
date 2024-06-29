@@ -1,18 +1,22 @@
 'use client'
 import { useEffect, useState } from 'react';
 import './ad.css';
-import { useFetchCreateAd, useFetchDeleteAd, useFetchGetAd } from '@/app/api/http.ad';
-import { Ad } from "../../../lib/data-definitions";
+import { useFetchCreateAd, useFetchDeleteAd, useFetchGetAd, useSignalRGetAds } from '@/app/api/http.ad';
 import { UUID } from 'crypto';
+import { get } from 'http';
+import '@/app/ui/loading/hourglass.css';
 export default function Products() {
     const [message, setMessages] = useState('');
-    const getMessages = useFetchGetAd();
+    let getMessages = useFetchGetAd();
+    const newMessages = useSignalRGetAds();
     const [ad, setAd] = useState('');
     const [isClient, setIsClient] = useState(false);
     const [deleteAdId, setDeleteAdId] = useState<UUID | null>(null);
-    useFetchDeleteAd(deleteAdId);
 
+    useFetchDeleteAd(deleteAdId);
     useFetchCreateAd(ad);
+
+    getMessages.message = [...getMessages.message, ...newMessages.message];
 
     function handleSaveAd() {
         if (message.trim()) {
@@ -29,9 +33,20 @@ export default function Products() {
     }, []);
 
     if (!isClient) {
-        return <div>Loading...</div>;
+        return <>
+            <div className="hourglassBackground">
+                <div className="hourglassContainer">
+                    <div className="hourglassCurves"></div>
+                    <div className="hourglassCapTop"></div>
+                    <div className="hourglassGlassTop"></div>
+                    <div className="hourglassSand"></div>
+                    <div className="hourglassSandStream"></div>
+                    <div className="hourglassCapBottom"></div>
+                    <div className="hourglassGlass"></div>
+                </div>
+            </div>
+        </>;
     }
-
 
     return (
         <div className='container'>

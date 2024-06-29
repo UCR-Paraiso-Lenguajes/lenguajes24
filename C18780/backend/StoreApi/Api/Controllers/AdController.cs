@@ -32,6 +32,15 @@ namespace StoreApi
             return ads;
         }
 
+        [HttpPost("latest")]
+        [AllowAnonymous]
+        public async Task<IEnumerable<Ad>> GetLatestAdsAsync(int count)
+        {
+            var ads = await _mediator.Send(new GetLatestAdsQuery() { Count = count });
+
+            return ads;
+        }
+
         [HttpPost, Authorize(Roles = "Operator")]
         public async Task<Ad> AddAdAsync([FromBody] string message)
         {

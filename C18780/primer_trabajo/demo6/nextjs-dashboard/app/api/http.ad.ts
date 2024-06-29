@@ -96,3 +96,26 @@ export function useSignalRGetAds() {
 
     return { message };
 }
+
+export function useFecthGetLatestAds(count: number) {
+    const [message, setMessage] = useState<Ad[]>([]);
+    useEffect(() => {
+        const getAd = async () => {
+            const token = getCookie('token');
+            const res = await fetch(`${environmentUrl}/api/Ad/latest?count=${count}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (!res.ok) {
+                throw new Error('Failed to fetch Get Latest Ad.');
+            }
+            const data = await res.json();
+            setMessage(data);
+        }
+        getAd();
+    }, []);
+    return { message };
+}

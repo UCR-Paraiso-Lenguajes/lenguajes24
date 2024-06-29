@@ -8,5 +8,6 @@ namespace StoreApi.Repositories
         public Task<Ad> GetAdByIdAsync(Guid uuid);
         public Task<Ad> AddAdAsync(Ad ad);
         public Task<int> DeleteAdAsync(Guid uuid);
+        public Task<List<Ad>> GetLatestAdsAsync(int count);
     }
 }
