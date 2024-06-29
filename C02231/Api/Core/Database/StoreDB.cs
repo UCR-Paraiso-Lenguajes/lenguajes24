@@ -106,14 +106,17 @@ public sealed class StoreDB
                         active BOOLEAN NOT NULL DEFAULT FALSE 
                         );
                     
+
                     CREATE TABLE IF NOT EXISTS sales (
                         Id INT AUTO_INCREMENT PRIMARY KEY,
                         purchase_date DATETIME NOT NULL,
                         total DECIMAL(10, 2) NOT NULL,
-                        payment_method  INT NOT NULL,
+                        payment_method INT NOT NULL,
                         purchase_number VARCHAR(50) NOT NULL,
+                        address VARCHAR(500) NOT NULL,
                         FOREIGN KEY (payment_method) REFERENCES paymentMethod(id)
                     );
+
 
                     CREATE TABLE IF NOT EXISTS saleLines (
                         sale_id INT,
@@ -141,35 +144,59 @@ public sealed class StoreDB
                         ('Notification prove', '2024-06-22 15:03:38');
 
 
-                    INSERT INTO sales (purchase_date, total, payment_method, purchase_number)
+                    INSERT INTO sales (purchase_date, total, payment_method, purchase_number, address)
                     VALUES 
-                        ('2024-05-01 10:00:00', 5000,  1, 'ABD12345'), ('2024-05-02 09:00:00', 15000,  1, 'NEW12345'),
-                        ('2024-05-03 09:00:00', 15200,  1, 'WER8352'), ('2024-05-03 10:30:00', 8200,  0, 'QXR9235'),
-                        ('2024-05-04 10:30:00', 8400,  0, 'YUI9204'), ('2024-05-05 11:45:00', 9700,  1, 'ZPL4110'),
-                        ('2024-05-06 11:45:00', 9900,  1, 'CDE4682'), ('2024-05-06 12:00:00', 11200,  0, 'WSG7589'),
-                        ('2024-05-07 12:00:00', 11500,  0, 'BGT5726'), ('2024-05-08 14:15:00', 13500,  1, 'AIB6427'),
-                        ('2024-05-09 14:15:00', 8700,  0, 'OUY8534'), ('2024-05-09 14:15:00', 13800,  1, 'UIO3014'),
-                        ('2024-05-09 15:30:00', 8700,  0, 'NEW97531'), ('2024-05-10 11:30:00', 7520,  0, 'GML54321'),
-                        ('2024-05-10 15:30:00', 8900,  0, 'NEW53148'), ('2024-05-10 15:30:00', 8900,  0, 'JKL7809'),
-                        ('2024-05-10 16:45:00', 7800,  1, 'NEW86420'), ('2024-05-10 16:45:00', 7800,  1, 'XVD7065'),
-                        ('2024-05-11 13:45:00', 10050,  1, 'GKS98765'), ('2024-05-11 13:45:00', 10050,  1, 'GKS98765'),
-                        ('2024-05-12 09:15:00', 63000,  1, 'XYZ12345'), ('2024-05-12 16:45:00', 7500,  1, 'ASD6123'),
-                        ('2024-05-12 18:00:00', 9500,  0, 'NEW75309'), ('2024-05-12 18:00:00', 9500,  0, 'IKJ2491'),
-                        ('2024-05-13 18:00:00', 9300,  0, 'NHJ4298'), ('2024-05-13 19:15:00', 8600,  1, 'NEW64257'),
-                        ('2024-05-14 19:15:00', 8600,  1, 'RTM1473'), ('2024-05-15 19:15:00', 9700,  1, 'ZXW3749'),
-                        ('2024-05-15 20:30:00', 7300,  0, 'DCE6301'), ('2024-05-16 09:00:00', 14000,  1, 'NEW98765'),
-                        ('2024-05-16 20:30:00', 7200,  0, 'NEW97531'),('2024-05-16 20:30:00', 7200,  0, 'QWE9573'),
-                        ('2024-05-17 10:30:00', 8100,  0, 'LKJ8902'), ('2024-05-18 09:00:00', 15400,  1, 'NEW86420'),
-                        ('2024-05-18 11:45:00', 9500,  1, 'QRS98765'),('2024-05-19 10:30:00', 8600,  0, 'NEW75309'),
-                        ('2024-05-19 10:30:00', 8600,  0, 'UIO1394'), ('2024-05-19 14:15:00', 8500,  1, 'NEW13579'),
-                        ('2024-05-20 12:00:00', 11400,  0, 'NEW97531'),('2024-05-21 11:45:00', 10000,  1, 'NEW64257'),
-                        ('2024-05-22 12:00:00', 11800,  0, 'NEW53148'),('2024-05-22 14:15:00', 13700,  1, 'NEW86420'),
-                        ('2024-05-23 15:30:00', 8800,  0, 'NEW75309'), ('2024-05-24 16:45:00', 7700,  1, 'NEW64257'),
-                        ('2024-05-24 16:45:00', 7800,  1, 'NOP86420'), ('2024-05-25 18:00:00', 8900,  0, 'DEF75309'),
-                        ('2024-05-26 18:00:00', 9400,  0, 'NEW53148'), ('2024-05-27 19:15:00', 9600,  1, 'NEW98765'),
-                        ('2024-05-27 19:15:00', 9600,  1, 'ABC64257'), ('2024-05-27 20:30:00', 7300,  0, 'MNO53148'),
-                        ('2024-05-28 20:30:00', 7200,  0, 'NEW24680');
-                        ";
+                        ('2024-05-01 10:00:00', 5000, 1, 'ABD12345', 'San José, Central, Calle 1'),
+                        ('2024-05-02 09:00:00', 15000, 1, 'NEW12345', 'Alajuela, San Ramón, Avenida 2'),
+                        ('2024-05-03 09:00:00', 15200, 1, 'WER8352', 'Cartago, Paraíso, Calle 3'),
+                        ('2024-05-03 10:30:00', 8200, 0, 'QXR9235', 'Heredia, Santo Domingo, Calle 4'),
+                        ('2024-05-04 10:30:00', 8400, 0, 'YUI9204', 'Guanacaste, Liberia, Avenida 1'),
+                        ('2024-05-05 11:45:00', 9700, 1, 'ZPL4110', 'Puntarenas, Quepos, Calle 5'),
+                        ('2024-05-06 11:45:00', 9900, 1, 'CDE4682', 'Limón, Pococí, Avenida 6'),
+                        ('2024-05-06 12:00:00', 11200, 0, 'WSG7589', 'San José, Desamparados, Calle 7'),
+                        ('2024-05-07 12:00:00', 11500, 0, 'BGT5726', 'Alajuela, Grecia, Avenida 8'),
+                        ('2024-05-08 14:15:00', 13500, 1, 'AIB6427', 'Cartago, La Unión, Calle 9'),
+                        ('2024-05-09 14:15:00', 8700, 0, 'OUY8534', 'Heredia, San Rafael, Avenida 10'),
+                        ('2024-05-09 14:15:00', 13800, 1, 'UIO3014', 'Guanacaste, Nicoya, Calle 11'),
+                        ('2024-05-09 15:30:00', 8700, 0, 'NEW97531', 'Puntarenas, Osa, Avenida 12'),
+                        ('2024-05-10 11:30:00', 7520, 0, 'GML54321', 'Limón, Talamanca, Calle 13'),
+                        ('2024-05-10 15:30:00', 8900, 0, 'NEW53148', 'San José, Escazú, Avenida 14'),
+                        ('2024-05-10 15:30:00', 8900, 0, 'JKL7809', 'Alajuela, Palmares, Calle 15'),
+                        ('2024-05-10 16:45:00', 7800, 1, 'NEW86420', 'Cartago, Jiménez, Avenida 16'),
+                        ('2024-05-10 16:45:00', 7800, 1, 'XVD7065', 'Heredia, Barva, Calle 17'),
+                        ('2024-05-11 13:45:00', 10050, 1, 'GKS98765', 'Guanacaste, Santa Cruz, Avenida 18'),
+                        ('2024-05-11 13:45:00', 10050, 1, 'GKS98765', 'Puntarenas, Esparza, Calle 19'),
+                        ('2024-05-12 09:15:00', 63000, 1, 'XYZ12345', 'Limón, Siquirres, Avenida 20'),
+                        ('2024-05-12 16:45:00', 7500, 1, 'ASD6123', 'San José, Aserrí, Calle 21'),
+                        ('2024-05-12 18:00:00', 9500, 0, 'NEW75309', 'Alajuela, Naranjo, Avenida 22'),
+                        ('2024-05-12 18:00:00', 9500, 0, 'IKJ2491', 'Cartago, Turrialba, Calle 23'),
+                        ('2024-05-13 18:00:00', 9300, 0, 'NHJ4298', 'Heredia, Belén, Avenida 24'),
+                        ('2024-05-13 19:15:00', 8600, 1, 'NEW64257', 'Guanacaste, Tilarán, Calle 25'),
+                        ('2024-05-14 19:15:00', 8600, 1, 'RTM1473', 'Puntarenas, Golfito, Avenida 26'),
+                        ('2024-05-15 19:15:00', 9700, 1, 'ZXW3749', 'Limón, Matina, Calle 27'),
+                        ('2024-05-15 20:30:00', 7300, 0, 'DCE6301', 'San José, Mora, Avenida 28'),
+                        ('2024-05-16 09:00:00', 14000, 1, 'NEW98765', 'Alajuela, Atenas, Calle 29'),
+                        ('2024-05-16 20:30:00', 7200, 0, 'NEW97531', 'Cartago, Alvarado, Avenida 30'),
+                        ('2024-05-16 20:30:00', 7200, 0, 'QWE9573', 'Heredia, Santa Bárbara, Calle 31'),
+                        ('2024-05-17 10:30:00', 8100, 0, 'LKJ8902', 'Guanacaste, Bagaces, Avenida 32'),
+                        ('2024-05-18 09:00:00', 15400, 1, 'NEW86420', 'Puntarenas, Parrita, Calle 33'),
+                        ('2024-05-18 11:45:00', 9500, 1, 'QRS98765', 'Limón, Guácimo, Avenida 34'),
+                        ('2024-05-19 10:30:00', 8600, 0, 'NEW75309', 'San José, Goicoechea, Calle 35'),
+                        ('2024-05-19 10:30:00', 8600, 0, 'UIO1394', 'Alajuela, Poás, Avenida 36'),
+                        ('2024-05-19 14:15:00', 8500, 1, 'NEW13579', 'Cartago, Oreamuno, Calle 37'),
+                        ('2024-05-20 12:00:00', 11400, 0, 'NEW97531', 'Heredia, San Pablo, Avenida 38'),
+                        ('2024-05-21 11:45:00', 10000, 1, 'NEW64257', 'Guanacaste, Cañas, Calle 39'),
+                        ('2024-05-22 12:00:00', 11800, 0, 'NEW53148', 'Puntarenas, Coto Brus, Avenida 40'),
+                        ('2024-05-22 14:15:00', 13700, 1, 'NEW86420', 'Limón, Central, Calle 41'),
+                        ('2024-05-23 15:30:00', 8800, 0, 'NEW75309', 'San José, Santa Ana, Avenida 42'),
+                        ('2024-05-24 16:45:00', 7700, 1, 'NEW64257', 'Alajuela, Upala, Calle 43'),
+                        ('2024-05-24 16:45:00', 7800, 1, 'NOP86420', 'Cartago, El Guarco, Avenida 44'),
+                        ('2024-05-25 18:00:00', 8900, 0, 'DEF75309', 'Heredia, Flores, Calle 45'),
+                        ('2024-05-26 18:00:00', 9400, 0, 'NEW53148', 'Guanacaste, Hojancha, Avenida 46'),
+                        ('2024-05-27 19:15:00', 9600, 1, 'NEW98765', 'Puntarenas, Corredores, Calle 47'),
+                        ('2024-05-27 19:15:00', 9600, 1, 'ABC64257', 'Limón, Talamanca, Avenida 48'),
+                        ('2024-05-27 20:30:00', 7300, 0, 'MNO53148', 'San José, Tibás, Calle 49'),
+                        ('2024-05-28 20:30:00', 7200, 0, 'NEW24680', 'Alajuela, Los Chiles, Avenida 50');";
 
 
             using (var command = new MySqlCommand(createTableQuery, connection))

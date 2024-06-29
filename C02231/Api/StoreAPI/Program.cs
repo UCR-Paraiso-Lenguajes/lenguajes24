@@ -8,8 +8,6 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSignalR();
-builder.Services.AddSingleton<CampaignDB>();
 
 
 // Add services to the container.
@@ -26,6 +24,9 @@ builder.Services.AddCors(options =>
                 .AllowCredentials();
     });
 });
+
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<CampaignDB>();
 
 var security = Environment.GetEnvironmentVariable("Security");
 
