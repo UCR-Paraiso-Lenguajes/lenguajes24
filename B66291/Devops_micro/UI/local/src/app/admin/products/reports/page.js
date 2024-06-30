@@ -17,8 +17,11 @@ const Reports = () => {
   const dataObject = storedData ? JSON.parse(storedData) : {};
   const [dailySalesList, setDailySalesList] = useState([]);
   const [weeklySalesList, setWeeklySalesList] = useState([]);
-
   const datePickerRef = useRef(undefined);
+  const [cantidadMensajes, setCantidadMensajes] = useState(() => {
+    const storedCantidadMensajes = localStorage.getItem('cantidadMensajes');
+    return storedCantidadMensajes ? parseInt(storedCantidadMensajes, 10) : 0;
+  });
 
   useEffect(() => {
     const verificarFechaExpiracion = () => {
@@ -37,7 +40,7 @@ const Reports = () => {
     };
 
     verificarFechaExpiracion();
-    const intervalId = setInterval(verificarFechaExpiracion, 2 * 60 * 1000);
+    const intervalId = setInterval(verificarFechaExpiracion, 10 * 60 * 1000);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -50,8 +53,8 @@ const Reports = () => {
 
   const formatDataForChart = (sales) => {
     return [
-      ['PurchaseNumber', 'PurchaseDate', 'Total', 'Cantidad'],
-      ...sales.map(report => [report.purchaseNumber, report.purchaseDate.substring(0, 10), report.total, report.pcantidad])
+      ['PurchaseNumber', 'PurchaseDate', 'Total'],
+      ...sales.map(report => [report.purchaseNumber, report.purchaseDate.substring(0, 10), report.total])
     ];
   };
 
@@ -108,7 +111,7 @@ const Reports = () => {
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <div>
-        <Navbar cantidad_Productos={dataObject.cart?.productos?.length || 0} />
+        <Navbar cantidad_Productos={dataObject.cart?.productos?.length || 0} cantidad_Mensajes={cantidadMensajes}/>
       </div>
       <div className="row">
         <div className="col-md-3">
@@ -117,7 +120,7 @@ const Reports = () => {
         <div className="col-md-9">
           <div className="row">
             <div className="col-sm-12 col-md-4 col-lg-4 col-xl-4">
-              <div className="chart-title" style={{ marginBottom: '10px', marginTop: '10px' }}>
+              <div className="chart-title" style={{ marginBottom: '10px', marginTop: '10px', paddingLeft: '60px' }}>
                 Tabla de ventas diarias
               </div>
               <Chart

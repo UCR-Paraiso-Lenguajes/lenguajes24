@@ -15,21 +15,25 @@ const Login = () => {
     necesitaVerificacion: false,
   };
 
-  const [tienda, setTienda] = useState(initialState);
+  const [cartData, setCartData] = useState(undefined);
+
+  const [cantidadMensajes, setCantidadMensajes] = useState(() => {
+    const storedCantidadMensajes = localStorage.getItem('cantidadMensajes');
+    return storedCantidadMensajes ? parseInt(storedCantidadMensajes, 10) : 0;
+  });
 
   useEffect(() => {
-    const storedTienda = localStorage.getItem("tienda");
-    if (storedTienda) {
-      try {
-        setTienda(JSON.parse(storedTienda));
-      } catch (error) {
-        throw new Error("Error al realizar el parsing", error);
-      }
-      setTienda(initialState);
-    } else {
-      setTienda(initialState);
-    }
+    const storedData = localStorage.getItem('tienda');
+    const dataObject = JSON.parse(storedData);
+    setCartData(dataObject);
   }, []);
+
+  useEffect(() => {
+    if (cartData) {
+      localStorage.setItem('tienda', JSON.stringify(cartData));
+    }
+  }, [cartData]);
+
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -69,7 +73,7 @@ const Login = () => {
   return (
     <article>
       <div>
-        <Navbar cantidad_Productos={tienda.cart.productos.length} />
+      <Navbar cantidad_Productos={cartData ? cartData.cart.productos.length : 0} cantidad_Mensajes={cantidadMensajes}/>
       </div>
       <div className="form_login">
         <form onSubmit={procesarForm}>

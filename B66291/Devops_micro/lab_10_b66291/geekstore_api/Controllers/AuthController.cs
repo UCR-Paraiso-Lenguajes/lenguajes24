@@ -50,14 +50,14 @@ namespace geekstore_api.Controllers
                 var claims = testUser.UserRoles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
                 claims.Add(new Claim(ClaimTypes.Name, testUser.UserName));
 
-                var secretKey = "TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"; // Opcional: puedes obtenerlo de alguna otra fuente segura
+                var secretKey = "TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"; 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
                 var signinCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
                 var tokeOptions = new JwtSecurityToken(
                     issuer: "https://localhost:5001",
                     audience: "https://localhost:5001",
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(2),
+                    expires: DateTime.Now.AddMinutes(10),
                     signingCredentials: signinCredentials
                 );
 

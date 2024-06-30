@@ -14,7 +14,7 @@ namespace UT
         [SetUp]
         public void Setup()
         {
-            var myDbtest = "Server=localhost;Database=geekStoreDB;Uid=root;Pwd=123456;";
+            var myDbtest = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
             Storage.Init(myDbtest);
             _reportDb = new ReportDb();
             StoreDb.CrearDatosSync();

@@ -16,6 +16,12 @@ export default function Home() {
     necesitaVerificacion: false,
   };
 
+  const [cantidadMensajes, setCantidadMensajes] = useState(() => {
+    const storedCantidadMensajes = localStorage.getItem('cantidadMensajes');
+    return storedCantidadMensajes ? parseInt(storedCantidadMensajes, 10) : 0;
+  });
+
+
   function agregarProducto(item) {
     if (item === "") {
       throw new Error("El objeto a agregar se encuentra vacio")
@@ -25,8 +31,8 @@ export default function Home() {
       const isPresent = tienda.cart.productos.some(producto => producto.id == item.id);
 
       if (!isPresent) {
-        
-        const nuevosProductos = tienda.cart.productos.concat(item); 
+
+        const nuevosProductos = tienda.cart.productos.concat(item);
 
         let subtotalCalc = 0;
 
@@ -91,14 +97,14 @@ export default function Home() {
       setProductList(json);
       window.history.pushState({}, '', `?idSearch=${newCategoryId.searchText}&idSearchCat=${selectedIdsString}`);
     } catch (error) {
-      throw new error('Error al intentar realizar el fetch:');
+      throw new Error('Error al intentar realizar el fetch:');
     }
   };
 
   return (
     <div>
       <div>
-        <Navbar cantidad_Productos={tienda.cart.productos.length} />
+        <Navbar cantidad_Productos={tienda.cart.productos.length} cantidad_Mensajes={cantidadMensajes} />
       </div>
       <div className="d-flex justify-content-center align-items-center"></div>
       <main>

@@ -10,7 +10,7 @@ export default function Home() {
 
   const URLConection = process.env.NEXT_PUBLIC_API;
 
-  //cart
+
   const initialState = {
     productosCarrusel: [],
     impVentas: 13,
@@ -60,8 +60,22 @@ export default function Home() {
   const [productList, setProductList] = useState([]);
   const [tienda, setTienda] = useState(initialState);
   const [index, setIndex] = useState(0);
+  const [cantidadMensajes, setCantidadMensajes] = useState(() => {
+    const storedCantidadMensajes = localStorage.getItem('cantidadMensajes');
+    return storedCantidadMensajes ? parseInt(storedCantidadMensajes, 10) : 0;
+  });
 
-  //use effect
+  useEffect(() => {
+    const storedCantidadMensajes = localStorage.getItem('cantidadMensajes');
+    if (storedCantidadMensajes) {
+      setCantidadMensajes(parseInt(storedCantidadMensajes, 10));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cantidadMensajes', cantidadMensajes.toString());
+  }, [cantidadMensajes]);
+
   useEffect(() => { loadData(); }, [selectedCategoryId]);
 
   useEffect(() => {
@@ -89,7 +103,6 @@ export default function Home() {
       }
     }
   }, []);
-
 
   const getCategoryName = (categoryId) => {
     switch (categoryId) {
@@ -204,7 +217,7 @@ export default function Home() {
   return (
     <div>
       <div>
-        <Navbar cantidad_Productos={tienda.cart.productos.length} />
+        <Navbar cantidad_Productos={tienda.cart.productos.length} cantidad_Mensajes={cantidadMensajes}/>
       </div>
       <ControlledCarousel productListApi={productList} agregarProducto={agregarProducto} />
       <div className="d-flex justify-content-center align-items-center">

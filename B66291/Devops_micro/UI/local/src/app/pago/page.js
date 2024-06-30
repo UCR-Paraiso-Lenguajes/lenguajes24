@@ -1,12 +1,38 @@
-"use client";
+'use client';
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import "../../styles/pago.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const Pago = () => { //los metodos de pago deben venir de la consulta en base de datos no de local storage ahora
+const Pago = () => {
+  const URLConnection = process.env.NEXT_PUBLIC_API;
+
   const [dataObject, setDataObject] = useState(null);
   const [pagoIngresado, setPagoIngresado] = useState(false);
+  const [cantidadMensajes, setCantidadMensajes] = useState(() => {
+    const storedCantidadMensajes = localStorage.getItem('cantidadMensajes');
+    return storedCantidadMensajes ? parseInt(storedCantidadMensajes, 10) : 0;
+  });
+
+  const [metodosPago, setMetodosPago] = useState([]); 
+
+  useEffect(() => {
+    obtenerMetodos();
+  }, []);
+
+  const obtenerMetodos = async () => {
+    try {
+      const response = await fetch(`${URLConnection}/api/pago`);
+      if (!response.ok) {
+        throw new Error('Error al obtener los métodos de pago');
+      }
+      const data = await response.json();
+      const metodosFiltrados = data.filter(metodo => metodo.estado === 1);
+      setMetodosPago(metodosFiltrados);
+    } catch (error) {
+      throw new Error('Error obteniendo los métodos de pago:', error);
+    }
+  };
 
   useEffect(() => {
     if (typeof localStorage !== 'undefined') {
@@ -22,15 +48,15 @@ const Pago = () => { //los metodos de pago deben venir de la consulta en base de
     }
   }, []);
 
-  function agregarPago(e) {
+  const agregarPago = (e) => {
     e.preventDefault();
 
     if (!dataObject) {
-      return <p></p>;
+      return;
     }
 
     let metodoPago = e.target.pago.value;
-    let pago = 0; 
+    let pago = 0;
 
     if (metodoPago === "Sinpe Movil") {
       pago = 1;
@@ -47,7 +73,7 @@ const Pago = () => { //los metodos de pago deben venir de la consulta en base de
       localStorage.setItem("tienda", JSON.stringify(updatedDataObject));
       setPagoIngresado(true);
     } catch (error) {
-      throw new Error('No se pudo guardar el método de pago.');
+      throw new Error('No se pudo guardar el método de pago:', error);
     }
   };
 
@@ -58,34 +84,24 @@ const Pago = () => { //los metodos de pago deben venir de la consulta en base de
   return (
     <article>
       <div>
-        <Navbar cantidad_Productos={dataObject.cart.productos.length} />
+        <Navbar cantidad_Productos={dataObject.cart.productos.length} cantidad_Mensajes={cantidadMensajes} />
       </div>
       <div className="form_pago">
         <form onSubmit={agregarPago}>
-          <div className="form-check">
-            <input
-              type="radio"
-              id="pago1"
-              name="pago"
-              value="Efectivo"
-              className="form-check-input"
-            />
-            <label htmlFor="pago1" className="form-check-label">
-              Efectivo
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              type="radio"
-              id="pago2"
-              name="pago"
-              value="Sinpe Movil"
-              className="form-check-input"
-            />
-            <label htmlFor="pago2" className="form-check-label">
-              Sinpe Movil
-            </label>
-          </div>
+          {metodosPago.map((metodo) => (
+            <div key={metodo.id} className="form-check">
+              <input
+                type="radio"
+                id={`pago${metodo.id}`}
+                name="pago"
+                value={metodo.payment_type}
+                className="form-check-input"
+              />
+              <label htmlFor={`pago${metodo.id}`} className="form-check-label">
+                {metodo.payment_type}
+              </label>
+            </div>
+          ))}
           <button type="submit" className="btn btn-primary mt-3">
             Seleccionar tipo de pago
           </button>

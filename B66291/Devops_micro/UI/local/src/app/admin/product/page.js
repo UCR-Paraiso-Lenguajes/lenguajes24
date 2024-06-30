@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useState, useEffect } from 'react';
 import "../../../styles/direccion.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -7,6 +7,11 @@ import Navbar from '../../../components/Navbar';
 const Product = () => {
 
     const URLConection = process.env.NEXT_PUBLIC_API;
+
+    const [cantidadMensajes, setCantidadMensajes] = useState(() => {
+        const storedCantidadMensajes = localStorage.getItem('cantidadMensajes');
+        return storedCantidadMensajes ? parseInt(storedCantidadMensajes, 10) : 0;
+    });
 
     const [product, setProduct] = useState({
         id: '0',
@@ -25,7 +30,6 @@ const Product = () => {
                 window.location.href = "/admin";
                 return;
             }
-
             const decodedToken = JSON.parse(atob(token.split(".")[1]));
             const expirationDate = new Date(decodedToken.exp * 1000);
 
@@ -36,12 +40,31 @@ const Product = () => {
         };
 
         verificarFechaExpiracion();
-        const intervalId = setInterval(verificarFechaExpiracion, 2 * 60 * 1000);
+        const intervalId = setInterval(verificarFechaExpiracion, 10 * 60 * 1000);
         return () => clearInterval(intervalId);
     }, []);
 
     const modificarCampo = (e) => {
         const { name, value } = e.target;
+        if (name === 'price') {
+            if (value.includes('-')) {
+                return;
+            }
+            if (!(/^\d*\.?\d*$/.test(value))) {
+                return;
+            }
+            if (parseFloat(value) < 0) {
+                return;
+            }
+        }
+
+        if (name === 'imageUrl') {
+            if (value && !value.match(/\.(jpg|jpeg|png)$/)) {
+                throw new Error('Formato de imagen no válido. Solo se permiten archivos JPG o PNG.');
+                return;
+            }
+        }
+
         setProduct((prevProduct) => ({
             ...prevProduct,
             [name]: value
@@ -104,7 +127,7 @@ const Product = () => {
     return (
         <article>
             <div>
-                <Navbar cantidad_Productos={product.pcant} />
+                <Navbar cantidad_Productos={product.pcant} cantidad_Mensajes={cantidadMensajes} />
             </div>
             <div className="container">
                 <div className="row justify-content-center mt-5">
@@ -113,30 +136,30 @@ const Product = () => {
                         <form onSubmit={agregarProducto}>
                             <div className="form-group">
                                 <label htmlFor="name">Nombre:</label>
-                                <input type="text" className="form-control" id="name" name="name" value={product.name} onChange={modificarCampo} autoComplete="name"/>
+                                <input type="text" className="form-control" id="name" name="name" value={product.name} onChange={modificarCampo} autoComplete="name" />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="description">Descripción:</label>
-                                <input type="text" className="form-control" id="description" name="description" value={product.description} onChange={modificarCampo} autoComplete="description"/>
+                                <textarea className="form-control" id="description" name="description" value={product.description} onChange={modificarCampo} style={{ height: '100px' }} autoComplete="description" />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="price">Precio:</label>
-                                <input type="number" className="form-control" id="price" name="price" value={product.price} onChange={modificarCampo} autoComplete="price"/>
+                                <input type="text" className="form-control" id="price" name="price" value={product.price} onChange={modificarCampo} autoComplete="price" />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="category">Categoría:</label>
                                 <select className="form-control" id="category" name="categoryID" value={product.categoryID} onChange={modificarCampo} autoComplete="category">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
+                                    <option value="1">Perifericos</option>
+                                    <option value="2">Hardware</option>
+                                    <option value="3">Moda</option>
+                                    <option value="4">Videojuegos</option>
+                                    <option value="5">Entretenimiento</option>
+                                    <option value="6">Decoracion</option>
                                 </select>
                             </div>
                             <div className="form-group">
                                 <label htmlFor="imageUrl">Imagen:</label>
-                                <input type="text" className="form-control" id="img" name="imageUrl" value={product.imageUrl} onChange={modificarCampo} autoComplete="url"/>
+                                <input type="text" className="form-control" id="img" name="imageUrl" value={product.imageUrl} onChange={modificarCampo} autoComplete="url" />
                             </div>
                             <button type="submit" className="btn btn-primary btn-block" style={{ width: '200px', margin: '20px auto', display: 'block' }}>Agregar Producto</button>
                         </form>
