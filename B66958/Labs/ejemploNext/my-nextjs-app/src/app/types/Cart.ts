@@ -1,6 +1,11 @@
 export interface CartItem {
     uuid: string;
-  }
+    quantity: number;
+    name: string;
+    imageUrl: string;
+    price: number;
+    description: string;
+}
   
 export interface Carrito {
     productos: CartItem[];

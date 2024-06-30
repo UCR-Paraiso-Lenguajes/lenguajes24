@@ -13,6 +13,34 @@ const Cart = ({ cart, setCart, toggleCart, clearProducts }:
         setShowAddressForm(!showAddressForm);
     }
 
+    const handleQuantityChange = (id, newQuantity) => {
+        const updatedProducts = cart.carrito.productos.map(product => {
+            if (product.uuid === id) {
+                if(newQuantity > 0)
+                return {
+                    ...product,
+                    quantity: newQuantity,
+                };
+            }
+            return product;
+        });
+
+        const newSubTotal = updatedProducts.reduce((acc, product) => acc + (product.price * product.quantity), 0);
+        const newTotal = newSubTotal + (newSubTotal * (cart.carrito.porcentajeImpuesto / 100));
+
+        const updatedCart: CartState = {
+            ...cart,
+            carrito: {
+                ...cart.carrito,
+                productos: updatedProducts,
+                subtotal: newSubTotal,
+                total: newTotal,
+            },
+        }
+
+        setCart(updatedCart);
+    };
+
     return (
         showAddressForm ? <AddressForm handleAddressForm={handleAddressForm}
             cart={cart} setCart={setCart} clearProducts={clearProducts} /> :
@@ -27,20 +55,30 @@ const Cart = ({ cart, setCart, toggleCart, clearProducts }:
                             </div>
                         </div>
                     </a>
-                    {cart?.carrito?.productos?.map((producto: any, index: number) =>
-                        <a key={index} className="list-group-item list-group-item-action flex-column align-items-start">
-                            <div className="d-flex justify-content-start align-items-center">
-                                <img className="card-img-top mr-3"
-                                    src={producto?.imageUrl ?? ''}
-                                    style={{ width: "200px", height: "90px" }} />
-                                <div className="d-flex w-100 justify-content-between">
-                                <h5 className="mb-1">{producto?.name ?? 'Nombre no disponible'}</h5>
-                                <small>${producto?.price ?? 'Precio no disponible'}</small>
+                    {cart?.carrito?.productos?.map((producto, index) => (
+                    <div key={index} className="list-group-item list-group-item-action flex-column align-items-start">
+                        <div className="d-flex justify-content-start align-items-center">
+                            <img className="card-img-top mr-3"
+                                src={producto?.imageUrl ?? ''}
+                                style={{ width: "200px", height: "90px" }} />
+                            <div className="d-flex w-100 justify-content-between">
+                                <div>
+                                    <h5 className="mb-1">{producto?.name ?? 'Nombre no disponible'}</h5>
+                                    <p className="mb-1">{producto?.description ?? 'Descripción no disponible'}</p>
+                                </div>
+                                <div>
+                                    <button className="btn btn-sm btn-outline-primary mx-2" onClick={() => handleQuantityChange(producto.uuid, (producto.quantity ?? 1) - 1)}>-</button>
+                                    <span>{producto.quantity ?? 1}</span>
+                                    <button className="btn btn-sm btn-outline-primary mx-2" onClick={() => handleQuantityChange(producto.uuid, (producto.quantity ?? 1) + 1)}>+</button>
                                 </div>
                             </div>
-                            <p className="mb-1">{producto?.description ?? 'Descripción no disponible'}</p>
-                        </a>
-                    )}
+                        </div>
+                        <div className="d-flex justify-content-between align-items-center">
+                            <small>${producto?.price ?? 'Precio no disponible'}</small>
+                            <small>Subtotal: ${producto.price * (producto.quantity ? producto.quantity : 1)}</small>
+                        </div>
+                    </div>
+                ))}
                     <a className="list-group-item list-group-item-action flex-column align-items-start">
                         <div className="d-flex justify-content-start align-items-center">
                             <div className="d-flex w-100 justify-content-center">

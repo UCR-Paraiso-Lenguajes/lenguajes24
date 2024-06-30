@@ -58,7 +58,10 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
     async function persistPurchase() {
 
         let purchaseToPersist = {
-            "productIds": cart.carrito.productos.map(product => product.uuid),
+            "productIds": cart.carrito.productos.map(product => ({
+                id: product.uuid,
+                quantity: product.quantity
+            })),
             "address": cart.carrito.direccionEntrega,
             "paymentMethod": cart.carrito.metodoDePago,
             "confirmationNumber": confirmationNumber
