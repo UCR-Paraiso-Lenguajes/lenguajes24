@@ -1,0 +1,15 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.login,
+.image {
+  min-height: 100vh;
+}
+
+.bg-image {
+  background-image: url('https://th.bing.com/th/id/OIG4.hk96JU15Vx9iUyXj4BGP?pid=ImgGn');
+  background-size: cover;
+  background-position: center center;
+}

@@ -9,7 +9,6 @@ import { useState } from 'react';
 import { useFecthGetLatestAds, useFetchGetAd, useSignalRGetAds } from '@/app/api/http.ad';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
-import './dropdawn.css';
 
 const Categories = ({ categories, onAddCategory }: { categories: Category[], onAddCategory: any }) => {
   const [nameCategory, setNameCategory] = useState<string>("Category");
