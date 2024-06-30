@@ -29,7 +29,7 @@ public class SaleData
         INSERT INTO sale_line(sale_id, product_Id, unit_price) 
         VALUES(@id, @product, @price);";
 
-        IEnumerable<Product> productsSale;
+        IEnumerable<CartProduct> productsSale;
 
         for (int i = 0; i < 8; i++)
         {
@@ -38,7 +38,13 @@ public class SaleData
             productsSale = Enumerable
                 .Range(0, products.Count)
                 .Where(index => index == i || index == (i + 1))
-                .Select(index => products[index]);
+                .Select(index => new CartProduct
+                {
+                    Id = products[index].Uuid,
+                    Price = products[index].Price,
+                    Quantity = 1 // Assuming 1 for simplicity, you may want to change this based on your logic
+                })
+                .ToList();
             decimal amount = products.ElementAt(i).Price + products.ElementAt(i + 1).Price;
             PaymentMethods payment = PaymentMethods.Find((PaymentMethods.Type)0);
             sale = Sale.Build(productsSale, "direccion", amount, payment, "0010" + i, "");
@@ -74,11 +80,11 @@ public class SaleData
 
                     using (SqlCommand command = new SqlCommand(insertSaleLineQuery, connection))
                     {
-                        foreach (Product product in sale.Products)
+                        foreach (CartProduct product in sale.CartProducts)
                         {
                             command.Parameters.Clear();
                             command.Parameters.AddWithValue("@id", generatedSaleId);
-                            command.Parameters.AddWithValue("@product", product.Uuid);
+                            command.Parameters.AddWithValue("@product", product.Id);
                             command.Parameters.AddWithValue("@price", product.Price);
                             command.ExecuteNonQuery();
                         }

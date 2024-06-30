@@ -40,7 +40,8 @@ public class Db
             "CREATE TABLE sales (id INT PRIMARY KEY IDENTITY(1,1), address VARCHAR(100), "
                 + "purchase_amount DECIMAL(10, 2), payment_method_id INT, purchase_number CHAR(6), sale_date DATETIME, "
                 + "confirmed BIT, CONSTRAINT fkPaymentMethodSale FOREIGN KEY (payment_method_id) REFERENCES payment_method(id));",
-            "CREATE TABLE sale_line (id INT IDENTITY(1,1) PRIMARY KEY, sale_id INT, product_Id CHAR(36), unit_price DECIMAL(10, 2), "
+            "CREATE TABLE sale_line (id INT IDENTITY(1,1) PRIMARY KEY, sale_id INT, product_Id CHAR(36), "
+                + "unit_price DECIMAL(10, 2), quantity INT, "
                 + "CONSTRAINT fkSale FOREIGN KEY (sale_id) REFERENCES sales(id));",
             "CREATE TABLE sinpe_confirmation_number (id INT PRIMARY KEY, confirmation_number VARCHAR(20), "
                 + "CONSTRAINT fkSinpeSaleid FOREIGN KEY (id) REFERENCES sales(id))",

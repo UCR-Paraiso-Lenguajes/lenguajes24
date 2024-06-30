@@ -9,7 +9,6 @@ public class Product : ICloneable
     public Guid Uuid { get; set; }
     public Category Category { get; set; }
 
-    // Implementation of the ICloneable interface
     public object Clone()
     {
         return new Product
@@ -109,12 +108,18 @@ public class Products
 
     public void AddNewProduct(Product product)
     {
-        if(product == null) throw new ArgumentException("The product can't be null");
-        if(String.IsNullOrWhiteSpace(product.Name)) throw new ArgumentException("The product's name should be provided");
-        if(String.IsNullOrWhiteSpace(product.Description)) throw new ArgumentException("The product's description should be provided");
-        if(String.IsNullOrWhiteSpace(product.ImageUrl)) throw new ArgumentException("The product's description should be provided");
-        if(product.Price <= 0) throw new ArgumentException("The product's price should be above 0");
-        if(product.Category.Id <= 0) throw new ArgumentException("The product's category should be above 0");
+        if (product == null)
+            throw new ArgumentException("The product can't be null");
+        if (String.IsNullOrWhiteSpace(product.Name))
+            throw new ArgumentException("The product's name should be provided");
+        if (String.IsNullOrWhiteSpace(product.Description))
+            throw new ArgumentException("The product's description should be provided");
+        if (String.IsNullOrWhiteSpace(product.ImageUrl))
+            throw new ArgumentException("The product's description should be provided");
+        if (product.Price <= 0)
+            throw new ArgumentException("The product's price should be above 0");
+        if (product.Category.Id <= 0)
+            throw new ArgumentException("The product's category should be above 0");
         AddProduct(product);
     }
 

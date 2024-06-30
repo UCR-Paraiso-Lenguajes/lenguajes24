@@ -19,18 +19,28 @@ public class CartBusiness
         ValidateCart(cart);
 
         // Find matching products based on the product IDs in the cart
-        IEnumerable<Product> matchingProducts = Store
-            .Instance.ProductsInStore.Where(p => cart.ProductIds.Contains(p.Uuid.ToString()))
-            .ToList();
+        IEnumerable<CartProduct> matchingProducts = cart
+            .ProductIds.Select(cartProduct =>
+            {
+                var product = Store.Instance.ProductsInStore.FirstOrDefault(p =>
+                    p.Uuid == cartProduct.Id
+                );
 
-        // Create shadow copies of the matching products
-        IEnumerable<Product> shadowCopyProducts = matchingProducts
-            .Select(p => (Product)p.Clone())
+                return product == null
+                    ? null
+                    : new CartProduct
+                    {
+                        Id = product.Uuid,
+                        Price = product.Price,
+                        Quantity = cartProduct.Quantity
+                    };
+            })
+            .Where(cp => cp != null)
             .ToList();
 
         // Calculate purchase amount by multiplying each product's price with the store's tax percentage
         decimal purchaseAmount = 0;
-        foreach (var product in shadowCopyProducts)
+        foreach (var product in matchingProducts)
         {
             product.Price *= (1 + (decimal)Store.Instance.TaxPercentage / 100);
             purchaseAmount += product.Price;
@@ -41,7 +51,7 @@ public class CartBusiness
         string receiptNumber = GeneratePurchaseNumber();
 
         var sale = Sale.Build(
-            shadowCopyProducts,
+            matchingProducts,
             cart.Address,
             purchaseAmount,
             paymentMethod,
@@ -66,13 +76,9 @@ public class CartBusiness
             throw new ArgumentException("A payment method should be provided");
     }
 
-    private void ValidateAddress(String address){
-        
-    }
-
     private void ValidateSale(Sale sale)
     {
-        if (sale.Products.Count() == 0)
+        if (sale.CartProducts.Count() == 0)
             throw new ArgumentException("Sale must contain at least one product.");
         if (string.IsNullOrWhiteSpace(sale.Address))
             throw new ArgumentException("Address must be provided.");
