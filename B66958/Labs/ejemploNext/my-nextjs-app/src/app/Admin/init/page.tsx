@@ -9,6 +9,7 @@ import { checkTokenDate } from "@/app/hooks/jwtHooks";
 import { useRouter } from 'next/navigation';
 import Products from "./products";
 import Campaigns from "./campaigns/page";
+import PaymentMethods from "./paymentMethods/page";
 
 export default function MainAdmin() {
     const [path, setPath] = useState<string>('/');
@@ -175,12 +176,6 @@ export default function MainAdmin() {
         </>
     }
 
-    const PaymentMethods = () => {
-        return <>
-            Soy métodos de pago
-        </>
-    }
-
     return <>
         <div className="d-flex" style={{ height: "100vh" }}>
             <div className="p-3 text-white bg-dark h-100" style={{ width: "200px", height: "100%", flex: "0 0 auto" }}>
@@ -230,7 +225,7 @@ export default function MainAdmin() {
             <div className="flex-grow-1">
             {path === '/Admin/init/products' && <Products />}
             {path === '/Admin/init/reports' && <Reports />}
-            {path === '/Admin/init/payment-methods' && 'Soy métodos de pago'}
+            {path === '/Admin/init/paymentMethods' && <PaymentMethods />}
             {path === '/Admin/init/campannas' && <Campaigns />}
             </div>
             {errorMessage ?

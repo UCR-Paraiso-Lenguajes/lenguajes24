@@ -10,19 +10,19 @@ namespace ApiLab7.Controllers
     {
         private PaymentMethodsBusiness paymentMethodsBusiness;
 
-        [HttpPut("enable"), Authorize(Roles = "Admin,Operator")]
-        public async Task<IActionResult> EnablePaymentMethodAsync([FromBody] PaymentMethodRequest request)
+        [HttpPut, Authorize(Roles = "Admin,Operator")]
+        public async Task<IActionResult> UpdatePaymentMethodAsync([FromBody] PaymentMethodRequest request)
         {
+            if(request == null){
+                throw new ArgumentException("A payment method must be provided");
+            }
+            var requestType = (PaymentMethods.Type) request.PaymentType;
             paymentMethodsBusiness = new PaymentMethodsBusiness();
-            await paymentMethodsBusiness.EnablePaymentMethodAsync(request.PaymentMethodType);
-            return Ok();
-        }
-
-        [HttpPut("disable"), Authorize(Roles = "Admin,Operator")]
-        public async Task<IActionResult> DisablePaymentMethodAsync([FromBody] PaymentMethodRequest request)
-        {
-            paymentMethodsBusiness = new PaymentMethodsBusiness();
-            await paymentMethodsBusiness.DisablePaymentMethodAsync(request.PaymentMethodType);
+            if(request.IsEnabled){
+                await paymentMethodsBusiness.EnablePaymentMethodAsync(requestType);
+            }else{
+                await paymentMethodsBusiness.DisablePaymentMethodAsync(requestType);
+            }
             return Ok();
         }
 
@@ -35,8 +35,8 @@ namespace ApiLab7.Controllers
         }
     }
 
-    public class PaymentMethodRequest
-    {
-        public PaymentMethods.Type PaymentMethodType { get; set; }
+    public class PaymentMethodRequest{
+        public int PaymentType { get; set;}
+        public bool IsEnabled { get; set; } 
     }
 }
