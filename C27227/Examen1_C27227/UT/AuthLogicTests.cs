@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Core;
@@ -17,6 +18,7 @@ namespace UT
         private Mock<IConfiguration> _mockConfiguration;
         private Mock<IHostEnvironment> _mockHostEnvironment;
         private AuthLogic _authLogic;
+
         [SetUp]
         public void Setup()
         {
@@ -48,13 +50,10 @@ namespace UT
         [Test]
         public void ValidateUser_InvalidCredentials_ReturnsFalse()
         {
-            // Arrange
             var user = new UserAuth { Name = "admin", Password = "wrongpassword" };
 
-            // Act
             var result = _authLogic.ValidateUser(user, out var claims);
 
-            // Assert
             Assert.IsFalse(result);
             Assert.IsNull(claims);
         }
@@ -62,13 +61,10 @@ namespace UT
         [Test]
         public void ValidateUser_UserNotFound_ReturnsFalse()
         {
-            // Arrange
             var user = new UserAuth { Name = "nonexistentuser", Password = "password" };
 
-            // Act
             var result = _authLogic.ValidateUser(user, out var claims);
 
-            // Assert
             Assert.IsFalse(result);
             Assert.IsNull(claims);
         }
@@ -76,17 +72,14 @@ namespace UT
         [Test]
         public void CreateToken_ValidClaims_ReturnsToken()
         {
-            // Arrange
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, "admin"),
                 new Claim(ClaimTypes.Role, "Admin")
             };
 
-            // Act
             var token = _authLogic.CreateToken(claims);
 
-            // Assert
             Assert.IsNotNull(token);
             Assert.IsNotEmpty(token);
 
@@ -101,11 +94,88 @@ namespace UT
         [Test]
         public void CreateToken_NullClaims_ThrowsException()
         {
-            // Arrange
             List<Claim> claims = null;
 
-            // Act & Assert
             Assert.Throws<ArgumentNullException>(() => _authLogic.CreateToken(claims));
         }
+
+        [Test]
+        public void ValidateUser_NullUser_ReturnsFalse()
+        {
+            UserAuth user = null;
+
+            var result = _authLogic.ValidateUser(user, out var claims);
+
+            Assert.IsFalse(result);
+            Assert.IsNull(claims);
+        }
+
+        [Test]
+        public void ValidateUser_EmptyPassword_ReturnsFalse()
+        {
+            var user = new UserAuth { Name = "admin", Password = "" };
+
+            var result = _authLogic.ValidateUser(user, out var claims);
+
+            Assert.IsFalse(result);
+            Assert.IsNull(claims);
+        }
+
+        [Test]
+        public void ValidateUser_ValidUserInvalidRole_ReturnsFalse()
+        {
+            var user = new UserAuth { Name = "admin", Password = "admin123" };
+
+            var result = _authLogic.ValidateUser(user, out var claims);
+
+            if (claims != null)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "InvalidRole"));
+            }
+
+            Assert.IsFalse(result);
+            Assert.IsNull(claims);
+        }
+
+        [Test]
+        public void CreateToken_CustomExpiration_ReturnsToken()
+        {
+            // Arrange
+            var configurationBuilder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.Development.json");
+
+            IConfiguration configuration = configurationBuilder.Build();
+
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.Name, "admin"),
+        new Claim(ClaimTypes.Role, "Admin")
+    };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                issuer: configuration["Jwt:Issuer"],
+                audience: configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(5),
+                signingCredentials: creds);
+
+            // Act
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenString = tokenHandler.WriteToken(token);
+
+            // Assert
+            Assert.IsNotNull(tokenString);
+            Assert.IsNotEmpty(tokenString);
+
+            var securityToken = tokenHandler.ReadToken(tokenString) as JwtSecurityToken;
+
+            Assert.IsNotNull(securityToken);
+            Assert.AreEqual(configuration["Jwt:Issuer"], securityToken.Issuer);
+            Assert.AreEqual(configuration["Jwt:Audience"], securityToken.Audiences.First());
+        }
+
     }
 }

@@ -1,18 +1,22 @@
-'use client';
+"use client";
 import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from "../init/page";
 import '@/app/ui/Styles/products.css';
+import { decodeToken, checkTokenDate } from '../../hooks/jwtHooks';
+import { useRouter } from 'next/navigation';
+
 const URLConection = process.env.NEXT_PUBLIC_API;
 
 interface Product {
   id: number;
   name: string;
   imageUrl: string;
-  price: number;
+  price: number | '';
   quantity: number;
   categoriaId: number;
   categoriaNombre: string;
+  description: string;
 }
 
 interface Categoria {
@@ -21,19 +25,46 @@ interface Categoria {
 }
 
 const Products: React.FC = () => {
-  const [form, setForm] = useState<Product>({ id: 0, name: '', imageUrl: '', price: 0, quantity: 1, categoriaId: 0, categoriaNombre: '' });
+  const [form, setForm] = useState<Product>({ id: 0, name: '', imageUrl: '', price: '', quantity: 1, categoriaId: 0, categoriaNombre: '', description: '' });
   const [showModal, setShowModal] = useState(false);
-  const [errors, setErrors] = useState<{ name?: string, imageUrl?: string, price?: string, categoriaId?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string, imageUrl?: string, price?: string, categoriaId?: string, description?: string }>({});
   const [categories, setCategories] = useState<Categoria[]>([]);
   const [productList, setProductList] = useState<Product[]>([]);
+  const router = useRouter();
+
+  const checkToken = () => {
+    const token = sessionStorage.getItem("sessionToken");
+    if (token) {
+      const decodedToken = decodeToken(token);
+      const isTokenAlive = checkTokenDate(decodedToken?.exp);
+      if (!isTokenAlive) {
+        sessionStorage.removeItem("sessionToken");
+        sessionStorage.removeItem("expiracyToken");
+        router.push("/admin");
+        return false;
+      }
+      return true;
+    } else {
+      router.push("/admin");
+      return false;
+    }
+  };
 
   useEffect(() => {
-    fetchStoreData();
-  }, []);
+    if (checkToken()) {
+      fetchStoreData();
+    }
+  }, [router]);
 
   const fetchStoreData = async () => {
+    if (!checkToken()) return;
+
     try {
-      const response = await fetch(`${URLConection}/admin/productos`);
+      const response = await fetch(`${URLConection}/admin/productos`, {
+        headers: {
+          'Authorization': `Bearer ${sessionStorage.getItem('sessionToken')}`
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setCategories(data.categorias || []);
@@ -42,16 +73,17 @@ const Products: React.FC = () => {
         throw new Error('Failed to fetch data');
       }
     } catch (error) {
-      throw new Error(error.message);
+      throw new Error(`Error fetching store data: ${error.message}`);
     }
   };
 
   const validateForm = () => {
-    const newErrors: { name?: string, imageUrl?: string, price?: string, categoriaId?: string } = {};
-    if (!form.name) newErrors.name = 'El nombre es requerido';
-    if (!form.imageUrl) newErrors.imageUrl = 'La URL de la imagen es requerida';
-    if (form.price <= 0) newErrors.price = 'El precio debe ser mayor a 0';
-    if (!form.categoriaNombre) newErrors.categoriaId = 'La categoría es requerida';
+    const newErrors: { name?: string, imageUrl?: string, price?: string, categoriaId?: string, description?: string } = {};
+    if (!form.name.trim()) newErrors.name = 'El nombre es requerido y no puede estar vacío o ser solo espacios';
+    if (!form.imageUrl.trim() || !/^https?:\/\/.*\.(jpeg|jpg|gif|png)$/.test(form.imageUrl)) newErrors.imageUrl = 'La URL de la imagen es requerida y debe ser válida';
+    if (typeof form.price !== 'number' || form.price <= 0 || form.price > 99999999) newErrors.price = 'El precio debe ser mayor a 0 y menor a 99,999,999';
+    if (!form.categoriaNombre.trim()) newErrors.categoriaId = 'La categoría es requerida y no puede estar vacía o ser solo espacios';
+    if (!form.description.trim()) newErrors.description = 'La descripción es requerida y no puede estar vacía o ser solo espacios';
     return newErrors;
   };
 
@@ -61,17 +93,27 @@ const Products: React.FC = () => {
       const selectedCategory = categories.find(categoria => categoria.nombre === value);
       setForm({ ...form, categoriaId: selectedCategory ? selectedCategory.id : 0, categoriaNombre: selectedCategory ? selectedCategory.nombre : '' });
     } else {
-      setForm({ ...form, [name]: name === 'price' ? Number(value) : value });
+      setForm({ ...form, [name]: name === 'price' ? (value === '' ? '' : Number(value)) : value });
     }
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!checkToken()) return;
+
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
       return;
     }
+
+    // Verificar si el producto ya existe
+    const existingProduct = productList.find(product => product.name.toLowerCase() === form.name.toLowerCase());
+    if (existingProduct) {
+      setErrors({ name: 'El producto ya existe. No se puede insertar un producto duplicado.' });
+      return;
+    }
+
     try {
       const response = await fetch(`${URLConection}/admin/producto`, {
         method: 'POST',
@@ -83,18 +125,22 @@ const Products: React.FC = () => {
       });
 
       if (response.ok) {
-        setForm({ id: 0, name: '', imageUrl: '', price: 0, quantity: 1, categoriaId: 0, categoriaNombre: '' });
+        setForm({ id: 0, name: '', imageUrl: '', price: '', quantity: 1, categoriaId: 0, categoriaNombre: '', description: '' });
+        setErrors({});
         setShowModal(false);
         fetchStoreData();
       } else {
-        const errorResponseData = await response.json();
-        throw new Error(errorResponseData.message || 'Error');
+        const errorResponseText = await response.text();
+        throw new Error(`Error en el servidor: ${errorResponseText}`);
       }
     } catch (error) {
-      throw new Error(error.message);
+      throw new Error(`Error submitting form: ${error.message}`);
     }
   };
+
   const handleDelete = async (productId: number) => {
+    if (!checkToken()) return;
+
     if (!window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
       return;
     }
@@ -110,11 +156,11 @@ const Products: React.FC = () => {
       if (response.ok) {
         fetchStoreData();
       } else {
-        const errorResponseData = await response.json();
-        throw new Error(errorResponseData.message || 'Error');
+        const errorResponseText = await response.text();
+        throw new Error(`Error en el servidor: ${errorResponseText}`);
       }
     } catch (error) {
-      throw new Error(error.message);
+      throw new Error(`Error deleting product: ${error.message}`);
     }
   };
 
@@ -175,6 +221,8 @@ const Products: React.FC = () => {
                         className={`form-control ${errors.price ? 'is-invalid' : ''}`}
                         placeholder="Precio"
                         required
+                        min="1"
+                        max="99999999"
                       />
                       {errors.price && <div className="invalid-feedback">{errors.price}</div>}
                     </div>
@@ -193,6 +241,19 @@ const Products: React.FC = () => {
                         ))}
                       </select>
                       {errors.categoriaId && <div className="invalid-feedback">{errors.categoriaId}</div>}
+                    </div>
+                    <div className="mb-3">
+                      <label htmlFor="description" className="form-label">Descripción</label>
+                      <textarea
+                        name="description"
+                        value={form.description}
+                        onChange={handleInputChange}
+                        className={`form-control ${errors.description ? 'is-invalid' : ''}`}
+                        placeholder="Descripción"
+                        rows={4}
+                        required
+                      ></textarea>
+                      {errors.description && <div className="invalid-feedback">{errors.description}</div>}
                     </div>
                     <button type="submit" className="btn btn-primary">Guardar</button>
                   </form>

@@ -1,65 +1,62 @@
-﻿using Core;
+﻿﻿using Core;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace UT;
-
-public class CategoriasTest
+namespace UT
 {
-
-
-    [SetUp]
-
-    public void SetUp()
+    public class CategoriasTest
     {
-        Categorias categorias;
+        private Categorias categorias;
 
-        categorias = Categorias.Instance;
+        [SetUp]
+        public void SetUp()
+        {
+            categorias = Categorias.Instance;
+        }
+
+        [Test]
+        public void Categorias_Build_CreatesCategories()
+        {
+            var listaCategorias = categorias.GetCategorias();
+            Assert.IsNotNull(listaCategorias);
+            Assert.IsNotEmpty(listaCategorias);
+        }
+
+        [Test]
+        public void Categoria_Creation_WithInvalidId_ThrowsArgumentException()
+        {
+            Assert.Throws<ArgumentException>(() => new Categoria(0, "Alimento"));
+            Assert.Throws<ArgumentException>(() => new Categoria(-1, "Belleza"));
+        }
+
+        [Test]
+        public void Categoria_Creation_WithInvalidNombre_ThrowsArgumentException()
+        {
+            Assert.Throws<ArgumentException>(() => new Categoria(1, null));
+            Assert.Throws<ArgumentException>(() => new Categoria(1, ""));
+            Assert.Throws<ArgumentException>(() => new Categoria(1, "    "));
+        }
+
+        [Test]
+        public void GetCategorias_Ordenadas()
+        {
+            var categoriasEsperadas = new List<string>
+            {
+                "Accesorios de Tecnología", "Computadoras", "Electrónica de Consumo", "Gaming", "Hardware",
+                "Robótica", "Smartphones", "Software"
+            };
+            var nombresCategorias = categorias.GetCategorias().Select(categoria => categoria.Nombre).ToList();
+            CollectionAssert.AreEqual(categoriasEsperadas, nombresCategorias);
+        }
+
+        [Test]
+        public void CantidadCategorias()
+        {
+            int cantidadEsperada = 8;
+            var categorias = this.categorias.GetCategorias();
+            Assert.AreEqual(cantidadEsperada, categorias.Count());
+        }
     }
-
-
-    [Test]
-    public void Categorias_Build_CreatesCategories()
-    {
-
-        var categorias = Categorias.Instance;
-
-        var listaCategorias = categorias.GetCategorias();
-
-        Assert.IsNotNull(listaCategorias);
-        Assert.IsNotEmpty(listaCategorias);
-    }
-
-    [Test]
-
-    public void Categoria_Creation_WithInvalidId_ThrowsArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => new Categoria(0, "Alimento"));
-        Assert.Throws<ArgumentException>(() => new Categoria(-1, "Belleza"));
-    }
-
-    [Test]
-    public void Categoria_Creation_WithInvalidNombre_ThrowsArgumentException()
-    {
-
-        Assert.Throws<ArgumentException>(() => new Categoria(1, null));
-        Assert.Throws<ArgumentException>(() => new Categoria(1, ""));
-        Assert.Throws<ArgumentException>(() => new Categoria(1, "    "));
-    }
-
-    [Test]
-    public void getCategorias_Ordenadas()
-    {
-        var categorias = Categorias.Instance.GetCategorias();
-        var categoriasEsperadas = new List<string> { "Alimentación", "Belleza", "Deportes", "Electrónica", "Entretenimiento", "Hogar y Jardín", "Moda", "Tecnología" };
-        var nombresCategorias = categorias.Select(category => category.Nombre).ToList();
-        CollectionAssert.AreEqual(categoriasEsperadas, nombresCategorias);
-    }
-
-    [Test]
-    public void cantidadCategorias()
-    {
-        int cantidadEsperada = 8;
-        var categorias = Categorias.Instance.GetCategorias();
-        Assert.AreEqual(cantidadEsperada, categorias.Count());
-    }
-
 }

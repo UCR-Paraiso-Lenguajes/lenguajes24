@@ -32,7 +32,6 @@ const Sidebar = () => {
         router.push("/admin");
       }
     } catch (error) {
-      throw new Error('Error ' + error.message);
       setErrorMessage('Ocurrió un error al validar la sesión, por favor inicie sesión nuevamente.');
       router.push("/admin");
     }
@@ -84,9 +83,14 @@ const Sidebar = () => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                <Link href="/admin/products" passHref>
+                  <Link href="/admin/products" passHref>
                     <span className="nav-link">Products</span>
-                </Link>
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link href="/admin/campanas" passHref>
+                    <span className="nav-link">Campanas</span>
+                  </Link>
                 </li>
               </ul>
             </div>
