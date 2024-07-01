@@ -8,7 +8,7 @@ import Carousel from 'react-bootstrap/Carousel';
 import { Dropdown } from "react-bootstrap";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import DOMPurify from 'dompurify';
-import { CartState } from "./types/Cart";
+import { CartState, PaymentMethod } from "./types/Cart";
 import './css/messages.css';
 import WebSocketMessage from "./navbar/WebSocketMessage";
 
@@ -101,7 +101,7 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const result = await getData();
-        const paymentTypes = result.paymentMethods.map(payment => payment.paymentType);
+        const paymentTypes : PaymentMethod[] = result.paymentMethods;
         setProducts(result.productsInStore);
         setCategories(result.categoriesInStore);
         setCart(cart => ({

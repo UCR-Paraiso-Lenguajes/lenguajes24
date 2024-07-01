@@ -15,7 +15,7 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
     const [confirmationNumber, setConfirmationNumber] = useState('');
     const isConfirmationNumberValid = confirmationNumber.trim() !== '';
 
-    enum PaymentMethod {
+    enum PaymentMethodEnum {
         EFECTIVO = 0,
         SINPE = 1
     }
@@ -28,11 +28,11 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
             ...cart,
             carrito: {
               ...cart.carrito,
-              metodoDePago: cart.carrito.metodoDePago ?? PaymentMethod.EFECTIVO,
+              metodoDePago: cart.carrito.metodoDePago ?? PaymentMethodEnum.EFECTIVO,
             },
           };
           setCart(updatedCart);
-          setSelectedIndex(cart.carrito.metodoDePago === PaymentMethod.SINPE ? 1 : 0);
+          setSelectedIndex(cart.carrito.metodoDePago === PaymentMethodEnum.SINPE ? 1 : 0);
         }
     }, []);      
 
@@ -80,21 +80,25 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
                 setOrderNumber(order.purchaseNumber);
                 setMessage("Se realizó la compra");
                 setAlertType(0);
+                return true;
             }
-            else { setMessage("Error al realizar la compra"); setAlertType(1) }
+            else { setMessage("Error al realizar la compra"); setAlertType(1); return false;}
         } catch (error) {
             setMessage(String(error));
-            setAlertType(1)
+            setAlertType(1);
+            return false;
         } finally {
             setIsMessageShowing(true);
         }
     }
 
     const finishPurchase = async () => {
-        setFinishedSale(true);
-        setConfirmationNumber('');
-        await persistPurchase();
-        clearProducts();
+        var result = await persistPurchase();
+        if(result){
+            setFinishedSale(true);
+            setConfirmationNumber('');
+            clearProducts();
+        }
     }
 
     const Efectivo = () => {
@@ -124,17 +128,22 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
             <div className="container">
                 <h3>Métodos de pago</h3>
                 <div className="form-group">
-                    <select className="form-control" onChange={handleSelectPayment}
-                        value={cart?.carrito?.metodoDePago ?? ''} disabled={finishedSale}>
+                    <select
+                        className="form-control"
+                        onChange={handleSelectPayment}
+                        value={cart?.carrito?.metodoDePago ?? ''}
+                        disabled={finishedSale}
+                    >
                         {cart?.metodosDePago
-                            ?.sort((a, b) => a - b)
-                            .map((method: number, index: number) => (
-                                <option key={index} value={method}>
-                                    {PaymentMethod[method]}
+                            ?.filter(method => method.isEnabled)
+                            ?.sort((a, b) => a.paymentType - b.paymentType)
+                            .map((method, index) => (
+                                <option key={index} value={method.paymentType}>
+                                    {PaymentMethodEnum[method.paymentType]}
                                 </option>
                             ))}
                     </select>
-                    {selectedIndex === PaymentMethod.SINPE ? <>
+                    {selectedIndex === PaymentMethodEnum.SINPE ? <>
                         <div className="container"><label>Número para realizar el pago: +506 8888 8888</label></div>
                         <label htmlFor="confirmationText">Número de confirmación:</label>
                         <input type="number" className="form-control" id="confirmationText"
@@ -147,8 +156,8 @@ const PaymentForm = ({ cart, setCart, clearProducts }:
                 <div className="d-flex w-100 justify-content-center">
                     <button className="btn btn-primary"
                         disabled={
-                            (selectedIndex === PaymentMethod.SINPE) ?
-                                (!isConfirmationNumberValid && selectedIndex === PaymentMethod.SINPE) :
+                            (selectedIndex === PaymentMethodEnum.SINPE) ?
+                                (!isConfirmationNumberValid && selectedIndex === PaymentMethodEnum.SINPE) :
                                 finishedSale
                         }
                         onClick={finishPurchase}>
