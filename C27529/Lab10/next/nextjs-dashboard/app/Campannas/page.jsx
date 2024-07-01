@@ -27,7 +27,7 @@ const Page = () => {
 
         newConnection.start()
             .then(() => console.log('Connected to the campaign hub'))
-            .catch(err => console.error('Error connecting to campaign hub:', err));
+            .catch(err =>  new error('Error connecting to campaign hub:', err));
 
         setConnection(newConnection);
 
@@ -60,7 +60,6 @@ const Page = () => {
                 });
 
                 if (response.status == "200") {
-                    console.log(connection.connectionStarted);
 
                     if (connection) {
                         if (connection ) {
@@ -70,10 +69,10 @@ const Page = () => {
                     }
                     setNewMessage({ content: '' });
                 } else {
-                    console.error('Failed to add message');
+                    throw new error('Failed to add message');
                 }
             } catch (error) {
-                console.error('Error sending message:', error);
+                throw new error('Error sending message:', error);
             } finally {
                 setIsSubmitting(false);
             }
@@ -85,7 +84,7 @@ const Page = () => {
             try {
                 await connection.invoke('DeleteMessage', id);
             } catch (error) {
-                console.error('Error deleting message:', error);
+                throw new error('Error deleting message:', error);
             }
         }
     };

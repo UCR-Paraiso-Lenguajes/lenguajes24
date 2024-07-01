@@ -37,10 +37,9 @@ export const Header = ({ goToPage }) => {
 
             try {
                 await connection.start();
-                console.log('Connected to the Notification Hub');
                 setConnection(connection);
             } catch (error) {
-                console.error('Connection failed: ', error);
+              throw new error('Connection failed: ', error);
             }
         };
 
