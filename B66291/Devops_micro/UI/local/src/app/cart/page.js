@@ -1,12 +1,15 @@
-"use client"
+'use client';
 import React, { useState, useEffect } from "react";
 import "../../styles/cart.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from '../../components/Navbar';
 
 const Cart = () => {
-
   const [cartData, setCartData] = useState(undefined);
+  const [cantidadMensajes, setCantidadMensajes] = useState(() => {
+    const storedCantidadMensajes = localStorage.getItem('cantidadMensajes');
+    return storedCantidadMensajes ? parseInt(storedCantidadMensajes, 10) : 0;
+  });
 
   useEffect(() => {
     const storedData = localStorage.getItem('tienda');
@@ -21,52 +24,55 @@ const Cart = () => {
   }, [cartData]);
 
   function borrarProducto(item) {
-    if(item == null){
-      throw new Error("El objeto a comprar se encuentra vacio")
-    }
     const updatedProducts = cartData.cart.productos.filter(product => product.id !== item.id);
+    const subtotalCalc = updatedProducts.reduce((subtotal, product) => subtotal + product.price * product.pcant, 0);
+    const nuevoTotalCalc = subtotalCalc * (1 + cartData.impVentas / 100);
+
     const updatedCart = {
       ...cartData.cart,
       productos: updatedProducts,
-    };
-
-    let subtotalCalc = 0;
-    let nuevoTotalCalc = 0;
-
-    updatedCart.productos.forEach((item) => {
-      if(item == null){
-        throw new Error("El objeto a comprar se encuentra vacio")
-      }
-      subtotalCalc += item.price;
-    });
-
-    const nuevoSubtotal = subtotalCalc;
-
-    updatedCart.productos.forEach(() => {
-      nuevoTotalCalc = nuevoSubtotal * (1 + cartData.impVentas / 100);
-    });
-
-    const updatedCartWithTotals = {
-      ...updatedCart,
-      subtotal: nuevoSubtotal,
+      subtotal: subtotalCalc,
       total: nuevoTotalCalc,
     };
 
-    const updatedDataObject = { ...cartData, cart: updatedCartWithTotals };
+    const updatedDataObject = { ...cartData, cart: updatedCart };
     setCartData(updatedDataObject);
   }
 
-  const isCartEmpty = cartData ? cartData.cart.productos.length == 0 : true;
+  const isCartEmpty = cartData ? cartData.cart.productos.length === 0 : true;
+
+  const handleChangeCantidad = (e, item) => {
+    const value = parseInt(e.target.value, 10);
+    if (isNaN(value) || value <= 0) {
+      return; 
+    }
+
+    const updatedProducts = cartData.cart.productos.map(product =>
+      product.id === item.id ? { ...product, pcant: value } : product
+    );
+
+    const subtotalCalc = updatedProducts.reduce((subtotal, product) => subtotal + product.price * product.pcant, 0);
+    const nuevoTotalCalc = subtotalCalc * (1 + cartData.impVentas / 100);
+
+    const updatedCart = {
+      ...cartData.cart,
+      productos: updatedProducts,
+      subtotal: subtotalCalc,
+      total: nuevoTotalCalc,
+    };
+
+    const updatedDataObject = { ...cartData, cart: updatedCart };
+    setCartData(updatedDataObject);
+  };
 
   return (
     <article>
       <div>
-        <Navbar cantidad_Productos={cartData ? cartData.cart.productos.length : 0} />
+        <Navbar cantidad_Productos={cartData ? cartData.cart.productos.length : 0} cantidad_Mensajes={cantidadMensajes} />
       </div>
 
       {cartData && cartData.cart.productos.map((item) => (
         <div className="cart_box" key={item.id}>
-
           <div className="cart_id">
             <span>{item.name}</span>
           </div>
@@ -82,6 +88,15 @@ const Cart = () => {
               alt="Product Image"
               style={{ height: '70px', width: '80%' }}
               className="imgProduct"
+            />
+          </div>
+          <div className="cart_cantidad">
+            <label>Cantidad</label> :&nbsp;
+            <input
+              type="number"
+              value={item.pcant}
+              onChange={(e) => handleChangeCantidad(e, item)}
+              style={{ width: '50px' }}
             />
           </div>
           <button
@@ -113,7 +128,6 @@ const Cart = () => {
         </div>
       )}
 
-
       <div className="cart_box" style={{ flex: 1, justifyContent: 'flex-end' }}>
         <a
           href="/direccion"
@@ -129,4 +143,3 @@ const Cart = () => {
 }
 
 export default Cart;
-

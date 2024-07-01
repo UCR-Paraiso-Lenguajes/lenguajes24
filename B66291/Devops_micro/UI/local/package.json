@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@microsoft/signalr": "^8.0.0",
     "bootstrap": "^5.3.3",
     "bootstrap-datepicker": "^1.10.0",
     "jquery": "^3.7.1",

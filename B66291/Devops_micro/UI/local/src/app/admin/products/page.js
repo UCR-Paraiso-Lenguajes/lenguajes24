@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useEffect, useState } from "react";
 import "../../../styles/direccion.css";
 import "../../../styles/products.css";
@@ -8,11 +8,14 @@ import Sidebar from "../../../components/Sidebar";
 import { Table, Button } from "react-bootstrap";
 
 const Products = () => {
-
   const URLConection = process.env.NEXT_PUBLIC_API;
 
   const [productList, setProductList] = useState([]);
   const [dataObject, setDataObject] = useState(null);
+  const [cantidadMensajes, setCantidadMensajes] = useState(() => {
+    const storedCantidadMensajes = localStorage.getItem('cantidadMensajes');
+    return storedCantidadMensajes ? parseInt(storedCantidadMensajes, 10) : 0;
+  });
 
   useEffect(() => {
     const storedData = localStorage.getItem("tienda");
@@ -55,13 +58,34 @@ const Products = () => {
     loadData();
   }, []);
 
+  useEffect(() => {
+    const verificarFechaExpiracion = () => {
+      const token = sessionStorage.getItem("token");
+      if (!token) {
+        window.location.href = "/admin";
+      }
+
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      const expirationDate = new Date(decodedToken.exp * 1000);
+
+      if (new Date() > expirationDate) {
+        sessionStorage.removeItem("token");
+        window.location.href = "/admin";
+      }
+    };
+
+    verificarFechaExpiracion();
+    const intervalId = setInterval(verificarFechaExpiracion, 10 * 60 * 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   const agregarProducto = () => {
     window.location.href = "/admin/product";
   };
 
   return (
     <article>
-      <Navbar cantidad_Productos={dataObject?.cart.productos.length || 0} />
+      <Navbar cantidad_Productos={dataObject?.cart.productos.length || 0} cantidad_Mensajes={cantidadMensajes} />
       <div className="container-fluid">
         <div className="row">
           <div className="col-md-3 fixed-sidebar">
@@ -82,9 +106,6 @@ const Products = () => {
                     </th>
                     <th style={{ width: "10%", textAlign: "center" }}>Price</th>
                     <th style={{ width: "10%", textAlign: "center" }}>Image</th>
-                    <th style={{ width: "10%", textAlign: "center" }}>
-                      Deleted
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -100,9 +121,6 @@ const Products = () => {
                           alt={product.name}
                           style={{ width: "50px", height: "auto" }}
                         />
-                      </td>
-                      <td className="text-center">
-                        <input type="checkbox" />
                       </td>
                     </tr>
                   ))}
@@ -127,14 +145,6 @@ const Products = () => {
                   Agregar Producto
                 </Button>
               </div>
-              <Button
-                className="btnEliminar"
-                variant="dark"
-                size="sm"
-                style={{ backgroundColor: "black", color: "white" }}
-              >
-                Eliminar Productos
-              </Button>
             </div>
           </div>
         </div>

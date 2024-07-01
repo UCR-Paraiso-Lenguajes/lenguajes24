@@ -20,41 +20,47 @@ public sealed class StoreDb
                 {
                     StoreDb _storeDb = new StoreDb();
                     string createTableQuery = @"
-                DROP TABLE IF EXISTS salesLine;
-                DROP TABLE IF EXISTS sales; 
-                DROP TABLE IF EXISTS products;
-                DROP TABLE IF EXISTS paymentMethod;
-                CREATE TABLE IF NOT EXISTS products (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    name VARCHAR(100),
-                    description VARCHAR(255),
-                    price DECIMAL(10, 2),
-                    imageURL VARCHAR(255),
-                    pcant INT,
-                    idCat INT 
-                );
-                CREATE TABLE IF NOT EXISTS paymentMethod (
-                    id INT PRIMARY KEY,
-                    payment_type VARCHAR(50),
-                    estado INT
-                );
-                CREATE TABLE IF NOT EXISTS sales (
-                    purchase_number VARCHAR(30) NOT NULL PRIMARY KEY,
-                    purchase_date DATETIME NOT NULL,
-                    total DECIMAL(10, 2) NOT NULL,
-                    payment_type INT,
-                    FOREIGN KEY (payment_type) REFERENCES paymentMethod(id)
-                );
-                CREATE TABLE IF NOT EXISTS salesLine(
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    purchase_id VARCHAR(30) NOT NULL,
-                    product_id INT,
-                    quantity INT,
-                    price DECIMAL(10, 2),
-                    FOREIGN KEY (purchase_id) REFERENCES sales(purchase_number),
-                    FOREIGN KEY (product_id) REFERENCES products(id)
-                );";
-
+                    DROP TABLE IF EXISTS salesLine;
+                    DROP TABLE IF EXISTS sales; 
+                    DROP TABLE IF EXISTS products;
+                    DROP TABLE IF EXISTS paymentMethod;
+                    CREATE TABLE IF NOT EXISTS products (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(100),
+                        description VARCHAR(255),
+                        price DECIMAL(10, 2),
+                        imageURL VARCHAR(255),
+                        pcant INT,
+                        idCat INT 
+                    );
+                    CREATE TABLE IF NOT EXISTS paymentMethod (
+                        id INT PRIMARY KEY,
+                        payment_type VARCHAR(50),
+                        estado INT
+                    );
+                    CREATE TABLE IF NOT EXISTS sales (
+                        purchase_number VARCHAR(30) NOT NULL PRIMARY KEY,
+                        purchase_date DATETIME NOT NULL,
+                        total DECIMAL(10, 2) NOT NULL,
+                        payment_type INT,
+                        FOREIGN KEY (payment_type) REFERENCES paymentMethod(id)
+                    );
+                    CREATE TABLE IF NOT EXISTS salesLine(
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        purchase_id VARCHAR(30) NOT NULL,
+                        product_id INT,
+                        quantity INT,
+                        price DECIMAL(10, 2),
+                        FOREIGN KEY (purchase_id) REFERENCES sales(purchase_number),
+                        FOREIGN KEY (product_id) REFERENCES products(id)
+                    );
+                    CREATE TABLE IF NOT EXISTS campain (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        sender VARCHAR(100),
+                        message_content TEXT,
+                        status int,
+                        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );";
                     using (var command = new MySqlCommand(createTableQuery, connection, transaction))
                     {
                         command.ExecuteNonQuery();
@@ -181,14 +187,14 @@ public sealed class StoreDb
                 VALUES (@id, @payment_type, @estado);";
 
                 insertCommand.Parameters.AddWithValue("@id", 0);
-                insertCommand.Parameters.AddWithValue("@payment_type", "Cash");
+                insertCommand.Parameters.AddWithValue("@payment_type", "Efectivo");
                 insertCommand.Parameters.AddWithValue("@estado", 1);
                 insertCommand.ExecuteNonQuery();
 
                 insertCommand.Parameters.Clear();
                 insertCommand.Parameters.AddWithValue("@id", 1);
-                insertCommand.Parameters.AddWithValue("@payment_type", "Sinpe");
-                insertCommand.Parameters.AddWithValue("@estado", 1); 
+                insertCommand.Parameters.AddWithValue("@payment_type", "Sinpe Movil");
+                insertCommand.Parameters.AddWithValue("@estado", 1);
                 insertCommand.ExecuteNonQuery();
             }
         }

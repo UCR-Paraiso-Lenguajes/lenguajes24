@@ -79,22 +79,5 @@ namespace geekstore_api.Controllers
 
             return Ok(store);
         }
-
-        [HttpGet("store/pago")]
-        [AllowAnonymous]
-        public IActionResult GetMetodosPago(string idSearch, string idSearchCat)//recibe el estado y el nombre del metodo de pago
-        {
-            //llaman a metodo de clase logica que extrae de la base de datos 
-            //returna ese nuevo array 
-            return Ok();
-        }
-
-        [HttpPut("store/pago")]
-        [AllowAnonymous]
-        public IActionResult SetMetodosPago(string idSearch, string idSearchCat)//recibe el estado y el nombre del metodo de pago
-        {
-            //llama a metodo de clase db que recibe el estado y nombre y modifica en base de datos
-            return Ok();
-        }
     }
 }

@@ -7,10 +7,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const Detalle = () => {
 
   const URLConection = process.env.NEXT_PUBLIC_API;
-
   const [confirmed, setConfirmed] = useState(false);
   const [orderDetails, setOrderDetails] = useState(undefined);
   const [dataObject, setDataObject] = useState(null);
+  const [cantidadMensajes, setCantidadMensajes] = useState(() => {
+    const storedCantidadMensajes = localStorage.getItem('cantidadMensajes');
+    return storedCantidadMensajes ? parseInt(storedCantidadMensajes, 10) : 0;
+  });
 
   useEffect(() => {
     const storedData = localStorage.getItem("tienda");
@@ -96,6 +99,12 @@ const Detalle = () => {
     }
   };
 
+  const handleTextareaInput = (e) => {
+    const value = e.target.value;
+    const filteredValue = value.replace(/\D/g, '');
+    e.target.value = filteredValue;
+  };
+
   if (!dataObject) {
     return <p></p>; 
   }
@@ -103,7 +112,7 @@ const Detalle = () => {
   return (
     <article>
       <div>
-        <Navbar cantidad_Productos={dataObject.cart.productos.length} />
+        <Navbar cantidad_Productos={dataObject.cart.productos.length} cantidad_Mensajes={cantidadMensajes} />
       </div>
       <div className="container mt-5">
         <div className="row justify-content-center">
@@ -116,7 +125,12 @@ const Detalle = () => {
               )}
               <p>Número de teléfono: {generarNumeroTelefono()}</p>
               {mostrarTextArea && (
-                <textarea className="form-control mt-3" rows="5" placeholder="Comprobante de pago" />
+                <textarea
+                  className="form-control mt-3"
+                  rows="5"
+                  placeholder="Comprobante de pago"
+                  onInput={handleTextareaInput}
+                />
               )}
               <button onClick={enviarDatosPago} className="btn btn-info mt-3">
                 Confirmar compra

@@ -40,3 +40,9 @@
 .form_direccion button:hover {
   background-color: #0056b3; 
 }
+
+.custom-select {
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+}
