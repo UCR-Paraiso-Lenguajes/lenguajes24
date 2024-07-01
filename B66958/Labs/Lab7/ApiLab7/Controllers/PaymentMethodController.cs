@@ -8,18 +8,30 @@ namespace ApiLab7.Controllers
     [ApiController]
     public class PaymentMethodController : ControllerBase
     {
+        private PaymentMethodsBusiness paymentMethodsBusiness;
+
         [HttpPut("enable"), Authorize(Roles = "Admin,Operator")]
         public async Task<IActionResult> EnablePaymentMethodAsync([FromBody] PaymentMethodRequest request)
         {
-            await Store.Instance.EnablePaymentMethodAsync(request.PaymentMethodType);
+            paymentMethodsBusiness = new PaymentMethodsBusiness();
+            await paymentMethodsBusiness.EnablePaymentMethodAsync(request.PaymentMethodType);
             return Ok();
         }
 
         [HttpPut("disable"), Authorize(Roles = "Admin,Operator")]
         public async Task<IActionResult> DisablePaymentMethodAsync([FromBody] PaymentMethodRequest request)
         {
-            await Store.Instance.DisablePaymentMethodAsync(request.PaymentMethodType);
+            paymentMethodsBusiness = new PaymentMethodsBusiness();
+            await paymentMethodsBusiness.DisablePaymentMethodAsync(request.PaymentMethodType);
             return Ok();
+        }
+
+        [HttpGet, Authorize(Roles = "Admin,Operator")]
+        public IEnumerable<PaymentMethods> GetAllPaymentMethods()
+        {
+            paymentMethodsBusiness = new PaymentMethodsBusiness();
+            IEnumerable<PaymentMethods> paymentMethods = paymentMethodsBusiness.GetAllPaymentMethods();
+            return paymentMethods;
         }
     }
 
