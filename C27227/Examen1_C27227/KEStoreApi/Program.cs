@@ -1,11 +1,13 @@
+using System;
 using System.Text;
+using System.Threading.Tasks;
 using Core;
 using KEStoreApi;
 using KEStoreApi.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Controllers;
+using MySqlConnector;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -101,9 +103,26 @@ else
 
 DatabaseConfiguration.Init(connection);
 
+// Verificar conexión a MySQL y crear la base de datos si no existe
+try
+{
+    DatabaseStore.VerifyAndCreateDatabase(connection);
+}
+catch (Exception ex)
+{
+    throw new Exception("Error al conectar a MySQL o crear la base de datos.", ex);
+}
+
 if (app.Environment.IsDevelopment())
 {
-    DatabaseStore.Store_MySql();
+    try
+    {
+        DatabaseStore.Store_MySql();
+    }
+    catch (Exception ex)
+    {
+        throw new Exception("Error al inicializar la base de datos.", ex);
+    }
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();

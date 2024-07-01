@@ -14,6 +14,27 @@ namespace KEStoreApi.Data
         {
         }
 
+ public static void VerifyAndCreateDatabase(string connectionString)
+        {
+            var connectionStringWithoutDb = connectionString.Replace("Database=store;", string.Empty);
+
+            try
+            {
+                using (var connection = new MySqlConnection(connectionStringWithoutDb))
+                {
+                    connection.Open();
+
+                    using (var command = new MySqlCommand("CREATE DATABASE IF NOT EXISTS store;", connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al verificar o crear la base de datos.", ex);
+            }
+        }
         public static void Store_MySql()
         {
             var products = new List<Product>
