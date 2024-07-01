@@ -84,6 +84,10 @@ public class CartBusiness
             throw new ArgumentException("Address must be provided.");
         if (cart.PaymentMethod == null)
             throw new ArgumentException("A payment method should be provided");
+        bool paymentMethodSinpeWithNoConfirmationNumber = cart.PaymentMethod == PaymentMethods.Type.SINPE &&
+            string.IsNullOrWhiteSpace(cart.ConfirmationNumber);
+        if(paymentMethodSinpeWithNoConfirmationNumber)
+            throw new BusinessException("When paying by SINPE you should provide a confirmation number");
     }
 
     private void ValidateSale(Sale sale)

@@ -101,4 +101,105 @@ public class PurchaseTests
         };
         Assert.DoesNotThrowAsync(() => cartBusiness.PurchaseAsync(cart));
     }
+
+    [Test]
+    public void SaleThatHasNoProducts_ThrowsArgumentException()
+    {
+        CartBusiness cartBusiness = new CartBusiness();
+        var cartProduct = new CartProduct
+        {
+            Id = Guid.NewGuid(),
+            Price = 0,
+            Quantity = 1
+        };
+        var cartProduct2 = new CartProduct
+        {
+            Id = Guid.NewGuid(),
+            Price = 0,
+            Quantity = 1
+        };
+        var cartProduct3 = new CartProduct
+        {
+            Id = Guid.NewGuid(),
+            Price = 0,
+            Quantity = 1
+        };
+        List<CartProduct> products = [cartProduct, cartProduct2, cartProduct3];
+        Cart cart = new Cart()
+        {
+            ProductIds = products,
+            Address = "an address",
+            PaymentMethod = 0,
+            ConfirmationNumber = "123"
+        };
+        Assert.ThrowsAsync<ArgumentException>(() => cartBusiness.PurchaseAsync(cart));
+    }
+
+    [Test]
+    public async Task PurchaseCartWithInactivePaymentMethod_ThrowsBusinessExpectionAsync()
+    {
+        PaymentMethodsBusiness paymentMethodsBusiness = new PaymentMethodsBusiness();
+        await paymentMethodsBusiness.DisablePaymentMethodAsync(PaymentMethods.Type.CASH);
+        CartBusiness cartBusiness = new CartBusiness();
+        var cartProduct = new CartProduct
+        {
+            Id = store.ProductsInStore.ElementAt(0).Uuid,
+            Price = 0,
+            Quantity = 1
+        };
+        var cartProduct2 = new CartProduct
+        {
+            Id = store.ProductsInStore.ElementAt(1).Uuid,
+            Price = 0,
+            Quantity = 1
+        };
+        var cartProduct3 = new CartProduct
+        {
+            Id = store.ProductsInStore.ElementAt(2).Uuid,
+            Price = 0,
+            Quantity = 1
+        };
+        List<CartProduct> products = [cartProduct, cartProduct2, cartProduct3];
+        Cart cart = new Cart()
+        {
+            ProductIds = products,
+            Address = "an address",
+            PaymentMethod = 0,
+            ConfirmationNumber = "123"
+        };
+        Assert.ThrowsAsync<BusinessException>(() => cartBusiness.PurchaseAsync(cart));
+    }
+
+    [Test]
+    public void PurchaseCartWithSinpeMethodAndNoConfirmationNumber_ThrowsBusinessExpectionAsync()
+    {
+        CartBusiness cartBusiness = new CartBusiness();
+        var cartProduct = new CartProduct
+        {
+            Id = store.ProductsInStore.ElementAt(0).Uuid,
+            Price = 0,
+            Quantity = 1
+        };
+        var cartProduct2 = new CartProduct
+        {
+            Id = store.ProductsInStore.ElementAt(1).Uuid,
+            Price = 0,
+            Quantity = 1
+        };
+        var cartProduct3 = new CartProduct
+        {
+            Id = store.ProductsInStore.ElementAt(2).Uuid,
+            Price = 0,
+            Quantity = 1
+        };
+        List<CartProduct> products = [cartProduct, cartProduct2, cartProduct3];
+        Cart cart = new Cart()
+        {
+            ProductIds = products,
+            Address = "an address",
+            PaymentMethod = PaymentMethods.Type.SINPE,
+            ConfirmationNumber = ""
+        };
+        Assert.ThrowsAsync<BusinessException>(() => cartBusiness.PurchaseAsync(cart));
+    }
 }

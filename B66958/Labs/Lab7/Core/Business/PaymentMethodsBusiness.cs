@@ -16,6 +16,9 @@ public class PaymentMethodsBusiness
         {
             paymentMethod.Enable();
             await db.UpdatePaymentMethodAsync(paymentMethod);
+        }else
+        {
+            throw new BusinessException("The method provided could not be found");
         }
     }
 
@@ -26,12 +29,16 @@ public class PaymentMethodsBusiness
         {
             paymentMethod.Disable();
             await db.UpdatePaymentMethodAsync(paymentMethod);
+        }else
+        {
+            throw new BusinessException("The method provided could not be found");
         }
     }
 
     public IEnumerable<PaymentMethods> GetAllPaymentMethods()
     {
-        var paymentMethods = db.GetPaymentMethods();
+        var paymentMethods = db.GetPaymentMethods().Where(method => method.IsEnabled).ToList();
+        if(paymentMethods.Count == 0) throw new BusinessException("No payment methods at the moment");
         return paymentMethods;
     }
 }
