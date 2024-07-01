@@ -48,6 +48,8 @@ public class CartBusiness
 
         PaymentMethods paymentMethod = PaymentMethods.Find(cart.PaymentMethod);
 
+        ValidatePaymentMethod(paymentMethod);
+
         string receiptNumber = GeneratePurchaseNumber();
 
         var sale = Sale.Build(
@@ -64,6 +66,14 @@ public class CartBusiness
         await cartData.SaveAsync(sale);
 
         return sale;
+    }
+
+    private void ValidatePaymentMethod(PaymentMethods paymentMethod)
+    {
+        if(!paymentMethod.IsEnabled)
+        {
+            throw new BusinessException("The provided payment method is not available at this time");
+        }
     }
 
     private void ValidateCart(Cart cart)

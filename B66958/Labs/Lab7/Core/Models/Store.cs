@@ -47,6 +47,28 @@ public sealed class Store
         return Products.Instance.GetProductsByQuery(query);
     }
 
+    public async Task EnablePaymentMethodAsync(PaymentMethods.Type paymentMethodType)
+    {
+        var paymentMethod = PaymentMethods.Find(paymentMethodType);
+        if (paymentMethod != null)
+        {
+            paymentMethod.Enable();
+            db = Db.Instance;
+            await db.UpdatePaymentMethodAsync(paymentMethod);
+        }
+    }
+
+    public async Task DisablePaymentMethodAsync(PaymentMethods.Type paymentMethodType)
+    {
+        var paymentMethod = PaymentMethods.Find(paymentMethodType);
+        if (paymentMethod != null)
+        {
+            paymentMethod.Disable();
+            db = Db.Instance;
+            await db.UpdatePaymentMethodAsync(paymentMethod);
+        }
+    }
+
     static Store()
     {
         db = Db.Instance;

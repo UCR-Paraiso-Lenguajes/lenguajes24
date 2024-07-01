@@ -126,7 +126,7 @@ public class Db
             {
                 connection.Open();
 
-                string query = @"USE andromeda_store; SELECT id FROM payment_method;";
+                string query = @"USE andromeda_store; SELECT id, enabled FROM payment_method;";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
@@ -135,9 +135,11 @@ public class Db
                         while (reader.Read())
                         {
                             int paymentMethodId = Convert.ToInt32(reader[0].ToString());
+                            bool isEnabled = Convert.ToBoolean(reader[1].ToString());
                             PaymentMethods payment = PaymentMethods.Find(
                                 (PaymentMethods.Type)paymentMethodId
                             );
+                            payment.IsEnabled = isEnabled;
                             paymentMethods.Add(payment);
                         }
                     }
@@ -189,6 +191,21 @@ public class Db
             catch (Exception)
             {
                 throw;
+            }
+        }
+    }
+
+    public async Task UpdatePaymentMethodAsync(PaymentMethods paymentMethod)
+    {
+        string query = @"USE andromeda_store; UPDATE payment_method SET enabled = @IsEnabled WHERE id = @PaymentMethodId";
+        using (SqlConnection connection = new SqlConnection(Db.Instance.DbConnectionString))
+        {
+            await connection.OpenAsync();
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@IsEnabled", paymentMethod.IsEnabled);
+                command.Parameters.AddWithValue("@PaymentMethodId", (int)paymentMethod.PaymentType);
+                await command.ExecuteNonQueryAsync();
             }
         }
     }
