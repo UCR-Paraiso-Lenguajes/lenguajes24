@@ -137,6 +137,7 @@ if (!string.IsNullOrEmpty(security) && security.ToLower() != "false")
     app.UseAuthentication();
     app.UseAuthorization();
 }
+
 app.MapHub<MarketingHub>("/hubs/marketing");
 app.MapControllers();
 app.Run();

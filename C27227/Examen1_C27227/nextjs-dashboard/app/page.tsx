@@ -59,7 +59,7 @@ const Page = () => {
       }
     }
   }, [router]);
-
+  
   const handleShowLoginForm = () => {
     setCurrentView('login');
   };

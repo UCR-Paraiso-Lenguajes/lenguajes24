@@ -7,9 +7,6 @@
 .product-container:hover {
     transform: scale(1.05);
 }
-.product-container:hover {
-    transform: scale(1.05);
-}
 
 .add-to-cart-btn {
     background-color: #007bff;
@@ -23,4 +20,13 @@
 
 .add-to-cart-btn:hover {
     background-color: #0056b3;
+}
+
+.product-description {
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+    margin-top: 10px;
+    max-height: 100px;
+    overflow: auto;
 }
