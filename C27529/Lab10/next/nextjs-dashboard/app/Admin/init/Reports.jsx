@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import {jwtDecode} from 'jwt-decode'; 
+import { jwtDecode } from 'jwt-decode';
 import DatePicker from "react-datepicker";
 import 'chart.js/auto';
 import { Pie } from 'react-chartjs-2';
@@ -16,6 +16,11 @@ function Reports() {
   const [weekSaleData, setWeekSaleData] = useState([]);
   const [dailySaleData, setDailySaleData] = useState([['Purchase Number', 'Total']]);
 
+
+  const URL = process.env.NEXT_PUBLIC_API_URL;
+  if (!URL) {
+    throw new Error('NEXT_PUBLIC_API_URL is not defined');
+  }
 
   useEffect(() => {
     const token = sessionStorage.getItem('token');
@@ -52,7 +57,7 @@ function Reports() {
 
 
     try {
-      const response = await fetch('http://localhost:5164/api/Sale', {
+      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + '/api/Sale', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

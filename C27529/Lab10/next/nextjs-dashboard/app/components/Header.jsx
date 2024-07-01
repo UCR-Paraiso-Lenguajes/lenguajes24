@@ -1,20 +1,61 @@
-import React from 'react';
-import "bootstrap/dist/css/bootstrap.min.css"; // Importar CSS de Bootstrap
-import { useState, useEffect } from 'react';
-
+import React, { useState, useEffect } from 'react';
+import "bootstrap/dist/css/bootstrap.min.css";
+import { HubConnectionBuilder } from '@microsoft/signalr';
 
 export const Header = ({ goToPage }) => {
     const [active, setActive] = useState(false);
+    const [campaignActive, setCampaignActive] = useState(false);
+    const [newMessages, setNewMessages] = useState(0);
+    const [messages, setMessages] = useState([]);
+    const [connection, setConnection] = useState(null);
+
     const [store, setStore] = useState(() => {
-        const storedStore = localStorage.getItem("tienda");
-        return JSON.parse(storedStore) || { productos: [], carrito: { subtotal: 0, total: 0 } };
+        if (typeof window !== 'undefined') {
+            const storedStore = localStorage.getItem("tienda");
+            return JSON.parse(storedStore) || { productos: [], carrito: { subtotal: 0, total: 0 } };
+        }
+        return { productos: [], carrito: { subtotal: 0, total: 0 } };
     });
+
+    const URL = process.env.NEXT_PUBLIC_API_URL;
+    if (!URL) {
+        throw new Error('NEXT_PUBLIC_API_URL is not defined');
+    }
+
+    useEffect(() => {
+        const connectToHub = async () => {
+            const connection = new HubConnectionBuilder()
+                .withUrl(`${URL}/Campannas`)
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on("UpdateMessages", (receivedMessages) => {
+                setMessages(receivedMessages);
+                setNewMessages(receivedMessages.length);
+            }
+        );
+
+            try {
+                await connection.start();
+                setConnection(connection);
+            } catch (error) {
+              throw new error('Connection failed: ', error);
+            }
+        };
+
+        connectToHub();
+
+        return () => {
+            if (connection) {
+                connection.stop();
+            }
+        };
+    }, []);
 
     const onDeleteProduct = product => {
         const updatedProductos = store.productos.filter(item => item.id !== product.id);
         const updatedSubtotal = store.carrito.subtotal - product.price;
         const updatedTotal = store.carrito.total - product.price;
-
 
         const updatedStore = {
             ...store,
@@ -27,14 +68,16 @@ export const Header = ({ goToPage }) => {
         };
 
         setStore(updatedStore);
-        localStorage.setItem("tienda", JSON.stringify(updatedStore));
+        if (typeof window !== 'undefined') {
+            localStorage.setItem("tienda", JSON.stringify(updatedStore));
+        }
     };
 
-
     const onCleanCart = () => {
-        localStorage.removeItem("tienda");
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem("tienda");
+        }
         setStore({ productos: [], carrito: { subtotal: 0, total: 0 } });
-
     };
 
     useEffect(() => {
@@ -45,27 +88,20 @@ export const Header = ({ goToPage }) => {
             }
         }
     }, [store.productos]);
-    
-    
 
     return (
         <header>
-
             <h1>GreatestBuy</h1>
             <nav className="navbar navbar-expand-lg bg-body-tertiary">
                 <div className="container-fluid">
-
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
                         aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
                         <div className="navbar-nav">
-
                             <div className="secciones">
-
                                 <div className="row">
-
                                     <div className="col-sm-2">
                                         <button className="nav-link"> <i className="fa-solid fa-list-ul"></i> Todo</button>
                                     </div>
@@ -90,12 +126,10 @@ export const Header = ({ goToPage }) => {
                     </div>
                 </div>
             </nav>
-
             <div className='container-icon'>
                 <div
                     className='container-cart-icon'
                     onClick={() => setActive(!active)}
-
                 >
                     <svg
                         xmlns='http://www.w3.org/2000/svg'
@@ -113,70 +147,86 @@ export const Header = ({ goToPage }) => {
                     </svg>
                     <div className='count-products'>
                         <span id='contador-productos'>{store.productos.length}</span>
-
                     </div>
                 </div>
-
-                <div
-                    className={`container-cart-products ${active ? '' : 'hidden-cart'
-                        }`}
-                >
-                    {true ? (
-                        <>
-                            <div className='row-product'>
-                                {store.productos.map(product => (
-                                    <div className='cart-product' key={product.id}>
-                                        <div className='info-cart-product'>
-
-                                            <p className='titulo-producto-carrito'>
-                                                {product.name}
-                                            </p>
-                                            <span className='precio-producto-carrito'>
-                                                ₡{product.price}
-                                            </span>
-                                        </div>
-                                        <svg
-                                            xmlns='http://www.w3.org/2000/svg'
-                                            fill='none'
-                                            viewBox='0 0 24 24'
-                                            strokeWidth='1.5'
-                                            stroke='currentColor'
-                                            className='icon-close'
-                                            onClick={() => onDeleteProduct(product)}
-                                        >
-                                            <path
-                                                strokeLinecap='round'
-                                                strokeLinejoin='round'
-                                                d='M6 18L18 6M6 6l12 12'
-                                            />
-                                        </svg>
+                <div className='container-campaign-icon' onClick={() => setCampaignActive(!campaignActive)}>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="icon-campaign"
+                        style={{ width: '32px', height: '32px' }}
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d='M12 8v8m4-4H8m8-4a8 8 0 11-16 0 8 8 0 0116 0z'
+                        />
+                    </svg>
+                    <div className='count-messages'>
+                        <span id='contador-mensajes'>{newMessages}</span>
+                    </div>
+                </div>
+                {campaignActive && (
+                    <div className={`container-campaign-messages ${campaignActive ? '' : 'hidden-campaign'}`} style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                        {messages.length > 0 ? (
+                            <div className='campaign-messages'>
+                                {messages.map((message, index) => (
+                                    <div className='message-item' key={index}>
+                                        <div dangerouslySetInnerHTML={{ __html: message.content || "Mensaje vacío" }}></div>
                                     </div>
                                 ))}
                             </div>
-
-                            <div className='cart-total'>
-                                <h3>Subtotal:</h3>
-                                <span className='total-pagar'>{<span className='total-pagar'>₡{store.carrito.subtotal}</span>}</span>
-                                <h6>Sin Impuestos</h6>
-                            </div>
-                            <button className='btn-payment' onClick={() => goToPage(1)}>
-                                Pagar
-                            </button>
-
-                            <button className='btn-clear-all' onClick={onCleanCart}>
-                                Vaciar Carrito
-                            </button>
-                        </>
-                    ) : (
-                            <>
-
-                                <p className='cart-empty'>El carrito está vacío</p>
-
-
-                            </>
-
+                        ) : (
+                            <p className='campaign-empty'>No hay mensajes</p>
                         )}
-                </div>
+                    </div>
+                )}
+            </div>
+            <div
+                className={`container-cart-products ${active ? '' : 'hidden-cart'
+                    }`}
+            >
+                {store.productos.length > 0 ? (
+                    <>
+                        <div className='row-product'>
+                            {store.productos.map(product => (
+                                <div className='cart-product' key={product.id}>
+                                    <div className='info-cart-product'>
+                                        <p className='titulo-producto-carrito'>{product.name}</p>
+                                        <span className='precio-producto-carrito'>₡{product.price}</span>
+                                    </div>
+                                    <svg
+                                        xmlns='http://www.w3.org/2000/svg'
+                                        fill='none'
+                                        viewBox='0 0 24 24'
+                                        strokeWidth='1.5'
+                                        stroke='currentColor'
+                                        className='icon-close'
+                                        onClick={() => onDeleteProduct(product)}
+                                    >
+                                        <path
+                                            strokeLinecap='round'
+                                            strokeLinejoin='round'
+                                            d='M6 18L18 6M6 6l12 12'
+                                        />
+                                    </svg>
+                                </div>
+                            ))}
+                        </div>
+                        <div className='cart-total'>
+                            <h3>Subtotal:</h3>
+                            <span className='total-pagar'>₡{store.carrito.subtotal}</span>
+                            <h6>Sin Impuestos</h6>
+                        </div>
+                        <button className='btn-payment' onClick={() => goToPage(1)}>Pagar</button>
+                        <button className='btn-clear-all' onClick={onCleanCart}>Vaciar Carrito</button>
+                    </>
+                ) : (
+                    <p className='cart-empty'>El carrito está vacío</p>
+                )}
             </div>
         </header>
     );

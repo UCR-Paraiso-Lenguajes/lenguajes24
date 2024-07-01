@@ -13,6 +13,79 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 	color: #333;
 }
+/* Contenedor del ícono */
+.container-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Estilos para los íconos */
+.container-cart-icon,
+.container-campaign-icon {
+    position: relative;
+    margin-left: 25px; /* Aumentar margen para más espacio entre los iconos */
+    cursor: pointer;
+}
+
+/* Ajuste de tamaño del icono de campaña */
+.icon-cart,
+.icon-campaign {
+    width: 32px; /* Aumentar tamaño del icono */
+    height: 32px; /* Aumentar tamaño del icono */
+}
+
+/* Estilos para el contador */
+.count-products,
+.count-messages {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 5px;
+    font-size: 14px; /* Aumentar tamaño de la fuente */
+}
+
+/* Estilos para las ventanas emergentes */
+.container-cart-products,
+.container-campaign-messages {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+/* Ocultar ventanas emergentes por defecto */
+.hidden-cart,
+.hidden-campaign {
+    display: none;
+}
+
+/* Estilos para los mensajes de campaña */
+.campaign-messages .message-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.campaign-empty {
+    padding: 10px;
+    text-align: center;
+    display: none; /* Ocultar por defecto */
+}
+
+.container-campaign-messages .campaign-empty {
+    display: block; /* Mostrar solo cuando la ventana emergente está activa */
+}
+
+
 
 .icon-cart {
 	width: 40px;

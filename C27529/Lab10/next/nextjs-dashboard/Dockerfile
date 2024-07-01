@@ -11,7 +11,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm config set legacy-peer-deps true
 RUN npm install
-RUN npm install chart.js react-chartjs-2 react-google-charts react-modal react-data-table-component
+
+RUN npm install chart.js react-chartjs-2 react-google-charts react-modal react-data-table-component @microsoft/signalr @types/styled-components styled-components
+
 
 # Copia el resto de los archivos del proyecto
 
@@ -24,7 +26,7 @@ COPY . .
  
 # Compila la aplicación
 #RUN npm run build
-RUN chmod +x write_env.sh
+RUN chmod +x  write_env.sh
 # Expone el puerto en el que la aplicación se ejecutará
 EXPOSE 3000
 

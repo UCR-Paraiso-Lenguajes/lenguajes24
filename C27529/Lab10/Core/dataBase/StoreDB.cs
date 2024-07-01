@@ -338,41 +338,47 @@ public sealed class StoreDB
 
             string createTableQuery = @"
              CREATE TABLE IF NOT EXISTS paymentMethods (
-    paymentId INT PRIMARY KEY,
-    paymentName VARCHAR(30) NOT NULL UNIQUE
-);
+                paymentId INT PRIMARY KEY,
+                paymentName VARCHAR(30) NOT NULL UNIQUE
+            );
 
-CREATE TABLE IF NOT EXISTS products (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description  BLOB NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    imageURL VARCHAR(255) NOT NULL,
-    category INT NOT NULL
-);
+            CREATE TABLE IF NOT EXISTS products (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(100) NOT NULL,
+                description  BLOB NOT NULL,
+                price DECIMAL(10, 2) NOT NULL,
+                imageURL VARCHAR(255) NOT NULL,
+                category INT NOT NULL
+            );
 
-CREATE TABLE IF NOT EXISTS sales (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    purchase_date DATETIME NOT NULL,
-    total DECIMAL(10, 2) NOT NULL,
-    payment_method INT NOT NULL,
-    purchase_number VARCHAR(50) NOT NULL UNIQUE,
-    FOREIGN KEY (payment_method) REFERENCES paymentMethods(paymentId)
-);
+            CREATE TABLE IF NOT EXISTS sales (
+                Id INT AUTO_INCREMENT PRIMARY KEY,
+                purchase_date DATETIME NOT NULL,
+                total DECIMAL(10, 2) NOT NULL,
+                payment_method INT NOT NULL,
+                purchase_number VARCHAR(50) NOT NULL UNIQUE,
+                FOREIGN KEY (payment_method) REFERENCES paymentMethods(paymentId)
+            );
 
-CREATE TABLE IF NOT EXISTS saleLines (
-    productId INT,
-    purchaseNumber VARCHAR(50),
-    price DECIMAL(10,2) NOT NULL,
-    PRIMARY KEY (productId, purchaseNumber),
-    FOREIGN KEY (productId) REFERENCES products(id),
-    CONSTRAINT fk_purchaseNumber FOREIGN KEY (purchaseNumber) REFERENCES sales(purchase_number)
-);
+            CREATE TABLE IF NOT EXISTS saleLines (
+                productId INT,
+                purchaseNumber VARCHAR(50),
+                price DECIMAL(10,2) NOT NULL,
+                PRIMARY KEY (productId, purchaseNumber),
+                FOREIGN KEY (productId) REFERENCES products(id),
+                CONSTRAINT fk_purchaseNumber FOREIGN KEY (purchaseNumber) REFERENCES sales(purchase_number)
+            );
 
-INSERT INTO paymentMethods (paymentId, paymentName)
-VALUES 
-    (0, 'Cash'),
-    (1, 'Sinpe');
+                      CREATE TABLE IF NOT EXISTS messages (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        content TEXT NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
+
+                     INSERT INTO paymentMethods (paymentId, paymentName)
+                        VALUES 
+                        (0, 'Cash'),
+                        (1, 'Sinpe');
 
                 INSERT INTO sales (purchase_date, total, payment_method, purchase_number)
                 VALUES
@@ -514,4 +520,109 @@ VALUES
 
     }
 
+    public static async Task<int> AddMessageAsync(string content)
+{
+    using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
+    {
+        await connection.OpenAsync();
+        using (var transaction = await connection.BeginTransactionAsync())
+        {
+            try
+            {
+                // Llama al método pasando la conexión y transacción
+                var existingId = await CheckIfMessageExists(content, connection, transaction);
+                if (existingId != null)
+                {
+                    transaction.Commit();
+                    return existingId.Value;
+                }
+
+                string query = "INSERT INTO messages (content) VALUES (@content); SELECT LAST_INSERT_ID();";
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Transaction = transaction;
+                    command.Parameters.AddWithValue("@content", content);
+                    var messageId = Convert.ToInt32(await command.ExecuteScalarAsync());
+                    transaction.Commit();
+                    return messageId;
+                }
+            }
+            catch (Exception)
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
+    }
+}
+
+private static async Task<int?> CheckIfMessageExists(string content, MySqlConnection connection, MySqlTransaction transaction)
+{
+    string query = "use store; SELECT id FROM messages WHERE content = @content LIMIT 1;";
+    using (var command = new MySqlCommand(query, connection))
+    {
+        command.Transaction = transaction;
+        command.Parameters.AddWithValue("@content", content);
+        var result = await command.ExecuteScalarAsync();
+        if (result != DBNull.Value && result != null)
+        {
+            return Convert.ToInt32(result);
+        }
+        return null;
+    }
+}
+
+    public static async Task<List<Dictionary<string, object>>> GetLastThreeMessagesAsync()
+    {
+        var messages = new List<Dictionary<string, object>>();
+        using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
+        {
+            await connection.OpenAsync();
+            string query = "use store; SELECT id, content FROM messages ORDER BY created_at DESC LIMIT 3;";
+            using (var command = new MySqlCommand(query, connection))
+            {
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var message = new Dictionary<string, object>
+                            {
+                                { "id", reader.GetInt32("id") },
+                                { "content", reader.GetString("content") }
+                            };
+                        messages.Add(message);
+                    }
+                }
+            }
+        }
+        messages.Reverse();
+        return messages;
+    }
+
+    public static async Task<List<Dictionary<string, object>>> GetMessagesByContentAsync(string content)
+    {
+        var messages = new List<Dictionary<string, object>>();
+        using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
+        {
+            await connection.OpenAsync();
+            string query = "use store; SELECT id, content FROM messages WHERE content = @content;";
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@content", content);
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var message = new Dictionary<string, object>
+                            {
+                                { "id", reader.GetInt32("id") },
+                                { "content", reader.GetString("content") }
+                            };
+                        messages.Add(message);
+                    }
+                }
+            }
+        }
+        return messages;
+    }
 }

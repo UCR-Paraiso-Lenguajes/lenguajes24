@@ -12,6 +12,10 @@ export const Payment = () => {
 
 
 
+    const URL = process.env.NEXT_PUBLIC_API_URL;
+    if (!URL) {
+        throw new Error('NEXT_PUBLIC_API_URL is not defined');
+    }
     const productIds = store.productos.map(producto => producto.id.toString());
 
     const data = {
@@ -31,7 +35,7 @@ export const Payment = () => {
                 },
                 body: JSON.stringify(data)
             };
-            const response = await fetch('http://localhost:5164/api/Cart', requestOptions);
+            const response = await fetch(`${URL}/api/Cart`, requestOptions);
             if (!response.ok) {
                 throw new Error('Failed to post data');
             } else {

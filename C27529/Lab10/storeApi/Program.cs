@@ -1,121 +1,97 @@
 using Core;
-using storeApi.db; 
-using Microsoft.AspNetCore.Authentication.JwtBearer; 
-using Microsoft.IdentityModel.Tokens; 
-using System.Text; 
-using Microsoft.OpenApi.Models; 
+using storeApi.db;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
- 
- 
-var builder = WebApplication.CreateBuilder(args); 
- 
+var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
+builder.Services.AddControllers();
 
-// Add services to the container. 
-builder.Services.AddControllers(); 
- 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle 
-builder.Services.AddEndpointsApiExplorer(); 
-//builder.Services.AddSwaggerGen(); 
-builder.Services.AddSwaggerGen(setup => 
-{ 
-    // Include 'SecurityScheme' to use JWT Authentication 
-    var jwtSecurityScheme = new OpenApiSecurityScheme 
-    { 
-        BearerFormat = "JWT", 
-        Name = "JWT Authentication", 
-        In = ParameterLocation.Header, 
-        Type = SecuritySchemeType.Http, 
-        Scheme = JwtBearerDefaults.AuthenticationScheme, 
-        Description = "Put *ONLY* your JWT Bearer token on textbox below!", 
- 
-        Reference = new OpenApiReference 
-        { 
-            Id = JwtBearerDefaults.AuthenticationScheme, 
-            Type = ReferenceType.SecurityScheme 
-        } 
-    }; 
- 
-    setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme); 
- 
-    setup.AddSecurityRequirement(new OpenApiSecurityRequirement 
-    { 
-        { jwtSecurityScheme, Array.Empty<string>() } 
-    }); 
- 
-}); 
- 
-// Add CORS 
-builder.Services.AddCors(options => 
-{ 
-    options.AddDefaultPolicy(builder => 
-    { 
-        builder.AllowAnyOrigin() 
-               .AllowAnyMethod() 
-               .AllowAnyHeader(); 
-    }); 
-}); 
-string connection = null; 
- 
-//https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-8.0 
-//https://medium.com/@chandrashekharsingh25/securing-asp-net-core-web-api-with-jwt-authentication-ff9ecd9ba1ed 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) 
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, 
-        options => 
-    { 
-        options.TokenValidationParameters = new TokenValidationParameters 
-        { 
-            ValidateIssuer = true, 
-            ValidateAudience = true, 
-            ValidateLifetime = true, 
-            ValidateIssuerSigningKey = true, 
-            ValidIssuer = "https://localhost:5164", 
-            ValidAudience = "https://localhost:5164", 
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere")) 
-        }; 
-    }); 
- 
- 
-var app = builder.Build(); 
- 
-var value = Environment.GetEnvironmentVariable("DB"); 
+// Add SignalR
+builder.Services.AddSignalR();
 
-if (value == null) 
-{ 
-    builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true); 
-    builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true); 
-#pragma warning disable CS8602 // Dereference of a possibly null reference. 
-    connection = builder.Configuration.GetSection("ConnectionStrings").GetSection("MyDatabase").Value.ToString(); 
-#pragma warning restore CS8602 // Dereference of a possibly null reference. 
-} 
-else 
-{ 
-    connection = value; 
-} 
+// Configuring CORS properly
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin", // Create a named policy
+        builder => builder.WithOrigins("http://localhost:3000","http://localhost:8080","http://localhost:http://localhost:5164") // Replace with the actual client URL
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials()); // Allow credentials
+});
 
+// Swagger and JWT Configuration
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(setup =>
+{
+    var jwtSecurityScheme = new OpenApiSecurityScheme
+    {
+        BearerFormat = "JWT",
+        Name = "JWT Authentication",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        Description = "Put *ONLY* your JWT Bearer token on textbox below!",
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+    setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+    setup.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, Array.Empty<string>() }
+    });
+});
+
+// Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "http://localhost:5164",
+            ValidAudience = "http://localhost:5164",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
+        };
+    });
+
+var app = builder.Build();
+
+// Database configuration
+var connection = Environment.GetEnvironmentVariable("DB") ?? builder.Configuration["ConnectionStrings:MyDatabase"];
 app.Logger.LogInformation("Connection String: {connection}", connection);
 ConnectionDB.Init(connection);
-await StoreDB.CreateMysql(); 
- 
+await StoreDB.CreateMysql();
 
-// Configure the HTTP request pipeline. 
-if (app.Environment.IsDevelopment()) 
-{ 
- 
-    app.UseSwagger(); 
-app.UseSwaggerUI(); 
-} 
- 
- 
-app.UseHttpsRedirection(); 
- 
-app.UseRouting(); 
- 
-// Use CORS 
-app.UseCors(); 
- 
-app.UseAuthorization(); 
- 
-app.MapControllers(); 
- 
-app.Run(); 
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseRouting();
+
+// Apply CORS policy
+app.UseCors("AllowSpecificOrigin"); // Use the named policy
+
+app.UseAuthentication();  // Make sure authentication comes before authorization
+app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<CampaignController>("/Campannas");
+    endpoints.MapControllers();
+});
+
+app.Run();

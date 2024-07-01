@@ -9,6 +9,11 @@ function Page() {
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const URL = process.env.NEXT_PUBLIC_API_URL;
+if (!URL) {
+    throw new Error('NEXT_PUBLIC_API_URL is not defined');
+}
+
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     if (token) {
@@ -37,7 +42,7 @@ function Page() {
     };
 
     try {
-      const response = await fetch('http://localhost:5164/api/Auth/login', {
+      const response = await fetch(`${URL}/api/Auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
