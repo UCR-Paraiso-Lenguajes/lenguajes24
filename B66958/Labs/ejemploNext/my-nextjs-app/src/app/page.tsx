@@ -9,6 +9,8 @@ import { Dropdown } from "react-bootstrap";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import DOMPurify from 'dompurify';
 import { CartState } from "./types/Cart";
+import './css/messages.css';
+import WebSocketMessage from "./navbar/WebSocketMessage";
 
 export default function Home() {
 
@@ -28,6 +30,9 @@ export default function Home() {
 
   const [isCartActive, setIsCartActive] = useState(false);
 
+  const [messages, setMessages] = useState<WebSocketMessage[]>([]);
+  const [isMessageListVisible, setMessageListVisible] = useState<boolean>(false);
+
   const [count, setCount] = useState(0);
   const [idList, setIdList] = useState([]);
 
@@ -45,7 +50,18 @@ export default function Home() {
     necesitaVerificacion: false
   });
 
+  const toggleMessageList = () => {
+    setMessageListVisible(!isMessageListVisible);
+  };
+  
   let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
+
+  const cleanHTML = (html : string) => {
+    return DOMPurify.sanitize(html, {
+      ADD_TAGS: ['iframe'],
+      ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling']
+    });
+  };
 
   const categoriesSearchString = Array.isArray(categoriesSearch) ? categoriesSearch.join(',') : categoriesSearch;
   useEffect(() => {
@@ -223,7 +239,7 @@ export default function Home() {
 
   const Product = ({ product, handleAddToCart }) => {
     const { uuid, name, description, imageUrl, price } = product;
-    const sanitizedDescription = DOMPurify.sanitize(description);
+    const sanitizedDescription = cleanHTML(description);
     return (
       <div className="card" style={{ width: '20rem' }}>
         <div className="col">
@@ -309,7 +325,17 @@ export default function Home() {
   return ( <Suspense fallback={<div>Loading...</div>}>
     <div className="d-grid gap-2">
       <NavBar productCount={count} toggleCart={(action) => toggleCart({ action })}
-        searchFunction={searchProduct} setQuery={setProductQuery} />
+        searchFunction={searchProduct} setQuery={setProductQuery}
+        setMessages={setMessages} toggleMessageList={toggleMessageList} />
+        {isMessageListVisible && (
+                <div className="message-list">
+                    {messages.map(message => (
+                        <div key={message.Id} className="message">
+                          <span dangerouslySetInnerHTML={{ __html: cleanHTML(message.Text) }} />
+                        </div>
+                    ))}
+                </div>
+            )}
       {isCartActive ? <Cart cart={cart} setCart={setCart}
         toggleCart={(action) => toggleCart({ action })} clearProducts={clearProducts} /> : <><MyRow /> <CarouselBootstrap /></>}
       {isErrorShowing ?

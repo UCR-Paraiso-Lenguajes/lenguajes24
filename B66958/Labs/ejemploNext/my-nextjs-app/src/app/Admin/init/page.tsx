@@ -8,38 +8,36 @@ import { Chart } from 'react-google-charts';
 import { checkTokenDate } from "@/app/hooks/jwtHooks";
 import { useRouter } from 'next/navigation';
 import Products from "./products";
+import Campaigns from "./campaigns/page";
 
 export default function MainAdmin() {
-
-    const [showProducts, setShowProducts] = useState(false);
-    const [showReports, setShowReports] = useState(false);
-    const [showPayMeths, setShowPayMeths] = useState(false);
+    const [path, setPath] = useState<string>('/');
     const [errorMessage, setErrorMessage] = useState('');
     const router = useRouter();
 
     let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV;
 
     useEffect(() => {
-        checkTokenStatus();
+        if(checkTokenStatus()){
+            const handlePopState = () => {
+                setPath(window.location.pathname);
+            };
+    
+            setPath(window.location.pathname);
+
+            window.addEventListener('popstate', handlePopState);
+    
+            return () => {
+                window.removeEventListener('popstate', handlePopState);
+            };
+        }
     }, []);
 
-    function handleShowProducts() {
-        setShowProducts(true);
-        setShowReports(false);
-        setShowPayMeths(false);
-    }
+    const navigateTo = (newPath: string) => {
+        window.history.pushState({}, '', newPath);
+        setPath(newPath);
+    };
 
-    function handleShowReports() {
-        setShowReports(true);
-        setShowProducts(false);
-        setShowPayMeths(false);
-    }
-
-    function handleShowPayMeths() {
-        setShowPayMeths(true);
-        setShowReports(false);
-        setShowProducts(false);
-    }
     function checkTokenStatus() {
         var token = sessionStorage.getItem("sessionToken");
         var expiracyDate = sessionStorage.getItem("expiracyToken");
@@ -202,30 +200,38 @@ export default function MainAdmin() {
                     <li className="mb-1">
                         <button className="btn btn-toggle align-items-center rounded collapsed text-white"
                             data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true"
-                            onClick={handleShowProducts}>
+                            onClick={() => navigateTo('/Admin/init/products')}>
                             Productos
                         </button>
                     </li>
                     <li className="mb-1">
                         <button className="btn btn-toggle align-items-center rounded collapsed text-white"
                             data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true"
-                            onClick={handleShowReports}>
+                            onClick={() => navigateTo('/Admin/init/reports')}>
                             Reporte de ventas
                         </button>
                     </li>
                     <li className="mb-1">
                         <button className="btn btn-toggle align-items-center rounded collapsed text-white"
                             data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true"
-                            onClick={handleShowPayMeths}>
+                            onClick={() => navigateTo('/Admin/init/paymentMethods')}>
                             Métodos de pago
+                        </button>
+                    </li>
+                    <li className="mb-1">
+                        <button className="btn btn-toggle align-items-center rounded collapsed text-white"
+                            data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true"
+                            onClick={() => navigateTo('/Admin/init/campannas')}>
+                            Campañas
                         </button>
                     </li>
                 </ul>
             </div>
             <div className="flex-grow-1">
-                {showProducts ? <Products /> : ''}
-                {showReports ? <Reports /> : ''}
-                {showPayMeths ? <PaymentMethods /> : ''}
+            {path === '/Admin/init/products' && <Products />}
+            {path === '/Admin/init/reports' && <Reports />}
+            {path === '/Admin/init/payment-methods' && 'Soy métodos de pago'}
+            {path === '/Admin/init/campannas' && <Campaigns />}
             </div>
             {errorMessage ?
                 <div

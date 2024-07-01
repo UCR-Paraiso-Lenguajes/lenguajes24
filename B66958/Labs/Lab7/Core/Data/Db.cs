@@ -44,6 +44,7 @@ public class Db
                 + "CONSTRAINT fkSale FOREIGN KEY (sale_id) REFERENCES sales(id));",
             "CREATE TABLE sinpe_confirmation_number (id INT PRIMARY KEY, confirmation_number VARCHAR(20), "
                 + "CONSTRAINT fkSinpeSaleid FOREIGN KEY (id) REFERENCES sales(id))",
+            "CREATE TABLE campaigns (id CHAR(36) PRIMARY KEY, message VARBINARY(MAX) NOT NULL, date datetime, enabled BIT)"
         };
 
         using (SqlConnection connection = new SqlConnection(Db.Instance.DbConnectionString))
@@ -101,12 +102,12 @@ public class Db
                 {
                     command.Parameters.AddWithValue("@id", products.ElementAt(i).Uuid);
                     command.Parameters.AddWithValue("@name", products.ElementAt(i).Name);
-                    command.Parameters.AddWithValue("@description", Encoding.UTF8.GetBytes(products.ElementAt(i).Description));
-                    command.Parameters.AddWithValue("@imageUrl", products.ElementAt(i).ImageUrl);
                     command.Parameters.AddWithValue(
-                        "@price",
-                        products.ElementAt(i).Price * i
+                        "@description",
+                        Encoding.UTF8.GetBytes(products.ElementAt(i).Description)
                     );
+                    command.Parameters.AddWithValue("@imageUrl", products.ElementAt(i).ImageUrl);
+                    command.Parameters.AddWithValue("@price", products.ElementAt(i).Price * i);
                     command.Parameters.AddWithValue("@category", products.ElementAt(i).Category.Id);
 
                     command.ExecuteNonQuery();

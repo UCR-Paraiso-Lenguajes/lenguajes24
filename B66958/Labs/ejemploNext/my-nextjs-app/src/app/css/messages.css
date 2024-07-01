@@ -1,0 +1,54 @@
+.message-list {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    width: 300px;
+    background: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.message {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    background: #f9f9f9;
+    border-radius: 4px;
+    transition: background 0.3s;
+    text-align: left;
+}
+
+.message:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.message:hover {
+    background: #f1f1f1;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.message {
+    animation: slideIn 0.3s ease;
+}
+
+.envelope-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
