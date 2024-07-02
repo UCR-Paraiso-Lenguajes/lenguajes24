@@ -12,14 +12,17 @@ namespace MyStoreAPI.Controllers{
     public class NotificationHub : Hub{
 
         //Funcion llamadas por los usuarios
-        public async Task receiveNotificationsAsync(IEnumerable<Notification> listOfnotifications){
+        public async Task SendNotificationAsync(Notification currentNotify){
 
             //Fucnion de propia de SignalR, donde el primer parametro es el
             //codigo para reconocerse entre cliente y servidor;cy los demas son datos
             //para los clientes
-            await Clients.All.SendAsync("Receive",listOfnotifications);
+            await Clients.All.SendAsync("Receive",currentNotify);
         }
 
+        public async Task NotifyIdDeletionAsync(int notificationDeletedId){
+ 
+            await Clients.All.SendAsync("Delete",notificationDeletedId);
+        }
     }
-
 }

@@ -22,6 +22,7 @@ export default function AdminDashboard({
                         <ul>
                             <Link href="/admin/init/sales_report"><button>Reportes de ventas</button></Link>
                             <Link href="/admin/init/products_info"><button>Productos</button></Link>
+                            <Link href="/admin/init/notification"><button>Notificaciones</button></Link>
                         </ul>
                     </nav>
                 </header>

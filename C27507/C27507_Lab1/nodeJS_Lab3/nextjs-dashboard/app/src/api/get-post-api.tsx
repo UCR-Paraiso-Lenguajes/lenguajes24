@@ -9,9 +9,8 @@ import { useRouter } from 'next/navigation';
 
 import { jwtDecode } from 'jwt-decode';
 import { CartShopAPI } from "../models-data/CartShopAPI";
-import { ProductWithoutCategoryAPI } from "../models-data/ProductWithoutCategoryAPI";
-import { CartShopWithoutCategoryAPI } from "../models-data/CartShopWithoutCategoryAPI";
 import { stringify } from "querystring";
+import { NotificationAPI } from "../models-data/NotificationAPI";
 
 
 const { default: jwt_decode } = require("jwt-decode");
@@ -249,6 +248,111 @@ const { default: jwt_decode } = require("jwt-decode");
             }        
             const insertedWithSuccess = await responsePost.json();                      
             return insertedWithSuccess;
+        } catch (error) {            
+            throw new Error('Failed to POST data: '+ error);
+        }        
+    }
+
+
+    export async function getAllNotificationsAdmin(): Promise<string | NotificationAPI[] | null> {
+
+        //let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV;
+        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
+        let directionAPI = `${urlByReactEnviroment}/api/CampaignManagement/campaign/select`;
+                
+        try {            
+            const response = await fetch(directionAPI)
+            if (!response.ok){                
+                //Obtenemos el mensaje de error de CartController
+                const errorMessage = await response.text();
+                return errorMessage;
+            }
+            const notificationList = await response.json();            
+            return notificationList;
+            
+        } catch (error) {
+            throw new Error('Failed to fetch data');                
+        }
+
+    }
+
+
+    export async function insertNewNotificationInDBAsync(newNotification: NotificationAPI): Promise<string | boolean | null> {
+                
+        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
+        let directionAPI = `${urlByReactEnviroment}/api/CampaignManagement/campaign/insert`;
+
+
+        //Validamos si el token ha expirado
+        let loginToken = sessionStorage.getItem("loginToken");
+        if (!loginToken) {            
+            window.location.reload();
+            return "Default Error";
+        }
+        let tokenFormat = jwtDecode(loginToken);
+
+        let todayDate = Date.now() / 1000;
+        let tokenLifeTime = tokenFormat.exp;
+        if (tokenLifeTime && tokenLifeTime < todayDate) window.location.reload();        
+        //Especificacion POST
+        let postConfig = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${loginToken}`
+            },
+            body: JSON.stringify(newNotification)
+        }    
+    
+        try {                 
+            let responsePost = await fetch(directionAPI,postConfig);            
+            if(!responsePost.ok){                                
+                const errorMessage = await responsePost.text();                                
+                return errorMessage;
+            }        
+            const insertedWithSuccess = await responsePost.json();                      
+            return insertedWithSuccess;
+        } catch (error) {            
+            throw new Error('Failed to POST data: '+ error);
+        }        
+    }
+
+    export async function deleteNotificationInDBAsync(idNotification: number): Promise<string | boolean | null> {
+                
+        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';        
+        let directionAPI = `${urlByReactEnviroment}/api/CampaignManagement/campaign/delete/${idNotification}`;
+
+        //Validamos si el token ha expirado
+        let loginToken = sessionStorage.getItem("loginToken");
+        if (!loginToken) {            
+            window.location.reload();
+            return "Default Error";
+        }
+        let tokenFormat = jwtDecode(loginToken);
+
+        let todayDate = Date.now() / 1000;
+        let tokenLifeTime = tokenFormat.exp;
+        if (tokenLifeTime && tokenLifeTime < todayDate) window.location.reload();
+
+        //Especificacion POST
+        let deleteConfig  = {
+            method: "DELETE",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${loginToken}`
+            }            
+        }            
+    
+        try {                 
+            let responsePost = await fetch(directionAPI,deleteConfig );            
+            if(!responsePost.ok){                                
+                const errorMessage = await responsePost.text();                                
+                return errorMessage;
+            }        
+            const deletedWithSuccess = await responsePost.json();                      
+            return deletedWithSuccess;
         } catch (error) {            
             throw new Error('Failed to POST data: '+ error);
         }        
