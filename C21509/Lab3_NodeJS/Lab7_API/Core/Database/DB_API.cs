@@ -4,21 +4,23 @@ using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using Store_API.Models;
 using Core.Models;
+using System.Diagnostics;
+
 
 namespace Store_API.Database
 {
     public class DB_API
     {
-        private string connectionString;
-        public DB_API(string connString)
-        {
+        private static string connectionString;
 
-            connectionString = connString;
+          public DB_API(string connectionStrings)
+        {
+            connectionString = connectionStrings;
         }
 
         public DB_API() { }
 
-        public void ConnectDB(string connectionString)
+        public void ConnectDB()
         {
             try
             {
@@ -74,6 +76,7 @@ namespace Store_API.Database
                             IdSaleLine INT AUTO_INCREMENT PRIMARY KEY,
                             IdSale INT NOT NULL,
                             IdProduct INT NOT NULL,
+                            Quantity INT NOT NULL DEFAULT 1,
                             Price DECIMAL(10, 2) NOT NULL,
                             FOREIGN KEY (IdSale) REFERENCES Sales(IdSale),
                             FOREIGN KEY (IdProduct) REFERENCES Products(IdProduct)
@@ -104,14 +107,14 @@ namespace Store_API.Database
                     {
                         string insertQuery = @"
                     INSERT INTO Products (Name, ImageURL, Description, Price, Categoria)
-                    VALUES (@name, @imageURL, @description @price, @categoria);
+                    VALUES (@name, @imageURL, @description, @price, @categoria);
                 ";
 
                         using (MySqlCommand command = new MySqlCommand(insertQuery, connection))
                         {
                             command.Parameters.AddWithValue("@name", actualProduct.Name);
                             command.Parameters.AddWithValue("@imageURL", actualProduct.ImageURL);
-                             command.Parameters.AddWithValue("@description", actualProduct.Description);
+                            command.Parameters.AddWithValue("@description", actualProduct.Description);
                             command.Parameters.AddWithValue("@price", actualProduct.Price);
                             command.Parameters.AddWithValue("@categoria", actualProduct.Categoria.IdCategory);
 
@@ -130,49 +133,41 @@ namespace Store_API.Database
         {
             List<Product> productListToStoreInstance = new List<Product>();
 
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                connection.Open();
+                string selectProducts = @"
+            SELECT IdProduct, Name, ImageURL, Description, Price, Categoria
+            FROM Products;
+        ";
+
+                using (MySqlCommand command = new MySqlCommand(selectProducts, connection))
                 {
-                    connection.Open();
-                    string selectProducts = @"
-                 SELECT IdProduct, Name, ImageURL, Description, Price, Categoria
-                    FROM Products;
-                    ";
-
-                    using (MySqlCommand command = new MySqlCommand(selectProducts, connection))
+                    using (MySqlDataReader readerTable = command.ExecuteReader())
                     {
-                        using (MySqlDataReader readerTable = command.ExecuteReader())
+                        while (readerTable.Read())
                         {
-                            while (readerTable.Read())
+                            int categoryId = Convert.ToInt32(readerTable["Categoria"]);
+                            Category category = Categories.GetCategoryById(categoryId);
+
+                            productListToStoreInstance.Add(new Product
                             {
-
-                                int categoryId = Convert.ToInt32(readerTable["Categoria"]);
-                                Category category = Categories.GetCategoryById(categoryId);
-
-
-                                productListToStoreInstance.Add(new Product
-                                {
-                                    Id = Convert.ToInt32(readerTable["IdProduct"]),
-                                    Name = readerTable["Name"].ToString(),
-                                    ImageURL = readerTable["ImageURL"].ToString(),
-                                    Description = readerTable["Description"].ToString(),
-                                    Price = Convert.ToDecimal(readerTable["Price"]),
-                                    Categoria = category
-                                });
-                            }
+                                Id = Convert.ToInt32(readerTable["IdProduct"]),
+                                Name = readerTable["Name"].ToString(),
+                                ImageURL = readerTable["ImageURL"].ToString(),
+                                Description = readerTable["Description"].ToString(),
+                                Price = Convert.ToDecimal(readerTable["Price"]),
+                                Categoria = category
+                            });
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
+
             return productListToStoreInstance;
         }
 
-        public async Task<string> InsertSaleAsync(Sale sale)
+        public async Task<string> InsertSaleAsync(Sale sale, List<ProductQuantity> productQuantities)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -185,8 +180,8 @@ namespace Store_API.Database
                         await InsertPaymentMethodsAsync(connection, transaction);
 
                         string insertSale = @"
-                    INSERT INTO Sales (Total, Subtotal, PurchaseNumber, Address, PaymentMethodId, DateSale)
-                    VALUES (@total, @subtotal, @purchaseNumber, @address, @paymentMethod, @dateSale);
+                INSERT INTO Sales (Total, Subtotal, PurchaseNumber, Address, PaymentMethodId, DateSale)
+                VALUES (@total, @subtotal, @purchaseNumber, @address, @paymentMethod, @dateSale);
                 ";
 
                         using (MySqlCommand command = new MySqlCommand(insertSale, connection, transaction))
@@ -200,7 +195,7 @@ namespace Store_API.Database
                             await command.ExecuteNonQueryAsync();
                         }
 
-                        await InsertSalesLinesAsync(connection, transaction, sale.PurchaseNumber, sale.Products.ToList());
+                        await InsertSalesLinesAsync(connection, transaction, sale.PurchaseNumber, productQuantities);
 
                         await transaction.CommitAsync();
 
@@ -241,20 +236,20 @@ namespace Store_API.Database
             }
         }
 
-        private async Task InsertSalesLinesAsync(MySqlConnection connection, MySqlTransaction transaction, string purchaseNumber, List<Product> products)
+        private async Task InsertSalesLinesAsync(MySqlConnection connection, MySqlTransaction transaction, string purchaseNumber, List<ProductQuantity> products)
         {
             string selectIdSale = "SELECT IdSale FROM Sales WHERE PurchaseNumber = @purchaseNumber";
-            decimal idSaleFromSelect;
+            int idSaleFromSelect;
 
             using (MySqlCommand command = new MySqlCommand(selectIdSale, connection, transaction))
             {
                 command.Parameters.AddWithValue("@purchaseNumber", purchaseNumber);
-                idSaleFromSelect = Convert.ToDecimal(await command.ExecuteScalarAsync());
+                idSaleFromSelect = Convert.ToInt32(await command.ExecuteScalarAsync());
             }
 
             string insertSalesLine = @"
-        INSERT INTO SalesLines (IdSale, IdProduct, Price)
-        VALUES (@idSale, @idProduct, @price);
+    INSERT INTO SalesLines (IdSale, IdProduct, Price, Quantity)
+    VALUES (@idSale, @idProduct, @price, @quantity);
     ";
 
             foreach (var product in products)
@@ -264,6 +259,7 @@ namespace Store_API.Database
                     command.Parameters.AddWithValue("@idSale", idSaleFromSelect);
                     command.Parameters.AddWithValue("@idProduct", product.Id);
                     command.Parameters.AddWithValue("@price", product.Price);
+                    command.Parameters.AddWithValue("@quantity", product.Quantity);
                     await command.ExecuteNonQueryAsync();
                 }
             }
@@ -364,10 +360,11 @@ namespace Store_API.Database
         {
             if (date == DateTime.MinValue)
             {
-                throw new ArgumentException("The date cannot be", nameof(date));
+                throw new ArgumentException("The date cannot be DateTime.MinValue.", nameof(date));
             }
 
             var weeklySalesReport = new List<SaleAttribute>();
+
             var startOfWeek = date.AddDays(-(int)date.DayOfWeek);
 
             using (var connection = new MySqlConnection(connectionString))
@@ -408,7 +405,7 @@ namespace Store_API.Database
             return weeklySalesReport;
         }
 
-        public async Task<bool> InsertionProductInDBAsync(Product insertedProduct)
+        public async Task<Product> InsertionProductInDBAsync(Product insertedProduct)
         {
             if (insertedProduct == null) throw new ArgumentException($"{nameof(insertedProduct)} cannot be null");
 
@@ -422,9 +419,10 @@ namespace Store_API.Database
                 transaction = await connectionWithDB.BeginTransactionAsync();
 
                 string insertQuery = @"
-                    INSERT INTO Products (Name, ImageUrl, Description, Price, Category)
-                    VALUES (@name, @imageUrl, @description, @price, @idCategory);
-                ";
+            INSERT INTO Products (Name, ImageUrl, Description, Price, Categoria)
+            VALUES (@name, @imageUrl, @description, @price, @categoria);
+            SELECT LAST_INSERT_ID();
+        ";
 
                 using (MySqlCommand command = new MySqlCommand(insertQuery, connectionWithDB))
                 {
@@ -434,8 +432,10 @@ namespace Store_API.Database
                     command.Parameters.AddWithValue("@imageUrl", insertedProduct.ImageURL);
                     command.Parameters.AddWithValue("@description", insertedProduct.Description);
                     command.Parameters.AddWithValue("@price", insertedProduct.Price);
-                    command.Parameters.AddWithValue("@idCategory", insertedProduct.Categoria.IdCategory);
-                    await command.ExecuteNonQueryAsync();
+                    command.Parameters.AddWithValue("@categoria", insertedProduct.Categoria.IdCategory);
+
+                    var result = await command.ExecuteScalarAsync();
+                    insertedProduct.Id = Convert.ToInt32(result);
                 }
                 await transaction.CommitAsync();
             }
@@ -455,7 +455,7 @@ namespace Store_API.Database
                 }
             }
 
-            return true;
+            return insertedProduct;
         }
 
         public async Task<bool> DeleteProductFromDBAsync(int productId)
@@ -503,6 +503,4 @@ namespace Store_API.Database
             return true;
         }
     }
-
-
 }

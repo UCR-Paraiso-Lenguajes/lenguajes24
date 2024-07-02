@@ -2,12 +2,13 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import { Parser } from 'html-to-react';
+import VerifyToken, { useTokenContext } from '@/app/components/verify_token';
+import { useRouter } from 'next/navigation';
 
 interface Product {
     id: number;
     name: string;
-    category: { idCategory: number, nameCategory: string };
+    Categoria: { IdCategory: number, NameCategory: string };
     price: number;
     description: string;
     imageURL: string;
@@ -18,26 +19,14 @@ interface Category {
     name: string;
 }
 
-declare module 'html-to-react' {
-    export class Parser {
-        constructor(options?: any);
-        parse: (html: string) => any; 
-    }
-}
+const ProductCrud = () => {
+    const { isValidToken, isVerifying } = useTokenContext();
+    const router = useRouter();
 
-const htmlParser = new Parser();
-
-export default function ProductCrud() {
     const [products, setProducts] = useState<Product[]>([]);
-    const [categoryListFromStore, setCategoryListFromStore] = useState<Category[]>([
-        { id: 1, name: "Electrónica" },
-        { id: 2, name: "Hogar y oficina" },
-        { id: 3, name: "Entretenimiento" },
-        { id: 4, name: "Tecnología" }
-    ]);
-    const [newProduct, setNewProduct] = useState<Omit<Product, 'id' | 'category'> & { category: string }>({
+    const [newProduct, setNewProduct] = useState<Omit<Product, 'id' | 'Categoria'> & { Categoria: number }>({
         name: '',
-        category: '',
+        Categoria: 0,
         price: 0,
         description: '',
         imageURL: ''
@@ -45,96 +34,153 @@ export default function ProductCrud() {
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [alert, setAlert] = useState<{ message: string, type: 'success' | 'danger' } | null>(null);
+
+    const [categoryListFromStore, setCategoryListFromStore] = useState<Category[]>([
+        { id: 1, name: "Electrónica" },
+        { id: 2, name: "Hogar y oficina" },
+        { id: 3, name: "Entretenimiento" },
+        { id: 4, name: "Tecnología" }
+    ]);
+
+    const loadProductData = async () => {
+        try {
+            const productResponse = await fetch('https://localhost:7165/api/Store');
+            if (!productResponse.ok) {
+                throw new Error('Failed to fetch products');
+            }
+            const productJson = await productResponse.json();
+            if (!Array.isArray(productJson.products)) {
+                throw new Error('Invalid product data format');
+            }
+            setProducts(productJson.products);
+        } catch (error) {
+            setError('Error al cargar productos');
+            setProducts([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const loadDataProductAPI = async () => {
-            try {
-                const response = await fetch('https://localhost:7165/api/Store');
-                const dataFromStore = await response.json();
-                if (dataFromStore) {
-                    setProducts(dataFromStore.productsFromStore);
-                    setCategoryListFromStore(dataFromStore.categoriesFromStore);
-                }
-            } catch (error) {
-                setError('Failed to fetch data: ' + error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadDataProductAPI();
-    }, []);
+        if (isValidToken && !isVerifying) {
+            loadProductData();
+        }
+    }, [isValidToken, isVerifying]);
+
+    useEffect(() => {
+        if (!isValidToken && !isVerifying) {
+            router.push("/../admin");
+        }
+    }, [isValidToken, isVerifying, router]);
 
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
 
         if (name === 'price') {
-            const newValue = value.replace(/\D/g, ''); 
-            const limitedValue = newValue.substring(0, 6); 
-            setNewProduct({ ...newProduct, [name]: parseInt(limitedValue) }); 
+            const newValue = value.replace(/\D/g, '');
+            const limitedValue = newValue.substring(0, 6);
+            setNewProduct({ ...newProduct, [name]: parseInt(limitedValue) });
+        } else if (name === 'Categoria') {
+            setNewProduct({ ...newProduct, [name]: parseInt(value) });
         } else {
             setNewProduct({ ...newProduct, [name]: value });
         }
     };
 
     const handleInsertProduct = async () => {
-        if (!newProduct.name || !newProduct.category || !newProduct.price || !newProduct.imageURL) {
-            alert("Todos los campos son obligatorios.");
+        if (!newProduct.name || !newProduct.Categoria || !newProduct.price || !newProduct.imageURL) {
+            setAlert({ message: "Todos los campos son obligatorios.", type: 'danger' });
             return;
         }
+
+        const selectedCategory = categoryListFromStore.find(Categoria => Categoria.id === newProduct.Categoria);
+        if (!selectedCategory) {
+            setAlert({ message: "Categoría no válida.", type: 'danger' });
+            return;
+        }
+
+        const categoryName = selectedCategory.name;
+
         try {
-            const response = await fetch('https://localhost:7165/api/Store/product/insert', {
+            const productToInsert = {
+                ...newProduct,
+                Categoria: { IdCategory: newProduct.Categoria, NameCategory: categoryName }
+            };
+
+            const response = await fetch('https://localhost:7165/api/Product/product/insert', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(newProduct),
+                body: JSON.stringify(productToInsert)
             });
 
-            const result = await response.json();
-            if (result.insertedProductStatus) {
-                setProducts([...products, { ...newProduct, id: result.newProductId, category: { idCategory: 0, nameCategory: newProduct.category } }]);
-                setShowModal(false);
-                clearFormFields();
+            if (!response.ok) {
+                const errorResponse = await response.json();
+                throw new Error(errorResponse.errors ? JSON.stringify(errorResponse.errors) : 'Failed to insert product');
             }
+
+            const insertedProduct = await response.json();
+
+            setProducts(prevProducts => [...prevProducts, insertedProduct]);
+
+            setShowModal(false);
+            clearFormFields();
         } catch (error) {
-            throw new Error('Failed to insert product:');
+            setError('Error al insertar el producto');
         }
     };
 
     const handleDeleteProduct = async (productId: number) => {
         try {
-            const response = await fetch('https://localhost:7165/api/Store/product/delete', {
+            const response = await fetch('https://localhost:7165/api/Product/product/delete', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id: productId }),
+                body: JSON.stringify({ id: productId })
             });
 
-            const result = await response.json();
-            if (result.deleteProductStatus) {
-                setProducts(products.filter(product => product.id !== productId));
+            if (!response.ok) {
+                throw new Error('Failed to delete product');
             }
+
+            setProducts(products.filter(product => product.id !== productId));
         } catch (error) {
-            throw new Error('Failed to delete product:');
+            setError('Error al eliminar el producto');
         }
     };
 
     const clearFormFields = () => {
         setNewProduct({
             name: '',
-            category: '',
+            Categoria: 0,
             price: 0,
             description: '',
             imageURL: ''
         });
     };
 
+    const renderDescription = (description: string) => {
+        return { __html: description };
+    };
+
+    if (isVerifying || !isValidToken) {
+        return <p></p>;
+    }
+
     return (
         <main className="container">
             <header className="my-4">
                 <h1>CRUD de Productos</h1>
             </header>
+
+            {alert && (
+                <div className={`alert alert-${alert.type}`} role="alert">
+                    {alert.message}
+                </div>
+            )}
 
             <button className="btn btn-primary mb-4" onClick={() => setShowModal(true)}>Añadir Producto</button>
 
@@ -162,12 +208,11 @@ export default function ProductCrud() {
                                 <tr key={product.id}>
                                     <td>{product.id}</td>
                                     <td>{product.name}</td>
-                                    <td>{product.category && product.category.nameCategory}</td>
+                                    <td>{product.Categoria && product.Categoria.NameCategory}</td>
                                     <td>{product.price}</td>
-                                    <td dangerouslySetInnerHTML={{ __html: product.description }}></td>
+                                    <td dangerouslySetInnerHTML={renderDescription(product.description)}></td>
                                     <td><img src={product.imageURL} alt={product.name} className="img-thumbnail" style={{ width: '100px' }} /></td>
                                     <td>
-                                        <button className="btn btn-warning mr-2">Editar</button>
                                         <button className="btn btn-danger" onClick={() => handleDeleteProduct(product.id)}>Eliminar</button>
                                     </td>
                                 </tr>
@@ -202,18 +247,18 @@ export default function ProductCrud() {
                                         />
                                     </div>
                                     <div className="mb-3">
-                                        <label htmlFor="category" className="form-label">Categoría</label>
+                                        <label htmlFor="Categoria" className="form-label">Categoría</label>
                                         <select
                                             className="form-select"
-                                            id="category"
-                                            name="category"
-                                            value={newProduct.category}
+                                            id="Categoria"
+                                            name="Categoria"
+                                            value={newProduct.Categoria}
                                             onChange={handleInputChange}
                                             required
                                         >
-                                            <option value="">Selecciona una categoría</option>
+                                            <option value={0}>Selecciona una categoría</option>
                                             {categoryListFromStore.map(category => (
-                                                <option key={category.id} value={category.name}>
+                                                <option key={category.id} value={category.id}>
                                                     {category.name}
                                                 </option>
                                             ))}
@@ -229,7 +274,7 @@ export default function ProductCrud() {
                                             value={newProduct.price}
                                             onChange={handleInputChange}
                                             required
-                                            inputMode="numeric" 
+                                            inputMode="numeric"
                                         />
                                     </div>
                                     <div className="mb-3">
@@ -268,4 +313,12 @@ export default function ProductCrud() {
             )}
         </main>
     );
-}
+};
+
+const WrappedProductCrud = () => (
+    <VerifyToken>
+        <ProductCrud />
+    </VerifyToken>
+);
+
+export default WrappedProductCrud;

@@ -1,5 +1,8 @@
 using Store_API.Database;
 using Store_API.Models;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Store_API.Business
 {
@@ -13,22 +16,33 @@ namespace Store_API.Business
             var taxPercentage = Store.Instance.TaxPercentage;
 
             // Encontrar productos basados en los IDs en el carrito
-            IEnumerable<Product> matchingProducts = products.Where(p => cart.ProductIds.Contains(p.Id)).ToList();
+            var matchingProducts = products.Where(p => cart.Products.Any(cp => cp.Id == p.Id)).ToList();
 
             decimal purchaseAmount = 0;
-            foreach (var product in matchingProducts)
+            foreach (var productQuantity in cart.Products)
             {
-                purchaseAmount += product.Price;
+                var product = matchingProducts.FirstOrDefault(p => p.Id == productQuantity.Id);
+                if (product != null)
+                {
+                    purchaseAmount += product.Price * productQuantity.Quantity;
+                }
             }
 
             PaymentMethods.Type paymentMethodType = cart.PaymentMethod;
 
             string purchaseNumber = GeneratePurchaseNumber();
 
+            // Crear una lista de ProductQuantity con el precio incluido
+            var productQuantities = cart.Products.Select(pq =>
+            {
+                var product = matchingProducts.First(mp => mp.Id == pq.Id);
+                return new ProductQuantity(pq.Id, pq.Quantity, product.Price);
+            }).ToList();
+
             var sale = new Sale(matchingProducts, cart.Address, purchaseAmount, paymentMethodType, purchaseNumber);
 
             sale.PurchaseNumber = purchaseNumber;
-            await dbAPI.InsertSaleAsync(sale);
+            await dbAPI.InsertSaleAsync(sale, productQuantities);
 
             return purchaseNumber;
         }

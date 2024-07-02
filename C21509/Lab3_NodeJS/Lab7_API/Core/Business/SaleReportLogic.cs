@@ -7,6 +7,7 @@ namespace Store_API.Business
     {
         private readonly DB_API dbApi;
 
+
         public SaleReportLogic()
         {
             dbApi = new DB_API();

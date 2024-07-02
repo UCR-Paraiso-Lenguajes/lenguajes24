@@ -34,7 +34,7 @@ const PurchasedItems = () => {
 
   useEffect(() => {
     const savedCartProducts = JSON.parse(localStorage.getItem('cartProducts') || '[]');
-    const subtotal = savedCartProducts.reduce((acc: number, product: ProductItem) => acc + product.price, 0);
+    const subtotal = savedCartProducts.reduce((acc: number, product: ProductItem) => acc + product.price * product.quantity, 0);
     const total = subtotal; 
 
     setCartState(prevState => ({
@@ -75,10 +75,13 @@ const PurchasedItems = () => {
   };
 
   const sendDataToAPI = async () => {
-    const productIds = cartState.cart.products.map((product: any) => Number(product.id));
+    const productIdsAndQuantities = cartState.cart.products.map((product: ProductItem) => ({
+      id: Number(product.id),
+      quantity: product.quantity,
+    }));
     const paymentMethodValue = selectedPaymentMethod === PaymentMethod.EFECTIVO ? 0 : 1; 
     const purchaseData = {
-      ProductIds: productIds,
+      Products: productIdsAndQuantities,
       Address: cartState.cart.deliveryAddress,
       PaymentMethod: paymentMethodValue, 
       Total: cartState.cart.total, 
@@ -97,7 +100,7 @@ const PurchasedItems = () => {
   
       if (response.ok) {
         const data = await response.json();
-        setPurchaseNumber(data.purchaseNumber);
+        setPurchaseNumber(data.successPurchase);
         setPaymentConfirmation(`Su compra ha sido confirmada.`);
         localStorage.removeItem('cartProducts');
       } else {
@@ -162,6 +165,7 @@ const PurchasedItems = () => {
             <li key={product.id}>
               <p>{product.name}</p>
               <p>Precio: ${product.price}</p>
+              <p>Cantidad: {product.quantity}</p>
             </li>
           ))}
         </ul>
@@ -171,7 +175,6 @@ const PurchasedItems = () => {
       </Link>
       <button onClick={sendDataToAPI} className="button">Confirmar Compra</button>
       <p>Número de Compra: {purchaseNumber}</p>
-
     </div>
   );
 };

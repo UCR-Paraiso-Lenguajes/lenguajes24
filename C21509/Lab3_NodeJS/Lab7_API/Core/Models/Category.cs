@@ -6,8 +6,8 @@ namespace Core.Models
 {
     public struct Category
     {
-        public string NameCategory { get; }
-        public int IdCategory { get; }
+        public string NameCategory { get; set; }
+        public int IdCategory { get; set; }
 
         public Category(int idCategory, string nameCategory)
         {

@@ -11,17 +11,19 @@ public class Product : ICloneable
     public int Id { get; set; }
     public Category Categoria {get; set;}
 
-    // Implementation of the ICloneable interface
-    public object Clone()
-    {
-        return new Product
+    public Product() { }
+   public Product(string name, string imageURL, decimal price, string description, int id, Category categoria)
         {
-            Id = this.Id,
-            Name = this.Name,
-            ImageURL = this.ImageURL,
-            Description= this.Description,
-            Price = this.Price,
-            Categoria  = this.Categoria 
-        };
-    }
+            Name = name;
+            ImageURL = imageURL;
+            Price = price;
+            Description = description;
+            Id = id;
+            Categoria = categoria;
+        }
+
+        public object Clone()
+        {
+            return new Product(Name, ImageURL, Price, Description, Id, Categoria);
+        }
 }

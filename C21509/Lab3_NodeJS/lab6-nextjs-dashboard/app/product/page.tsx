@@ -1,7 +1,8 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from 'react';
 import { ProductItem, Product } from './layout';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Carousel } from 'react-bootstrap';
 import '../HTMLPageDemo.css';
 import Link from 'next/link';
 
@@ -90,22 +91,26 @@ export default function Page() {
     });
   };
 
+  const handleAddToCartCarousel = (product: ProductItem) => {
+    addToCart(product);
+  };
+
   const handleSearch = async () => {
     try {
       setLoading(true);
       setError('');
-  
+
       let searchUrl = `https://localhost:7165/api/Store/Search?productName=${encodeURIComponent(searchQuery)}`;
-  
+
       if (selectedCategory !== 0) {
         searchUrl += `&categoryId=${selectedCategory}`;
       }
-  
+
       const response = await fetch(searchUrl);
       if (!response.ok) {
         throw new Error('Failed to fetch products');
       }
-  
+
       const productJson = await response.json();
       setAvailableProducts(productJson);
     } catch (error) {
@@ -118,6 +123,10 @@ export default function Page() {
   const filteredProducts = availableProducts.filter(product =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const renderDescription = (description: string) => {
+    return { __html: description };
+  };
 
   return (
     <main className="flex min-h-screen flex-col p-6">
@@ -174,27 +183,23 @@ export default function Page() {
       )}
 
       <div className="products col-sm-6" style={{ margin: '0 auto' }}>
-        <div id="productsCarouselControl" className="carousel" data-bs-ride="carousel">
-          <div className="carousel-inner">
-            <div className="carousel-item active">
-              <img src="/img/Chromecast.jpg" className="d-block w-100" />
-            </div>
-            <div className="carousel-item">
-              <img src="/img/teclado.jpg" className="d-block w-100" />
-            </div>
-            <div className="carousel-item">
-              <img src="/img/Pantalla.jpg" className="d-block w-100" />
-            </div>
-          </div>
-          <button className="carousel-control-prev" type="button" data-bs-target="#productsCarouselControl" data-bs-slide="prev">
-            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span className="visually-hidden">Previous</span>
-          </button>
-          <button className="carousel-control-next" type="button" data-bs-target="#productsCarouselControl" data-bs-slide="next">
-            <span className="carousel-control-next-icon" aria-hidden="true"></span>
-            <span className="visually-hidden">Next</span>
-          </button>
-        </div>
+        <Carousel>
+          {availableProducts.map(product => (
+            <Carousel.Item key={product.id}>
+              <img
+                className="d-block w-100"
+                src={product.imageURL}
+                alt={product.name}
+                style={{ maxHeight: "400px", objectFit: "contain" }}
+              />
+              <Carousel.Caption>
+                <h3>{product.name}</h3>
+                <div dangerouslySetInnerHTML={renderDescription(product.description)}></div>
+                <button className="btn btn-primary" onClick={() => handleAddToCartCarousel(product)}>Comprar</button>
+              </Carousel.Caption>
+            </Carousel.Item>
+          ))}
+        </Carousel>
       </div>
 
       <footer className="footer-container">

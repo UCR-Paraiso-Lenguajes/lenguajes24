@@ -13,18 +13,20 @@ namespace Store_API.Controllers
         {
         }
 
-        [HttpGet, Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetSalesReportAsync( DateTime date)
+        [HttpGet]
+        public async Task<IActionResult> GetSalesReportAsync(DateTime date)
         {
-            if (date == DateTime.MinValue || date > DateTime.Now)
-            {
-                return BadRequest("Invalid date. Date cannot be later than the current date.");
-            }
-
             try
             {
-                var saleReportLogic = new SaleReportLogic(); 
+                // Validación de la fecha si es necesario
+                if (date == DateTime.MinValue || date > DateTime.Now)
+                {
+                    return BadRequest("Invalid date. Date cannot be later than the current date.");
+                }
+
+                var saleReportLogic = new SaleReportLogic();
                 var salesReport = await saleReportLogic.GenerateSalesReportAsync(date);
+
                 return Ok(salesReport);
             }
             catch (Exception ex)

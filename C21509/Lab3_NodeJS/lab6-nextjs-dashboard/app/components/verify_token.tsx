@@ -18,23 +18,25 @@ export default function VerifyToken({ children }: { children: React.ReactNode })
     if (!loginToken) {
       setIsValidToken(false);
       setIsVerifying(false);
-      router.push("/../admin"); // Redirect immediately if no token
+      router.push("/../admin");
       return;
     }
 
     try {
-      const tokenFormat = jwtDecode(loginToken);
+      const tokenFormat: { exp: number } = jwtDecode(loginToken);
       const todayDate = Date.now() / 1000;
 
-      if (tokenFormat.exp && tokenFormat.exp < todayDate) {
+      if (tokenFormat.exp < todayDate) {
         setIsValidToken(false);
-        router.push("/../admin"); // Redirect immediately if token is expired
+        sessionStorage.removeItem("loginToken");
+        router.push("/../admin");
       } else {
         setIsValidToken(true);
       }
     } catch (error) {
       setIsValidToken(false);
-      router.push("/../admin"); // Redirect immediately if token is invalid
+      sessionStorage.removeItem("loginToken");
+      router.push("/../admin");
     } finally {
       setIsVerifying(false);
     }
@@ -43,13 +45,21 @@ export default function VerifyToken({ children }: { children: React.ReactNode })
   useEffect(() => {
     verifyToken();
 
-    const handleStorageChange = () => {
+    const intervalId = setInterval(() => {
       verifyToken();
+    }, 60000); // Verificar cada 60 segundos
+
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === "loginToken" && event.newValue === null) {
+        setIsValidToken(false);
+        router.push("/../admin");
+      }
     };
 
     window.addEventListener("storage", handleStorageChange);
 
     return () => {
+      clearInterval(intervalId);
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);

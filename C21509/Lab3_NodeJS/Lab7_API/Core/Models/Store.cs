@@ -1,4 +1,5 @@
 using Core.Models;
+using Org.BouncyCastle.Security;
 using Store_API.Database;
 
 namespace Store_API.Models
@@ -14,11 +15,15 @@ namespace Store_API.Models
         }
 
         public readonly static Store Instance;
+    
 
         // Static constructor
         static Store()
         {
+           
             DB_API dbApi = new DB_API();
+            
+            dbApi.ConnectDB();
 
             var products = new List<Product>
             {
@@ -96,11 +101,12 @@ namespace Store_API.Models
                 }
             };
 
+            //dbApi.InsertProductsStore(products);
+
             List<Product> dbProducts = dbApi.SelectProducts();
 
             Store.Instance = new Store(dbProducts);
-
-            //dbApi.InsertProductsStore(dbProducts);
+        
         }
 
         public void AddNewProductToStore(Product newProduct)

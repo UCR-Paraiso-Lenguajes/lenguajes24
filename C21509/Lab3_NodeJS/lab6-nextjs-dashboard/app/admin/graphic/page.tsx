@@ -1,34 +1,37 @@
-"use client";
+"use client"
 import React, { useState, useEffect } from 'react';
 import { Chart } from 'react-google-charts';
-import "react-datepicker/dist/react-datepicker.css";
 import VerifyToken, { useTokenContext } from '@/app/components/verify_token';
 import { useRouter } from 'next/navigation';
+
+interface SalesAttribute {
+  saleId: number;
+  purchaseNumber: string;
+  total: number;
+  purchaseDate: string; // Changed to string based on backend response
+  product: string;
+  dailySale: string;
+  saleCounter: number;
+}
 
 const Graphic = () => {
   const { isValidToken, isVerifying } = useTokenContext();
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [dailySales, setDailySales] = useState([]);
+  const [dailySales, setDailySales] = useState<SalesAttribute[]>([]);
   const [weeklySales, setWeeklySales] = useState<[string, string][]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const fetchData = async () => {
     if (!isValidToken) {
-      return; // Skip fetching if token is invalid
+      return;
     }
 
     setLoading(true);
     try {
-      const formattedDate = selectedDate.toISOString().split('T')[0];
-      const response = await fetch(`https://localhost:7165/api/SalesReport?date=${formattedDate}`,
-        {
-          headers: {
-            'Authorization': 'Bearer ${token}' 
-          }
-        }
-      );
+      const formattedDate = selectedDate.toISOString().split('T')[0]; // Formato yyyy-MM-dd
+      const response = await fetch(`https://localhost:7165/api/SalesReport?date=${formattedDate}`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch sales data');
@@ -36,12 +39,12 @@ const Graphic = () => {
 
       const data = await response.json();
 
-      if (!data || !data.DailySales || !data.WeeklySales) {
+      if (!data || !data.dailySales || !data.weeklySales) {
         throw new Error('Sales data is empty or missing');
       }
 
-      const formattedDailySales = data.DailySales.map((sale: any) => ({
-        id: sale.saleId,
+      const formattedDailySales: SalesAttribute[] = data.dailySales.map((sale: any) => ({
+        saleId: sale.saleId,
         purchaseNumber: sale.purchaseNumber,
         total: sale.total,
         purchaseDate: new Date(sale.purchaseDate).toLocaleDateString(),
@@ -52,9 +55,9 @@ const Graphic = () => {
 
       setDailySales(formattedDailySales);
 
-      const weeklySalesData: [string, string][] = data.WeeklySales.reduce((acc: any[], current: any) => {
+      const weeklySalesData: [string, string][] = data.weeklySales.reduce((acc: any[], current: any) => {
         if (current.dailySale && current.total) {
-          acc.push([current.dailySale, current.total]);
+          acc.push([current.dailySale, current.total.toString()]); // Asegúrate de que total sea string para el Chart
         }
         return acc;
       }, []);
@@ -71,7 +74,7 @@ const Graphic = () => {
     }
   };
 
-  const handleDateChange = (e: any) => {
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDate(new Date(e.target.value));
   };
 
@@ -88,7 +91,7 @@ const Graphic = () => {
   }, [isValidToken, isVerifying, router]);
 
   if (isVerifying || !isValidToken) {
-    return <p></p>; 
+    return <p></p>;
   }
 
   return (
@@ -122,9 +125,9 @@ const Graphic = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dailySales.map(({ id, purchaseNumber, total, purchaseDate, product, dailySale, saleCounter }, index) => (
+                  {dailySales.map(({ saleId, purchaseNumber, total, purchaseDate, product, dailySale, saleCounter }, index) => (
                     <tr key={index}>
-                      <td>{id}</td>
+                      <td>{saleId}</td>
                       <td>{purchaseNumber}</td>
                       <td>{total}</td>
                       <td>{purchaseDate}</td>

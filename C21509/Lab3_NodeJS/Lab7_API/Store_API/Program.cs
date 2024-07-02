@@ -1,21 +1,19 @@
 using Store_API.Database;
-using Store_API;
 using Microsoft.Extensions.Configuration;
-using Microsoft.OpenApi.Models; 
+using Microsoft.OpenApi.Models;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-
+// Configuración de servicios
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
+
+// Configuración de Swagger
 builder.Services.AddSwaggerGen(setup =>
 {
-    // Include 'SecurityScheme' to use JWT Authentication
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
         BearerFormat = "JWT",
@@ -38,10 +36,9 @@ builder.Services.AddSwaggerGen(setup =>
     {
         { jwtSecurityScheme, Array.Empty<string>() }
     });
-
 });
 
-
+// Configuración de CORS
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
@@ -52,11 +49,10 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Configuración de autenticación JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-        options =>
+    .AddJwtBearer(options =>
     {
-       
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -69,35 +65,49 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+    
 
-var app = builder.Build();
+// Configuración de appsettings.json y base de datos
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-
-// Configure the HTTP request pipeline.
-builder.Configuration.AddJsonFile("appsettings.json", optional: false,reloadOnChange: true);
-if (app.Environment.IsDevelopment())
+// Configuración de la base de datos según el entorno
+if (builder.Environment.IsDevelopment())
 {
     string connectionString = builder.Configuration.GetSection("ConnectionStrings").GetSection("DataBase").Value.ToString();
-    DB_API dbApi= new DB_API(connectionString);
-    string DB_value = Environment.GetEnvironmentVariable("DB");
-    if (!String.IsNullOrEmpty(DB_value))
-    {
-        connectionString = DB_value;
-    }
+    builder.Services.AddSingleton(new DB_API(connectionString));
 
-    dbApi.ConnectDB(connectionString);
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var dbApi = new DB_API();
+    dbApi.ConnectDB();
+
+}
+else if (builder.Environment.IsProduction())
+{
+    string connectionString = builder.Configuration.GetSection("ConnectionStrings").GetSection("DataBase").Value.ToString();
+    builder.Services.AddSingleton(new DB_API(connectionString));
+
+    var dbApi = new DB_API();
+    dbApi.ConnectDB();
+
 }
 
+// Construir la aplicación
+var app = builder.Build();
+
+// Middleware de HTTPS
 app.UseHttpsRedirection();
 
+// Middleware de autenticación y autorización
 app.UseAuthentication();
-
 app.UseAuthorization();
 
+// Endpoints de controladores
 app.MapControllers();
 
+// Middleware de CORS
 app.UseCors();
+
+// Configuración de Swagger y ejecución de la aplicación
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.Run();

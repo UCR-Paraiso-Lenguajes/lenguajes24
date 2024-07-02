@@ -1,9 +1,11 @@
 using Core.Business;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Store_API.Models;
+using Core.Models;
+using Store_API.Database;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Store_API.Controllers
 {
@@ -12,35 +14,45 @@ namespace Store_API.Controllers
     public class ProductController : ControllerBase
     {
         private readonly ProductLogic productLogic;
+        private readonly DB_API dbApi;
 
-        public ProductController()
+        public ProductController(DB_API dbApi)
         {
+            this.dbApi = dbApi ?? throw new ArgumentNullException(nameof(dbApi));
             productLogic = new ProductLogic();
             productLogic.referenceProductInserted = Store.Instance.AddNewProductToStore;
         }
 
         [HttpPost("product/insert")]
-        //[Authorize(Roles = "Admin")]
-        public async Task<IActionResult> InsertNewProductInStoreAsync([FromBody] Product newProduct)
+        public async Task<IActionResult> InsertProduct([FromBody] Product product)
         {
+            if (product == null)
+            {
+                return BadRequest("The product object cannot be null.");
+            }
+
+            var insertedProduct = new Product(
+                product.Name,
+                product.ImageURL,
+                product.Price,
+                product.Description,
+                product.Id,
+                new Category(product.Categoria.IdCategory, product.Categoria.NameCategory)
+            );
+
             try
             {
-                bool insertedProductStatus = await productLogic.insertProductAsync(newProduct, Store.Instance.AddNewProductToStore);
-                return Ok(new { insertedProductStatus });
-            }
-            catch (ArgumentNullException ex)
-            {
-                return StatusCode(400, $"Product cannot be null: {ex.Message}");
+                var resultProduct = await dbApi.InsertionProductInDBAsync(insertedProduct);
+                return Ok(resultProduct);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Product insertion was unsuccessful: {ex.Message}");
+                return BadRequest(new { insertedProductStatus = false, message = ex.Message });
             }
         }
-
         [HttpPost("product/delete")]
-        //[Authorize(Roles = "Admin")]
-       public async Task<IActionResult> DeleteProductInDBAsync([FromBody] Product productToDelete)
+        //[HttpGet, Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteProductInDBAsync([FromBody] Product productToDelete)
         {
             try
             {
@@ -53,7 +65,7 @@ namespace Store_API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error has ocurred: {ex.Message}");
+                return StatusCode(500, $"An error has occurred: {ex.Message}");
             }
         }
     }

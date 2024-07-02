@@ -22,8 +22,8 @@ namespace Store_API.Controllers
                 return BadRequest("The cart object cannot be null.");
             }
 
-            Cart actualCart = new Cart(
-                cart.ProductIds,
+            var actualCart = new Cart(
+                cart.Products,
                 cart.Address,
                 cart.PaymentMethod,
                 cart.Total,
