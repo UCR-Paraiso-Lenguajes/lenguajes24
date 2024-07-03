@@ -23,7 +23,7 @@ namespace StoreApi.Handler
             ValidateCommand(command);
             var sinpe = new Sinpe()
             {
-                UuidSales = command.UuidSales,
+                SalesUuid = command.SalesUuid,
                 ConfirmationNumber = command.ConfirmationNumber
             };
 
@@ -32,7 +32,7 @@ namespace StoreApi.Handler
 
         private void ValidateCommand(CreateSinpeCommand command)
         {
-            if (command.UuidSales == Guid.Empty)
+            if (command.SalesUuid == Guid.Empty)
             {
                 throw new ArgumentException("The uuid cannot be empty.");
             }

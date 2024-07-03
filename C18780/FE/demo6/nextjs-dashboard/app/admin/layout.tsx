@@ -1,9 +1,7 @@
-import SideNav from "@/app/ui/admin/sidenav";
-import '../ui/styles/reports.css';
-import '../ui/styles/login.css';
-import '../ui/styles/navAdmin.css';
+'use client'
+import SideNav from "../components/NavbarAdmin/sidenav";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'react-calendar/dist/Calendar.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
@@ -13,7 +11,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     {children}
                 </div>
                 <div className="col-ms col-md col-xl">
-                    <SideNav />
+                    <SideNav/>
                 </div>
             </div>
         </div>

@@ -1,8 +1,8 @@
 import { getCookie } from "cookies-next";
 import { UUID } from "crypto";
 import { useEffect, useState } from "react";
-import { Ad } from "../lib/data-definitions";
 import * as signalR from '@microsoft/signalr';
+import { Ad } from "../utils/data-definitions";
 
 let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7099';
 

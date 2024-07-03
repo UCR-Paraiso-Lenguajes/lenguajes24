@@ -1,0 +1,47 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+.btnNabvar {
+    background-color: transparent;
+    color: white;
+}
+
+.nav-item {
+    margin-right: 40px;
+    margin-top: 10px;
+}
+
+.navbar-brand {
+    margin-top: -5px;
+    margin-bottom: -5px;
+}
+
+a:hover .fa-icon {
+    animation: bounce 0.5s;
+    scale: 1.2;
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-10px);
+    }
+
+    60% {
+        transform: translateY(-5px);
+    }
+}

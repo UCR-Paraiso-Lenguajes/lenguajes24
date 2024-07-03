@@ -1,9 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-      domains: ['extremetechcr.com', /* otros dominios permitidos */],
-    },
-  };
-  
-  module.exports = nextConfig;
-  
+  images: {
+    domains: ['extremetechcr.com'],
+  },
+};
+
+module.exports = nextConfig;

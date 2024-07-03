@@ -136,7 +136,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.MapHub<CampaignHub>("/hub");
-
+app.MapHub<PaymentMethodsHub>("/paymentMethodsHub");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -152,8 +152,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-CreateDatabaseAndTables(app);
-
 var value = Environment.GetEnvironmentVariable("DB");
 
 
@@ -166,13 +164,3 @@ app.MapControllers();
 app.UseCors("corsapp");
 
 app.Run();
-
-// Método para crear la base de datos y sus tablas si no existen
-void CreateDatabaseAndTables(IApplicationBuilder app)
-{
-    using (var serviceScope = app.ApplicationServices.CreateScope())
-    {
-        var dbContext = serviceScope.ServiceProvider.GetRequiredService<DbContextClass>();
-        dbContext.Database.EnsureCreated();
-    }
-}

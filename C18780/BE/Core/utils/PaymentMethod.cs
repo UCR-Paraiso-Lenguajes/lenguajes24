@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StoreApi.utils
 {
-
     [NotMapped]
     public abstract class PaymentMethods
     {
@@ -11,11 +10,16 @@ namespace StoreApi.utils
             CASH = 0,
             SINPE = 1
         }
+
         public Type PaymentType { get; set; }
-        public PaymentMethods(PaymentMethods.Type paymentType)
+        public string Name { get; set; }
+        public bool IsEnabled { get; set; }
+
+        protected PaymentMethods(Type paymentType, string name, bool isEnabled)
         {
             PaymentType = paymentType;
-
+            Name = name;
+            IsEnabled = isEnabled;
         }
 
         public static Type Find(Type type)
@@ -31,18 +35,18 @@ namespace StoreApi.utils
             }
         }
     }
+
     public sealed class SinpeMovil : PaymentMethods
     {
-        public SinpeMovil() : base(Type.SINPE)
+        public SinpeMovil() : base(Type.SINPE, "Sinpe Móvil", true)
         {
-
         }
     }
+
     public sealed class Cash : PaymentMethods
     {
-        public Cash() : base(Type.CASH)
+        public Cash() : base(Type.CASH, "Cash", true)
         {
-
         }
     }
 }

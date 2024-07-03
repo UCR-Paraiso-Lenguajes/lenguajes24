@@ -1,10 +1,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using SignalRWebpack.Hubs;
 using StoreApi.Cache;
 using StoreApi.Models;
 using StoreApi.Queries;
 using StoreApi.Search;
+using StoreApi.utils;
 
 namespace StoreApi.Controllers
 {
@@ -16,12 +19,16 @@ namespace StoreApi.Controllers
         private readonly CategoryController categoryController;
         private CategoriesCache categoriesCache;
         private ProductsCache productsCache = ProductsCache.GetInstance();
-        public StoreController(IMediator mediator, CategoryController categoryController)
+        private readonly IHubContext<PaymentMethodsHub> _hubContext;
+
+        public StoreController(IMediator mediator, CategoryController categoryController, IHubContext<PaymentMethodsHub> hubContext)
         {
             if (mediator == null)
             {
                 throw new ArgumentException("Illegal action, the mediator is being touched. The mediator is null and void.");
             }
+            _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
+
             this.mediator = mediator;
             this.categoryController = categoryController;
             categoriesCache = CategoriesCache.GetInstance();
@@ -56,7 +63,30 @@ namespace StoreApi.Controllers
                 products = new List<Product>(productSearch.Search(search));
             }
 
-            return new Store(products);
+            return new Store(products, paymentMethods);
+        }
+
+        private static List<PaymentMethods> paymentMethods = new List<PaymentMethods>
+        {
+            new SinpeMovil(),
+            new Cash()
+        };
+
+        [HttpPost("UpdatePaymentEnabled"), Authorize(Roles = "Operator")]
+        public async Task<IActionResult> UpdatePaymentEnabledAsync([FromBody] int paymentMethod)
+        {
+            PaymentMethods.Type paymentMethodType = (PaymentMethods.Type)paymentMethod;
+            PaymentMethods payment = paymentMethods.Find(p => p.PaymentType == paymentMethodType);
+            payment.IsEnabled = !payment.IsEnabled;
+            await _hubContext.Clients.All.SendAsync("PaymentMethodsChange", paymentMethods);
+            return Ok();
+        }
+
+        [HttpGet("PaymentMethods")]
+        [AllowAnonymous]
+        public Task<List<PaymentMethods>> GetPaymentMethods()
+        {
+            return Task.FromResult(paymentMethods);
         }
     }
 }

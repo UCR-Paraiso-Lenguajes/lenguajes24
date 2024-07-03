@@ -33,11 +33,11 @@ namespace StoreApi.Controllers
             var sinpeMovil = new Sinpe
             {
                 ConfirmationNumber = sinpeMovilInput.confirmationNumber,
-                UuidSales = sales.Uuid
+                SalesUuid = sales.Uuid
             };
 
             var createSinpeCommand = new CreateSinpeCommand(
-                uuidSales: sinpeMovil.UuidSales,
+                salesUuid: sinpeMovil.SalesUuid,
                 confirmationNumber: sinpeMovil.ConfirmationNumber
             );
             var sinpe = await _mediator.Send(createSinpeCommand);

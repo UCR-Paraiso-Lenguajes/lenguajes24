@@ -41,18 +41,19 @@ namespace StoreApi
 
             var sales = await _mediator.Send(createSalesCommand);
 
-            foreach (var productId in cart.ProductIds)
+            var productCounts = cart.ProductIds.GroupBy(id => id).ToDictionary(g => g.Key, g => g.Count());
+            
+            foreach (var p in productCounts)
             {
-                var product = await GetProductById(Guid.Parse(productId));
-
+                var product = await GetProductById(Guid.Parse(p.Key));
                 if (product != null)
                 {
                     total += product.Price;
 
                     var createSalesLineCommand = new CreateSalesLineCommand(
-                        quantity: 1,
+                        quantity: p.Value,
                         subTotal: product.Price,
-                        uuidProduct: Guid.Parse(productId),
+                        uuidProduct: Guid.Parse(p.Key),
                         uuidSales: sales.Uuid
                     );
 

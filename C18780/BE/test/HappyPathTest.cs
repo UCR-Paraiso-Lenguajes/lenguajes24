@@ -1,36 +1,28 @@
-using Microsoft.Extensions.Configuration;
-using Moq;
 using StoreApi.Models;
 using StoreApi.Repositories;
+using Microsoft.Extensions.Configuration;
 
 namespace StoreApiTests
 {
     public class HappyPathTest
     {
         private IConfiguration _configuration;
-        private ISalesRepository _salesRepository;
-        [OneTimeSetUp]
-        public async Task Setup()
+        private IProductRepository _productRepository;
+
+        [SetUp]
+        public void Setup()
         {
             _configuration = new ConfigurationBuilder()
                        .AddJsonFile("appsettings.json")
                        .Build();
-
-            var salesRepositoryMock = new Mock<ISalesRepository>();
-
-            //Configuracion de los metodos simulados de ISalesRepository
-            salesRepositoryMock.Setup(repo => repo.AddSalesAsync(It.IsAny<Sales>()))
-                                .ReturnsAsync(new Sales() { Uuid = Guid.NewGuid() });
-
-            salesRepositoryMock.Setup(repo => repo.GetSalesByPurchaseNumberAsync(It.IsAny<string>()))
-                                .ReturnsAsync(new Sales() { Uuid = Guid.NewGuid() });
-
-            _salesRepository = salesRepositoryMock.Object;
+            _productRepository = new ProductRepository(_configuration);
         }
 
+
         [Test]
-        public async Task AddSalesAsync()
+        public async Task AddSalesAsync_ValidSales_ReturnsSales()
         {
+            var salesRepository = new SalesRepository(_configuration);
             var sales = new Sales
             {
                 Date = DateTime.Now,
@@ -40,8 +32,39 @@ namespace StoreApiTests
                 Address = "San Jose",
                 PurchaseNumber = "123456"
             };
-            var result = await _salesRepository.AddSalesAsync(sales);
+
+            var result = await salesRepository.AddSalesAsync(sales);
+
             Assert.NotNull(result);
+            Assert.AreEqual(sales.Date, result.Date);
+            Assert.AreEqual(sales.Confirmation, result.Confirmation);
+            Assert.AreEqual(sales.PaymentMethod, result.PaymentMethod);
+            Assert.AreEqual(sales.Total, result.Total);
+            Assert.AreEqual(sales.Address, result.Address);
+            Assert.AreEqual(sales.PurchaseNumber, result.PurchaseNumber);
+        }
+
+        [Test]
+        public async Task GetSalesByPurchaseNumberAsync_ExistingPurchaseNumber_ReturnsSales()
+        {
+            var salesRepository = new SalesRepository(_configuration);
+            var existingPurchaseNumber = "123456";
+
+            var result = await salesRepository.GetSalesByPurchaseNumberAsync(existingPurchaseNumber);
+
+            Assert.NotNull(result);
+            Assert.AreEqual(existingPurchaseNumber, result.PurchaseNumber);
+        }
+
+        [Test]
+        public async Task GetSalesByPurchaseNumberAsync_NonExistingPurchaseNumber_ReturnsNull()
+        {
+            var salesRepository = new SalesRepository(_configuration);
+            var nonExistingPurchaseNumber = "999999";
+
+            var result = await salesRepository.GetSalesByPurchaseNumberAsync(nonExistingPurchaseNumber);
+
+            Assert.Null(result);
         }
     }
 }

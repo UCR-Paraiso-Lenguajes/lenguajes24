@@ -7,8 +7,7 @@ namespace StoreApi.Models
     {
         [Key]
         public Guid Uuid { get; set; }
-        [ForeignKey("UuidSales")]
-        public Guid UuidSales { get; set; }
+        public Guid SalesUuid { get; set; }
         public string ConfirmationNumber { get; set; }
     }
 }

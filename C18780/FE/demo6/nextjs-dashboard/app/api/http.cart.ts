@@ -1,4 +1,4 @@
-import { getInitialCartLocalStorage } from '../lib/cart_data_localeStore';
+import { getInitialCartLocalStorage } from "../utils/utils";
 
 let environmentUrl = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7099';
 
@@ -6,7 +6,7 @@ export async function useFetchCartPurchase() {
     const cart = getInitialCartLocalStorage();
 
     let purchase = {
-        "productIds": cart.cart.products.map(product => product.uuid),
+        "productIds": cart.cart.products.map((product: { uuid: any; }) => product.uuid),
         "address": cart.cart.deliveryAddress,
         "paymentMethod": cart.cart.methodPayment
     }

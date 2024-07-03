@@ -5,11 +5,11 @@ namespace StoreApi.Commands
 {
     public sealed class CreateSinpeCommand : IRequest<Sinpe>
     {
-        public Guid UuidSales {get; set; }
+        public Guid SalesUuid {get; set; }
         public string ConfirmationNumber {get; set; }
-        public CreateSinpeCommand(Guid uuidSales, string confirmationNumber)
+        public CreateSinpeCommand(Guid salesUuid, string confirmationNumber)
         {
-            UuidSales = uuidSales;
+            SalesUuid = salesUuid;
             ConfirmationNumber = confirmationNumber;
         }
     }
