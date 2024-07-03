@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
+//PROYECTO
 
 const URL = process.env.NEXT_PUBLIC_API;
 

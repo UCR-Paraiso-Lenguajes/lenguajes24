@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
 const URL = process.env.NEXT_PUBLIC_API;
+//PROYECTO
 
 interface PaymentMethod {
   paymentType: number;

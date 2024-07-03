@@ -18,7 +18,8 @@ namespace storeapi.Models
             }
         }
 
-        public string Address
+        public string 
+        Address
         {
             get => _address;
             set
