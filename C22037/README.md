@@ -18,3 +18,12 @@
 
 ## Diagrama del WebSocket
 ![Diagrama Websocket](Images/ws.jpeg)
+
+## Diagrama de clases Proyecto
+![Diagrama Websocket](Images/DiagramaClasesProy.png)
+
+## Diagrama de actividad Carrito
+![Diagrama Websocket](Images/DiagramaActividadCart.png)
+
+## Diagrama de actividad Payment
+![Diagrama Websocket](Images/DiagramaActividadPayment.png)
