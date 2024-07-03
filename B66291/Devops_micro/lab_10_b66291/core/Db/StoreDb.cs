@@ -4,113 +4,78 @@ using System.IO.Compression;
 using MySqlConnector;
 using core.Models;
 using System.Security.Cryptography;
-using System.Diagnostics;
 namespace core.DataBase;
 
 public sealed class StoreDb
 {
-    public static async void CrearDatosSync()
+    public static void CrearDatosSync()
     {
-        string connectionString = "Server=localhost;Database=mysql;Uid=root;Pwd=123456;"; 
-
-        using (var connectionWithoutDb = new MySqlConnection(connectionString))
-        {
-            try
-            {
-                connectionWithoutDb.Open();
-
-                string createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS store;";
-                using (var createDbCommand = new MySqlCommand(createDatabaseQuery, connectionWithoutDb))
-                {
-                    createDbCommand.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("No se pudo crear la base de datos", ex);
-            }
-        }
-
         using (var connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
         {
-            try
+            connection.Open();
+
+            using (var transaction = connection.BeginTransaction())
             {
-                connection.Open();
-
-                string useDatabaseQuery = "USE store;";
-                using (var useDbCommand = new MySqlCommand(useDatabaseQuery, connection))
+                try
                 {
-                    useDbCommand.ExecuteNonQuery();
-                }
+                    StoreDb _storeDb = new StoreDb();
+                    string createTableQuery = @"
+                    DROP DATABASE IF EXISTS store;
+                    CREATE DATABASE store;
+                    use store;
+                    CREATE TABLE IF NOT EXISTS products (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(100),
+                        description VARCHAR(255),
+                        price DECIMAL(10, 2),
+                        imageURL VARCHAR(255),
+                        pcant INT,
+                        idCat INT 
+                    );
+                    CREATE TABLE IF NOT EXISTS paymentMethod (
+                        id INT PRIMARY KEY,
+                        payment_type VARCHAR(50),
+                        estado INT
+                    );
+                    CREATE TABLE IF NOT EXISTS sales (
+                        purchase_number VARCHAR(30) NOT NULL PRIMARY KEY,
+                        purchase_date DATETIME NOT NULL,
+                        total DECIMAL(10, 2) NOT NULL,
+                        payment_type INT,
+                        FOREIGN KEY (payment_type) REFERENCES paymentMethod(id)
+                    );
+                    CREATE TABLE IF NOT EXISTS salesLine(
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        purchase_id VARCHAR(30) NOT NULL,
+                        product_id INT,
+                        quantity INT,
+                        price DECIMAL(10, 2),
+                        FOREIGN KEY (purchase_id) REFERENCES sales(purchase_number),
+                        FOREIGN KEY (product_id) REFERENCES products(id)
+                    );
+                    CREATE TABLE IF NOT EXISTS campain (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        sender VARCHAR(100),
+                        message_content TEXT,
+                        status int,
+                        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );";
+                    using (var command = new MySqlCommand(createTableQuery, connection, transaction))
+                    {
+                        command.ExecuteNonQuery();
+                    }
 
-                using (var transaction = connection.BeginTransaction())
+                    _storeDb.agregarProductos();
+                    _storeDb.agregarMetodosPago();
+                    _storeDb.InsertarVentasPasadas();
+
+                    transaction.Commit();
+                }
+                catch (Exception)
                 {
-                    try
-                    {
-                        StoreDb storeDb = new StoreDb();
-                        string createTableQuery = @"
-                        DROP TABLE IF EXISTS salesLine;
-                        DROP TABLE IF EXISTS sales; 
-                        DROP TABLE IF EXISTS products;
-                        DROP TABLE IF EXISTS paymentMethod;
-                        CREATE TABLE IF NOT EXISTS products (
-                            id INT AUTO_INCREMENT PRIMARY KEY,
-                            name VARCHAR(100),
-                            description VARCHAR(255),
-                            price DECIMAL(10, 2),
-                            imageURL VARCHAR(255),
-                            pcant INT,
-                            idCat INT 
-                        );
-                        CREATE TABLE IF NOT EXISTS paymentMethod (
-                            id INT PRIMARY KEY,
-                            payment_type VARCHAR(50),
-                            estado INT
-                        );
-                        CREATE TABLE IF NOT EXISTS sales (
-                            purchase_number VARCHAR(30) NOT NULL PRIMARY KEY,
-                            purchase_date DATETIME NOT NULL,
-                            total DECIMAL(10, 2) NOT NULL,
-                            payment_type INT,
-                            FOREIGN KEY (payment_type) REFERENCES paymentMethod(id)
-                        );
-                        CREATE TABLE IF NOT EXISTS salesLine(
-                            id INT AUTO_INCREMENT PRIMARY KEY,
-                            purchase_id VARCHAR(30) NOT NULL,
-                            product_id INT,
-                            quantity INT,
-                            price DECIMAL(10, 2),
-                            FOREIGN KEY (purchase_id) REFERENCES sales(purchase_number),
-                            FOREIGN KEY (product_id) REFERENCES products(id)
-                        );
-                        CREATE TABLE IF NOT EXISTS campain (
-                            id INT AUTO_INCREMENT PRIMARY KEY,
-                            sender VARCHAR(100),
-                            message_content TEXT,
-                            status INT,
-                            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                        );";
-
-                        using (var command = new MySqlCommand(createTableQuery, connection, transaction))
-                        {
-                            command.ExecuteNonQuery();
-                        }
-
-                        storeDb.agregarProductos();
-                        storeDb.agregarMetodosPago();
-                        storeDb.InsertarVentasPasadas();
-
-                        transaction.Commit();
-                    }
-                    catch (Exception ex)
-                    {
-                       throw new Exception("No se pudieron crear las tablas", ex);
-                    }
+                    transaction.Rollback();
+                    throw;
                 }
-            }
-            catch (Exception ex)
-            {
-               throw new Exception("No se pudo establecer la conexion a db", ex);
             }
         }
     }
@@ -208,7 +173,7 @@ public sealed class StoreDb
         return productList;
     }
 
-    internal void agregarMetodosPago()
+    internal void agregarMetodosPago() //debe tener un estado para habilitarse o desabilitars
     {
         using (var connection = new MySqlConnection(Storage.Instance.ConnectionStringMyDb))
         {
