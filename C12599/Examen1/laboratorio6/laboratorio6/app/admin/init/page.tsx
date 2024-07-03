@@ -1,4 +1,3 @@
-//investigacion
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -39,15 +38,24 @@ const CustomAccordionItem: React.FC<CustomAccordionItemProps> = ({ title, href, 
               </button>
             </Link>
           </div>
-          <div className="mb-3"> {/* Add margin-bottom: 20px */}            <Link href="/products"> {/* Enlace a la página de productos */}
+          <div className="mb-3">
+            <Link href="/products">
               <button className="btn btn-secondary btn-sm btn-block">
                 Ir a Productos
               </button>
             </Link>
           </div>
-          <div className="mb-3"> {/* Add margin-bottom: 20px */}            <Link href="/campannas"> {/* Enlace a la página de productos */}
+          <div className="mb-3">
+            <Link href="/campannas">
               <button className="btn btn-secondary btn-sm btn-block">
-                Ir a campañas
+                Ir a Campañas
+              </button>
+            </Link>
+          </div>
+          <div className="mb-3">
+            <Link href="/payment">
+              <button className="btn btn-secondary btn-sm btn-block">
+                Ir a Pagos
               </button>
             </Link>
           </div>
@@ -78,14 +86,13 @@ const Init: React.FC = () => {
   }
 
   return (
-    
     <div className="container-fluid">
       <Navbar bg="light" expand="lg">
         <Navbar.Toggle onClick={toggleMenu} aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className={isOpen ? 'show' : ''}>
           <Nav className="flex-column mt-4">
             <CustomAccordionItem
-              title="Panel Administracion"
+              title="Panel Administración"
               href="/ventas"
               icon={<ShoppingCart />}
             />
