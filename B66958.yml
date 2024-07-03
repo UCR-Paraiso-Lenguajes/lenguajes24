@@ -10,6 +10,7 @@ services:
       - NODE_ENV=localhost:8080      
     ports:
       - "3000:3000"
+      - "8181:8181"
     restart: "never"
     #command: npm uninstall next && npm install next && npm run build && npm run start
     #command: bash -c "npm run build && npm start"

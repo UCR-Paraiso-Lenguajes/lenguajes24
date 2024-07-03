@@ -25,7 +25,7 @@ services:
       - demo
 
   ui:
-    image: marianoda2002/react:latest
+    image: bulan506/lenguajes2024ui:0.0.1
     container_name: ui
     hostname: ui
     environment:
@@ -37,21 +37,26 @@ services:
       - demo
 
   api:
-    image: marianoda2002/storeapi:latest
+    image: bulan506/lenguajes2024api:0.0.1
     container_name: api
     hostname: api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       #- mysql=192.168.1.10:3306
-      - DB=Server=mysql;Database=lab;Uid=root;Pwd=123456
+      - DB=Server=mysql;Database=store;Uid=root;Pwd=123456
     ports:
       - "8080:8080"
+#    networks:
+#      internal_net:
+#        ipv4_address: 192.168.1.12
     depends_on:
       mysql:
         condition: service_healthy
     networks:
       - demo
 
+
 networks:
   demo:
     driver: bridge
+
