@@ -158,9 +158,18 @@ const PurchasedItems = () => {
     return cartState.cart.deliveryAddress && selectedPaymentMethod !== undefined && paymentConfirmation;
   };
 
+  const validateExtraAddress = (address: string) => {
+    const regex = /^[a-zA-Z0-9\s,.-]+$/;
+    return regex.test(address);
+  };
+
   const handleAddressSubmit = () => {
     if (!selectedProvince || !selectedCanton) {
       setErrorMessage('Debe seleccionar una provincia y un cantón.');
+      return;
+    }
+    if (!validateExtraAddress(extraAddress)) {
+      setErrorMessage('La dirección específica contiene caracteres no válidos.');
       return;
     }
     const fullAddress = `${selectedProvince}, ${selectedCanton}, ${extraAddress}`;
