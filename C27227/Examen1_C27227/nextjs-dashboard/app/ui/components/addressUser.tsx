@@ -19,6 +19,7 @@ const AddressForm: React.FC = () => {
   const [states, setStates] = useState<any[]>([]);
   const router = useRouter();
   const URLConection = process.env.NEXT_PUBLIC_API;
+  const geonamesUsername = 'yuuta';
 
   useEffect(() => {
     const token = sessionStorage.getItem("sessionToken");
@@ -31,41 +32,56 @@ const AddressForm: React.FC = () => {
         router.push("/admin");
       }
     }
-
-    // Fetch countries
-    const fetchCountries = async () => {
-      try {
-        const response = await axios.get('https://restcountries.com/v3.1/all');
-        const countryOptions = response.data.map((country: any) => ({
-          value: country.cca2,
-          label: country.name.common
-        }));
-        setCountries(countryOptions);
-      } catch (error) {
-        throw new Error('Error fetching countries: ' + error);
-      }
-    };
-
     fetchCountries();
   }, [router]);
 
+  const fetchCountries = async () => {
+    try {
+      const response = await axios.get(`http://api.geonames.org/countryInfoJSON`, {
+        params: {
+          username: geonamesUsername
+        }
+      });
+
+      if (response.data && response.data.geonames) {
+        const countryOptions = response.data.geonames.map((country: any) => ({
+          value: country.geonameId,
+          label: country.countryName
+        }));
+        setCountries(countryOptions);
+      }
+    } catch (error) {
+      throw new Error('Error fetching countries: ' + error);
+    }
+  };
+
+  const fetchStates = async (countryCode: string) => {
+    try {
+      const response = await axios.get(`http://api.geonames.org/childrenJSON`, {
+        params: {
+          geonameId: countryCode,
+          username: geonamesUsername,
+          featureCode: 'ADM1'
+        }
+      });
+
+      if (response.data && response.data.geonames) {
+        const stateOptions = response.data.geonames.map((state: any) => ({
+          value: state.adminCode1,
+          label: state.name
+        }));
+        setStates(stateOptions);
+      } else {
+        setStates([]);
+      }
+    } catch (error) {
+      throw new Error('Error fetching states: ' + error);
+    }
+  };
+
   useEffect(() => {
     if (country) {
-      // Fetch states/provinces based on selected country
-      const fetchStates = async () => {
-        try {
-          const response = await axios.get(`http://geodb-free-service.wirefreethought.com/v1/geo/countries/${country.value}/regions`);
-          const stateOptions = response.data.data.map((region: any) => ({
-            value: region.isoCode,
-            label: region.name
-          }));
-          setStates(stateOptions);
-        } catch (error) {
-          throw new Error('Error fetching states: ' + error);
-        }
-      };
-
-      fetchStates();
+      fetchStates(country.value);
     } else {
       setStates([]);
       setState(null);
@@ -73,7 +89,7 @@ const AddressForm: React.FC = () => {
   }, [country]);
 
   const isValidAddressFormat = () => {
-    const zipCodePattern = /^[0-9]+$/; // Zip code should only contain numbers
+    const zipCodePattern = /^[0-9]+$/;
     return (
       street.trim().length >= 5 &&
       city.trim().length >= 2 &&
@@ -123,7 +139,7 @@ const AddressForm: React.FC = () => {
   };
 
   const handleZipCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, ''); // Remove non-digit characters
+    const value = e.target.value.replace(/\D/g, '');
     setZipCode(value);
   };
 
@@ -139,48 +155,50 @@ const AddressForm: React.FC = () => {
       }}
     />
   ) : (
-    <form className="address-form" onSubmit={handleContinueBuy}>
-      <div>Shipping Address</div>
-      <Select
-        value={country}
-        onChange={setCountry}
-        options={countries}
-        placeholder="Country / Region"
-      />
-      <input
-        type="text"
-        value={street}
-        onChange={(e) => setStreet(e.target.value)}
-        placeholder="Street"
-      />
-      <input
-        type="text"
-        value={specificAddress}
-        onChange={(e) => setSpecificAddress(e.target.value)}
-        placeholder="House, apartment, etc. (optional)"
-      />
-      <Select
-        value={state}
-        onChange={setState}
-        options={states}
-        placeholder="Province / State"
-        isDisabled={!states.length}
-      />
-      <input
-        type="text"
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-        placeholder="City"
-      />
-      <input
-        type="text"
-        value={zipCode}
-        onChange={handleZipCodeChange}
-        placeholder="Postal code"
-      />
-      <button type="submit">Submit</button>
-      {warning && <div className='alert'>{warning}</div>}
-    </form>
+    <div>
+      <form className="address-form" onSubmit={handleContinueBuy}>
+        <div>Shipping Address</div>
+        <Select
+          value={country}
+          onChange={setCountry}
+          options={countries}
+          placeholder="Country / Region"
+        />
+        <Select
+          value={state}
+          onChange={setState}
+          options={states}
+          placeholder="Province / State"
+          isDisabled={!states.length}
+        />
+        <input
+          type="text"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          placeholder="City"
+        />
+        <input
+          type="text"
+          value={street}
+          onChange={(e) => setStreet(e.target.value)}
+          placeholder="Street"
+        />
+        <input
+          type="text"
+          value={specificAddress}
+          onChange={(e) => setSpecificAddress(e.target.value)}
+          placeholder="House, apartment, etc. (optional)"
+        />
+        <input
+          type="text"
+          value={zipCode}
+          onChange={handleZipCodeChange}
+          placeholder="Postal code"
+        />
+        <button type="submit">Submit</button>
+        {warning && <div className='alert'>{warning}</div>}
+      </form>
+    </div>
   );
 };
 
