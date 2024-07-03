@@ -50,8 +50,10 @@ public class PurchaseTests
     }
 
     [Test]
-    public void CartThatHasNoPaymentMethod_ThrowsArgumentException()
+    public async Task CartThatHasNoPaymentMethod_ThrowsArgumentException()
     {
+        PaymentMethodsBusiness paymentMethodsBusiness = new PaymentMethodsBusiness();
+        await paymentMethodsBusiness.EnablePaymentMethodAsync(PaymentMethods.Type.CASH);
         CartBusiness cartBusiness = new CartBusiness();
         var cartProduct = new CartProduct
         {
@@ -69,8 +71,10 @@ public class PurchaseTests
     }
 
     [Test]
-    public void CartThatHasValidArguments_DoesNotThrowsArgumentException()
+    public async Task CartThatHasValidArguments_DoesNotThrowsArgumentException()
     {
+        PaymentMethodsBusiness paymentMethodsBusiness = new PaymentMethodsBusiness();
+        await paymentMethodsBusiness.EnablePaymentMethodAsync(PaymentMethods.Type.CASH);
         CartBusiness cartBusiness = new CartBusiness();
         var cartProduct = new CartProduct
         {
@@ -103,8 +107,10 @@ public class PurchaseTests
     }
 
     [Test]
-    public void SaleThatHasNoProducts_ThrowsArgumentException()
+    public async Task SaleThatHasNoProducts_ThrowsArgumentException()
     {
+        PaymentMethodsBusiness paymentMethodsBusiness = new PaymentMethodsBusiness();
+        await paymentMethodsBusiness.EnablePaymentMethodAsync(PaymentMethods.Type.CASH);
         CartBusiness cartBusiness = new CartBusiness();
         var cartProduct = new CartProduct
         {
@@ -171,8 +177,10 @@ public class PurchaseTests
     }
 
     [Test]
-    public void PurchaseCartWithSinpeMethodAndNoConfirmationNumber_ThrowsBusinessExpectionAsync()
+    public async Task PurchaseCartWithSinpeMethodAndNoConfirmationNumber_ThrowsBusinessExpectionAsync()
     {
+        PaymentMethodsBusiness paymentMethodsBusiness = new PaymentMethodsBusiness();
+        await paymentMethodsBusiness.EnablePaymentMethodAsync(PaymentMethods.Type.CASH);
         CartBusiness cartBusiness = new CartBusiness();
         var cartProduct = new CartProduct
         {
