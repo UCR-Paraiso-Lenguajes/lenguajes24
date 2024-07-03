@@ -42,7 +42,7 @@ public class SaleData
                 {
                     Id = products[index].Uuid,
                     Price = products[index].Price,
-                    Quantity = 1 // Assuming 1 for simplicity, you may want to change this based on your logic
+                    Quantity = 1
                 })
                 .ToList();
             decimal amount = products.ElementAt(i).Price + products.ElementAt(i + 1).Price;
