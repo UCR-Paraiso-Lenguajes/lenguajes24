@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using storeapi.Bussisnes;
 using Microsoft.AspNetCore.Authorization;
 using storeapi.Models;
+//PRODUCT1
 
 namespace storeapi.Controllers
 {
@@ -28,7 +29,7 @@ namespace storeapi.Controllers
             string purchaseNumber = _storeLogic.PurchaseNumber;
 
             var response = new { purchaseNumberResponse = purchaseNumber };
-            return Ok(sale.Products);
+            return Ok(response);
         }
 
         private void ValidateCart(Cart cart)

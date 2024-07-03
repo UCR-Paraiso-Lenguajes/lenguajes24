@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using MySqlConnector;
 using core;
-//PROYECTO
+//PROYECTO1
 
 namespace storeapi.Database
 {
