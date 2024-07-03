@@ -5,14 +5,14 @@ using core.Business;
 
 public class StoreDbTesting
 {
-    private StoreDb store;
-
+    StoreDb store = new StoreDb();
     [SetUp]
     public void Setup()
     {
-        var myDbtest = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
+        var myDbtest = "Server=localhost;Database=mysql;Uid=root;Pwd=123456;";
         Storage.Init(myDbtest);
-        store = new StoreDb();
+        myDbtest = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
+        Storage.Init(myDbtest);
         StoreDb.CrearDatosSync();
     }
 
@@ -41,7 +41,7 @@ public class StoreDbTesting
     {
         StoreDb storeDb = new StoreDb();
         int maxId = storeDb.ExtraerIDMax();
-        Assert.IsTrue(maxId > 0); 
+        Assert.IsTrue(maxId > 0);
     }
 
     [Test]

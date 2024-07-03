@@ -17,10 +17,11 @@ namespace UT
         [SetUp]
         public void Setup()
         {
-            var myDbtest = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
+           var myDbtest = "Server=localhost;Database=mysql;Uid=root;Pwd=123456;";
+            Storage.Init(myDbtest);
+            myDbtest = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
             Storage.Init(myDbtest);
             StoreDb.CrearDatosSync();
-
             _campainBusiness = new CampainBusiness();
         }
 
@@ -42,9 +43,11 @@ namespace UT
             var messages = await _campainBusiness.GetMessageList();
             Assert.IsNotNull(messages);
             Assert.GreaterOrEqual(((List<Campain>)messages).Count, 1);
+            var savedCampain = messages.FirstOrDefault(c => c.Sender == "TestSender" && c.MessageContent == "Test Message");
+            Assert.IsNotNull(savedCampain, "La campaña específica no se encontró en la lista de mensajes.");
         }
 
-         [Test]
+        [Test]
         public async Task EraseCampain_CasoExitoso()
         {
             var campain = new Campain("TestSender", "Message to delete", 1);
@@ -55,5 +58,7 @@ namespace UT
             Assert.IsNotNull(deletedCampain, "La campaña no se encontró.");
             Assert.AreEqual(0, deletedCampain.Status, "La campaña no se borró correctamente.");
         }
+
+        
     }
 }

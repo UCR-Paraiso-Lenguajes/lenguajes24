@@ -25,12 +25,12 @@ namespace core.DataBase
                     {
                         string insertQuery = @"
                             INSERT INTO campain (sender, message_content, status) 
-                            VALUES (@sender, @messageContent, @status)";
+                            VALUES (@sender, @message_content, @status)";
 
                         using (var command = new MySqlCommand(insertQuery, connection, transaction))
                         {
                             command.Parameters.AddWithValue("@sender", campain.Sender);
-                            command.Parameters.AddWithValue("@messageContent", campain.MessageContent);
+                            command.Parameters.AddWithValue("@message_content", campain.MessageContent);
                             command.Parameters.AddWithValue("@status", campain.Status);
                             await command.ExecuteNonQueryAsync();
                         }
