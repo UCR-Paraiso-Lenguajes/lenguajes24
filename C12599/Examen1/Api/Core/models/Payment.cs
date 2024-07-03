@@ -13,7 +13,9 @@ namespace storeapi.Models
 
         private Payment()
         {
-            (Cash, Sinpe) = LoadPaymentMethodsFromDatabase();
+            var methods = LoadPaymentMethodsFromDatabase();
+            Cash = methods[PaymentMethods.Type.CASH];
+            Sinpe = methods[PaymentMethods.Type.SINPE];
 
             if (Cash == null || Sinpe == null)
             {
@@ -21,43 +23,23 @@ namespace storeapi.Models
             }
         }
 
-        private (PaymentMethods, PaymentMethods) LoadPaymentMethodsFromDatabase()
+        private Dictionary<PaymentMethods.Type, PaymentMethods> LoadPaymentMethodsFromDatabase()
         {
-            PaymentMethods cash = null;
-            PaymentMethods sinpe = null;
+            var paymentMethods = new Dictionary<PaymentMethods.Type, PaymentMethods>();
+            var data = PaymentDB.RetrievePaymentMethods();
 
-            List<string[]> methodData = PaymentDB.RetrievePaymentMethods();
-
-            foreach (string[] row in methodData)
+            foreach (var methodData in data)
             {
-                if (row.Length >= 2)
-                {
-                    if (int.TryParse(row[0], out int id) && Enum.TryParse(row[1], out PaymentMethods.Type type))
-                    {
-                        PaymentMethods paymentMethod = PaymentMethods.Find(type);
+                int id = int.Parse(methodData[0]);
+                string name = methodData[1];
+                bool isActive = bool.Parse(methodData[2]);
 
-                        if (paymentMethod != null)
-                        {
-                            if (paymentMethod.PaymentType == PaymentMethods.Type.CASH)
-                            {
-                                cash = paymentMethod;
-                            }
-                            else if (paymentMethod.PaymentType == PaymentMethods.Type.SINPE)
-                            {
-                                sinpe = paymentMethod;
-                            }
-                        }
-                    }
-                }
+                var method = PaymentMethods.LoadFromDatabase(id, name, isActive);
+                paymentMethods.Add((PaymentMethods.Type)id, method);
             }
 
-            // Validación después de cargar los métodos de pago desde la base de datos
-            if (cash == null || sinpe == null)
-            {
-                throw new InvalidOperationException("No se encontraron ambos métodos de pago necesarios.");
-            }
-
-            return (cash, sinpe); // Asegúrate de devolver un valor válido
+            return paymentMethods;
         }
     }
 }
+
