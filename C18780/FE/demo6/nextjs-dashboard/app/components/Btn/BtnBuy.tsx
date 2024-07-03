@@ -1,5 +1,6 @@
 'use client'
-import '../../styles/BtnBuy.css';
+import '../../styles/btnBuy.css';
+
 export default function BtnBuy({price}:{price:number}) {
     return (
         <>

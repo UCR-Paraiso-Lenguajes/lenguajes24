@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartLine, faCartFlatbed, faPowerOff, faHome, faBars, faMessage } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faCartFlatbed, faPowerOff, faHome, faBars, faMessage, faToggleOn } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { deleteCookie } from "cookies-next";
 import '../../styles/NavbarAdmin.css';
@@ -57,7 +57,7 @@ export default function SideNav() {
                 </Link>
                 <Link href="/admin/paymentMethods">
                     <li className="nav">
-                        <FontAwesomeIcon icon={faChartLine} className="fa-icon me-2" />
+                        <FontAwesomeIcon icon={faToggleOn} className="fa-icon me-2" />
                         <span className={`text-hidden ${isMenuOpen ? '' : 'hidden'}`}>
                             Payment Methods
                         </span>
