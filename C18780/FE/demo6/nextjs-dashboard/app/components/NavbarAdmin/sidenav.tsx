@@ -5,7 +5,6 @@ import { faChartLine, faCartFlatbed, faPowerOff, faHome, faBars, faMessage, faTo
 import Link from 'next/link';
 import { deleteCookie } from "cookies-next";
 import '../../styles/NavbarAdmin.css';
-
 export default function SideNav() {
     const [isMenuOpen, setIsMenuOpen] = useState(true);
     const toggleMenu = () => {
