@@ -1,5 +1,5 @@
 'use client'
-import '../../styles/BtnPay.css';
+import '../../styles/btnPay.css';
 export default function BtnPay() {
     return (
         <>
