@@ -3,10 +3,21 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
+
 const URL = process.env.NEXT_PUBLIC_API;
 
+interface Cart {
+    productos: any[];
+    direccionEntrega: string;
+    metodoPago: string;
+    isCartEmpty: boolean;
+    numeroCompra: string;
+    sinpeAvailable: boolean;
+    cashAvailable: boolean;
+}
+
 const PayPage: React.FC = () => {
-    const [cart, setCart] = useState({
+    const [cart, setCart] = useState<Cart>({
         productos: [],
         direccionEntrega: '',
         metodoPago: '',
@@ -43,10 +54,10 @@ const PayPage: React.FC = () => {
                     setCart({ ...cartData, isCartEmpty: false });
                 } else {
                     localStorage.removeItem('cartData');
-                    setCart({ ...cart, isCartEmpty: true });
+                    setCart(prevCart => ({ ...prevCart, isCartEmpty: true }));
                 }
             } else {
-                setCart({ ...cart, isCartEmpty: true });
+                setCart(prevCart => ({ ...prevCart, isCartEmpty: true }));
             }
         };
 
@@ -55,15 +66,15 @@ const PayPage: React.FC = () => {
 
     useEffect(() => {
         const fetchPaymentMethods = async () => {
-            const response = await fetch(URL+'Payment');
+            const response = await fetch(URL + '/api/Payment/payment-methods');
             if (response.ok) {
                 const paymentMethodsData = await response.json();
                 const { cash, sinpe } = paymentMethodsData;
 
                 setCart(prevCart => ({
                     ...prevCart,
-                    cashAvailable: cash.paymentType === 1,
-                    sinpeAvailable: sinpe.paymentType === 1
+                    cashAvailable: cash.isActive,
+                    sinpeAvailable: sinpe.isActive
                 }));
             } else {
                 throw new Error('Error al obtener métodos de pago');
@@ -134,6 +145,7 @@ const PayPage: React.FC = () => {
             const direccionCompleta = `${formDireccion.nombreDestinatario}, ${formDireccion.direccionCalle}, ${formDireccion.direccionNumero}, ${formDireccion.direccionCiudad}, ${formDireccion.direccionPais}`;
             setCart(prevCart => ({ ...prevCart, direccionEntrega: direccionCompleta }));
             updateLocalStorage({ ...cart, direccionEntrega: direccionCompleta });
+            setDireccionValida(true); // Set the address as valid
         }
     };
 
@@ -146,7 +158,7 @@ const PayPage: React.FC = () => {
         updateLocalStorage({ ...cart, metodoPago: value });
     };
 
-    const updateLocalStorage = (updatedCart: any) => {
+    const updateLocalStorage = (updatedCart: Cart) => {
         localStorage.setItem('cartData', JSON.stringify(updatedCart));
     };
 
@@ -157,19 +169,14 @@ const PayPage: React.FC = () => {
             throw new Error('Por favor, complete todos los campos requeridos.');
         }
 
-        const isValidPaymentMethod = metodoPago === 'sinpe' || metodoPago === 'efectivo';
+        const isValidPaymentMethod = metodoPago === 'sinpe' && cart.sinpeAvailable || metodoPago === 'efectivo' && cart.cashAvailable;
         if (!isValidPaymentMethod) {
-            throw new Error('Método de pago no válido.');
+            throw new Error('Método de pago no válido o no disponible.');
         }
 
         const productIds = productos.map((producto: any) => String(producto.id));
 
-        let paymentMethodValue = 0;
-        if (metodoPago === 'sinpe' && cart.sinpeAvailable) {
-            paymentMethodValue = 1;
-        } else if (metodoPago === 'efectivo' && cart.cashAvailable) {
-            paymentMethodValue = 1;
-        }
+        let paymentMethodValue = metodoPago === 'sinpe' ? 1 : 0;
 
         const dataToSend = {
             productIds: productIds,
@@ -177,7 +184,7 @@ const PayPage: React.FC = () => {
             paymentMethod: paymentMethodValue
         };
 
-        const response = await fetch(URL+'/api/Cart', {
+        const response = await fetch(URL + '/api/Cart', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -194,7 +201,9 @@ const PayPage: React.FC = () => {
                 direccionEntrega: '',
                 metodoPago: '',
                 isCartEmpty: true,
-                numeroCompra: purchaseNumberResponse.toString()
+                numeroCompra: purchaseNumberResponse.toString(),
+                sinpeAvailable: false,
+                cashAvailable: false
             });
 
             updateLocalStorage({
@@ -202,7 +211,9 @@ const PayPage: React.FC = () => {
                 direccionEntrega: '',
                 metodoPago: '',
                 isCartEmpty: true,
-                numeroCompra: purchaseNumberResponse.toString()
+                numeroCompra: purchaseNumberResponse.toString(),
+                sinpeAvailable: false,
+                cashAvailable: false
             });
         } else {
             const errorResponseData = await response.json();
@@ -290,8 +301,8 @@ const PayPage: React.FC = () => {
                                     onChange={handleMetodoPagoChange}
                                 >
                                     <option value="">Seleccione un método de pago</option>
-                                    <option value="sinpe">Sinpe</option>
-                                    <option value="efectivo">Efectivo</option>
+                                    {cart.sinpeAvailable && <option value="sinpe">Sinpe</option>}
+                                    {cart.cashAvailable && <option value="efectivo">Efectivo</option>}
                                 </select>
                             </div>
                             {cart.metodoPago && (
@@ -317,3 +328,4 @@ const PayPage: React.FC = () => {
 }
 
 export default PayPage;
+
