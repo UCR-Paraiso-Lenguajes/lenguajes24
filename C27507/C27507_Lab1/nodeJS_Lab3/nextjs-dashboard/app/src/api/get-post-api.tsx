@@ -11,6 +11,7 @@ import { jwtDecode } from 'jwt-decode';
 import { CartShopAPI } from "../models-data/CartShopAPI";
 import { stringify } from "querystring";
 import { NotificationAPI } from "../models-data/NotificationAPI";
+import { PaymentMethod } from "../models-data/PaymentMethodAPI";
 
 
 const { default: jwt_decode } = require("jwt-decode");
@@ -305,7 +306,7 @@ const { default: jwt_decode } = require("jwt-decode");
             body: JSON.stringify(newNotification)
         }    
     
-        try {                 
+        try {
             let responsePost = await fetch(directionAPI,postConfig);            
             if(!responsePost.ok){                                
                 const errorMessage = await responsePost.text();                                
@@ -356,6 +357,59 @@ const { default: jwt_decode } = require("jwt-decode");
         } catch (error) {            
             throw new Error('Failed to POST data: '+ error);
         }        
+    }
+
+
+
+    ///////Metodos de Pago
+    export async function getAllPaymentMethodsToAdmin(): Promise<PaymentMethod[] | string | null> {
+
+        //let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV;
+        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
+        let directionAPI = `${urlByReactEnviroment}/api/PaymentMethodManagement/payment/select`;
+                
+        try {            
+            const response = await fetch(directionAPI)
+            if (!response.ok){                
+                //Obtenemos el mensaje de error de CartController
+                const errorMessage = await response.text();
+                console.log(errorMessage);
+                return errorMessage;
+            }
+            const paymentMethodList: PaymentMethod[] = await response.json();
+            return paymentMethodList;
+            
+        } catch (error) {
+            throw new Error('Failed to fetch data');                
+        }
+    }
+
+    export async function updateStatusPaymentMethod(paymentMethodId: number, newStatus: number): Promise<string | null | boolean> {
+        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
+        let directionAPI = `${urlByReactEnviroment}/api/PaymentMethodManagement/payment/update`;
+
+        let postConfig = {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"                    
+            },
+            body: JSON.stringify({ paymentMethodId, newStatus }),
+        }
+        
+        try {
+            const response = await fetch(directionAPI,postConfig);
+    
+            if (!response.ok) {                
+                const errorMessage = await response.text();
+                return errorMessage;
+            }
+            //se borra con exito siempre a menos que haya un error            
+            return true;
+            
+        } catch (error) {
+            throw new Error('Failed to fetch data');
+        }
     }
 
 

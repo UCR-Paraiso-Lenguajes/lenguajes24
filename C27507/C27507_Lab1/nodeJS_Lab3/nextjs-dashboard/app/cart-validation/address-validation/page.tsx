@@ -4,13 +4,13 @@ import { useState } from 'react';
 
 //Interfaces
 import { CartShopAPI } from '@/app/src/models-data/CartShopAPI';
-import { PaymentMethodNumber, PaymentMethods } from '@/app/src/models-data/PaymentMethodAPI';
+import { PaymentMethod, PaymentMethodNumber, PaymentMethods } from '@/app/src/models-data/PaymentMethodAPI';
 //Componentes
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { AlertShop } from '@/app/global-components/generic_overlay';
-import { sendCartDataToAPI } from '@/app/src/api/get-post-api';
+import { getAllPaymentMethodsToAdmin, sendCartDataToAPI } from '@/app/src/api/get-post-api';
 
 //Funciones
 import {getCartShopStorage, setCartShopStorage, deleteAllProduct } from '@/app/src/storage/cart-storage';
@@ -20,6 +20,8 @@ export default function ModalDirection() {
 
     //manejar carrito
     const [myCartInStorage, setMyCartInStorage] = useState<CartShopAPI | null>(getCartShopStorage("A"));        
+    //cargamos los datos desde la API (StoreController)    
+    const [listOfPaymentMethods, setListOfPaymentMethods] = useState<PaymentMethod[]>([]);
 
     //Estados  para los alert de Boostrap
     const [showAlert, setShowAlert] = useState(false);
@@ -38,6 +40,27 @@ export default function ModalDirection() {
         //objeto que guarda los errores de los campos como propiedades sin definir
     const [errors, setErrors] = useState<{[key:string]: string | null}>({});
     const [submitAttempted, setSubmitAttempted] = useState(false);
+
+
+    //Obtener los metodos de pago de Store
+    useEffect(() => {
+        const loadPaymentMethodsAPI = async ()=>{
+            try{            
+                let dataFromStore = await getAllPaymentMethodsToAdmin();                
+                if (Array.isArray(dataFromStore)) {
+                    let verifiedPaymentMethods = dataFromStore.filter((method: { verify: any; }) => method.verify);
+                    setListOfPaymentMethods(verifiedPaymentMethods);
+                } else {
+                    callAlertShop("danger","Vacio","VACIO");
+                }
+                 
+            } catch (error) {
+                callAlertShop("danger","Error al obtener datos","Hubo un error al intentar obtener los mensajes de la campana  de notificaciones")
+            }                    
+            
+        }  
+        loadPaymentMethodsAPI();
+    }, []);    
 
 
     //Cada vez que se produzca un cambio en los campos de los formularios, guardamos su estado
@@ -140,6 +163,8 @@ export default function ModalDirection() {
             callAlertShop("danger","Campos de formulario incompletos","Por favor, verifique que los campos esten llenos y con la informacion solicitada")
             
         }
+
+
     }    
 
     return (
@@ -172,11 +197,14 @@ export default function ModalDirection() {
                             value={selectPayment} 
                             onChange={(e)=>{setField("payment",e.target.value);getSelectPayment(e);}}
                             isInvalid={submitAttempted && !!errors.payment}
-                        >                                        
+                        >             
                                 <option value="">Seleccione un tipo de pago:</option>                                        
-                                {PaymentMethods.map((method) => (
+                                {listOfPaymentMethods.map((method) => (
                                     <option key={method.payment} value={method.payment}>{PaymentMethodNumber[method.payment]}</option>
                                 ))}
+                                {/* {PaymentMethods.map((method) => (
+                                    <option key={method.payment} value={method.payment}>{PaymentMethodNumber[method.payment]}</option>
+                                ))} */}
                         </Form.Select>
                         {submitAttempted && errors.payment && (
                             <Form.Control.Feedback type='invalid'>{errors.payment}</Form.Control.Feedback>
