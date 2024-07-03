@@ -16,6 +16,25 @@ public sealed class StoreDb
 
             using (var transaction = connection.BeginTransaction())
             {
+
+                string dropDatabaseQuery = "DROP DATABASE IF EXISTS store;";
+                using (var dropDbCommand = new MySqlCommand(dropDatabaseQuery, connection, transaction))
+                {
+                    dropDbCommand.ExecuteNonQuery();
+                }
+
+                string createDatabaseQuery = "CREATE DATABASE store;";
+                using (var createDbCommand = new MySqlCommand(createDatabaseQuery, connection, transaction))
+                {
+                    createDbCommand.ExecuteNonQuery();
+                }
+
+                string useDatabaseQuery = "USE store;";
+                using (var useDbCommand = new MySqlCommand(useDatabaseQuery, connection, transaction))
+                {
+                    useDbCommand.ExecuteNonQuery();
+                }
+                
                 try
                 {
                     StoreDb _storeDb = new StoreDb();
