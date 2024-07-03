@@ -34,3 +34,13 @@ El árbol invertido y la búsqueda de productos están diseñados para ser efici
 ![webSocketActivityDiagram](https://i.imgur.com/gnVba0j.png)
 [PlantUml](plantuml/WebSocketActivityDiagram.md)
 
+## UML Payment Methods
+![UMLPaymentMethods](https://i.imgur.com/aHBIEV4.png)
+
+## Diagrama Actividad Payment Methods
+![DiagramaActividadPaymentMethods](https://i.imgur.com/cNop2zM.png)
+
+## Diagrama UML Editar Cantidad de Products
+![DiagramaUMLEditarCantidaddeProducts](https://i.imgur.com/BNVtmBo.png)
+## Diagrama Actividad Agregar Productos Al Cart
+![DiagramaActividadAgregarProductosAlCart](https://i.imgur.com/2C3quDt.png)
