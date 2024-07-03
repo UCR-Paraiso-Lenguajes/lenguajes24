@@ -20,6 +20,11 @@ const NavBar = ({ productCount, toggleCart, searchFunction, setQuery, setMessage
         setQuery(inputValue);
     }
 
+    const handleSpotMessages = () => {
+        toggleMessageList();
+        setNewMessages(0);
+    }
+
     return <>
         <nav className="navbar navbar-expand-lg sticky-top navbar-dark bg-dark">
             <div className="container">
@@ -57,7 +62,7 @@ const NavBar = ({ productCount, toggleCart, searchFunction, setQuery, setMessage
                                 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
                         </svg>
                     </button>
-                    <button className="btn btn-outline-success" type="button" onClick={toggleMessageList}>
+                    <button className="btn btn-outline-success" type="button" onClick={handleSpotMessages}>
                         {newMessages}
                         <svg xmlns="http://www.w3.org/2000/svg" width="22px" height="24px" fill="white"
                             className="envelope-icon" viewBox="0 0 24 24">
