@@ -1,5 +1,8 @@
+using System.Text.Json;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using StoreApi.Commands;
+using StoreApi.Models;
 using StoreApi.Repositories;
 
 namespace StoreApi.Handler
@@ -7,14 +10,21 @@ namespace StoreApi.Handler
     public sealed class UpdateSalesHandler : IRequestHandler<UpdateSalesCommand, int>
     {
         private readonly ISalesRepository _salesRepository;
+        private readonly IConfiguration configuration;
 
-        public UpdateSalesHandler(ISalesRepository salesRepository)
+        private HttpClient client = new HttpClient();
+        private readonly string apiUrl;
+        private readonly string key;
+        public UpdateSalesHandler(IConfiguration configuration, ISalesRepository salesRepository)
         {
             if (salesRepository == null)
             {
                 throw new ArgumentException("Illegal action, salesRepository is invalid.");
             }
             _salesRepository = salesRepository;
+            this.configuration = configuration;
+            apiUrl = configuration["LocationApi:ApiUrl"];
+            key = configuration["LocationApi:Key"];
         }
         public async Task<int> Handle(UpdateSalesCommand command, CancellationToken cancellationToken)
         {
@@ -54,6 +64,51 @@ namespace StoreApi.Handler
             if (string.IsNullOrWhiteSpace(command.Address))
             {
                 throw new ArgumentException("The address cannot be empty.");
+            }
+        }
+        private async Task<bool> ValidateAddressAsync(string address)
+        {
+            if (string.IsNullOrWhiteSpace(address))
+            {
+                throw new ArgumentException("The address is null or empty.");
+            }
+
+            try
+            {
+                string encodedAddress = Uri.EscapeDataString(address);
+                string requestUrl = $"{apiUrl}?q={encodedAddress}&limit=10&key={key}&format=json";
+
+                HttpResponseMessage response = await client.GetAsync(requestUrl);
+                response.EnsureSuccessStatusCode();
+
+                using (var responseStream = await response.Content.ReadAsStreamAsync())
+                {
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    };
+
+                    var locations = await JsonSerializer.DeserializeAsync<LocationData[]>(responseStream, options);
+
+                    if (locations.Any(l => l.Display_name == address) || locations.Length <= 3)
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new ArgumentException("Error in HTTP request when validating address.", ex);
+            }
+            catch (JsonException ex)
+            {
+                throw new ArgumentException("Error deserializing JSON when validating address.", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException("Error validating address.", ex);
             }
         }
     }

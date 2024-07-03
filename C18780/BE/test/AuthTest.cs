@@ -1,12 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using NUnit.Framework;
-using StoreApi.Controllers;
-using StoreApi.Models;
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
 using Microsoft.Extensions.Hosting.Internal;
 using StoreApi;
 
