@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using StoreAPI.Business;
 using StoreAPI.models;
+using StoreAPI.Database;
 using System;
 using System.Collections.Generic;
 
@@ -11,14 +12,19 @@ namespace StoreAPI.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        private StoreLogic storeLogic = new StoreLogic();
+        private readonly StoreLogic storeLogic;
+
+        public CartController(PaymentMethodDB paymentMethodDB)
+        {
+            storeLogic = new StoreLogic(paymentMethodDB);
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateCart([FromBody] Cart cart)
         {
             try
             {
-                if (cart == null || cart.ProductIds == null ) return BadRequest("The cart cannot be empty.");
+                if (cart == null || cart.ProductIds == null) return BadRequest("The cart cannot be empty.");
 
                 var sale = await storeLogic.PurchaseAsync(cart);
 

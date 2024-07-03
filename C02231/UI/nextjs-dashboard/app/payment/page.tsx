@@ -24,7 +24,7 @@ export default function PaymentPage() {
     const [cart, setCart] = useState({
         products: [],
         deliveryAddress: '',
-        paymentMethod: '',
+        paymentMethod: { id: 0, name: '', active: 0 },
         receipt: '',
         confirmation: '',
         total: '',
@@ -35,6 +35,7 @@ export default function PaymentPage() {
     const [selectedProvince, setSelectedProvince] = useState('');
     const [selectedCanton, setSelectedCanton] = useState('');
     const [specificDetails, setSpecificDetails] = useState('');
+    const [paymentMethods, setPaymentMethods] = useState([]);
 
     useEffect(() => {
         let cartItemStored = localStorage.getItem('cartItem');
@@ -50,9 +51,21 @@ export default function PaymentPage() {
         } else {
             setCart(prevCart => ({ ...prevCart, isCartEmpty: true }));
         }
-        // Reemplazar la entrada actual del historial con una nueva entrada que apunte a la página de inicio
-        window.history.replaceState(null, '', '/'); // Esto hace que no sea posible retroceder a esta página
+        window.history.replaceState(null, '', '/');
+        fetchPaymentMethods();
     }, []);
+
+    const fetchPaymentMethods = async () => {
+        try {
+            const response = await fetch(`${URL}/api/paymentMethods`);
+            if (response.ok) {
+                const data = await response.json();
+                setPaymentMethods(data);
+            }
+        } catch (error) {
+            console.error("Error fetching payment methods:", error);
+        }
+    };
 
     const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const province = e.target.value;
@@ -83,9 +96,10 @@ export default function PaymentPage() {
     };
 
     const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
+        const paymentMethodId = parseInt(e.target.value);
+        const selectedPaymentMethod = paymentMethods.find(method => method.id === paymentMethodId);
         setCart(prevCart => {
-            const updatedCart = { ...prevCart, paymentMethod: value };
+            const updatedCart = { ...prevCart, paymentMethod: selectedPaymentMethod || { id: 0, name: '', active: 0 } };
             updateLocalStorage(updatedCart);
             return updatedCart;
         });
@@ -106,25 +120,22 @@ export default function PaymentPage() {
     };
 
     const handleSubmit = async () => {
-        const { deliveryAddress, paymentMethod, products, total } = cart;
-        const validOrder = deliveryAddress && paymentMethod && products.length > 0 && (paymentMethod === 'cash' || paymentMethod === 'sinpe');
+        const { deliveryAddress, paymentMethod, products, total, receipt } = cart;
+        const isReceiptRequired = paymentMethod.name !== 'CASH' && paymentMethod.id !== 0;
+        const validOrder = deliveryAddress && paymentMethod.id && products.length > 0 && (!isReceiptRequired || receipt);
         if (validOrder) {
             const productIds = products.map((producto: any) => ({
                 productId: String(producto.id),
-                quantity: producto.cant // Utilizar la cantidad establecida en CartPage
+                quantity: producto.cant 
             }));
-            let paymentMethodValue = 0;
-            if (paymentMethod === 'sinpe') {
-                paymentMethodValue = 1;
-            }
-    
+
             const dataToSend = {
                 productIds: productIds,
                 address: deliveryAddress,
-                paymentMethod: paymentMethodValue,
+                paymentMethod: paymentMethod,
                 total: total
             };
-    
+
             try {
                 const response = await fetch(URL + '/api/Cart', {
                     method: 'POST',
@@ -133,16 +144,16 @@ export default function PaymentPage() {
                     },
                     body: JSON.stringify(dataToSend)
                 });
-    
+
                 if (response.ok) {
                     const responseData = await response.json();
                     const { purchaseNumber } = responseData;
                     const orderNumber = purchaseNumber;
-    
+
                     updateLocalStorage({
                         products: [],
                         deliveryAddress: '',
-                        paymentMethod: '',
+                        paymentMethod: { id: 0, name: '', active: 0 },
                         isCartEmpty: true,
                         numeroCompra: orderNumber
                     });
@@ -158,7 +169,6 @@ export default function PaymentPage() {
             setCart(prevCart => ({ ...prevCart, confirmation: 'Please complete all required fields or add items to the cart.' }));
         }
     };
-    
 
     return (
         <div>
@@ -210,17 +220,20 @@ export default function PaymentPage() {
 
                 <div className="form-group">
                     <label htmlFor="paymentMethod">Payment Method:</label>
-                    <select id="paymentMethod" className="form-control" value={cart.paymentMethod} onChange={handlePaymentMethodChange}>
+                    <select id="paymentMethod" className="form-control" value={cart.paymentMethod?.id || ''} onChange={handlePaymentMethodChange}>
                         <option value="">Select Payment Method</option>
-                        <option value="sinpe">Sinpe</option>
-                            <option value="cash">Cash</option>
+                        {paymentMethods.filter(method => method.active).map(method => (
+                            <option key={method.id} value={method.id}>{method.name}</option>
+                        ))}
                     </select>
                 </div>
 
-                <div className="form-group">
-                    <label htmlFor="receipt">Receipt:</label>
-                    <input type="text" id="receipt" className="form-control" value={cart.receipt} onChange={handleReceiptChange} />
-                </div>
+                {cart.paymentMethod?.name === 'SINPE' && (
+                    <div className="form-group">
+                        <label htmlFor="receipt">Receipt:</label>
+                        <input type="text" id="receipt" className="form-control" value={cart.receipt} onChange={handleReceiptChange} />
+                    </div>
+                )}
 
                 <button className="btn btn-secondary" onClick={handleSubmit}>Submit</button>
 

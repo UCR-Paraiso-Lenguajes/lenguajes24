@@ -19,7 +19,8 @@ namespace UT
       string connectionString = "Server=localhost;Database=store;Port=3306;Uid=root;Pwd=123456;";
       Storage.Init(connectionString);
       StoreDB.CreateMysql();
-      storeLogic = new StoreLogic();
+      var paymentMethodDB = new PaymentMethodDB();
+      storeLogic = new StoreLogic(paymentMethodDB);
       categoryList = new List<Category>
         {
             new(1, "Fantasy"),
@@ -44,7 +45,7 @@ namespace UT
       {
         ProductIds = new List<ProductQuantity>(),
         Address = "Dirección válida",
-        PaymentMethod = PaymentMethods.Type.CASH
+        PaymentMethod = new PayMethod { Id = 0, Name = "Cash", Active = 1 }
       };
 
       Assert.ThrowsAsync<ArgumentException>(async () => await storeLogic.PurchaseAsync(cart));
@@ -69,7 +70,7 @@ namespace UT
         new ProductQuantity("2", 1)  // Por ejemplo, asumiendo que el identificador del segundo producto es "2" y la cantidad es 1
         },
         Address = "",
-        PaymentMethod = PaymentMethods.Type.CASH
+        PaymentMethod = new PayMethod { Id = 0, Name = "Cash", Active = 1 }
       };
 
       Assert.ThrowsAsync<ArgumentException>(async () => await storeLogic.PurchaseAsync(cart));
@@ -83,7 +84,7 @@ namespace UT
       {
         ProductIds = null,
         Address = "Dirección válida",
-        PaymentMethod = PaymentMethods.Type.CASH
+        PaymentMethod = new PayMethod { Id = 0, Name = "Cash", Active = 1 }
       };
 
       Assert.ThrowsAsync<ArgumentException>(async () => await storeLogic.PurchaseAsync(cart));
@@ -97,7 +98,7 @@ namespace UT
       {
         ProductIds = new List<ProductQuantity>(),
         Address = "Dirección válida",
-        PaymentMethod = PaymentMethods.Type.CASH
+        PaymentMethod = new PayMethod { Id = 0, Name = "Cash", Active = 1 }
       };
 
       Assert.ThrowsAsync<ArgumentException>(async () => await storeLogic.PurchaseAsync(cart));
@@ -123,8 +124,8 @@ namespace UT
         new ProductQuantity("1", 1), // Por ejemplo, asumiendo que el identificador del primer producto es "1" y la cantidad es 1
         new ProductQuantity("2", 1)  // Por ejemplo, asumiendo que el identificador del segundo producto es "2" y la cantidad es 1
        },
-        Address = "Turrialba",
-        PaymentMethod = PaymentMethods.Type.CASH
+        Address = "Cartago, Turrialba",
+        PaymentMethod = new PayMethod { Id = 0, Name = "Cash", Active = 1 }
       };
 
       var sale = await storeLogic.PurchaseAsync(cart);
@@ -150,8 +151,8 @@ namespace UT
         new ProductQuantity("1", 1), // Por ejemplo, asumiendo que el identificador del primer producto es "1" y la cantidad es 1
         new ProductQuantity("2", 1)  // Por ejemplo, asumiendo que el identificador del segundo producto es "2" y la cantidad es 1
        },
-        Address = "Dirección válida",
-        PaymentMethod = PaymentMethods.Type.CASH
+        Address = "San José, San Pedro",
+        PaymentMethod = new PayMethod { Id = 0, Name = "Cash", Active = 1 }
       };
 
 
@@ -172,14 +173,14 @@ namespace UT
         new ProductQuantity("1", 1), // Por ejemplo, asumiendo que el identificador del primer producto es "1" y la cantidad es 1
         new ProductQuantity("2", 1)  // Por ejemplo, asumiendo que el identificador del segundo producto es "2" y la cantidad es 1
        },
-        Address = "Turrialba",
-        PaymentMethod = PaymentMethods.Type.CASH
+        Address = "Cartago, Paraíso",
+        PaymentMethod = new PayMethod { Id = 0, Name = "Cash", Active = 1 }
       };
 
       var sale = await storeLogic.PurchaseAsync(cart);
 
       Assert.IsNotNull(sale);
-      Assert.That(sale.PaymentMethod, Is.EqualTo(cart.PaymentMethod));
+      Assert.That(sale.PaymentMethod, Is.EqualTo(cart.PaymentMethod.Id == 1 ? PaymentMethods.Type.CASH : PaymentMethods.Type.SINPE));
     }
 
     //Happy path
@@ -193,8 +194,8 @@ namespace UT
         new ProductQuantity("1", 1), // Por ejemplo, asumiendo que el identificador del primer producto es "1" y la cantidad es 1
         new ProductQuantity("2", 1)  // Por ejemplo, asumiendo que el identificador del segundo producto es "2" y la cantidad es 1
        },
-        Address = "Turrialba",
-        PaymentMethod = PaymentMethods.Type.CASH
+        Address = "Cartago, Turrialba",
+        PaymentMethod = new PayMethod { Id = 1, Name = "Sinpe", Active = 1 }
       };
 
       // Act
@@ -202,7 +203,7 @@ namespace UT
 
       // Assert
       Assert.IsNotNull(sale);
-      Assert.That(sale.Address, Is.EqualTo("Turrialba"));
+      Assert.That(sale.Address, Is.EqualTo("Cartago, Turrialba"));
       Assert.That(sale.Products.Count(), Is.EqualTo(2));
       Assert.That(sale.Amount, Is.EqualTo(19000));
       Assert.That(sale.PaymentMethod, Is.EqualTo(PaymentMethods.Type.CASH));

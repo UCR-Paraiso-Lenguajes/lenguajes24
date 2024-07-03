@@ -192,7 +192,7 @@ export default function CartPage() {
                     )}
                 </div>
             </div>
-            <footer className='footer'>
+            <footer className='footer' style={{ position: 'fixed', bottom: '0', width: '100%', zIndex: '9999' }}>
                 <div className="text-center p-3">
                     <h5 className="text-light">Paula's Library</h5>
                 </div>

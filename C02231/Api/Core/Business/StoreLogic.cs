@@ -8,7 +8,13 @@ namespace StoreAPI.Business
 {
     public sealed class StoreLogic
     {
-        private SaleBD saleDB = new SaleBD();
+        private readonly SaleBD saleDB = new SaleBD();
+        private readonly PaymentMethodDB paymentMethodDB;
+
+        public StoreLogic(PaymentMethodDB paymentMethodDB)
+        {
+            this.paymentMethodDB = paymentMethodDB;
+        }
 
         public async Task<Sale> PurchaseAsync(Cart cart)
         {
@@ -18,6 +24,11 @@ namespace StoreAPI.Business
             if (addressIsNullOrWhiteSpace) throw new ArgumentException("Address must be provided.");
             if (cart == null || cart.ProductIds == null) throw new ArgumentException("The cart cannot be empty.");
             if (!IsValidAddress(cart.Address)) throw new ArgumentException("La dirección proporcionada no es válida.");
+            bool isPaymentMethodActive = await paymentMethodDB.IsPaymentMethodActiveAsync(cart.PaymentMethod.Id);
+            if (!isPaymentMethodActive)
+            {
+                throw new ArgumentException("El método de pago seleccionado no está activo.");
+            }
 
 
 
@@ -49,7 +60,7 @@ namespace StoreAPI.Business
 
             string purchaseNumber = GenerateNextPurchaseNumber();
 
-            PaymentMethods.Type paymentMethodType = cart.PaymentMethod;
+            PaymentMethods.Type paymentMethodType = cart.PaymentMethod.Id == 1 ? PaymentMethods.Type.CASH : PaymentMethods.Type.SINPE;
 
             var sale = new Sale(shadowCopyProducts, cart.Address, purchaseAmount, paymentMethodType, purchaseNumber);
 
@@ -78,7 +89,7 @@ namespace StoreAPI.Business
 
             var provinces = new Dictionary<string, List<string>>
             {
-                { "San José", new List<string> { "Central", "Escazú", "Desamparados", "Puriscal", "Tarrazú", "Aserrí", "Mora", "Goicoechea", "Santa Ana", "Alajuelita", "Vásquez de Coronado", "Acosta", "Tibás", "Moravia", "Montes de Oca", "Turrubares", "Dota", "Curridabat", "Pérez Zeledón", "León Cortés" } },
+                { "San José", new List<string> { "Central", "Escazú", "Desamparados", "Puriscal", "Tarrazú", "Aserrí", "Mora", "Goicoechea", "Santa Ana", "Alajuelita", "Vásquez de Coronado", "Acosta", "Tibás", "Moravia", "Montes de Oca", "Turrubares", "Dota", "Curridabat", "Pérez Zeledón", "León Cortés", "San Pedro" } },
                 { "Alajuela", new List<string> { "Central", "San Ramón", "Grecia", "San Mateo", "Atenas", "Naranjo", "Palmares", "Poás", "Orotina", "San Carlos", "Zarcero", "Valverde Vega", "Upala", "Los Chiles", "Guatuso", "Río Cuarto" } },
                 { "Cartago", new List<string> { "Central", "Paraíso", "La Unión", "Jiménez", "Turrialba", "Alvarado", "Oreamuno", "El Guarco" } },
                 { "Heredia", new List<string> { "Central", "Barva", "Santo Domingo", "Santa Bárbara", "San Rafael", "San Isidro", "Belén", "Flores", "San Pablo", "Sarapiquí" } },

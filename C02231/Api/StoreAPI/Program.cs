@@ -27,6 +27,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<CampaignDB>();
+builder.Services.AddSingleton<PaymentMethodDB>();
 
 var security = Environment.GetEnvironmentVariable("Security");
 

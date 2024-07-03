@@ -103,7 +103,7 @@ public sealed class StoreDB
                     CREATE TABLE IF NOT EXISTS paymentMethod (
                         id INT PRIMARY KEY NOT NULL,
                         method_name VARCHAR(50) NOT NULL,
-                        active BOOLEAN NOT NULL DEFAULT FALSE 
+                        active INT NOT NULL DEFAULT TRUE 
                         );
                     
 
@@ -128,7 +128,7 @@ public sealed class StoreDB
                         FOREIGN KEY (product_id) REFERENCES products(id)
                     );   
                     INSERT INTO paymentMethod (id, method_name)
-                            VALUES (0, 'Efectivo'), (1, 'Sinpe');
+                            VALUES (0, 'CASH'), (1, 'SINPE');
                     
                   CREATE TABLE messages (
                         id INT AUTO_INCREMENT PRIMARY KEY,
