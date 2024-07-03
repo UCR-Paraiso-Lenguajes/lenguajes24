@@ -11,9 +11,9 @@ namespace Store_API.Database
 {
     public class DB_API
     {
-        private static string connectionString;
+        private static string connectionString = "server=localhost;user=root;password=123456;database=Store_API";
 
-          public DB_API(string connectionStrings)
+        public DB_API(string connectionStrings)
         {
             connectionString = connectionStrings;
         }
@@ -29,10 +29,10 @@ namespace Store_API.Database
                     connection.Open();
 
                     string createTablePaymentMethod = @"
-                        CREATE TABLE IF NOT EXISTS PaymentMethod (
-                           PaymentMethodId INT PRIMARY KEY,
-                           PaymentMethodName VARCHAR(10) NOT NULL
-                        );";
+                    CREATE TABLE IF NOT EXISTS PaymentMethod (
+                        PaymentMethodId INT PRIMARY KEY,
+                        PaymentMethodName VARCHAR(10) NOT NULL
+                    );";
 
                     using (MySqlCommand command = new MySqlCommand(createTablePaymentMethod, connection))
                     {
@@ -40,16 +40,16 @@ namespace Store_API.Database
                     }
 
                     string createTableSales = @"
-                        CREATE TABLE IF NOT EXISTS Sales (
-                            IdSale INT AUTO_INCREMENT PRIMARY KEY,                            
-                            PurchaseNumber VARCHAR(50) NOT NULL,                           
-                            Total DECIMAL(10, 2) NOT NULL,
-                            Subtotal DECIMAL(10, 2) NOT NULL,                                                
-                            Address VARCHAR(255) NOT NULL,
-                            PaymentMethodId INT NOT NULL,
-                            DateSale DATETIME NOT NULL,
-                            FOREIGN KEY (PaymentMethodId) REFERENCES PaymentMethod(PaymentMethodId)
-                        );";
+                    CREATE TABLE IF NOT EXISTS Sales (
+                        IdSale INT AUTO_INCREMENT PRIMARY KEY,                            
+                        PurchaseNumber VARCHAR(50) NOT NULL,                           
+                        Total DECIMAL(10, 2) NOT NULL,
+                        Subtotal DECIMAL(10, 2) NOT NULL,                                                
+                        Address TEXT NOT NULL,
+                        PaymentMethodId INT NOT NULL,
+                        DateSale DATETIME NOT NULL,
+                        FOREIGN KEY (PaymentMethodId) REFERENCES PaymentMethod(PaymentMethodId)
+                    );";
 
                     using (MySqlCommand command = new MySqlCommand(createTableSales, connection))
                     {
@@ -57,14 +57,14 @@ namespace Store_API.Database
                     }
 
                     string createTableProducts = @"
-                        CREATE TABLE IF NOT EXISTS Products (
-                            IdProduct INT AUTO_INCREMENT PRIMARY KEY,
-                            Name VARCHAR(255) NOT NULL,
-                            ImageURL VARCHAR(255),
-                            Description TEXT,
-                            Price DECIMAL(10, 2) NOT NULL,
-                            Categoria INT NOT NULL
-                        );";
+                    CREATE TABLE IF NOT EXISTS Products (
+                        IdProduct INT AUTO_INCREMENT PRIMARY KEY,
+                        Name VARCHAR(255) NOT NULL,
+                        ImageURL VARCHAR(255),
+                        Description TEXT,
+                        Price DECIMAL(10, 2) NOT NULL,
+                        Categoria INT NOT NULL
+                    );";
 
                     using (MySqlCommand command = new MySqlCommand(createTableProducts, connection))
                     {
@@ -72,20 +72,142 @@ namespace Store_API.Database
                     }
 
                     string createTableSalesLines = @"
-                        CREATE TABLE IF NOT EXISTS SalesLines (
-                            IdSaleLine INT AUTO_INCREMENT PRIMARY KEY,
-                            IdSale INT NOT NULL,
-                            IdProduct INT NOT NULL,
-                            Quantity INT NOT NULL DEFAULT 1,
-                            Price DECIMAL(10, 2) NOT NULL,
-                            FOREIGN KEY (IdSale) REFERENCES Sales(IdSale),
-                            FOREIGN KEY (IdProduct) REFERENCES Products(IdProduct)
-                        );";
-
-                    //InsertSalesData(connection);
+                    CREATE TABLE IF NOT EXISTS SalesLines (
+                        IdSaleLine INT AUTO_INCREMENT PRIMARY KEY,
+                        IdSale INT NOT NULL,
+                        IdProduct INT NOT NULL,
+                        Quantity INT NOT NULL DEFAULT 1,
+                        Price DECIMAL(10, 2) NOT NULL,
+                        FOREIGN KEY (IdSale) REFERENCES Sales(IdSale),
+                        FOREIGN KEY (IdProduct) REFERENCES Products(IdProduct)
+                    );";
 
                     using (MySqlCommand command = new MySqlCommand(createTableSalesLines, connection))
                     {
+                        command.ExecuteNonQuery();
+                    }
+
+                    if (!AnyProductsExist(connection))
+                    {
+                        var initialProducts = GetInitialProducts();
+                        InsertProductsStore(initialProducts, connection);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        private bool AnyProductsExist(MySqlConnection connection)
+        {
+            string checkProductsQuery = "SELECT COUNT(*) FROM Products";
+            using (MySqlCommand command = new MySqlCommand(checkProductsQuery, connection))
+            {
+                int productCount = Convert.ToInt32(command.ExecuteScalar());
+                return productCount > 0;
+            }
+        }
+
+        private List<Product> GetInitialProducts()
+        {
+            return new List<Product>
+        {
+            new Product
+            {
+                Id = 1,
+                Name = "Iphone",
+                ImageURL = "/img/Iphone.jpg",
+                Description= "Producto nuevo",
+                Price = 200M,
+                Categoria = new Category(1, "Electrónica")
+            },
+            new Product
+            {
+                Id = 2,
+                Name = "Audifono",
+                ImageURL = "/img/audifonos.jpg",
+                Description= "Producto nuevo",
+                Price = 100M,
+                Categoria = new Category(1, "Electrónica")
+            },
+            new Product
+            {
+                Id = 3,
+                Name = "Mouse",
+                ImageURL = "/img/mouse.jpg",
+                Description= "Producto nuevo",
+                Price = 35M,
+                Categoria = new Category(2, "Hogar y oficina")
+            },
+            new Product
+            {
+                Id = 4,
+                Name = "Pantalla",
+                ImageURL = "/img/Pantalla.jpg",
+                Description= "Producto nuevo",
+                Price = 68M,
+                Categoria = new Category(3, "Entretenimiento")
+            },
+            new Product
+            {
+                Id = 5,
+                Name = "Headphone",
+                ImageURL = "/img/Headphone.jpg",
+                Description= "Producto nuevo",
+                Price = 35M,
+                Categoria = new Category(3, "Entretenimiento")
+            },
+            new Product
+            {
+                Id = 6,
+                Name = "Teclado",
+                ImageURL = "/img/teclado.jpg",
+                Description= "Producto nuevo",
+                Price = 95M,
+                Categoria = new Category(1, "Electrónica")
+            },
+            new Product
+            {
+                Id = 7,
+                Name = "Cable USB",
+                ImageURL = "/img/Cable.jpg",
+                Description= "Producto nuevo",
+                Price = 10M,
+                Categoria = new Category(4, "Tecnología")
+            },
+            new Product
+            {
+                Id = 8,
+                Name = "Chromecast",
+                ImageURL = "/img/Chromecast.jpg",
+                Description= "Producto nuevo",
+                Price = 150M,
+                Categoria = new Category(4, "Tecnología")
+            }
+        };
+        }
+
+        public void InsertProductsStore(List<Product> allProducts, MySqlConnection connection)
+        {
+            try
+            {
+                foreach (var actualProduct in allProducts)
+                {
+                    string insertQuery = @"
+                INSERT INTO Products (Name, ImageURL, Description, Price, Categoria)
+                VALUES (@name, @imageURL, @description, @price, @categoria);
+            ";
+
+                    using (MySqlCommand command = new MySqlCommand(insertQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@name", actualProduct.Name);
+                        command.Parameters.AddWithValue("@imageURL", actualProduct.ImageURL);
+                        command.Parameters.AddWithValue("@description", actualProduct.Description);
+                        command.Parameters.AddWithValue("@price", actualProduct.Price);
+                        command.Parameters.AddWithValue("@categoria", actualProduct.Categoria.IdCategory);
+
                         command.ExecuteNonQuery();
                     }
                 }
@@ -95,40 +217,6 @@ namespace Store_API.Database
                 throw;
             }
         }
-
-        public void InsertProductsStore(List<Product> allProducts)
-        {
-            try
-            {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
-                {
-                    connection.Open();
-                    foreach (var actualProduct in allProducts)
-                    {
-                        string insertQuery = @"
-                    INSERT INTO Products (Name, ImageURL, Description, Price, Categoria)
-                    VALUES (@name, @imageURL, @description, @price, @categoria);
-                ";
-
-                        using (MySqlCommand command = new MySqlCommand(insertQuery, connection))
-                        {
-                            command.Parameters.AddWithValue("@name", actualProduct.Name);
-                            command.Parameters.AddWithValue("@imageURL", actualProduct.ImageURL);
-                            command.Parameters.AddWithValue("@description", actualProduct.Description);
-                            command.Parameters.AddWithValue("@price", actualProduct.Price);
-                            command.Parameters.AddWithValue("@categoria", actualProduct.Categoria.IdCategory);
-
-                            command.ExecuteNonQuery();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
         public List<Product> SelectProducts()
         {
             List<Product> productListToStoreInstance = new List<Product>();
@@ -235,6 +323,7 @@ namespace Store_API.Database
                 }
             }
         }
+        
 
         private async Task InsertSalesLinesAsync(MySqlConnection connection, MySqlTransaction transaction, string purchaseNumber, List<ProductQuantity> products)
         {
