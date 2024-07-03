@@ -1,4 +1,4 @@
-"use client"; //Para utilizar el cliente en lugar del servidor
+"use client"; // Para utilizar el cliente en lugar del servidor
 import { useEffect, useState } from 'react';
 import "../../public/styles.css";
 import Link from 'next/link';
@@ -15,17 +15,19 @@ export default function Payment() {
   const [address, setAddress] = useState('');
   const [total, setTotal] = useState('');
   const [purchaseNumber, setPurchaseNumber] = useState('');
+  const [storedCart, setStoredCart] = useState({ products: {} });
   const URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const cart = localStorage.getItem('cart');
-    const storedCart = cart ? JSON.parse(cart) : { products: {} };
-    const productIds = Object.keys(storedCart.products);
+    const parsedCart = cart ? JSON.parse(cart) : { products: {} };
+    setStoredCart(parsedCart);
+    const productIds = Object.keys(parsedCart.products);
     setCartProducts(productIds);
-    
+
     const storedAddress = localStorage.getItem('address') || '';
     setAddress(storedAddress);
-    
+
     const storedTotal = localStorage.getItem('total') || '';
     setTotal(storedTotal);
   }, []);
@@ -47,10 +49,14 @@ export default function Payment() {
     const paymentMethodValue = selectedMethod === PaymentMethodsEnum.Sinpe ? PaymentMethodsEnum.Sinpe : PaymentMethodsEnum.Cash;
     try {
       const dataSend = {
-        ProductIds: cartProducts,
+        ProductIds: cartProducts.map(id => id),
         Address: address,
         PaymentMethod: selectedMethod,
-        Total: total
+        Total: total,
+        ProductQuantities: cartProducts.reduce((acc, id) => {
+          acc[id] = storedCart.products[id].quantity;
+          return acc;
+        }, {})
       };
 
       const response = await fetch(URL + '/api/cart', {
@@ -81,7 +87,7 @@ export default function Payment() {
     <div>
       <div className="header">
         <Link href="/">
-          <h1>Tienda</h1>
+          <h1>Store</h1>
         </Link>
       </div>
 
