@@ -61,7 +61,7 @@ namespace TodoApi.Models
             if (productAdd.category <= 0)
                 throw new ArgumentException("Product category must be greater than zero.", nameof(productAdd.category));
 
-            var newProduct = new Product(productAdd.name, productAdd.imageUrl, productAdd.price, productAdd.description, id, new Categories().GetType(productAdd.category));
+            var newProduct = new Product(productAdd.name, productAdd.imageUrl, productAdd.price, productAdd.description, id, new Categories().GetType(productAdd.category), productAdd.quantity);
             Products.Add(newProduct);
         }
 

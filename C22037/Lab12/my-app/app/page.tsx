@@ -1,4 +1,4 @@
-"use client";
+"use client"; // Para utilizar el cliente en lugar del servidor
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../public/styles.css";
 import { useState, useEffect } from "react";
@@ -70,7 +70,7 @@ export default function Home() {
           setProductList(searchData.products);
         }
       } catch (error) {
-        throw new Error('Error loading data.');
+        throw new Error('Error loading data.', error);
       }
     };
 
@@ -151,13 +151,14 @@ export default function Home() {
 
       setProductList(data.products);
     } catch (error) {
-      throw new Error('Error fetching data.');
+      throw new Error('Error fetching data.', error);
     }
   };
 
   const handleAddToCart = (productId) => {
     if (productId === undefined) {
       throw new Error('ProductId cannot be undefined.');
+      return;
     }
 
     const storedCart = JSON.parse(localStorage.getItem('cart')) || { products: {} };
@@ -165,7 +166,13 @@ export default function Home() {
     if (productToAdd) {
       const updatedCart = {
         ...storedCart,
-        products: { ...storedCart.products, [productId]: productToAdd }
+        products: { 
+          ...storedCart.products, 
+          [productId]: { 
+            ...productToAdd, 
+            quantity: storedCart.products[productId] ? storedCart.products[productId].quantity + 1 : 1 
+          } 
+        }
       };
       localStorage.setItem('cart', JSON.stringify(updatedCart));
       setCount(Object.keys(updatedCart.products).length);
@@ -177,20 +184,21 @@ export default function Home() {
   };
 
   const handleCategoryChange = async (category, isChecked) => {
+    if (category === undefined) {
+      throw new Error('Category cannot be undefined.');
+      return;
+    }
+
+    const updatedCategories = isChecked
+      ? [...(selectedCategory || []), category]
+      : selectedCategory.filter(c => c.id !== category.id);
+
+    setSelectedCategory(updatedCategories);
+    setIsDropdownOpen(false);
+
+    updateUrl(searchQuery, updatedCategories);
+
     try {
-      if (category === undefined) {
-        throw new Error('Category cannot be undefined.');
-      }
-
-      const updatedCategories = isChecked
-        ? [...(selectedCategory || []), category]
-        : selectedCategory.filter(c => c.id !== category.id);
-
-      setSelectedCategory(updatedCategories);
-      setIsDropdownOpen(false);
-
-      updateUrl(searchQuery, updatedCategories);
-
       const response = await fetch(URL + `/api/store/products?${updatedCategories.length > 0 ? `categories=${updatedCategories.map(c => c.id).join(',')}` : 'categories=null'}`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
@@ -199,7 +207,7 @@ export default function Home() {
       const data = await response.json();
       setProductList(data.products);
     } catch (error) {
-      throw new Error('Error fetching data.');
+      throw new Error('Error fetching data.', error);
     }
   };
 
@@ -217,6 +225,7 @@ export default function Home() {
   const Product = ({ product }) => {
     if (product === undefined) {
       throw new Error('Product cannot be undefined.');
+      return null;
     }
 
     return (
@@ -242,7 +251,7 @@ export default function Home() {
               src={product.imageURL}
               alt={product.name}
             />
-            <button onClick={() => handleAddToCart(product.id)} className="Button">Add to Cart</button>
+            <button onClick={(e) => { e.stopPropagation(); handleAddToCart(product.id); }} className="Button">Add to Cart</button>
           </Carousel.Item>
         ))}
       </Carousel>
@@ -252,10 +261,12 @@ export default function Home() {
   const rows = (array, size) => {
     if (array === undefined) {
       throw new Error("There are no products.");
+      return [];
     }
 
     if (size === undefined) {
       throw new Error("No index specified.");
+      return [];
     }
 
     const row = [];
@@ -271,7 +282,7 @@ export default function Home() {
       <div className="header">
         <div className="row">
           <div className="col-sm-2">
-            <h1>Tienda</h1>
+            <h1>Store</h1>
           </div>
           <div className="col-sm-6">
             <div className="col-sm-6 d-flex align-items-center">

@@ -69,7 +69,7 @@ export default function Admin() {
         <div>
             <div className="header">
                 <Link href="/">
-                    <h1>Tienda</h1>
+                    <h1>Store</h1>
                 </Link>
             </div>
 

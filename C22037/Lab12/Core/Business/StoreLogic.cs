@@ -18,24 +18,24 @@ namespace TodoApi.Business
             if (string.IsNullOrWhiteSpace(cart.Address)) throw new ArgumentException("Address must be provided.");
 
             var store = await Store.InstanceAsync();
-
             var products = store.Products;
             var taxPercentage = store.TaxPercentage;
 
-            // Find matching products based on the product IDs in the cart
             IEnumerable<Product> matchingProducts = products.Where(p => cart.ProductIds.Contains(p.Id.ToString())).ToList();
 
-            // Create shadow copies of the matching products
-            IEnumerable<Product> shadowCopyProducts = matchingProducts.Select(p => (Product)p.Clone()).ToList();
+            IEnumerable<Product> shadowCopyProducts = matchingProducts.Select(p =>
+            {
+                var product = (Product)p.Clone();
+                product.Quantity = cart.GetQuantityForProduct(p.Id.ToString());
+                return product;
+            }).ToList();
 
             string purchaseNumber = GenerateNextPurchaseNumber();
-
             PaymentMethod.Type paymentMethodType = cart.PaymentMethod;
 
             var sale = new Sale(shadowCopyProducts, cart.Address, cart.Total, paymentMethodType);
-
             await saleDB.SaveAsync(sale);
-                
+
             return sale;
         }
 
