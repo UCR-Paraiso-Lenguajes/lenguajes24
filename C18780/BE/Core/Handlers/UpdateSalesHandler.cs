@@ -1,6 +1,5 @@
 using System.Text.Json;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 using StoreApi.Commands;
 using StoreApi.Models;
 using StoreApi.Repositories;
@@ -10,21 +9,16 @@ namespace StoreApi.Handler
     public sealed class UpdateSalesHandler : IRequestHandler<UpdateSalesCommand, int>
     {
         private readonly ISalesRepository _salesRepository;
-        private readonly IConfiguration configuration;
-
         private HttpClient client = new HttpClient();
-        private readonly string apiUrl;
-        private readonly string key;
-        public UpdateSalesHandler(IConfiguration configuration, ISalesRepository salesRepository)
+        private string apiUrl = "https://us1.locationiq.com/v1/search";
+        private string key = "pk.907e2c27b4df9c13243827db78332485";
+        public UpdateSalesHandler(ISalesRepository salesRepository)
         {
             if (salesRepository == null)
             {
                 throw new ArgumentException("Illegal action, salesRepository is invalid.");
             }
             _salesRepository = salesRepository;
-            this.configuration = configuration;
-            apiUrl = configuration["LocationApi:ApiUrl"];
-            key = configuration["LocationApi:Key"];
         }
         public async Task<int> Handle(UpdateSalesCommand command, CancellationToken cancellationToken)
         {
