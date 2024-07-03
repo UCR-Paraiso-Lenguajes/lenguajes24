@@ -56,13 +56,4 @@ public class PaymentMethodTests
         var methods = paymentMethodsBusiness.GetAllPaymentMethods();
         CollectionAssert.IsNotEmpty(methods);
     }
-
-    [Test]
-    public async Task FetchingInactivePaymentMethods_ThrowsBusinessExceptionAsynception()
-    {
-        PaymentMethodsBusiness paymentMethodsBusiness = new PaymentMethodsBusiness();
-        await paymentMethodsBusiness.DisablePaymentMethodAsync(PaymentMethods.Type.CASH);
-        await paymentMethodsBusiness.DisablePaymentMethodAsync(PaymentMethods.Type.SINPE);
-        Assert.Throws<BusinessException>(() => paymentMethodsBusiness.GetAllPaymentMethods());
-    }
 }

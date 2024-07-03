@@ -37,7 +37,7 @@ public class PaymentMethodsBusiness
 
     public IEnumerable<PaymentMethods> GetAllPaymentMethods()
     {
-        var paymentMethods = db.GetPaymentMethods().Where(method => method.IsEnabled).ToList();
+        var paymentMethods = db.GetPaymentMethods();
         if(paymentMethods.Count == 0) throw new BusinessException("No payment methods at the moment");
         return paymentMethods;
     }
