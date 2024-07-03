@@ -11,10 +11,12 @@ namespace storeapi.Models
         }
 
         public Type PaymentType { get; set; }
+        public bool IsActive { get; set; }
 
-        protected PaymentMethods(Type paymentType)
+        protected PaymentMethods(Type paymentType, bool isActive = true)
         {
             PaymentType = paymentType;
+            IsActive = isActive;
         }
 
         private static readonly Sinpe sinpe = new Sinpe();
@@ -37,21 +39,30 @@ namespace storeapi.Models
         {
             return Find(type);
         }
+
+        public static PaymentMethods LoadFromDatabase(int id, string name, bool isActive)
+        {
+            var paymentType = (Type)id;
+            switch (paymentType)
+            {
+                case Type.CASH:
+                    return new Cash { PaymentType = paymentType, IsActive = isActive };
+                case Type.SINPE:
+                    return new Sinpe { PaymentType = paymentType, IsActive = isActive };
+                default:
+                    throw new NotImplementedException("Payment method not implemented");
+            }
+        }
     }
 
     public sealed class Sinpe : PaymentMethods
     {
-        public Sinpe() : base(Type.SINPE)
-        {
-
-        }
+        public Sinpe() : base(Type.SINPE) { }
     }
 
     public sealed class Cash : PaymentMethods
     {
-        public Cash() : base(Type.CASH)
-        {
-
-        }
+        public Cash() : base(Type.CASH) { }
     }
 }
+
