@@ -21,7 +21,10 @@ public class AuthLogic
         _developmentCredentials = new Dictionary<string, (string Password, string Role)>
         {
             { "admin", (_configuration["TestCredentials:admin:Password"], _configuration["TestCredentials:admin:Role"]) },
-            { "user", (_configuration["TestCredentials:user:Password"], _configuration["TestCredentials:user:Role"]) }
+            { "user", (_configuration["TestCredentials:user:Password"], _configuration["TestCredentials:user:Role"]) },
+            { "testuser", (_configuration["TestCredentials:testuser:Password"], _configuration["TestCredentials:testuser:Role"]) },
+            { "kendall", (_configuration["TestCredentials:kendall:Password"], _configuration["TestCredentials:kendall:Role"]) },
+            { "Yuuta", (_configuration["TestCredentials:Yuuta:Password"], _configuration["TestCredentials:Yuuta:Role"]) }
         };
     }
 

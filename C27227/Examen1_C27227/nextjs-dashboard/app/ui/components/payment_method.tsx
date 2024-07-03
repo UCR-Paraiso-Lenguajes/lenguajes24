@@ -14,7 +14,13 @@ interface PaymentMethodsProps {
   };
 }
 
+interface PaymentMethod {
+  paymentType: number;
+  isEnabled: boolean;
+}
+
 const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentmethod, setPaymentMethod] = useState<string>("");
   const [paymentCode, setPaymentCode] = useState<string>("");
   const [confirmationPurchase, setConfirmationPurchase] = useState<boolean>(false);
@@ -40,6 +46,29 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
     }
   }, [router]);
 
+  useEffect(() => {
+    const fetchPaymentMethods = async () => {
+      try {
+        const response = await fetch(`${URLConection}/api/store/paymentMethods`);
+        if (response.ok) {
+          const data = await response.json();
+          setPaymentMethods(data);
+        } else {
+          throw new Error("Error fetching payment methods");
+        }
+      } catch (error) {
+        setWarningMessage("Error fetching payment methods: " + error.message);
+        setWarning(true);
+        setTimeout(() => {
+          setWarning(false);
+          setWarningMessage("");
+        }, 2000);
+      }
+    };
+
+    fetchPaymentMethods();
+  }, [URLConection]);
+
   const handlePaymentCodeChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPaymentCode(event.target.value);
   };
@@ -52,24 +81,36 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
         setWarning(false);
         setWarningMessage("");
       }, 2000);
-    } else {
-      const newp = {
-        ...tiendaLocal,
-        cart: {
-          ...tiendaLocal.cart,
-          metodoPago: paymentmethod,
-          direccionEntrega: `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`,
-        },
-        necesitaVerifica: true,
-        idCompra: 1,
-      };
-      localStorage.setItem("tienda", JSON.stringify(newp));
-      setConfirmationPurchase(true);
+      return;
     }
+
+    const selectedMethod = paymentMethods.find((method) => method.paymentType.toString() === paymentmethod);
+    if (selectedMethod && !selectedMethod.isEnabled) {
+      setWarning(true);
+      setWarningMessage("El método de pago seleccionado está deshabilitado.");
+      setTimeout(() => {
+        setWarning(false);
+        setWarningMessage("");
+      }, 2000);
+      return;
+    }
+
+    const newp = {
+      ...tiendaLocal,
+      cart: {
+        ...tiendaLocal.cart,
+        metodoPago: paymentmethod,
+        direccionEntrega: `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`,
+      },
+      necesitaVerifica: true,
+      idCompra: 1,
+    };
+    localStorage.setItem("tienda", JSON.stringify(newp));
+    setConfirmationPurchase(true);
   };
 
   const enviarDatosPago = async () => {
-    if (paymentmethod === "sinpe" && !paymentCode.trim()) {
+    if (paymentmethod === "1" && !paymentCode.trim()) {
       setWarning(true);
       setWarningMessage("Por favor, ingrese el comprobante de pago.");
       setTimeout(() => {
@@ -86,14 +127,14 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
       })
     ) : [];
 
-    const paymentMethodValue = paymentmethod === "sinpe" ? 1 : 0;
+    const paymentMethodValue = parseInt(paymentmethod); // Ensure this is correctly set
 
     const dataToSend = {
       cart: {
         product: productQuantities,
         address: `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`,
-        paymentMethod: paymentMethodValue,
-        paymentCode: paymentmethod === "sinpe" ? paymentCode : undefined,
+        paymentMethod: paymentMethodValue,  // Send the correct value
+        paymentCode: paymentMethodValue === 1 ? paymentCode : undefined,
       },
     };
 
@@ -136,6 +177,17 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
     window.location.replace('/');
   };
 
+  const getPaymentMethodName = (type: number) => {
+    switch (type) {
+      case 0:
+        return "Efectivo";
+      case 1:
+        return "Sinpe";
+      default:
+        return "Desconocido";
+    }
+  };
+
   return (
     <div>
       {warning && (
@@ -163,9 +215,9 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
               {`${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`}
             </p>
             <p>
-              <strong>Método de pago:</strong> {paymentmethod === "cash" ? "Efectivo" : "Sinpe"}
+              <strong>Método de pago:</strong> {getPaymentMethodName(parseInt(paymentmethod))}
             </p>
-            {paymentmethod === "sinpe" && (
+            {paymentmethod === "1" && (
               <>
                 <p>
                   <strong>Número de cuenta:</strong> +506-5678-9012
@@ -198,28 +250,33 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
         <fieldset className="payment-methods">
           <legend>Escoja el método de pago</legend>
           <div className="payment-methods-container">
-            <div className="payment-method">
-              <input
-                type="radio"
-                id="sinpe"
-                name="paymentMethod"
-                value="sinpe"
-                checked={paymentmethod === "sinpe"}
-                onChange={() => setPaymentMethod("sinpe")}
-              />
-              <label htmlFor="sinpe">Sinpe</label>
-            </div>
-            <div className="payment-method">
-              <input
-                type="radio"
-                id="cash"
-                name="paymentMethod"
-                value="cash"
-                checked={paymentmethod === "cash"}
-                onChange={() => setPaymentMethod("cash")}
-              />
-              <label htmlFor="cash">Efectivo</label>
-            </div>
+            {paymentMethods.map((method) => (
+              method.isEnabled ? (
+                <div key={method.paymentType} className="payment-method">
+                  <input
+                    type="radio"
+                    id={method.paymentType.toString()}
+                    name="paymentMethod"
+                    value={method.paymentType.toString()}
+                    checked={paymentmethod === method.paymentType.toString()}
+                    onChange={() => setPaymentMethod(method.paymentType.toString())}
+                  />
+                  <label htmlFor={method.paymentType.toString()}>{getPaymentMethodName(method.paymentType)}</label>
+                </div>
+              ) : (
+                <div key={method.paymentType} className="payment-method">
+                  <input
+                    type="radio"
+                    id={method.paymentType.toString()}
+                    name="paymentMethod"
+                    value={method.paymentType.toString()}
+                    checked={false}
+                    disabled
+                  />
+                  <label htmlFor={method.paymentType.toString()}>{getPaymentMethodName(method.paymentType)} (Deshabilitado)</label>
+                </div>
+              )
+            ))}
           </div>
           <div className="buttons-container">
             <button className="BtnBuy" onClick={handlePaymentMethod}>

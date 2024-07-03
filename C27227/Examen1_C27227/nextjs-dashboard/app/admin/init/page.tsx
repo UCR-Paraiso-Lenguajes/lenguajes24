@@ -84,9 +84,14 @@ const Sidebar = () => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                <Link href="/admin/products" passHref>
+                  <Link href="/admin/products" passHref>
                     <span className="nav-link">Products</span>
-                </Link>
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link href="/admin/PaymentMethods" passHref>
+                    <span className="nav-link">Payment Methods</span>
+                  </Link>
                 </li>
               </ul>
             </div>

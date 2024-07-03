@@ -1,51 +1,58 @@
-namespace KEStoreApi;
-
-public abstract class PaymentMethods{
-
-    public enum Type {
+public abstract class PaymentMethods
+{
+    public enum Type
+    {
         CASH = 0,
         SINPE = 1
     }
 
-    public Type PaymentType {get; set;}
+    public Type PaymentType { get; set; }
+    public bool IsEnabled { get; set; }
 
-     public PaymentMethods(PaymentMethods.Type paymentType)
+    protected PaymentMethods(Type paymentType)
     {
-        PaymentType= paymentType;
-
+        PaymentType = paymentType;
+        IsEnabled = true; // Por defecto, todos los métodos están habilitados
     }
-        private static Sinpe sinpe = new Sinpe();
-        private static Cash cash = new Cash();
-      public static PaymentMethods Find(PaymentMethods.Type type)
+
+    private static Sinpe sinpe = new Sinpe();
+    private static Cash cash = new Cash();
+
+    public static PaymentMethods Find(Type type)
     {
+        switch (type)
         {
-                switch (type)
-            {
-                case Type.CASH:
-                    return cash;
-                case Type.SINPE:
-                    return sinpe;
-                default:
-                     throw new NotImplementedException("El tipo de método de pago especificado no está implementado.");
-            }
+            case Type.CASH:
+                return cash;
+            case Type.SINPE:
+                return sinpe;
+            default:
+                throw new NotImplementedException("El tipo de método de pago especificado no está implementado.");
         }
-        
     }
-     public static PaymentMethods SetPaymentType(Type type)
+
+    public static PaymentMethods SetPaymentType(Type type)
     {
         return Find(type);
     }
-    public sealed class Sinpe : PaymentMethods{
-        public Sinpe() : base(PaymentMethods.Type.SINPE)
-        {
 
-        }
+    public void Enable()
+    {
+        IsEnabled = true;
     }
 
-    public sealed class Cash : PaymentMethods{
-          public Cash() : base(PaymentMethods.Type.CASH)
-        { 
-            
-        }
+    public void Disable()
+    {
+        IsEnabled = false;
+    }
+
+    public sealed class Sinpe : PaymentMethods
+    {
+        public Sinpe() : base(Type.SINPE) { }
+    }
+
+    public sealed class Cash : PaymentMethods
+    {
+        public Cash() : base(Type.CASH) { }
     }
 }

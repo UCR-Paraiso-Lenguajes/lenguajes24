@@ -8,8 +8,5 @@ namespace KEStoreApi.Models
         public string ZipCode { get; set; }
         public string Country { get; set; }
     }
-       public class Order
-    {
-        public Address Address { get; set; }
-    }
+
 }

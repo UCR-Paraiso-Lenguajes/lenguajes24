@@ -1,63 +1,66 @@
+/* address.css */
+.address-form {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px; /* Add margin bottom to prevent overlap with footer */
+}
 
-form {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-  }
-  
+.address-form div {
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
 
-  label {
-    display: block;
-    margin-bottom: 10px;
-  }
-  
-  input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    margin-top: 4px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box; 
-  }
-  
+.address-form input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
 
-  button[type="submit"] {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    float: right;
-  }
-  
- 
-  button[type="submit"]:hover {
-    background-color: #45a049;
-  }
-  
-  
-  button[type="submit"]:active {
-    background-color: #3e8e41;
-  }
+.address-form button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.address-form button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.address-form .alert {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
 .alert-container {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-  }
-  
+  position: fixed;
+  top: 10px;
+  right: 10px;
+}
+
 .alert {
-    height: 60px;
-    width: 250px;
-    background-color: rgb(210, 91, 91);
-    font-size: 1.1rem;
-    color: white;
-    font-family: cursive;
-    padding: 5px;
-    border-radius: 5px;
-  }
-  
+  height: 60px;
+  width: 250px;
+  background-color: rgb(210, 91, 91);
+  font-size: 1.1rem;
+  color: white;
+  font-family: cursive;
+  padding: 5px;
+  border-radius: 5px;
+}

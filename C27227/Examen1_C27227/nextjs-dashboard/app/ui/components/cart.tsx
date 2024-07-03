@@ -86,6 +86,7 @@ const Cart_Store: React.FC = () => {
       },
     };
     localStorage.setItem("tienda", JSON.stringify(carritoActualizado));
+    setCartEmpty(carritoActualizado.products.length === 0);
   };
 
   const handleQuantityChange = (productId, action) => {

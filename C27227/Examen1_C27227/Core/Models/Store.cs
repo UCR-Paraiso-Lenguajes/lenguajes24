@@ -1,4 +1,8 @@
+using System;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Core;
 using KEStoreApi.Data;
 using KEStoreApi.Models;
@@ -11,9 +15,11 @@ namespace KEStoreApi
         public IEnumerable<Product> ProductsList { get; private set; }
         public int TaxPercentage { get; private set; }
         public IEnumerable<Categoria> CategoriasLista { get; private set; }
+        public IEnumerable<PaymentMethods> PaymentMethodsList { get; private set; } // Lista de métodos de pago
+
         public delegate Task ProductActionDelegate(Product product);
 
-        private Store(IEnumerable<Product> products, int taxPercentage, IEnumerable<Categoria> categorias)
+        private Store(IEnumerable<Product> products, int taxPercentage, IEnumerable<Categoria> categorias, IEnumerable<PaymentMethods> paymentMethods)
         {
             if (products == null || !products.Any())
                 throw new ArgumentException("La lista de productos no puede ser nula ni estar vacía.", nameof(products));
@@ -24,18 +30,26 @@ namespace KEStoreApi
             if (categorias == null || !categorias.Any())
                 throw new ArgumentException($"La lista de {nameof(categorias)} no puede ser nula ni estar vacía");
 
+            if (paymentMethods == null || !paymentMethods.Any())
+                throw new ArgumentException($"La lista de {nameof(paymentMethods)} no puede ser nula ni estar vacía");
+
             this.ProductsList = products.Where(p => !p.IsDeleted);
             this.TaxPercentage = taxPercentage;
             this.CategoriasLista = categorias;
+            this.PaymentMethodsList = paymentMethods;
             this._productsInstance = Products.InitializeFromMemory(this.ProductsList);
         }
 
         public static async Task<Store> InitializeInstanceAsync()
         {
             var categorias = Categorias.Instance.GetCategorias();
-            var productsInstance = await Products.Instance;
             var products = await DatabaseStore.GetProductsFromDBaAsync();
-            return new Store(products, 13, categorias);
+            var paymentMethods = new List<PaymentMethods>
+            {
+                new PaymentMethods.Cash(),
+                new PaymentMethods.Sinpe()
+            };
+            return new Store(products, 13, categorias, paymentMethods);
         }
 
         public async Task<IEnumerable<Product>> GetProductosCategoryIDAsync(IEnumerable<int> categoryIds)
@@ -118,9 +132,17 @@ namespace KEStoreApi
                 throw new ArgumentException("La dirección de entrega no es válida.", nameof(order.Address));
             }
 
+            // Aquí puedes agregar validaciones adicionales para los métodos de pago.
+            var paymentMethod = PaymentMethodsList.FirstOrDefault(m => m.PaymentType == order.PaymentMethod);
+            if (paymentMethod == null || !paymentMethod.IsEnabled)
+            {
+                throw new InvalidOperationException($"El método de pago {order.PaymentMethod} está deshabilitado.");
+            }
+
+            // Aquí agregar la lógica para procesar el pedido
         }
 
-        private bool IsValidAddress(Address address)
+        public bool IsValidAddress(Address address)
         {
             var zipCodePattern = new Regex(@"^[0-9]{5}(?:-[0-9]{4})?$"); // Simple US ZIP code validation
 
@@ -133,5 +155,11 @@ namespace KEStoreApi
 
         private static readonly Lazy<Task<Store>> InstanceTask = new Lazy<Task<Store>>(InitializeInstanceAsync);
         public static Task<Store> Instance => InstanceTask.Value;
+
+        public class PaymentMethod
+        {
+            public int PaymentType { get; set; }
+            public bool IsEnabled { get; set; }
+        }
     }
 }
