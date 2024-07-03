@@ -17,9 +17,6 @@ const ConfirmacionEfectivoPage = () => {
         }
 
         const cartData = JSON.parse(cartDataString);
-        if (!cartData || typeof cartData !== 'object' || !cartData.numeroCompra) {
-            throw new Error('Los datos de carrito no son válidos.');
-        }
 
         setFormState(prevState => ({
             ...prevState,

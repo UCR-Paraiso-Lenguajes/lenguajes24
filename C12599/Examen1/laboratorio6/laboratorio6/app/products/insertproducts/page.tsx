@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React, { useState } from 'react';
 import '../../ui/globals.css';
 
@@ -39,14 +39,10 @@ const InsertProduct = () => {
 
         if (!productDescription.trim()) {
             formErrors.productDescription = 'La descripción del producto es obligatoria';
-        } else if (productDescription.length < 10 || productDescription.length > 200) {
-            formErrors.productDescription = 'La descripción del producto debe tener entre 10 y 200 caracteres';
         }
 
         if (!productImage.trim()) {
             formErrors.productImage = 'La URL de la imagen del producto es obligatoria';
-        } else if (!/^https?:\/\/.+\.(jpg|jpeg|png|gif)$/.test(productImage)) {
-            formErrors.productImage = 'La URL de la imagen debe ser válida y terminar en .jpg, .jpeg, .png, o .gif';
         }
 
         setErrors(formErrors);
@@ -177,3 +173,4 @@ const InsertProduct = () => {
 };
 
 export default InsertProduct;
+

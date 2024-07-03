@@ -5,6 +5,7 @@ import Link from 'next/link';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 const URL = process.env.NEXT_PUBLIC_API;
+
 const Page = () => {
   const [state, setState] = useState({
     cart: {
@@ -14,21 +15,35 @@ const Page = () => {
     productList: [],
     categories: [],
     selectedCategories: [],
+    messageCount: 0,
   });
+
+  const fetchMessageCount = () => {
+    const messageCount = localStorage.getItem('messageCount');
+    if (messageCount !== null) {
+      setState((prevState) => ({
+        ...prevState,
+        messageCount: parseInt(messageCount, 10),
+      }));
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(URL+'/api/store');
+      const response = await fetch(URL + '/api/store');
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
       const json = await response.json();
       const { products, categories } = json;
 
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         productList: products || [],
         categories: categories || [],
-      });
+      }));
+
+      fetchMessageCount(); // Fetch message count after setting products and categories
     };
 
     fetchData();
@@ -41,7 +56,7 @@ const Page = () => {
 
     const { cart } = state;
     const { productos, count } = cart;
-    const isProductInCart = productos.some(item => item.id === product.id);
+    const isProductInCart = productos.some((item) => item.id === product.id);
 
     if (!isProductInCart) {
       const updatedCart = {
@@ -50,10 +65,10 @@ const Page = () => {
         count: count + 1,
       };
 
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         cart: updatedCart,
-      });
+      }));
 
       localStorage.setItem('cartData', JSON.stringify(updatedCart));
     } else {
@@ -62,13 +77,12 @@ const Page = () => {
   };
 
   const buildUrl = (selectedCategories) => {
-    // Validamos si selectedCategories es un array
     if (!Array.isArray(selectedCategories)) {
       throw new Error('selectedCategories debe ser un array');
     }
 
-    const baseUrl = URL+'/api/Products';
-    const queryParams = selectedCategories.map(id => `categoryIDs=${id}`).join('&');
+    const baseUrl = URL + '/api/Products';
+    const queryParams = selectedCategories.map((id) => `categoryIDs=${id}`).join('&');
     return `${baseUrl}?${queryParams}&search=null`;
   };
 
@@ -80,21 +94,21 @@ const Page = () => {
       if (selectedCategories.length === state.categories.length) {
         updatedCategories = [];
       } else {
-        updatedCategories = state.categories.map(category => category.id);
+        updatedCategories = state.categories.map((category) => category.id);
       }
     } else {
       const index = selectedCategories.indexOf(categoryId);
       if (index === -1) {
         updatedCategories = [...selectedCategories, categoryId];
       } else {
-        updatedCategories = selectedCategories.filter(id => id !== categoryId);
+        updatedCategories = selectedCategories.filter((id) => id !== categoryId);
       }
     }
 
-    setState({
-      ...state,
+    setState((prevState) => ({
+      ...prevState,
       selectedCategories: updatedCategories,
-    });
+    }));
     const url = buildUrl(updatedCategories);
     if (updatedCategories.length > 0) {
       const response = await fetch(url);
@@ -103,18 +117,18 @@ const Page = () => {
       }
       const json = await response.json();
       const productList = json || [];
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         productList,
         selectedCategories: updatedCategories,
-      });
+      }));
       const searchParams = new URLSearchParams({ categoryIDs: updatedCategories.join(',') });
       window.history.pushState(null, '', `${window.location.pathname}?${searchParams.toString()}`);
     } else {
-      setState({
-        ...state,
+      setState((prevState) => ({
+        ...prevState,
         productList: [],
-      });
+      }));
       window.history.pushState(null, '', window.location.pathname);
     }
   };
@@ -126,9 +140,9 @@ const Page = () => {
     event.preventDefault();
     const query = event.target.q.value.trim();
     const { selectedCategories } = state;
-    let url = URL+'/api/Products';
+    let url = URL + '/api/Products';
     const queryParams = [];
-    selectedCategories.forEach(categoryID => {
+    selectedCategories.forEach((categoryID) => {
       queryParams.push(`categoryIDs=${categoryID}`);
     });
     if (query) {
@@ -171,7 +185,7 @@ const Page = () => {
           />
           <label htmlFor="all" style={{ marginRight: '10px' }}>Todos Productos</label>
         </div>
-        {categories.map(category => (
+        {categories.map((category) => (
           <div key={category.id}>
             <input
               type="checkbox"
@@ -191,15 +205,16 @@ const Page = () => {
   const renderProducts = () => {
     const { productList } = state;
 
-    return productList.map(product => (
+    return productList.map((product) => (
       <div key={product.id} className="col-sm-3 mb-4">
         <div className="card">
           <img src={product.imageUrl} className="card-img-top" alt={product.name} />
           <div className="card-body">
             <h5 className="card-title">{product.name}</h5>
-            <p className="card-text">{product.description}</p>
+            <div className="card-text" dangerouslySetInnerHTML={{ __html: product.description }}></div>
             <p className="card-text">${product.price}</p>
             <button className="btn btn-primary" onClick={() => handleAddToCart(product)}>
+              Agregar al Carrito
             </button>
           </div>
         </div>
@@ -226,7 +241,7 @@ const Page = () => {
               />
               <div className="mt-3 text-center">
                 <h3>{product.name}</h3>
-                <p>{product.description}</p>
+                <div className="card-text" dangerouslySetInnerHTML={{ __html: product.description }}></div>
                 <p>${product.price}</p>
                 <button className="btn btn-primary" onClick={() => handleAddToCart(product)}>
                   Comprar
@@ -260,7 +275,7 @@ const Page = () => {
             <span className="badge rounded-pill bg-danger me-2">{state.cart.count}</span>
             <Link href="/campaigns">
               <button className="btn btn-primary me-2">
-                <i className="bi bi-megaphone-fill"></i> Campañas Usuario
+                <i className="bi bi-megaphone-fill"></i> Campañas Usuario <span className="badge rounded-pill bg-danger">{state.messageCount}</span>
               </button>
             </Link>
             <Link href="/admin">
@@ -298,4 +313,5 @@ const Page = () => {
     </div>
   );
 };
+
 export default Page;

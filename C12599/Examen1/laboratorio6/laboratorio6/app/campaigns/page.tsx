@@ -1,4 +1,3 @@
-//investigacion
 'use client';
 import React, { useEffect, useState } from 'react';
 import * as signalR from "@microsoft/signalr";
@@ -12,16 +11,12 @@ function Chat() {
 
     useEffect(() => {
         const fetchCampaigns = async () => {
-            try {
-                const response = await fetch(URL + '/api/Campannas');
-                if (response.ok) {
-                    const data = await response.json();
-                    const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
-                    setMessages(campaigns.slice(-3)); // Only keep the last 3 messages
-                } else {
-                    setError('Error al obtener las campañas.');
-                }
-            } catch (error) {
+            const response = await fetch(URL + '/api/Campannas');
+            if (response.ok) {
+                const data = await response.json();
+                const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
+                setMessages(campaigns.slice(-3)); // Solo mantener los últimos 3 mensajes
+            } else {
                 setError('Error al obtener las campañas.');
             }
         };
@@ -29,7 +24,7 @@ function Chat() {
         fetchCampaigns();
 
         const newConnection = new signalR.HubConnectionBuilder()
-            .withUrl(URL + "/StoreHub", {
+            .withUrl(URL + "/CampaignHub", {
                 withCredentials: true
             })
             .withAutomaticReconnect()
@@ -37,14 +32,15 @@ function Chat() {
             .build();
 
         const startConnection = async () => {
-            try {
-                await newConnection.start();
-                setConnection(newConnection);
-                setError(null);
-            } catch (err) {
-                setError('Error al conectar con el servidor. Intentando reconectar...');
-                setTimeout(() => startConnection(), 5000);
-            }
+            await newConnection.start()
+                .then(() => {
+                    setConnection(newConnection);
+                    setError(null);
+                })
+                .catch(() => {
+                    setError('Error al conectar con el servidor. Intentando reconectar...');
+                    setTimeout(() => startConnection(), 5000);
+                });
         };
 
         newConnection.onclose(() => {
@@ -62,26 +58,27 @@ function Chat() {
     }, []);
 
     useEffect(() => {
+        const fetchCampaigns = async () => {
+            const response = await fetch(URL + '/api/Campannas');
+            if (response.ok) {
+                const data = await response.json();
+                const campaigns = data.map((campanna: any) => `Nueva Campaña: ${campanna.contenidoHtml}`);
+                setMessages(campaigns.slice(-3)); // Solo mantener los últimos 3 mensajes
+            } else {
+                setError('Error al obtener las campañas.');
+            }
+        };
+
         if (connection) {
             const handleReceiveMessage = (user: string, message: string) => {
                 setMessages(prevMessages => {
                     const newMessages = [...prevMessages, `${user}: ${message}`];
-                    return newMessages.slice(-3); // Only keep the last 3 messages
+                    return newMessages.slice(-3); // Solo mantener los últimos 3 mensajes
                 });
             };
 
             const handleUpdateCampaigns = (contenidoHtml: string, estado: boolean) => {
-                setMessages(prevMessages => {
-                    let newMessages;
-                    if (estado) {
-                        // If the status is true, add the message
-                        newMessages = [...prevMessages, `Nueva Campaña: ${contenidoHtml}`];
-                    } else {
-                        // If the status is false, remove the corresponding message
-                        newMessages = prevMessages.filter(msg => msg !== `Nueva Campaña: ${contenidoHtml}`);
-                    }
-                    return newMessages.slice(-3); // Only keep the last 3 messages
-                });
+                fetchCampaigns(); // Obtener la lista completa de campañas
             };
 
             connection.on("ReceiveMessage", handleReceiveMessage);

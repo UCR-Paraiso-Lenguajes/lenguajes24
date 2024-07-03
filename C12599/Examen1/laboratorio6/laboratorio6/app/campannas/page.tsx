@@ -1,8 +1,8 @@
-//investigacion
 'use client';
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
+
 const URL = process.env.NEXT_PUBLIC_API;
 
 interface Campanna {
@@ -19,18 +19,22 @@ const Campannas: React.FC = () => {
   const maxChars = 5000;
 
   const fetchCampannas = async () => {
-    const token = sessionStorage.getItem('authToken');
-    const response = await fetch(`${URL}/api/Campannas`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (response.ok) {
-      const data = await response.json();
-      setCampannas(data);
-      localStorage.setItem('messageCount', data.length.toString());
-    } else {
+    try {
+      const token = sessionStorage.getItem('authToken');
+      const response = await fetch(`${URL}/api/Campannas`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCampannas(data);
+        localStorage.setItem('messageCount', data.length.toString());
+      } else {
+        setErrorMessage('Error al obtener las campañas.');
+      }
+    } catch (error) {
       setErrorMessage('Error al obtener las campañas.');
     }
   };
@@ -57,38 +61,46 @@ const Campannas: React.FC = () => {
       return;
     }
 
-    const token = sessionStorage.getItem('authToken');
-    const response = await fetch(`${URL}/api/Campannas`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ contenidoHtml: htmlContent, estado: true }),
-    });
+    try {
+      const token = sessionStorage.getItem('authToken');
+      const response = await fetch(`${URL}/api/Campannas`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ contenidoHtml: htmlContent, estado: true }),
+      });
 
-    if (response.ok) {
-      setHtmlContent('');
-      await fetchCampannas();
-    } else {
+      if (response.ok) {
+        setHtmlContent('');
+        await fetchCampannas();
+      } else {
+        setErrorMessage('Error al enviar el mensaje.');
+      }
+    } catch (error) {
       setErrorMessage('Error al enviar el mensaje.');
     }
   };
 
   const handleDelete = async (id: number) => {
-    const token = sessionStorage.getItem('authToken');
-    const response = await fetch(`${URL}/api/Campannas/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ id: id, estado: false }),
-    });
+    try {
+      const token = sessionStorage.getItem('authToken');
+      const response = await fetch(`${URL}/api/Campannas/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id: id, estado: false }),
+      });
 
-    if (response.ok) {
-      await fetchCampannas();
-    } else {
+      if (response.ok) {
+        await fetchCampannas();
+      } else {
+        setErrorMessage('Error al eliminar la campaña.');
+      }
+    } catch (error) {
       setErrorMessage('Error al eliminar la campaña.');
     }
   };

@@ -34,7 +34,6 @@ namespace storeapi.Bussisnes
             IEnumerable<Product> matchingProducts = products.Where(p => cart.ProductIds.Contains(p.id.ToString())).ToList();
 
             List<Product> shadowCopyProducts = matchingProducts.Select(p => (Product)p.Clone()).ToList();
-            
 
             foreach (var product in shadowCopyProducts)
             {
@@ -52,8 +51,14 @@ namespace storeapi.Bussisnes
 
             PaymentMethods.Type paymentMethodType = cart.PaymentMethod;
 
-            var sale = new Sale(shadowCopyProducts, cart.Address, purchaseAmount, paymentMethodType);
+            // Validar si el método de pago está activo
+            var paymentMethod = PaymentMethods.Find(paymentMethodType);
+            if (!paymentMethod.IsActive)
+            {
+                throw new InvalidOperationException($"El método de pago {paymentMethodType} está desactivado.");
+            }
 
+            var sale = new Sale(shadowCopyProducts, cart.Address, purchaseAmount, paymentMethodType);
 
             CartSave cartSave = new CartSave();
             await cartSave.SaveSaleAndItemsToDatabaseAsync(sale);
