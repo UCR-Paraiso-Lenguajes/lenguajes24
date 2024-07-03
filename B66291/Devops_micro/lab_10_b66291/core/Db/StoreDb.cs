@@ -11,7 +11,7 @@ public sealed class StoreDb
 {
     public static async void CrearDatosSync()
     {
-        string connectionString = "Server=localhost;Uid=root;Pwd=123456;"; 
+        string connectionString = "Server=localhost;Database=mysql;Uid=root;Pwd=123456;"; 
 
         using (var connectionWithoutDb = new MySqlConnection(connectionString))
         {
