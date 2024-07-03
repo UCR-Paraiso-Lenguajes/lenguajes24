@@ -9,11 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@microsoft/signalr": "^8.0.0",
     "@types/jwt-decode": "^3.1.0",
     "boostrap": "^2.0.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "chart.js": "^4.4.2",
+    "express": "^4.19.2",
     "jwt-decode": "^4.0.0",
     "next": "14.1.4",
     "react": "^18",
@@ -22,7 +24,10 @@
     "react-datepicker": "^6.9.0",
     "react-dom": "^18",
     "react-feather": "^2.0.10",
-    "recharts": "^2.12.6"
+    "recharts": "^2.12.6",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@types/node": "20.12.2",

@@ -47,7 +47,7 @@ jobs:
           cd C12599/Examen1/Api
           dotnet test --no-build --verbosity normal
 
-  publish:
+  publish-Api:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -58,6 +58,10 @@ jobs:
           docker image build -t marianoda2002/storeapi:latest .
           docker push marianoda2002/storeapi:latest
 
+  publish-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
       - name: Build & Push Image
         run: |
           cd C12599/Examen1/laboratorio6/laboratorio6

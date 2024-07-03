@@ -1,10 +1,19 @@
 {
 	"folders": [
 		{
-			"path": ".."
+			"path": "../../../react/my-app"
 		},
 		{
-			"path": "../../../react/my-app"
+			"path": "../../../react/nextjs-dashboard"
+		},
+		{
+			"path": "../../../react/react-hooks"
+		},
+		{
+			"path": "../../../apiplus"
+		},
+		{
+			"path": "../../../delegate_sample"
 		}
 	],
 	"settings": {}

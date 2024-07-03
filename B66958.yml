@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  ui:
+    image: eisenheimdiego/store_fe:latest
+    container_name: ui
+    environment:
+      #- API=192.168.1.12:57600
+      - NODE_ENV=10.59.19.211:8080      
+    ports:
+      - "3000:3000"
+
+  api:
+    image: eisenheimdiego/store_api:latest
+    container_name: api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+#    entrypoint: ["./wait-for-it.sh", "mysql:3306", "--", "sh", "-c", "sleep 5 && your_api_start_command_here"]
+
