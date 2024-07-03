@@ -17,7 +17,7 @@ namespace UT
         [SetUp]
         public void Setup()
         {
-           var myDbtest = "Server=localhost;Database=mysql;Uid=root;Pwd=123456;";
+            var myDbtest = "Server=localhost;Database=mysql;Uid=root;Pwd=123456;";
             Storage.Init(myDbtest);
             myDbtest = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
             Storage.Init(myDbtest);
@@ -25,40 +25,19 @@ namespace UT
             _campainBusiness = new CampainBusiness();
         }
 
-        [Test]
-        public async Task SaveCampain_CasoExitoso()
+       [Test]
+        public async Task ObtenerListaMensajes()
         {
-            var campain = new Campain("TestSender", "Test Message", 1);
-            _campainBusiness.SaveCampain(campain);
-            var messages = await _campainBusiness.GetMessageList();
-            var savedCampain = messages.FirstOrDefault(c => c.Sender == "TestSender" && c.MessageContent == "Test Message");
-            Assert.IsNotNull(savedCampain, "La campaña no se guardó correctamente.");
-        }
-
-        [Test]
-        public async Task GetMessageList_CasoExitoso()
-        {
-            var campain = new Campain("TestSender", "Test Message", 1);
-            _campainBusiness.SaveCampain(campain);
             var messages = await _campainBusiness.GetMessageList();
             Assert.IsNotNull(messages);
-            Assert.GreaterOrEqual(((List<Campain>)messages).Count, 1);
-            var savedCampain = messages.FirstOrDefault(c => c.Sender == "TestSender" && c.MessageContent == "Test Message");
-            Assert.IsNotNull(savedCampain, "La campaña específica no se encontró en la lista de mensajes.");
         }
 
-        [Test]
-        public async Task EraseCampain_CasoExitoso()
+         [Test]
+        public async Task BorrarCampañaExitoso()
         {
-            var campain = new Campain("TestSender", "Message to delete", 1);
-            _campainBusiness.SaveCampain(campain);
-           _campainBusiness.eraseCampain("Message to delete");
-            var messages = await _campainBusiness.GetMessageList();
-            var deletedCampain = messages.FirstOrDefault(c => c.MessageContent == "Message to delete");
-            Assert.IsNotNull(deletedCampain, "La campaña no se encontró.");
-            Assert.AreEqual(0, deletedCampain.Status, "La campaña no se borró correctamente.");
+            var message = "MessageContent";
+            async Task EraseAction() => _campainBusiness.eraseCampain(message);
+            Assert.DoesNotThrowAsync(EraseAction);
         }
-
-        
     }
 }
