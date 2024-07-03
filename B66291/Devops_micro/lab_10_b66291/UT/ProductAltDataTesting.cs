@@ -16,10 +16,11 @@ namespace UT
         [SetUp]
         public void Setup()
         {
-            var myDbtest = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
+            var myDbtest = "Server=localhost;Database=mysql;Uid=root;Pwd=123456;";
+            Storage.Init(myDbtest);
+            myDbtest = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
             Storage.Init(myDbtest);
             StoreDb.CrearDatosSync();
-
             _productData = new ProductAltData();
         }
 

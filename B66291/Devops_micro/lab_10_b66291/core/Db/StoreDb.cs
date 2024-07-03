@@ -20,10 +20,9 @@ public sealed class StoreDb
                 {
                     StoreDb _storeDb = new StoreDb();
                     string createTableQuery = @"
-                    DROP TABLE IF EXISTS salesLine;
-                    DROP TABLE IF EXISTS sales; 
-                    DROP TABLE IF EXISTS products;
-                    DROP TABLE IF EXISTS paymentMethod;
+                    DROP DATABASE IF EXISTS store;
+                    CREATE DATABASE store;
+                    use store;
                     CREATE TABLE IF NOT EXISTS products (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         name VARCHAR(100),
