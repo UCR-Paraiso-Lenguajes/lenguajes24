@@ -89,4 +89,19 @@ public class ProductTests
         };
         Assert.ThrowsAsync<ArgumentException>(() => productBusiness.AddProduct(product));
     }
+
+    [Test]
+    public void AddingNewProductWithCorrectData_DoesNotThrowException()
+    {
+        ProductBusiness productBusiness = new ProductBusiness();
+        var product = new ProductDTO
+        {
+            Name = "product",
+            ImageUrl = "www.image.com",
+            Description = "desc",
+            Price = 25000,
+            Category = 1
+        };
+        Assert.DoesNotThrowAsync(() => productBusiness.AddProduct(product));
+    }
 }
