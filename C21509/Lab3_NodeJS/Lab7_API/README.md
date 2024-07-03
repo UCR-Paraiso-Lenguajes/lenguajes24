@@ -12,3 +12,6 @@
 
 ## Diagrama de Actividad Métodos de Pago Proyecto
 <img src="Diagramametodospago.png">
+
+## Diagrama UML Métodos de pago y Flujo de Compra Proyecto
+<img src="ClasesMetodoPago.jpg">
