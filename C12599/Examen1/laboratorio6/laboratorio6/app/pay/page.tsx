@@ -329,4 +329,3 @@ const PayPage: React.FC = () => {
 }
 
 export default PayPage;
-
