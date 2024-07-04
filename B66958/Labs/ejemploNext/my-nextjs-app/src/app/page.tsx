@@ -8,7 +8,7 @@ import Carousel from 'react-bootstrap/Carousel';
 import { Dropdown } from "react-bootstrap";
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import DOMPurify from 'dompurify';
-import { CartState } from "./types/Cart";
+import { CartState, PaymentMethod } from "./types/Cart";
 import './css/messages.css';
 import WebSocketMessage from "./navbar/WebSocketMessage";
 
@@ -101,7 +101,7 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const result = await getData();
-        const paymentTypes = result.paymentMethods.map(payment => payment.paymentType);
+        const paymentTypes : PaymentMethod[] = result.paymentMethods;
         setProducts(result.productsInStore);
         setCategories(result.categoriesInStore);
         setCart(cart => ({
@@ -137,7 +137,6 @@ export default function Home() {
   }, [cart, cartLoaded]);
 
   const clearProducts = () => {
-    console.log("pasa")
     localStorage.removeItem('cart');
     setIdList([]);
     const updatedCart: CartState = {
@@ -160,7 +159,13 @@ export default function Home() {
   }
 
   function addProductToCart({ product }: any) {
-    const newProductos = [...(cart.carrito.productos || []), product];
+    const newProduct = {
+      ...product,
+      quantity: 1,
+    };
+
+    const newProductos = [...(cart.carrito.productos || []), newProduct];
+
     setCart(cart => ({
       ...cart,
       carrito: {

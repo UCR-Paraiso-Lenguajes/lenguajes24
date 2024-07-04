@@ -15,6 +15,8 @@ namespace ApiLab7.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            if (!AddressValidator.ValidateAddressFormat(cart.Address))
+                return BadRequest("Invalid address format.");
             CartBusiness cartBusiness = new CartBusiness();
             Sale sale = await cartBusiness.PurchaseAsync(cart);
             return Ok(new { purchaseNumber = sale.PurchaseNumber });

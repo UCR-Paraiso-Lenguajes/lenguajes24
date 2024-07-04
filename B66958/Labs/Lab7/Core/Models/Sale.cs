@@ -3,6 +3,7 @@ namespace ApiLab7;
 public sealed class Sale
 {
     public IEnumerable<Product> Products { get; }
+    public IEnumerable<CartProduct> CartProducts { get; }
     public string Address { get; }
     public decimal Amount { get; }
     public PaymentMethods PaymentMethod { get; }
@@ -11,7 +12,7 @@ public sealed class Sale
     public string SaleDate { get; }
 
     private Sale(
-        IEnumerable<Product> products,
+        IEnumerable<CartProduct> cartProducts,
         string address,
         decimal amount,
         PaymentMethods paymentMethod,
@@ -19,7 +20,7 @@ public sealed class Sale
         string confirmationNumber
     )
     {
-        Products = products;
+        CartProducts = cartProducts;
         Address = address;
         Amount = amount;
         PaymentMethod = paymentMethod;
@@ -36,7 +37,7 @@ public sealed class Sale
     }
 
     public static Sale Build(
-        IEnumerable<Product> products,
+        IEnumerable<CartProduct> products,
         string address,
         decimal amount,
         PaymentMethods paymentMethod,

@@ -17,8 +17,8 @@ public class CartData
 
         string insertSaleLineQuery =
             @"USE andromeda_store;
-        INSERT INTO sale_line(sale_id, product_Id, unit_price) 
-        VALUES(@id, @product, @price);";
+        INSERT INTO sale_line(sale_id, product_Id, unit_price, quantity) 
+        VALUES(@id, @product, @price, @quantity);";
 
         using (SqlConnection connection = new SqlConnection(Db.Instance.DbConnectionString))
         {
@@ -57,12 +57,13 @@ public class CartData
                         )
                     )
                     {
-                        foreach (Product product in sale.Products)
+                        foreach (CartProduct product in sale.CartProducts)
                         {
                             command.Parameters.Clear();
                             command.Parameters.AddWithValue("@id", generatedSaleId);
-                            command.Parameters.AddWithValue("@product", product.Uuid);
+                            command.Parameters.AddWithValue("@product", product.Id);
                             command.Parameters.AddWithValue("@price", product.Price);
+                            command.Parameters.AddWithValue("@quantity", product.Quantity);
                             await command.ExecuteNonQueryAsync();
                         }
                     }

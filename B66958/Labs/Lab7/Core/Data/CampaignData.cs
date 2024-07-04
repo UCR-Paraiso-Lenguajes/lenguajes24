@@ -19,7 +19,7 @@ public class CampaignData
 
         using (SqlConnection connection = new SqlConnection(Db.Instance.DbConnectionString))
         {
-            connection.OpenAsync();
+            await connection.OpenAsync();
             using (SqlCommand command = new SqlCommand(insertCampaignQuery, connection))
             {
                 command.Parameters.AddWithValue("@id", campaign.Id);

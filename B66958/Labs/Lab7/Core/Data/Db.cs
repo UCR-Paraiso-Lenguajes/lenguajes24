@@ -40,7 +40,8 @@ public class Db
             "CREATE TABLE sales (id INT PRIMARY KEY IDENTITY(1,1), address VARCHAR(100), "
                 + "purchase_amount DECIMAL(10, 2), payment_method_id INT, purchase_number CHAR(6), sale_date DATETIME, "
                 + "confirmed BIT, CONSTRAINT fkPaymentMethodSale FOREIGN KEY (payment_method_id) REFERENCES payment_method(id));",
-            "CREATE TABLE sale_line (id INT IDENTITY(1,1) PRIMARY KEY, sale_id INT, product_Id CHAR(36), unit_price DECIMAL(10, 2), "
+            "CREATE TABLE sale_line (id INT IDENTITY(1,1) PRIMARY KEY, sale_id INT, product_Id CHAR(36), "
+                + "unit_price DECIMAL(10, 2), quantity INT, "
                 + "CONSTRAINT fkSale FOREIGN KEY (sale_id) REFERENCES sales(id));",
             "CREATE TABLE sinpe_confirmation_number (id INT PRIMARY KEY, confirmation_number VARCHAR(20), "
                 + "CONSTRAINT fkSinpeSaleid FOREIGN KEY (id) REFERENCES sales(id))",
@@ -125,7 +126,7 @@ public class Db
             {
                 connection.Open();
 
-                string query = @"USE andromeda_store; SELECT id FROM payment_method;";
+                string query = @"USE andromeda_store; SELECT id, enabled FROM payment_method;";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
@@ -134,9 +135,11 @@ public class Db
                         while (reader.Read())
                         {
                             int paymentMethodId = Convert.ToInt32(reader[0].ToString());
+                            bool isEnabled = Convert.ToBoolean(reader[1].ToString());
                             PaymentMethods payment = PaymentMethods.Find(
                                 (PaymentMethods.Type)paymentMethodId
                             );
+                            payment.IsEnabled = isEnabled;
                             paymentMethods.Add(payment);
                         }
                     }
@@ -188,6 +191,21 @@ public class Db
             catch (Exception)
             {
                 throw;
+            }
+        }
+    }
+
+    public async Task UpdatePaymentMethodAsync(PaymentMethods paymentMethod)
+    {
+        string query = @"USE andromeda_store; UPDATE payment_method SET enabled = @IsEnabled WHERE id = @PaymentMethodId";
+        using (SqlConnection connection = new SqlConnection(Db.Instance.DbConnectionString))
+        {
+            await connection.OpenAsync();
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@IsEnabled", paymentMethod.IsEnabled);
+                command.Parameters.AddWithValue("@PaymentMethodId", (int)paymentMethod.PaymentType);
+                await command.ExecuteNonQueryAsync();
             }
         }
     }

@@ -5,7 +5,7 @@ namespace ApiLab7;
 public sealed class Cart
 {
     [Required]
-    public List<string> ProductIds { get; set; }
+    public List<CartProduct> ProductIds { get; set; }
 
     [Required]
     public string Address { get; set; }

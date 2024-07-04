@@ -6,11 +6,12 @@ public abstract class PaymentMethods{
         SINPE=1
     }
     public Type PaymentType { get; set; }
+    public bool IsEnabled { get; set; }
 
-    public PaymentMethods(PaymentMethods.Type paymentType)
+    public PaymentMethods(Type paymentType, bool isEnabled = true)
     {
         PaymentType = paymentType;
-
+        IsEnabled = isEnabled;
     }
 
     public static PaymentMethods Find(PaymentMethods.Type type)
@@ -23,6 +24,16 @@ public abstract class PaymentMethods{
                 return Sinpe.Instance;
             default: return null;
         }
+    }
+
+    public void Enable()
+    {
+        IsEnabled = true;
+    }
+
+    public void Disable()
+    {
+        IsEnabled = false;
     }
 }
 public sealed class Sinpe : PaymentMethods
