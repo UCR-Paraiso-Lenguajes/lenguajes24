@@ -27,6 +27,11 @@ const InitPage = () => {
                      Opciones de productos
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link href="/admin/payment_method">
+                     Gestión métodos de pago
+                  </Link>
+                </li>
               </ul>
             </div>
           </nav>

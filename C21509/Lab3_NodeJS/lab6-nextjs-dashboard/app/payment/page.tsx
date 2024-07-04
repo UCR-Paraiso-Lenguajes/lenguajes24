@@ -1,13 +1,33 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from 'react';
 import { ProductItem } from '../product/layout';
 import '../HTMLPageDemo.css';
 import Link from 'next/link';
+import Head from 'next/head';
+import Script from 'next/script';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 enum PaymentMethod {
   EFECTIVO = 0,
-  SINPE = 1
+  SINPE = 1,
 }
+
+interface PaymentMethodInterface {
+  paymentMethodId: number;
+  paymentMethodName: string;
+  isEnabled: boolean;
+}
+
+const provinces: Record<string, string[]> = {
+  "San José": ["Escazú", "Desamparados", "Puriscal", "Tarrazú", "Aserrí", "Mora", "Goicoechea", "Santa Ana", "Alajuelita", "Vásquez de Coronado", "Acosta", "Tibás", "Moravia", "Montes de Oca", "Turrubares", "Dota", "Curridabat", "Pérez Zeledón", "León Cortés"],
+  "Alajuela": ["San Ramón", "Grecia", "San Mateo", "Atenas", "Naranjo", "Palmares", "Poás", "Orotina", "San Carlos", "Zarcero", "Valverde Vega", "Upala", "Los Chiles", "Guatuso", "Río Cuarto"],
+  "Cartago": ["Paraíso", "La Unión", "Jiménez", "Turrialba", "Alvarado", "Oreamuno", "El Guarco"],
+  "Heredia": ["Barva", "Santo Domingo", "Santa Bárbara", "San Rafael", "San Isidro", "Belén", "Flores", "San Pablo", "Sarapiquí"],
+  "Guanacaste": ["Nicoya", "Santa Cruz", "Bagaces", "Carrillo", "Cañas", "Abangares", "Tilarán", "Nandayure", "La Cruz", "Hojancha"],
+  "Puntarenas": ["Esparza", "Buenos Aires", "Montes de Oro", "Osa", "Quepos", "Golfito", "Coto Brus", "Parrita", "Corredores", "Garabito"],
+  "Limón": ["Pococí", "Siquirres", "Talamanca", "Matina", "Guácimo"]
+};
 
 const PurchasedItems = () => {
   const [cartState, setCartState] = useState({
@@ -16,40 +36,59 @@ const PurchasedItems = () => {
       products: [],
       deliveryAddress: '',
       paymentMethod: '',
-      subtotal: 0, 
-      total: 0 
+      subtotal: 0,
+      total: 0,
     },
     paymentMethods: [
       {
-        requiresVerification: false
-      }
-    ]
+        requiresVerification: false,
+      },
+    ],
   });
 
+  const [validPaymentMethods, setValidPaymentMethods] = useState<PaymentMethodInterface[]>([]);
   const [showPaymentMethod, setShowPaymentMethod] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>(PaymentMethod.EFECTIVO);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | undefined>(undefined);
   const [paymentConfirmation, setPaymentConfirmation] = useState('');
   const [paymentReceipt, setPaymentReceipt] = useState('');
   const [purchaseNumber, setPurchaseNumber] = useState('');
+  const [generatedPhoneNumber, setGeneratedPhoneNumber] = useState('');
+
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedCanton, setSelectedCanton] = useState('');
+  const [extraAddress, setExtraAddress] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const savedCartProducts = JSON.parse(localStorage.getItem('cartProducts') || '[]');
     const subtotal = savedCartProducts.reduce((acc: number, product: ProductItem) => acc + product.price * product.quantity, 0);
-    const total = subtotal; 
+    const total = subtotal;
 
-    setCartState(prevState => ({
+    setCartState((prevState) => ({
       ...prevState,
       cart: {
         ...prevState.cart,
         products: savedCartProducts,
         subtotal: subtotal,
-        total: total
-      }
+        total: total,
+      },
     }));
+    fetchValidPaymentMethods();
   }, []);
+
+  const fetchValidPaymentMethods = async () => {
+    const response = await fetch('https://localhost:7165/api/PaymentMethod');
+    const data: PaymentMethodInterface[] = await response.json();
+    const enabledMethods = data.filter(method => method.isEnabled);
+    setValidPaymentMethods(enabledMethods);
+    if (enabledMethods.length > 0) {
+      setSelectedPaymentMethod(enabledMethods[0].paymentMethodId);
+    }
+  };
 
   const handleContinue = () => {
     if (cartState.cart.products.length > 0) {
+      fetchValidPaymentMethods(); 
       setShowPaymentMethod(true);
     }
   };
@@ -58,19 +97,22 @@ const PurchasedItems = () => {
     return Math.floor(10000000 + Math.random() * 90000000);
   };
 
+  const generatePhoneNumber = () => {
+    const phoneNumber = Math.floor(10000000 + Math.random() * 90000000).toString();
+    setGeneratedPhoneNumber(phoneNumber);
+    return phoneNumber;
+  };
+
   const managePaymentMethodSelection = (method: PaymentMethod) => {
     setSelectedPaymentMethod(method);
   };
 
   const managePaymentConfirmation = () => {
     if (selectedPaymentMethod === PaymentMethod.EFECTIVO) {
-      const purchaseNum = generatePurchaseNumber();
-      setPaymentConfirmation(`Su compra ha sido confirmada.`);
-      setPurchaseNumber(purchaseNum.toString());
+      setPaymentConfirmation(`Presione el botón "Confirmar compra" para finalizar`);
     } else if (selectedPaymentMethod === PaymentMethod.SINPE) {
-      const purchaseNum = generatePurchaseNumber();
-      setPaymentConfirmation(`Por favor realice el pago a la cuenta indicada. El número de teléfono al cual depositar es: ${purchaseNum}. Una vez realizado, ingrese el comprobante y espere la confirmación del administrador.`);
-      setPurchaseNumber(purchaseNum.toString());
+      const phoneNumber = generatePhoneNumber();
+      setPaymentConfirmation(`Por favor realice el pago a la cuenta indicada. El número de teléfono al cual depositar es: ${phoneNumber}. Una vez realizado, ingrese el comprobante y espere la confirmación del administrador.`);
     }
   };
 
@@ -79,30 +121,41 @@ const PurchasedItems = () => {
       id: Number(product.id),
       quantity: product.quantity,
     }));
-    const paymentMethodValue = selectedPaymentMethod === PaymentMethod.EFECTIVO ? 0 : 1; 
+    const paymentMethodValue = selectedPaymentMethod;
     const purchaseData = {
       Products: productIdsAndQuantities,
       Address: cartState.cart.deliveryAddress,
-      PaymentMethod: paymentMethodValue, 
-      Total: cartState.cart.total, 
-      Subtotal: cartState.cart.subtotal 
+      PaymentMethod: paymentMethodValue,
+      Total: cartState.cart.total,
+      Subtotal: cartState.cart.subtotal,
     };
-  
+
     try {
       const response = await fetch('https://localhost:7165/api/Cart', {
         method: 'POST',
         headers: {
-          "Accept": "application/json",
-          'Content-Type': 'application/json'
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(purchaseData)
+        body: JSON.stringify(purchaseData),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        setPurchaseNumber(data.successPurchase);
-        setPaymentConfirmation(`Su compra ha sido confirmada.`);
+        const purchaseNum = generatePurchaseNumber();
+        setPurchaseNumber(data.successPurchase || purchaseNum.toString());
+        setPaymentConfirmation(`Su compra ha sido confirmada `);
         localStorage.removeItem('cartProducts');
+        setCartState((prevState) => ({
+          ...prevState,
+          cart: {
+            ...prevState.cart,
+            products: [],
+            deliveryAddress: '',
+            subtotal: 0,
+            total: 0,
+          },
+        }));
       } else {
         const errorResponseData = await response.json();
         throw new Error(errorResponseData.message || 'Purchase cannot be processed');
@@ -112,57 +165,116 @@ const PurchasedItems = () => {
     }
   };
 
+  const isFormComplete = () => {
+    if (selectedPaymentMethod === PaymentMethod.SINPE) {
+      return (
+        cartState.cart.deliveryAddress &&
+        selectedPaymentMethod !== undefined &&
+        paymentReceipt &&
+        paymentConfirmation 
+      );
+    }
+    return cartState.cart.deliveryAddress && selectedPaymentMethod !== undefined && paymentConfirmation;
+  };
+
+  const handleAddressSubmit = () => {
+    if (!selectedProvince || !selectedCanton) {
+      setErrorMessage('Debe seleccionar una provincia y un cantón.');
+      return;
+    }
+    const fullAddress = `${selectedProvince}, ${selectedCanton}${extraAddress ? `, ${extraAddress}` : ''}`;
+    setCartState((prevState) => ({
+      ...prevState,
+      cart: {
+        ...prevState.cart,
+        deliveryAddress: fullAddress,
+      },
+    }));
+    setErrorMessage('');
+    handleContinue();
+  };
+
+  const handlePaymentReceiptChange = (e: any) => {
+    const value = e.target.value;
+    if (/^\d{0,8}$/.test(value)) {
+      setPaymentReceipt(value);
+    }
+  };
+
   return (
-    <div>
-      <h1>Procesar Compra</h1>
+    <div className="container mt-5">
+      <Head>
+        <title>Procesar Compra</title>
+      </Head>
+      <Script src="https://code.jquery.com/jquery-3.6.0.min.js"></Script>
+      <Script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></Script>
+      <h1 className="mb-4">Procesar Compra</h1>
 
-      <input
-        type="text"
-        value={cartState.cart.deliveryAddress}
-        onChange={(e) => setCartState(prevState => ({
-          ...prevState,
-          cart: {
-            ...prevState.cart,
-            deliveryAddress: e.target.value
-          }
-        }))}
-        placeholder="Ingrese la dirección de entrega"
-      />
+      <button
+        type="button"
+        className="btn btn-info mb-3"
+        data-toggle="modal"
+        data-target="#addressModal"
+      >
+        Ingresar Dirección
+      </button>
 
-      <button onClick={handleContinue} disabled={!cartState.cart.deliveryAddress} className="button">Continuar</button>
+      {cartState.cart.deliveryAddress && (
+        <div className="alert alert-info mt-3">
+          Dirección ingresada: {cartState.cart.deliveryAddress}
+        </div>
+      )}
 
       {showPaymentMethod && (
-        <div>
-          <h2>Seleccione el método de pago:</h2>
-          <button onClick={() => managePaymentMethodSelection(PaymentMethod.EFECTIVO)} className="button">Efectivo</button>
-          <button onClick={() => managePaymentMethodSelection(PaymentMethod.SINPE)} className="button">Sinpe</button>
-        </div>
-      )}
+        <>
+          <div className="mt-4">
+            <h2>Seleccione el método de pago:</h2>
+            <div className="btn-group">
+              <select
+                className="form-control"
+                value={selectedPaymentMethod}
+                onChange={(e) => setSelectedPaymentMethod(Number(e.target.value))}
+              >
+                {validPaymentMethods.map((method, index) => (
+                  <option key={index} value={method.paymentMethodId}>
+                    {method.paymentMethodName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-      {selectedPaymentMethod !== undefined && (
-        <div>
-          <h2>Confirmación de Pago</h2>
-          <p>Método de Pago: {selectedPaymentMethod === PaymentMethod.EFECTIVO ? 'Efectivo' : 'Sinpe'}</p>
-          <button onClick={managePaymentConfirmation} className="button">Confirmar Pago</button>
-          {paymentConfirmation && <p>{paymentConfirmation}</p>}
-          {paymentReceipt && <p>Adjunte el comprobante: {paymentReceipt}</p>}
+          {selectedPaymentMethod !== undefined && (
+            <div className="mt-4">
+              <h2>Confirmación de Pago</h2>
+              <p>Método de Pago: {selectedPaymentMethod === PaymentMethod.EFECTIVO ? 'Efectivo' : 'Sinpe'}</p>
+              <button onClick={managePaymentConfirmation} className="btn btn-primary mt-3">
+                Confirmar Pago
+              </button>
+              {paymentConfirmation && <p className="alert alert-success mt-3">{paymentConfirmation}</p>}
 
-          {selectedPaymentMethod === PaymentMethod.SINPE && paymentConfirmation && (
-            <div>
-              <p>Número donde realizar el pago: {generatePurchaseNumber()}</p>
-              <p>Ingrese el número donde se realiza el pago:</p>
-              <input type="text" value={paymentReceipt} onChange={(e) => setPaymentReceipt(e.target.value)} placeholder="Ingrese el comprobante" />
-              <p>Una vez realizado el pago, espere la confirmación del administrador.</p>
+              {selectedPaymentMethod === PaymentMethod.SINPE && paymentConfirmation && (
+                <div className="mt-4">
+                  <p>Ingrese el número donde se debe hacer el pago:</p>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={paymentReceipt}
+                    onChange={handlePaymentReceiptChange}
+                  />
+                  <p className="mt-2">Una vez realizado el pago, espere la confirmación del administrador.</p>
+                </div>
+              )}
             </div>
           )}
-        </div>
+        </>
       )}
 
-      <div>
+      <div className="mt-5">
         <h2>Productos en el Carrito</h2>
-        <ul>
+        <ul className="list-group">
           {cartState.cart.products.map((product: ProductItem) => (
-            <li key={product.id}>
+            <li key={product.id} className="list-group-item">
               <p>{product.name}</p>
               <p>Precio: ${product.price}</p>
               <p>Cantidad: {product.quantity}</p>
@@ -170,11 +282,96 @@ const PurchasedItems = () => {
           ))}
         </ul>
       </div>
+
       <Link href="/cart">
-        <button className="button">Volver al carrito</button>
+        <button className="btn btn-secondary mt-3">Volver al carrito</button>
       </Link>
-      <button onClick={sendDataToAPI} className="button">Confirmar Compra</button>
-      <p>Número de Compra: {purchaseNumber}</p>
+      <button
+        onClick={sendDataToAPI}
+        className="btn btn-success mt-3"
+        disabled={!isFormComplete()}
+      >
+        Confirmar Compra
+      </button>
+      {purchaseNumber && (
+        <div className="alert alert-info mt-3">
+          Número de Compra: {purchaseNumber}
+        </div>
+      )}
+
+      <div className="modal fade" id="addressModal" tabIndex={-1} role="dialog" aria-labelledby="addressModalLabel" aria-hidden="true">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="addressModalLabel">Ingresar Dirección</h5>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+              <div className="form-group">
+                <label htmlFor="province">Provincia</label>
+                <select
+                  className="form-control"
+                  id="province"
+                  value={selectedProvince}
+                  onChange={(e) => {
+                    setSelectedProvince(e.target.value);
+                    setSelectedCanton('');
+                  }}
+                >
+                  <option value="">Seleccione una provincia</option>
+                  {Object.keys(provinces).map((province) => (
+                    <option key={province} value={province}>
+                      {province}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="canton">Cantón</label>
+                <select
+                  className="form-control"
+                  id="canton"
+                  value={selectedCanton}
+                  onChange={(e) => setSelectedCanton(e.target.value)}
+                  disabled={!selectedProvince}
+                >
+                  <option value="">Seleccione un cantón</option>
+                  {selectedProvince && provinces[selectedProvince].map((canton) => (
+                    <option key={canton} value={canton}>
+                      {canton}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="extraAddress">Dirección específica (opcional)</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="extraAddress"
+                  value={extraAddress}
+                  onChange={(e) => setExtraAddress(e.target.value)}
+                  placeholder="Detalles adicionales de la dirección"
+                  disabled={!selectedProvince || !selectedCanton}
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleAddressSubmit}
+              >
+                Guardar Dirección
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
