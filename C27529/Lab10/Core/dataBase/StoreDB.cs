@@ -432,6 +432,7 @@ public sealed class StoreDB
                     foreach (Product product in products)
                     {
                         string insertProductQuery = @"
+                        
                                 INSERT INTO products (name, description, price, imageURL, category)
                                 VALUES (@name, @description ,@price, @imageURL, @category);";
 
@@ -464,7 +465,7 @@ public sealed class StoreDB
         {
             await connection.OpenAsync();
 
-            string sql = "use store; select * from products;";
+            string sql = "USE store; select * from products;";
 
             using (var command = new MySqlCommand(sql, connection))
             {
@@ -502,7 +503,7 @@ public sealed class StoreDB
             await connection.OpenAsync();
 
             string insertProductQuery = @"
-                    use store;
+                    USE store;
                     INSERT INTO products (name, description, price, imageURL, category)
                     VALUES (@name, @description, @price, @imageURL, @category);";
 
@@ -543,7 +544,7 @@ public sealed class StoreDB
                         return existingId.Value;
                     }
 
-                    string query = " INSERT INTO messages (content) VALUES (@content); SELECT LAST_INSERT_ID();";
+                    string query = "USE store; INSERT INTO messages (content) VALUES (@content); SELECT LAST_INSERT_ID();";
                     using (var command = new MySqlCommand(query, connection))
                     {
                         command.Transaction = transaction;
@@ -564,7 +565,7 @@ public sealed class StoreDB
 
     private static async Task<int?> CheckIfMessageExists(string content, MySqlConnection connection, MySqlTransaction transaction)
     {
-        string query = " SELECT id FROM messages WHERE content = @content LIMIT 1;";
+        string query = "USE store; SELECT id FROM messages WHERE content = @content LIMIT 1;";
         using (var command = new MySqlCommand(query, connection))
         {
             command.Transaction = transaction;
@@ -585,7 +586,7 @@ public sealed class StoreDB
         using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
         {
             await connection.OpenAsync();
-            string query = " SELECT id, content FROM messages ORDER BY created_at DESC LIMIT 3;";
+            string query = "USE store; SELECT id, content FROM messages ORDER BY created_at DESC LIMIT 3;";
             using (var command = new MySqlCommand(query, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
@@ -618,7 +619,7 @@ public sealed class StoreDB
         using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
         {
             await connection.OpenAsync();
-            string query = " SELECT id, content FROM messages WHERE content = @content;";
+            string query = "USE store; SELECT id, content FROM messages WHERE content = @content;";
             using (var command = new MySqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@content", content);

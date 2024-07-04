@@ -22,7 +22,7 @@ namespace storeApi.Controllers
 
         public LoginDataAccount(string userName, string password, List<Claim> claims)
         {
-
+            
             UserName = userName;
             Password = password;
             Claims = claims;
@@ -62,8 +62,8 @@ namespace storeApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LoginAsync([FromBody] LoginModel user)
         {
-            if (user == null || string.IsNullOrWhiteSpace(user.UserName) || string.IsNullOrWhiteSpace(user.Password))
-            {
+            if (user == null || string.IsNullOrWhiteSpace(user.UserName) || string.IsNullOrWhiteSpace(user.Password))  
+    {
                 return BadRequest("Invalid client request");
             }
 
@@ -77,10 +77,10 @@ namespace storeApi.Controllers
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
             var tokenOptions = new JwtSecurityToken(
-            ValidIssuer = builder.Configuration["Jwt:Issuer"], // Ensure these match the values in your configuration
-            ValidAudience = builder.Configuration["Jwt:Audience"],
+                issuer: "http://localhost:5164",
+                audience: "http://localhost:5164",
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(2),
+                expires: DateTime.Now.AddMinutes(2), 
                 signingCredentials: signinCredentials
             );
             var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
