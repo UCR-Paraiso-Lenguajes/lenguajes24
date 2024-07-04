@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using MySqlConnector;
 using core;
-//PROYECTO1
 
 namespace storeapi.Database
 {
@@ -29,34 +28,6 @@ namespace storeapi.Database
                     createTableCommand.ExecuteNonQuery();
                 }
             }
-
-            InsertInitialPaymentMethods();
-        }
-
-        private static void InsertInitialPaymentMethods()
-        {
-            using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
-            {
-                connection.Open();
-
-                string insertCashQuery = @"
-                    INSERT IGNORE INTO paymentMethods (id, name, isActive)
-                    VALUES (0, 'CASH', TRUE)";
-
-                using (var insertCashCommand = new MySqlCommand(insertCashQuery, connection))
-                {
-                    insertCashCommand.ExecuteNonQuery();
-                }
-
-                string insertSinpeQuery = @"
-                    INSERT IGNORE INTO paymentMethods (id, name, isActive)
-                    VALUES (1, 'SINPE', TRUE)";
-
-                using (var insertSinpeCommand = new MySqlCommand(insertSinpeQuery, connection))
-                {
-                    insertSinpeCommand.ExecuteNonQuery();
-                }
-            }
         }
 
         public static List<string[]> RetrievePaymentMethods()
@@ -78,7 +49,7 @@ namespace storeapi.Database
                             string[] methodInfo = new string[3];
                             methodInfo[0] = reader["id"].ToString();
                             methodInfo[1] = reader["name"].ToString();
-                            methodInfo[2] = reader["isActive"].ToString();
+                            methodInfo[2] = reader.GetBoolean(reader.GetOrdinal("isActive")) ? "true" : "false";
                             paymentMethods.Add(methodInfo);
                         }
                     }
