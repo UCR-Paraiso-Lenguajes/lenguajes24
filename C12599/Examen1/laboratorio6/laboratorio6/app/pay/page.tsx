@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
-
-//PROYECTO10
+//PROYECTO12
 
 const URL = process.env.NEXT_PUBLIC_API;
 
@@ -108,7 +107,7 @@ const PayPage: React.FC = () => {
         } else {
             newErrors.nombreDestinatario = '';
         }
-        
+
         if (formDireccion.direccionCalle.length < 5) {
             newErrors.direccionCalle = 'La calle debe tener al menos 5 caracteres.';
         } else if (!/^[a-zA-Z0-9\sñÑáéíóúÁÉÍÓÚ.,'-]+$/.test(formDireccion.direccionCalle)) {
@@ -116,7 +115,7 @@ const PayPage: React.FC = () => {
         } else {
             newErrors.direccionCalle = '';
         }
-        
+
         if (formDireccion.direccionNumero.length < 1) {
             newErrors.direccionNumero = 'El número debe tener al menos 1 carácter.';
         } else if (!/^\d+[a-zA-Z]?$/i.test(formDireccion.direccionNumero)) {
@@ -124,7 +123,7 @@ const PayPage: React.FC = () => {
         } else {
             newErrors.direccionNumero = '';
         }
-        
+
         if (formDireccion.direccionCiudad.length < 3) {
             newErrors.direccionCiudad = 'La ciudad debe tener al menos 3 caracteres.';
         } else if (!/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/.test(formDireccion.direccionCiudad)) {
@@ -132,7 +131,7 @@ const PayPage: React.FC = () => {
         } else {
             newErrors.direccionCiudad = '';
         }
-        
+
         if (formDireccion.direccionPais.length < 3) {
             newErrors.direccionPais = 'El país debe tener al menos 3 caracteres.';
         } else if (!/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/.test(formDireccion.direccionPais)) {
@@ -286,13 +285,11 @@ const PayPage: React.FC = () => {
                         {errores.direccionPais && <small className="text-danger">{errores.direccionPais}</small>}
                     </div>
 
-                    {direccionValida && (
-                        <div className='my-4'>
-                            <button className="btn btn-primary" onClick={handleAgregarDireccion}>Agregar Dirección</button>
-                        </div>
-                    )}
+                    <div className='my-4'>
+                        <button className="btn btn-primary" onClick={handleAgregarDireccion}>Agregar Dirección</button>
+                    </div>
 
-                    {cart.direccionEntrega && (
+                    {direccionValida && (
                         <>
                             <div className="form-group">
                                 <label htmlFor="metodoPago">Método de Pago:</label>
