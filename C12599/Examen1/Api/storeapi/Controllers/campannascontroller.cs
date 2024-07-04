@@ -2,6 +2,7 @@
 using storeapi.Database;
 using storeapi.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using storeapi.Hubs;
 
@@ -11,9 +12,9 @@ namespace storeapi
     [Route("api/[controller]")]
     public class CampannasController : ControllerBase
     {
-        private readonly IHubContext<StoreHub> _hubContext;
+        private readonly IHubContext<CampaignHub> _hubContext;
 
-        public CampannasController(IHubContext<StoreHub> hubContext)
+        public CampannasController(IHubContext<CampaignHub> hubContext)
         {
             _hubContext = hubContext;
         }
@@ -26,7 +27,7 @@ namespace storeapi
                 return BadRequest("Campanna object is null");
             }
 
-            CampannaDB.InsertCampanna(campanna);
+            await CampannaDB.InsertCampannaAsync(campanna);
             await _hubContext.Clients.All.SendAsync("UpdateCampaigns", campanna.ContenidoHtml, campanna.Estado);
 
             return Ok(campanna);
@@ -40,17 +41,17 @@ namespace storeapi
                 return BadRequest("Invalid campanna object or ID");
             }
 
-            CampannaDB.UpdateCampannaEstado(id, campanna.Estado);
-            Campanna updatedCampanna = CampannaDB.GetCampannaById(id);
+            await CampannaDB.UpdateCampannaEstadoAsync(id, campanna.Estado);
+            Campanna updatedCampanna = await CampannaDB.GetCampannaByIdAsync(id);
             await _hubContext.Clients.All.SendAsync("UpdateCampaigns", updatedCampanna.ContenidoHtml, updatedCampanna.Estado);
 
-            return Ok(campanna);
+            return Ok(updatedCampanna);
         }
 
         [HttpGet]
-        public IActionResult GetCampannas()
+        public async Task<IActionResult> GetCampannas()
         {
-            IEnumerable<Campanna> campannas = Campanna.LoadCampannasFromDatabase();
+            IEnumerable<Campanna> campannas = await CampannaDB.LoadCampannasFromDatabaseAsync();
             return Ok(campannas);
         }
     }

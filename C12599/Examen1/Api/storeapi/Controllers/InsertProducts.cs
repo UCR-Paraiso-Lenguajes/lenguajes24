@@ -71,9 +71,6 @@ namespace storeapi.Controllers
         [Required]
         [Url(ErrorMessage = "Invalid URL format.")]
         public string ImageUrl { get; set; }
-
-        [Required]
-        [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string Description { get; set; }
 
         [Required]
