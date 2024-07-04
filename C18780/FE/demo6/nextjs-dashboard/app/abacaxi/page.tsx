@@ -19,7 +19,7 @@ const ProductsRow = ({ products, onAdd }: { products: Product[], onAdd: any }) =
             <div className="row">
                 {products.map((product, index) => (
                     <React.Fragment key={index}>
-                        {index === number && <Carousel key={`carousel-${index}`} products={products} />}
+                        {index === number && <Carousel key={`carousel-${index}`} products={products} onAdd={onAdd}/>}
                         <CardProduct key={`product-${product.uuid}`} product={product} onAdd={onAdd} />
                     </React.Fragment>
                 ))}
