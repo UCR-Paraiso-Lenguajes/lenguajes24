@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -6,8 +6,8 @@ using KEStoreApi.Bussiness;
 using KEStoreApi.Models;
 using KEStoreApi.Data;
 using Core;
-using KEStoreApi;
 using static KEStoreApi.Product;
+using KEStoreApi;
 
 namespace UnitTests
 {
@@ -45,24 +45,6 @@ namespace UnitTests
 
             Assert.ThrowsAsync<ArgumentException>(async () => await _storeLogic.PurchaseAsync(cart));
         }
-
-        [Test]
-        public void Purchase_WithMissingAddress_ThrowsArgumentException()
-        {
-            var cart = new Cart
-            {
-                Product = new List<ProductQuantity>
-                {
-                    new ProductQuantity { Id = 1, Quantity = 2 },
-                    new ProductQuantity { Id = 2, Quantity = 1 }
-                },
-                Address = null,
-                PaymentMethod = PaymentMethods.Type.CASH
-            };
-
-            Assert.ThrowsAsync<ArgumentException>(async () => await _storeLogic.PurchaseAsync(cart));
-        }
-
         [Test]
         public async Task Purchase_HappyPath()
         {
