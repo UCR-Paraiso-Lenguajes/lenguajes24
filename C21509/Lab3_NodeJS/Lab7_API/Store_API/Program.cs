@@ -4,6 +4,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Store_API.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,7 +66,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-    
+    builder.Services.AddSignalR();
+    builder.Services.AddSingleton<NotificationHub>();
 
 // Configuración de appsettings.json y base de datos
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -109,5 +111,7 @@ app.UseCors();
 // Configuración de Swagger y ejecución de la aplicación
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.MapHub<NotificationHub>("/notificationHub");
 
 app.Run();

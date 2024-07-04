@@ -6,14 +6,13 @@ using Store_API.Models;
 using Core.Models;
 using System.Diagnostics;
 
-
 namespace Store_API.Database
 {
     public class DB_API
     {
-        private static string connectionString= "server=localhost;user=root;password=123456;database=Store_API";
+        private static string connectionString = "server=localhost;user=root;password=123456;database=Store_API";
 
-          public DB_API(string connectionStrings)
+        public DB_API(string connectionStrings)
         {
             connectionString = connectionStrings;
         }
@@ -82,9 +81,20 @@ namespace Store_API.Database
                             FOREIGN KEY (IdProduct) REFERENCES Products(IdProduct)
                         );";
 
-                    //InsertSalesData(connection);
-
                     using (MySqlCommand command = new MySqlCommand(createTableSalesLines, connection))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+
+                    string createTableNotification = @"
+                        CREATE TABLE IF NOT EXISTS Notifications (
+                            Id INT AUTO_INCREMENT PRIMARY KEY,
+                            Name VARCHAR(255) NOT NULL,
+                            Message TEXT NOT NULL,
+                            Creation_Date DATETIME NOT NULL,
+                            Status BIT NOT NULL DEFAULT 1
+                        );";
+                    using (MySqlCommand command = new MySqlCommand(createTableNotification, connection))
                     {
                         command.ExecuteNonQuery();
                     }
@@ -106,9 +116,9 @@ namespace Store_API.Database
                     foreach (var actualProduct in allProducts)
                     {
                         string insertQuery = @"
-                    INSERT INTO Products (Name, ImageURL, Description, Price, Categoria)
-                    VALUES (@name, @imageURL, @description, @price, @categoria);
-                ";
+                            INSERT INTO Products (Name, ImageURL, Description, Price, Categoria)
+                            VALUES (@name, @imageURL, @description, @price, @categoria);
+                        ";
 
                         using (MySqlCommand command = new MySqlCommand(insertQuery, connection))
                         {
@@ -137,9 +147,9 @@ namespace Store_API.Database
             {
                 connection.Open();
                 string selectProducts = @"
-            SELECT IdProduct, Name, ImageURL, Description, Price, Categoria
-            FROM Products;
-        ";
+                    SELECT IdProduct, Name, ImageURL, Description, Price, Categoria
+                    FROM Products;
+                ";
 
                 using (MySqlCommand command = new MySqlCommand(selectProducts, connection))
                 {
@@ -180,9 +190,9 @@ namespace Store_API.Database
                         await InsertPaymentMethodsAsync(connection, transaction);
 
                         string insertSale = @"
-                INSERT INTO Sales (Total, Subtotal, PurchaseNumber, Address, PaymentMethodId, DateSale)
-                VALUES (@total, @subtotal, @purchaseNumber, @address, @paymentMethod, @dateSale);
-                ";
+                            INSERT INTO Sales (Total, Subtotal, PurchaseNumber, Address, PaymentMethodId, DateSale)
+                            VALUES (@total, @subtotal, @purchaseNumber, @address, @paymentMethod, @dateSale);
+                        ";
 
                         using (MySqlCommand command = new MySqlCommand(insertSale, connection, transaction))
                         {
@@ -213,16 +223,16 @@ namespace Store_API.Database
         private async Task InsertPaymentMethodsAsync(MySqlConnection connection, MySqlTransaction transaction)
         {
             string insertPaymentMethodQuery = @"
-        INSERT INTO PaymentMethod (PaymentMethodId, PaymentMethodName)
-        VALUES (@idPayment, @paymentName)
-        ON DUPLICATE KEY UPDATE PaymentMethodName = VALUES(PaymentMethodName);
-    ";
+                INSERT INTO PaymentMethod (PaymentMethodId, PaymentMethodName)
+                VALUES (@idPayment, @paymentName)
+                ON DUPLICATE KEY UPDATE PaymentMethodName = VALUES(PaymentMethodName);
+            ";
 
             var paymentMethods = new List<(int id, string name)>
-    {
-        (0, "Efectivo"),
-        (1, "Sinpe")
-    };
+            {
+                (0, "Efectivo"),
+                (1, "Sinpe")
+            };
 
             using (MySqlCommand command = new MySqlCommand(insertPaymentMethodQuery, connection, transaction))
             {
@@ -248,9 +258,9 @@ namespace Store_API.Database
             }
 
             string insertSalesLine = @"
-    INSERT INTO SalesLines (IdSale, IdProduct, Price, Quantity)
-    VALUES (@idSale, @idProduct, @price, @quantity);
-    ";
+                INSERT INTO SalesLines (IdSale, IdProduct, Price, Quantity)
+                VALUES (@idSale, @idProduct, @price, @quantity);
+            ";
 
             foreach (var product in products)
             {
@@ -262,48 +272,6 @@ namespace Store_API.Database
                     command.Parameters.AddWithValue("@quantity", product.Quantity);
                     await command.ExecuteNonQueryAsync();
                 }
-            }
-        }
-        private void InsertSalesData(MySqlConnection connection)
-        {
-            string insertSalesQuery = @"
-        INSERT INTO Sales (Total, Subtotal,PurchaseNumber, Address, DateSale)
-        VALUES
-            (50.00, 50.00, 'ACD789', 'Cartago', '2024-04-27 08:00:00'),
-            (35.75, 35.75, 'BTR321', 'San Jose', '2024-04-27 12:30:00'),
-            (75.20, 75.20, 'CJR579', 'Limon', '2024-04-28 10:15:00'),
-            (20.50, 20.50, 'DET468', 'Puntarenas', '2024-04-28 14:45:00'),
-            (45.60, 45.60, 'EBY321', 'Heredia', '2024-04-29 09:20:00'),
-            (90.00, 90.00, 'FKJ789', 'Alajuela', '2024-04-29 16:00:00'),
-            (60.30, 60.30, 'GNM579', 'Santa Lucia','2024-04-30 11:45:00'),
-            (25.75, 25.75, 'HFK468', 'Paraiso', '2024-04-30 13:20:00'),
-            (55.00, 55.00, 'IMH321', 'Turrialba', '2024-05-01 08:30:00'),
-            (70.25, 70.25, 'JLO789', 'Guapiles', '2024-05-01 15:10:00');
-        ";
-            ExecuteNonQuery(insertSalesQuery, connection);
-
-            string insertSalesLinesQuery = @"
-        INSERT INTO SalesLines (IdSale, IdProduct, Price)
-        VALUES
-            (1, 1, 50.00),
-            (2, 2, 35.75),
-            (3, 3, 75.20),
-            (4, 4, 20.50),
-            (5, 5, 45.60),
-            (6, 6, 90.00),
-            (7, 7, 60.30),
-            (8, 8, 25.75),
-            (9, 9, 55.00),
-            (10, 10, 70.25);
-    ";
-            ExecuteNonQuery(insertSalesLinesQuery, connection);
-        }
-
-        private void ExecuteNonQuery(string query, MySqlConnection connection)
-        {
-            using (MySqlCommand command = new MySqlCommand(query, connection))
-            {
-                command.ExecuteNonQuery();
             }
         }
 
@@ -372,12 +340,12 @@ namespace Store_API.Database
                 await connection.OpenAsync();
 
                 var query = @"
-            SELECT DAYNAME(s.DateSale) AS SaleDayOfWeek, SUM(s.Total) AS TotalSales
-            FROM Sales s
-            WHERE YEARWEEK(s.DateSale) = YEARWEEK(@startDate)
-            GROUP BY SaleDayOfWeek
-            ORDER BY SaleDayOfWeek;
-        ";
+                    SELECT DAYNAME(s.DateSale) AS SaleDayOfWeek, SUM(s.Total) AS TotalSales
+                    FROM Sales s
+                    WHERE YEARWEEK(s.DateSale) = YEARWEEK(@startDate)
+                    GROUP BY SaleDayOfWeek
+                    ORDER BY SaleDayOfWeek;
+                ";
 
                 using (var command = new MySqlCommand(query, connection))
                 {
@@ -419,10 +387,10 @@ namespace Store_API.Database
                 transaction = await connectionWithDB.BeginTransactionAsync();
 
                 string insertQuery = @"
-            INSERT INTO Products (Name, ImageUrl, Description, Price, Categoria)
-            VALUES (@name, @imageUrl, @description, @price, @categoria);
-            SELECT LAST_INSERT_ID();
-        ";
+                    INSERT INTO Products (Name, ImageUrl, Description, Price, Categoria)
+                    VALUES (@name, @imageUrl, @description, @price, @categoria);
+                    SELECT LAST_INSERT_ID();
+                ";
 
                 using (MySqlCommand command = new MySqlCommand(insertQuery, connectionWithDB))
                 {
@@ -472,9 +440,9 @@ namespace Store_API.Database
                 transaction = await connectionWithDB.BeginTransactionAsync();
 
                 string deleteQuery = @"
-            DELETE FROM Products
-            WHERE Id = @productId;
-        ";
+                    DELETE FROM Products
+                    WHERE Id = @productId;
+                ";
 
                 using (MySqlCommand command = new MySqlCommand(deleteQuery, connectionWithDB))
                 {
@@ -502,5 +470,194 @@ namespace Store_API.Database
 
             return true;
         }
+
+        public async Task<IEnumerable<Notifications>> getNotificationsForAdminsAsync()
+        {
+            List<Notifications> listOfNotifications = new List<Notifications>();
+            MySqlConnection connectionWithDB = null;
+            MySqlTransaction transaction = null;
+
+            try
+            {
+                connectionWithDB = new MySqlConnection(connectionString);
+                await connectionWithDB.OpenAsync();
+                transaction = await connectionWithDB.BeginTransactionAsync();
+
+                string selectNotifications = @"
+                    SELECT Id, Name, Message, Creation_Date, Status
+                    FROM Notifications
+                    ORDER BY Status DESC, Creation_Date DESC;
+                ";
+
+                using (MySqlCommand command = new MySqlCommand(selectNotifications, connectionWithDB))
+                {
+                    command.Transaction = transaction;
+                    using (var readerTable = await command.ExecuteReaderAsync())
+                    {
+                        while (await readerTable.ReadAsync())
+                        {
+                            var id = Convert.ToInt32(readerTable["Id"]);
+                            var name = readerTable["Name"].ToString();
+                            var message = readerTable["Message"].ToString();
+                            var creationDate = (DateTime)readerTable["Creation_Date"];
+                            var status = Convert.ToInt32(readerTable["Status"]);
+                            var currentNotify = new Notifications(id, name, message, creationDate, status);
+                            listOfNotifications.Add(currentNotify);
+                        }
+                    }
+                }
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+            finally
+            {
+                await connectionWithDB.CloseAsync();
+            }
+            return listOfNotifications;
+        }
+
+        public async Task<IEnumerable<Notifications>> getNotificationsForUsersAsync()
+        {
+            List<Notifications> listOfNotifications = new List<Notifications>();
+            MySqlConnection connectionWithDB = null;
+            MySqlTransaction transaction = null;
+
+            try
+            {
+                connectionWithDB = new MySqlConnection(connectionString);
+                await connectionWithDB.OpenAsync();
+                transaction = await connectionWithDB.BeginTransactionAsync();
+
+                string selectNotifications = @"
+                    SELECT Id, Name, Message, Creation_Date, Status
+                    FROM Notifications
+                    WHERE Status <> 0
+                    ORDER BY Creation_Date DESC
+                    LIMIT 3;
+                ";
+
+                using (MySqlCommand command = new MySqlCommand(selectNotifications, connectionWithDB))
+                {
+                    command.Transaction = transaction;
+                    using (var readerTable = await command.ExecuteReaderAsync())
+                    {
+                        while (await readerTable.ReadAsync())
+                        {
+                            var id = Convert.ToInt32(readerTable["Id"]);
+                            var name = readerTable["Name"].ToString();
+                            var message = readerTable["Message"].ToString();
+                            var creationDate = (DateTime)readerTable["Creation_Date"];
+                            var status = Convert.ToInt32(readerTable["Status"]);
+                            var currentNotify = new Notifications(id, name, message, creationDate, status);
+                            listOfNotifications.Add(currentNotify);
+                        }
+                    }
+                }
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+            finally
+            {
+                await connectionWithDB.CloseAsync();
+            }
+            return listOfNotifications;
+        }
+
+        public async Task DeleteOneNotificationAsync(int notifyToDelete)
+        {
+            if (notifyToDelete <= 0) throw new ArgumentException($"{nameof(notifyToDelete)} cannot be null");
+            MySqlConnection connectionWithDB = null;
+            MySqlTransaction transaction = null;
+
+            try
+            {
+                connectionWithDB = new MySqlConnection(connectionString);
+                await connectionWithDB.OpenAsync();
+                transaction = await connectionWithDB.BeginTransactionAsync();
+
+                string updateNotification = @"
+                    UPDATE Notifications
+                    SET Status = 0
+                    WHERE Id = @notificationId;
+                ";
+
+                using (MySqlCommand command = new MySqlCommand(updateNotification, connectionWithDB))
+                {
+                    command.Transaction = transaction;
+                    command.Parameters.AddWithValue("@notificationId", notifyToDelete);
+                    await command.ExecuteNonQueryAsync();
+                    await transaction.CommitAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception("A delete error has ocurred", ex);
+            }
+            finally
+            {
+                await connectionWithDB.CloseAsync();
+            }
+        }
+
+        public async Task<Notifications> InsertNotificationAsync(Notifications newNotification)
+        {
+            if (newNotification == null) throw new ArgumentException($"{nameof(newNotification)} cannot be null");
+
+            Notifications insertedNotification = null;
+            MySqlConnection connectionWithDB = null;
+            MySqlTransaction transaction = null;
+
+            try
+            {
+                connectionWithDB = new MySqlConnection(connectionString);
+                await connectionWithDB.OpenAsync();
+                transaction = await connectionWithDB.BeginTransactionAsync();
+
+                string insertNotification = @"
+                    INSERT INTO Notifications (Name, Message, Creation_Date)
+                    VALUES (@name, @message, @creationDate);
+                ";
+                using (MySqlCommand command = new MySqlCommand(insertNotification, connectionWithDB))
+                {
+                    command.Transaction = transaction;
+                    command.Parameters.AddWithValue("@name", newNotification.notificationName);
+                    command.Parameters.AddWithValue("@message", newNotification.notificationMessage);
+                    command.Parameters.AddWithValue("@creationDate", newNotification.notificationCreatedDate);
+                    await command.ExecuteNonQueryAsync();
+
+                    int thisIdNotification = 0;
+                    string selectLastInsertedId = "SELECT LAST_INSERT_ID();";
+                    using (MySqlCommand idCommand = new MySqlCommand(selectLastInsertedId, connectionWithDB))
+                    {
+                        idCommand.Transaction = transaction;
+                        object result = await idCommand.ExecuteScalarAsync();
+                        thisIdNotification = Convert.ToInt32(result);
+
+                        insertedNotification = new Notifications(thisIdNotification, newNotification.notificationName, newNotification.notificationMessage, newNotification.notificationCreatedDate, 1);
+                    }
+                    await transaction.CommitAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw new Exception("An insertion error has ocurred", ex);
+            }
+            finally
+            {
+                await connectionWithDB.CloseAsync();
+            }
+            return insertedNotification;
+        }
     }
 }
+
