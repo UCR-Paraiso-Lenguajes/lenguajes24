@@ -88,8 +88,7 @@ const Detalle = () => {
           metodosPago: 0,
           ordenCompra: 0,
         };
-        const updatedDataObject = { ...dataObject, cart: initialCartState };
-        localStorage.setItem("tienda", JSON.stringify(updatedDataObject));
+        localStorage.removeItem("tienda");
       } else {
         const errorResponseData = await response.json();
         throw new Error(errorResponseData.message || "Error al procesar el pago");
