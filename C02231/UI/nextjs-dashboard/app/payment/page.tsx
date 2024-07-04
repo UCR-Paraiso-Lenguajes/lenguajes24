@@ -166,7 +166,7 @@ export default function PaymentPage() {
                     throw new Error('Error to send data: ' + JSON.stringify(errorResponseData));
                 }
             } catch (error) {
-                console.error(error);
+                throw new Error(error);
                 setCart(prevCart => ({ ...prevCart, confirmation: 'Error processing your order. Please try again.' }));
             }
         } else {

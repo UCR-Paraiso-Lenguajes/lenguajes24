@@ -30,13 +30,12 @@ const PaymentMethods = () => {
                 method: 'POST',
             });
             if (response.ok) {
-                console.log(`Payment method with ID ${id} disabled successfully.`);
                 fetchPaymentMethods();
             } else {
-                console.error(`Failed to disable payment method with ID ${id}.`);
+                throw new Error(`Failed to disable payment method with ID ${id}.`);
             }
         } catch (error) {
-            console.error("Error disabling payment method:", error);
+            throw new Error("Error disabling payment method:", error);
         }
     };
 
@@ -49,13 +48,12 @@ const PaymentMethods = () => {
                 }
             });
             if (response.ok) {
-                console.log(`Payment method with ID ${id} toggled successfully.`);
                 fetchPaymentMethods();
             } else {
-                console.error(`Failed to toggle payment method with ID ${id}.`);
+                throw new Error(`Failed to toggle payment method with ID ${id}.`);
             }
         } catch (error) {
-            console.error("Error toggling payment method:", error);
+            throw new Error("Error toggling payment method:", error);
         }
     };
 
