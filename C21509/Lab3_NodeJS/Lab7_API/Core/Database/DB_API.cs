@@ -11,7 +11,7 @@ namespace Store_API.Database
 {
     public class DB_API
     {
-        private static string connectionString;
+        private static string connectionString= "server=localhost;user=root;password=123456;database=Store_API";
 
           public DB_API(string connectionStrings)
         {
