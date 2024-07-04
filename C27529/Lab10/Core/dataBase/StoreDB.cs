@@ -337,6 +337,7 @@ public sealed class StoreDB
 
 
             string createTableQuery = @"
+
              CREATE TABLE IF NOT EXISTS paymentMethods (
                 paymentId INT PRIMARY KEY,
                 paymentName VARCHAR(30) NOT NULL UNIQUE
@@ -542,7 +543,7 @@ public sealed class StoreDB
                         return existingId.Value;
                     }
 
-                    string query = "use store; INSERT INTO messages (content) VALUES (@content); SELECT LAST_INSERT_ID();";
+                    string query = " INSERT INTO messages (content) VALUES (@content); SELECT LAST_INSERT_ID();";
                     using (var command = new MySqlCommand(query, connection))
                     {
                         command.Transaction = transaction;
@@ -563,7 +564,7 @@ public sealed class StoreDB
 
     private static async Task<int?> CheckIfMessageExists(string content, MySqlConnection connection, MySqlTransaction transaction)
     {
-        string query = "use store; SELECT id FROM messages WHERE content = @content LIMIT 1;";
+        string query = " SELECT id FROM messages WHERE content = @content LIMIT 1;";
         using (var command = new MySqlCommand(query, connection))
         {
             command.Transaction = transaction;
@@ -584,7 +585,7 @@ public sealed class StoreDB
         using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
         {
             await connection.OpenAsync();
-            string query = "use store; SELECT id, content FROM messages ORDER BY created_at DESC LIMIT 3;";
+            string query = " SELECT id, content FROM messages ORDER BY created_at DESC LIMIT 3;";
             using (var command = new MySqlCommand(query, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
@@ -617,7 +618,7 @@ public sealed class StoreDB
         using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
         {
             await connection.OpenAsync();
-            string query = "use store; SELECT id, content FROM messages WHERE content = @content;";
+            string query = " SELECT id, content FROM messages WHERE content = @content;";
             using (var command = new MySqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@content", content);
