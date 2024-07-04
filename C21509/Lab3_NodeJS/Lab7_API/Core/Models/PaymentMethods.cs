@@ -1,7 +1,6 @@
-using System;
-
 namespace Store_API.Models
 {
+    [Serializable]
     public abstract class PaymentMethods
     {
         public enum Type
@@ -11,10 +10,12 @@ namespace Store_API.Models
         }
 
         public Type PaymentType { get; set; }
+        public bool IsEnabled { get; set; }
 
-        public PaymentMethods(PaymentMethods.Type paymentType)
+        public PaymentMethods(Type paymentType, bool isEnabled)
         {
             PaymentType = paymentType;
+            IsEnabled = isEnabled;
         }
 
         private static Sinpe sinpe = new Sinpe();
@@ -39,19 +40,19 @@ namespace Store_API.Models
         }
     }
 
+    [Serializable]
     public sealed class Sinpe : PaymentMethods
     {
-        public Sinpe() : base(PaymentMethods.Type.SINPE)
+        public Sinpe() : base(PaymentMethods.Type.SINPE, true)
         {
-
         }
     }
 
+    [Serializable]
     public sealed class Cash : PaymentMethods
     {
-        public Cash() : base(PaymentMethods.Type.CASH)
+        public Cash() : base(PaymentMethods.Type.CASH, true)
         {
-
         }
     }
 }

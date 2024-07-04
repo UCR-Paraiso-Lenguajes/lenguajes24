@@ -13,14 +13,20 @@ enum PaymentMethod {
   SINPE = 1,
 }
 
+interface PaymentMethodInterface {
+  paymentMethodId: number;
+  paymentMethodName: string;
+  isEnabled: boolean;
+}
+
 const provinces: Record<string, string[]> = {
-  "San José": ["San José", "Escazú", "Desamparados", "Puriscal", "Tarrazú", "Aserrí", "Mora", "Goicoechea", "Santa Ana", "Alajuelita", "Vásquez de Coronado", "Acosta", "Tibás", "Moravia", "Montes de Oca", "Turrubares", "Dota", "Curridabat", "Pérez Zeledón", "León Cortés"],
-  "Alajuela": ["Alajuela", "San Ramón", "Grecia", "San Mateo", "Atenas", "Naranjo", "Palmares", "Poás", "Orotina", "San Carlos", "Zarcero", "Valverde Vega", "Upala", "Los Chiles", "Guatuso", "Río Cuarto"],
-  "Cartago": ["Cartago", "Paraíso", "La Unión", "Jiménez", "Turrialba", "Alvarado", "Oreamuno", "El Guarco"],
-  "Heredia": ["Heredia", "Barva", "Santo Domingo", "Santa Bárbara", "San Rafael", "San Isidro", "Belén", "Flores", "San Pablo", "Sarapiquí"],
-  "Guanacaste": ["Liberia", "Nicoya", "Santa Cruz", "Bagaces", "Carrillo", "Cañas", "Abangares", "Tilarán", "Nandayure", "La Cruz", "Hojancha"],
-  "Puntarenas": ["Puntarenas", "Esparza", "Buenos Aires", "Montes de Oro", "Osa", "Quepos", "Golfito", "Coto Brus", "Parrita", "Corredores", "Garabito"],
-  "Limón": ["Limón", "Pococí", "Siquirres", "Talamanca", "Matina", "Guácimo"]
+  "San José": ["Escazú", "Desamparados", "Puriscal", "Tarrazú", "Aserrí", "Mora", "Goicoechea", "Santa Ana", "Alajuelita", "Vásquez de Coronado", "Acosta", "Tibás", "Moravia", "Montes de Oca", "Turrubares", "Dota", "Curridabat", "Pérez Zeledón", "León Cortés"],
+  "Alajuela": ["San Ramón", "Grecia", "San Mateo", "Atenas", "Naranjo", "Palmares", "Poás", "Orotina", "San Carlos", "Zarcero", "Valverde Vega", "Upala", "Los Chiles", "Guatuso", "Río Cuarto"],
+  "Cartago": ["Paraíso", "La Unión", "Jiménez", "Turrialba", "Alvarado", "Oreamuno", "El Guarco"],
+  "Heredia": ["Barva", "Santo Domingo", "Santa Bárbara", "San Rafael", "San Isidro", "Belén", "Flores", "San Pablo", "Sarapiquí"],
+  "Guanacaste": ["Nicoya", "Santa Cruz", "Bagaces", "Carrillo", "Cañas", "Abangares", "Tilarán", "Nandayure", "La Cruz", "Hojancha"],
+  "Puntarenas": ["Esparza", "Buenos Aires", "Montes de Oro", "Osa", "Quepos", "Golfito", "Coto Brus", "Parrita", "Corredores", "Garabito"],
+  "Limón": ["Pococí", "Siquirres", "Talamanca", "Matina", "Guácimo"]
 };
 
 const PurchasedItems = () => {
@@ -40,8 +46,9 @@ const PurchasedItems = () => {
     ],
   });
 
+  const [validPaymentMethods, setValidPaymentMethods] = useState<PaymentMethodInterface[]>([]);
   const [showPaymentMethod, setShowPaymentMethod] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>(PaymentMethod.EFECTIVO);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | undefined>(undefined);
   const [paymentConfirmation, setPaymentConfirmation] = useState('');
   const [paymentReceipt, setPaymentReceipt] = useState('');
   const [purchaseNumber, setPurchaseNumber] = useState('');
@@ -66,10 +73,22 @@ const PurchasedItems = () => {
         total: total,
       },
     }));
+    fetchValidPaymentMethods();
   }, []);
+
+  const fetchValidPaymentMethods = async () => {
+    const response = await fetch('https://localhost:7165/api/PaymentMethod');
+    const data: PaymentMethodInterface[] = await response.json();
+    const enabledMethods = data.filter(method => method.isEnabled);
+    setValidPaymentMethods(enabledMethods);
+    if (enabledMethods.length > 0) {
+      setSelectedPaymentMethod(enabledMethods[0].paymentMethodId);
+    }
+  };
 
   const handleContinue = () => {
     if (cartState.cart.products.length > 0) {
+      fetchValidPaymentMethods(); 
       setShowPaymentMethod(true);
     }
   };
@@ -90,7 +109,7 @@ const PurchasedItems = () => {
 
   const managePaymentConfirmation = () => {
     if (selectedPaymentMethod === PaymentMethod.EFECTIVO) {
-      setPaymentConfirmation(`Presione el boton "Confirmar compra" para finalizar`);
+      setPaymentConfirmation(`Presione el botón "Confirmar compra" para finalizar`);
     } else if (selectedPaymentMethod === PaymentMethod.SINPE) {
       const phoneNumber = generatePhoneNumber();
       setPaymentConfirmation(`Por favor realice el pago a la cuenta indicada. El número de teléfono al cual depositar es: ${phoneNumber}. Una vez realizado, ingrese el comprobante y espere la confirmación del administrador.`);
@@ -102,7 +121,7 @@ const PurchasedItems = () => {
       id: Number(product.id),
       quantity: product.quantity,
     }));
-    const paymentMethodValue = selectedPaymentMethod === PaymentMethod.EFECTIVO ? 0 : 1;
+    const paymentMethodValue = selectedPaymentMethod;
     const purchaseData = {
       Products: productIdsAndQuantities,
       Address: cartState.cart.deliveryAddress,
@@ -158,21 +177,12 @@ const PurchasedItems = () => {
     return cartState.cart.deliveryAddress && selectedPaymentMethod !== undefined && paymentConfirmation;
   };
 
-  const validateExtraAddress = (address: string) => {
-    const regex = /^[a-zA-Z0-9\s,.-]+$/;
-    return regex.test(address);
-  };
-
   const handleAddressSubmit = () => {
     if (!selectedProvince || !selectedCanton) {
       setErrorMessage('Debe seleccionar una provincia y un cantón.');
       return;
     }
-    if (!validateExtraAddress(extraAddress)) {
-      setErrorMessage('La dirección específica contiene caracteres no válidos.');
-      return;
-    }
-    const fullAddress = `${selectedProvince}, ${selectedCanton}, ${extraAddress}`;
+    const fullAddress = `${selectedProvince}, ${selectedCanton}${extraAddress ? `, ${extraAddress}` : ''}`;
     setCartState((prevState) => ({
       ...prevState,
       cart: {
@@ -220,18 +230,17 @@ const PurchasedItems = () => {
           <div className="mt-4">
             <h2>Seleccione el método de pago:</h2>
             <div className="btn-group">
-              <button
-                onClick={() => managePaymentMethodSelection(PaymentMethod.EFECTIVO)}
-                className={`btn ${selectedPaymentMethod === PaymentMethod.EFECTIVO ? 'btn-success' : 'btn-outline-success'}`}
+              <select
+                className="form-control"
+                value={selectedPaymentMethod}
+                onChange={(e) => setSelectedPaymentMethod(Number(e.target.value))}
               >
-                Efectivo
-              </button>
-              <button
-                onClick={() => managePaymentMethodSelection(PaymentMethod.SINPE)}
-                className={`btn ${selectedPaymentMethod === PaymentMethod.SINPE ? 'btn-success' : 'btn-outline-success'}`}
-              >
-                Sinpe
-              </button>
+                {validPaymentMethods.map((method, index) => (
+                  <option key={index} value={method.paymentMethodId}>
+                    {method.paymentMethodName}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -338,7 +347,7 @@ const PurchasedItems = () => {
                 </select>
               </div>
               <div className="form-group">
-                <label htmlFor="extraAddress">Dirección específica</label>
+                <label htmlFor="extraAddress">Dirección específica (opcional)</label>
                 <input
                   type="text"
                   className="form-control"
@@ -346,6 +355,7 @@ const PurchasedItems = () => {
                   value={extraAddress}
                   onChange={(e) => setExtraAddress(e.target.value)}
                   placeholder="Detalles adicionales de la dirección"
+                  disabled={!selectedProvince || !selectedCanton}
                 />
               </div>
             </div>

@@ -29,9 +29,10 @@ namespace Store_API.Database
                     connection.Open();
 
                     string createTablePaymentMethod = @"
-                    CREATE TABLE IF NOT EXISTS PaymentMethod (
+                        CREATE TABLE IF NOT EXISTS PaymentMethod (
                         PaymentMethodId INT PRIMARY KEY,
-                        PaymentMethodName VARCHAR(10) NOT NULL
+                        PaymentMethodName VARCHAR(10) NOT NULL,
+                        IsEnabled BOOLEAN NOT NULL DEFAULT TRUE
                     );";
 
                     using (MySqlCommand command = new MySqlCommand(createTablePaymentMethod, connection))
@@ -55,6 +56,8 @@ namespace Store_API.Database
                     {
                         command.ExecuteNonQuery();
                     }
+
+                    FillPaymentMethod(connection);
 
                     string createTableProducts = @"
                     CREATE TABLE IF NOT EXISTS Products (
@@ -107,6 +110,27 @@ namespace Store_API.Database
             {
                 int productCount = Convert.ToInt32(command.ExecuteScalar());
                 return productCount > 0;
+            }
+        }
+
+        private void FillPaymentMethod(MySqlConnection connection)
+        {
+            string checkPaymentMethodsQuery = "SELECT COUNT(*) FROM PaymentMethod";
+            using (MySqlCommand command = new MySqlCommand(checkPaymentMethodsQuery, connection))
+            {
+                int paymentMethodCount = Convert.ToInt32(command.ExecuteScalar());
+                if (paymentMethodCount == 0)
+                {
+                    string insertPaymentMethodsQuery = @"
+                    INSERT INTO PaymentMethod (PaymentMethodId, PaymentMethodName, IsEnabled)
+                    VALUES (0, 'Efectivo', TRUE),
+                           (1, 'Sinpe', TRUE);";
+
+                    using (MySqlCommand insertCommand = new MySqlCommand(insertPaymentMethodsQuery, connection))
+                    {
+                        insertCommand.ExecuteNonQuery();
+                    }
+                }
             }
         }
 
@@ -301,15 +325,15 @@ namespace Store_API.Database
         private async Task InsertPaymentMethodsAsync(MySqlConnection connection, MySqlTransaction transaction)
         {
             string insertPaymentMethodQuery = @"
-        INSERT INTO PaymentMethod (PaymentMethodId, PaymentMethodName)
-        VALUES (@idPayment, @paymentName)
-        ON DUPLICATE KEY UPDATE PaymentMethodName = VALUES(PaymentMethodName);
-    ";
+    INSERT INTO PaymentMethod (PaymentMethodId, PaymentMethodName, IsEnabled)
+    VALUES (@idPayment, @paymentName, @isEnabled)
+    ON DUPLICATE KEY UPDATE PaymentMethodName = VALUES(PaymentMethodName), IsEnabled = VALUES(IsEnabled);
+";
 
-            var paymentMethods = new List<(int id, string name)>
+            var paymentMethods = new List<(int id, string name, bool isEnabled)>
     {
-        (0, "Efectivo"),
-        (1, "Sinpe")
+        (0, "Efectivo", true),
+        (1, "Sinpe", true)
     };
 
             using (MySqlCommand command = new MySqlCommand(insertPaymentMethodQuery, connection, transaction))
@@ -318,13 +342,61 @@ namespace Store_API.Database
                 {
                     command.Parameters.AddWithValue("@idPayment", paymentMethod.id);
                     command.Parameters.AddWithValue("@paymentName", paymentMethod.name);
+                    command.Parameters.AddWithValue("@isEnabled", paymentMethod.isEnabled);
                     await command.ExecuteNonQueryAsync();
                     command.Parameters.Clear();
                 }
             }
         }
-        
 
+        public async Task UpdatePaymentMethodStatus(int paymentMethodId, bool isEnabled)
+        {
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "UPDATE PaymentMethod SET IsEnabled = @isEnabled WHERE PaymentMethodId = @paymentMethodId";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@isEnabled", isEnabled);
+                    command.Parameters.AddWithValue("@paymentMethodId", paymentMethodId);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        public async Task<IEnumerable<object>> GetPaymentMethodsAsync()
+        {
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "SELECT PaymentMethodId, PaymentMethodName, IsEnabled FROM PaymentMethod";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var methods = new List<object>();
+                        while (await reader.ReadAsync())
+                        {
+                            int paymentMethodId = reader.GetInt32(reader.GetOrdinal("PaymentMethodId"));
+                            string paymentMethodName = reader.GetString(reader.GetOrdinal("PaymentMethodName"));
+                            bool isEnabled = reader.GetBoolean(reader.GetOrdinal("IsEnabled"));
+
+                            var method = new
+                            {
+                                PaymentMethodId = paymentMethodId,
+                                PaymentMethodName = paymentMethodName,
+                                IsEnabled = isEnabled
+                            };
+
+                            methods.Add(method);
+                        }
+                        return methods;
+                    }
+                }
+            }
+        }
         private async Task InsertSalesLinesAsync(MySqlConnection connection, MySqlTransaction transaction, string purchaseNumber, List<ProductQuantity> products)
         {
             string selectIdSale = "SELECT IdSale FROM Sales WHERE PurchaseNumber = @purchaseNumber";
