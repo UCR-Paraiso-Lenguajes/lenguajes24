@@ -36,6 +36,34 @@ namespace StoreAPI.Database
             return paymentMethods;
         }
 
+         public async Task<IEnumerable<PayMethod>> GetPaymentMethodsAsync()
+        {
+            var paymentMethods = new List<PayMethod>();
+
+            using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
+            {
+                await connection.OpenAsync();
+                string query = "SELECT id, method_name, active FROM paymentMethod";
+
+                using (var command = new MySqlCommand(query, connection))
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var paymentMethod = new PayMethod
+                        {
+                            Id = reader.GetInt32("id"),
+                            Name = reader.GetString("method_name"),
+                            Active = reader.GetInt32("active")
+                        };
+                        paymentMethods.Add(paymentMethod);
+                    }
+                }
+            }
+
+            return paymentMethods;
+        }
+
         public async Task<bool> DisablePaymentMethodAsync(int id)
         {
             using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
@@ -52,22 +80,23 @@ namespace StoreAPI.Database
             }
         }
 
-        public async Task<bool> TogglePaymentMethodAsync(int id, bool active)
+          public async Task<bool> ActivePaymentMethodAsync(int id)
         {
             using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
             {
                 await connection.OpenAsync();
-                string query = "UPDATE paymentMethod SET active = @Active WHERE id = @Id";
+                string query = "UPDATE paymentMethod SET active = 1 WHERE id = @Id";
 
                 using (var command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@Id", id);
-                    command.Parameters.AddWithValue("@Active", active);
                     var result = await command.ExecuteNonQueryAsync();
                     return result > 0;
                 }
             }
         }
+
+       
 
         public async Task<bool> IsPaymentMethodActiveAsync(int paymentMethodId)
         {

@@ -36,6 +36,8 @@ export default function PaymentPage() {
     const [selectedCanton, setSelectedCanton] = useState('');
     const [specificDetails, setSpecificDetails] = useState('');
     const [paymentMethods, setPaymentMethods] = useState([]);
+    const [isFormValid, setIsFormValid] = useState(false);
+
 
     useEffect(() => {
         let cartItemStored = localStorage.getItem('cartItem');
@@ -63,30 +65,30 @@ export default function PaymentPage() {
                 setPaymentMethods(data);
             }
         } catch (error) {
-            console.error("Error fetching payment methods:", error);
+            throw new Error("Error fetching payment methods:", error);
         }
     };
 
-    const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleProvinceChange = (e) => {
         const province = e.target.value;
         setSelectedProvince(province);
         setSelectedCanton('');
         updateDeliveryAddress(province, '', specificDetails);
     };
 
-    const handleCantonChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleCantonChange = (e) => {
         const canton = e.target.value;
         setSelectedCanton(canton);
         updateDeliveryAddress(selectedProvince, canton, specificDetails);
     };
 
-    const handleSpecificDetailsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSpecificDetailsChange = (e) => {
         const details = e.target.value;
         setSpecificDetails(details);
         updateDeliveryAddress(selectedProvince, selectedCanton, details);
     };
 
-    const updateDeliveryAddress = (province: string, canton: string, details: string) => {
+    const updateDeliveryAddress = (province, canton, details) => {
         const address = `${province}, ${canton}, ${details}`;
         setCart(prevCart => {
             const updatedCart = { ...prevCart, deliveryAddress: address };
@@ -95,7 +97,7 @@ export default function PaymentPage() {
         });
     };
 
-    const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handlePaymentMethodChange = (e) => {
         const paymentMethodId = parseInt(e.target.value);
         const selectedPaymentMethod = paymentMethods.find(method => method.id === paymentMethodId);
         setCart(prevCart => {
@@ -103,13 +105,14 @@ export default function PaymentPage() {
             updateLocalStorage(updatedCart);
             return updatedCart;
         });
+        setIsFormValid(selectedPaymentMethod?.name === 'CASH' || selectedPaymentMethod?.name === 'SINPE');
     };
 
-    const updateLocalStorage = (updatedCart: any) => {
+    const updateLocalStorage = (updatedCart) => {
         localStorage.setItem('cartItem', JSON.stringify(updatedCart));
     };
 
-    const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleReceiptChange = (e) => {
         const value = e.target.value;
         setCart(prevCart => {
             const updatedCart = { ...prevCart, receipt: value };
@@ -122,9 +125,9 @@ export default function PaymentPage() {
     const handleSubmit = async () => {
         const { deliveryAddress, paymentMethod, products, total, receipt } = cart;
         const isReceiptRequired = paymentMethod.name !== 'CASH' && paymentMethod.id !== 0;
-        const validOrder = deliveryAddress && paymentMethod.id && products.length > 0 && (!isReceiptRequired || receipt);
+        const validOrder = deliveryAddress && paymentMethod.id && products.length > 0 && (isReceiptRequired || receipt);
         if (validOrder) {
-            const productIds = products.map((producto: any) => ({
+            const productIds = products.map(producto => ({
                 productId: String(producto.id),
                 quantity: producto.cant 
             }));
@@ -163,7 +166,8 @@ export default function PaymentPage() {
                     throw new Error('Error to send data: ' + JSON.stringify(errorResponseData));
                 }
             } catch (error) {
-                throw error;
+                console.error(error);
+                setCart(prevCart => ({ ...prevCart, confirmation: 'Error processing your order. Please try again.' }));
             }
         } else {
             setCart(prevCart => ({ ...prevCart, confirmation: 'Please complete all required fields or add items to the cart.' }));
@@ -235,7 +239,7 @@ export default function PaymentPage() {
                     </div>
                 )}
 
-                <button className="btn btn-secondary" onClick={handleSubmit}>Submit</button>
+                <button className="btn btn-secondary" onClick={handleSubmit} disabled={!isFormValid}>Submit</button>
 
                 {cart.confirmation && (
                     <div className="alert alert-warning mt-3">

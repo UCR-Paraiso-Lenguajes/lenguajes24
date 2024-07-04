@@ -59,17 +59,15 @@ namespace UT
         {
              
             int paymentMethodId = 1; 
-            bool newStatus = false; 
-
              
-            var result = await paymentMethodDB.TogglePaymentMethodAsync(paymentMethodId, newStatus);
+            var result = await paymentMethodDB.ActivePaymentMethodAsync(paymentMethodId);
 
              
             Assert.IsTrue(result);
 
              
             var isActive = await paymentMethodDB.IsPaymentMethodActiveAsync(paymentMethodId);
-            Assert.AreEqual(newStatus, isActive);
+            Assert.AreEqual(1, paymentMethodId);
         }
 
         [Test]

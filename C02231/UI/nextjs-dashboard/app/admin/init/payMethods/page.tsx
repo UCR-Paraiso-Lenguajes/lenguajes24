@@ -3,9 +3,8 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import Link from 'next/link';
 import '/app/ui/global.css';
-import useAuth from '../../useAuth';
 
-export default function PaymentMethods() {
+const PaymentMethods = () => {
     const [paymentMethods, setPaymentMethods] = useState([]);
     const URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -15,33 +14,48 @@ export default function PaymentMethods() {
 
     const fetchPaymentMethods = async () => {
         try {
-            const response = await fetch(`${URL}/api/paymentMethods`);
+            const response = await fetch(`${URL}/active`);
             if (response.ok) {
                 const data = await response.json();
                 setPaymentMethods(data);
             }
         } catch (error) {
-            console.error("Error fetching payment methods:", error);
+            throw new Error("Error fetching payment methods:", error);
         }
     };
 
-    const togglePaymentMethod = async (id, newStatus) => {
+    const disablePaymentMethod = async (id) => {
         try {
-            const response = await fetch(`${URL}/api/paymentMethods/${id}/toggle`, {
+            const response = await fetch(`${URL}/api/paymentMethods/${id}/disable`, {
+                method: 'POST',
+            });
+            if (response.ok) {
+                console.log(`Payment method with ID ${id} disabled successfully.`);
+                fetchPaymentMethods();
+            } else {
+                console.error(`Failed to disable payment method with ID ${id}.`);
+            }
+        } catch (error) {
+            console.error("Error disabling payment method:", error);
+        }
+    };
+
+    const togglePaymentMethod = async (id) => {
+        try {
+            const response = await fetch(`${URL}/api/paymentMethods/${id}/active`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ active: newStatus })
+                }
             });
-
             if (response.ok) {
-                fetchPaymentMethods(); // Refresh the payment methods list after toggling
+                console.log(`Payment method with ID ${id} toggled successfully.`);
+                fetchPaymentMethods();
             } else {
-                console.error('Failed to toggle payment method status');
+                console.error(`Failed to toggle payment method with ID ${id}.`);
             }
         } catch (error) {
-            console.error('Error toggling payment method status:', error);
+            console.error("Error toggling payment method:", error);
         }
     };
 
@@ -63,7 +77,6 @@ export default function PaymentMethods() {
                             <div className="flex-grow-1"></div>
                         </div>
                     </div>
-
                     <div className="col-md-9">
                         <div className="content">
                             <h2>Manage Payment Methods</h2>
@@ -78,14 +91,20 @@ export default function PaymentMethods() {
                                 <tbody>
                                     {paymentMethods.map(method => (
                                         <tr key={method.id}>
-                                            <td>{method.name}</td>
+                                            <td>{method.method_name}</td>
                                             <td>{method.active ? 'Active' : 'Inactive'}</td>
                                             <td>
-                                                <button 
-                                                    className={`btn ${method.active ? 'btn-danger' : 'btn-success'}`} 
-                                                    onClick={() => togglePaymentMethod(method.id, !method.active)}
+                                                <button
+                                                    className={`btn ${method.active ? 'btn-danger' : 'btn-success'}`}
+                                                    onClick={() => togglePaymentMethod(method.id)}
                                                 >
                                                     {method.active ? 'Deactivate' : 'Activate'}
+                                                </button>
+                                                <button
+                                                    className="btn btn-warning ml-2"
+                                                    onClick={() => disablePaymentMethod(method.id)}
+                                                >
+                                                    Disable
                                                 </button>
                                             </td>
                                         </tr>
@@ -96,7 +115,6 @@ export default function PaymentMethods() {
                     </div>
                 </div>
             </div>
-
             <footer className="footer" style={{ position: 'fixed', bottom: '0', width: '100%', zIndex: '9999' }}>
                 <div className="text-center p-3">
                     <h5 className="text-light">Biblioteca de Paula</h5>
@@ -104,4 +122,6 @@ export default function PaymentMethods() {
             </footer>
         </div>
     );
-}
+};
+
+export default PaymentMethods;

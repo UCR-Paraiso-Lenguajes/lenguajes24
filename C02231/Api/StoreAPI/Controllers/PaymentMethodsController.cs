@@ -28,6 +28,12 @@ namespace StoreAPI.Controllers
             return await _paymentMethodDB.GetActivePaymentMethodsAsync();
         }
 
+        [HttpGet("/active")]
+        public async Task<IEnumerable<PayMethod>> GetAllPaymentMethodsAsync()
+        {
+            return await _paymentMethodDB.GetPaymentMethodsAsync();
+        }
+
         [HttpPost("{id}/disable")]
         public async Task<IActionResult> DisablePaymentMethodAsync(int id)
         {
@@ -39,10 +45,10 @@ namespace StoreAPI.Controllers
             return BadRequest("Failed to disable payment method.");
         }
 
-        [HttpPost("{id}/toggle")]
+        [HttpPost("{id}/active")]
         public async Task<IActionResult> TogglePaymentMethodAsync(int id, [FromBody] TogglePaymentMethodRequest request)
         {
-            var result = await _paymentMethodDB.TogglePaymentMethodAsync(id, request.Active);
+            var result = await _paymentMethodDB.ActivePaymentMethodAsync(id);
             if (result)
             {
                 return Ok();
