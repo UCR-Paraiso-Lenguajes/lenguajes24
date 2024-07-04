@@ -1,13 +1,12 @@
-"use client";
-import "../../styles/direccion.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import Navbar from '../../components/Navbar';
+'use client';
 import React, { useState, useEffect } from 'react';
+import Navbar from '../../components/Navbar';
+import '../../styles/direccion.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Select from 'react-select';
 
 const Direccion = () => {
-
-  const validLocations = {//combinaciones correctas 
+  const validLocations = {
     "San José": {
       "Escazú": ["Escazú", "San Antonio", "San Rafael"],
       "Desamparados": ["Desamparados", "San Miguel", "San Juan de Dios"],
@@ -143,13 +142,13 @@ const Direccion = () => {
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedCanton, setSelectedCanton] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
+  const [selectedExactAddress, setSelectedExactAddress] = useState('');
   const [isClient, setIsClient] = useState(false);
 
   const [cantidadMensajes, setCantidadMensajes] = useState(() => {
     const storedCantidadMensajes = localStorage.getItem('cantidadMensajes');
     return storedCantidadMensajes ? parseInt(storedCantidadMensajes, 10) : 0;
   });
-
 
   useEffect(() => {
     setIsClient(true);
@@ -172,7 +171,7 @@ const Direccion = () => {
       setErrorMessage('Dirección no válida. Asegúrese de que está en el formato correcto y contiene una provincia, cantón y distrito válidos.');
       return;
     }
-    const updatedDirection = `${selectedProvince}, ${selectedCanton}, ${selectedDistrict}`;
+    const updatedDirection = `${selectedProvince}, ${selectedCanton}, ${selectedDistrict}, ${selectedExactAddress}`;
     if (dataObject) {
       const updatedCart = {
         ...dataObject.cart,
@@ -229,6 +228,17 @@ const Direccion = () => {
                   onChange={option => setSelectedDistrict(option.value)}
                 />
               )}
+            </>
+          )}
+          {selectedDistrict && (
+            <>
+              <label htmlFor="exactAddress">Dirección exacta:</label>
+              <input
+                type="text"
+                id="exactAddress"
+                value={selectedExactAddress}
+                onChange={e => setSelectedExactAddress(e.target.value)}
+              />
             </>
           )}
           <button className="btnAsignar" type="submit" style={{ marginTop: "20px" }}>Asignar</button>
