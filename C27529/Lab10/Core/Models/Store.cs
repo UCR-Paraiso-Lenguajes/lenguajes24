@@ -16,7 +16,7 @@ namespace storeApi
         public IEnumerable<Category.ProductCategory> CategoriesNames { get; private set; }
         public const int TaxPercent = 13;
 
-        internal Store(IEnumerable<Product> products)
+        public Store(IEnumerable<Product> products)
         {
             this.Products = products ?? throw new ArgumentNullException(nameof(products));
             this.RelateProductsToCategories();
@@ -24,20 +24,39 @@ namespace storeApi
             this.CategoriesNames = category.GetCategoryNames();
         }
 
+
+        // Constructor adicional para pruebas
+        public Store(IEnumerable<Product> products, bool skipStaticInitialization)
+        {
+            this.Products = products ?? throw new ArgumentNullException(nameof(products));
+            this.RelateProductsToCategories();
+            var category = new Category();
+            this.CategoriesNames = category.GetCategoryNames();
+            if (!skipStaticInitialization)
+            {
+                // Static initialization logic here, if needed.
+            }
+        }
+
+
         public static Store Instance { get; private set; }
 
         static Store()
         {
-            try
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Testing")
             {
-                var productsTask = productsFromDB().GetAwaiter().GetResult();
-                Store.Instance = new Store(productsTask);
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentException($"Error during static initialization: {ex.Message}");
+                try
+                {
+                    var productsTask = productsFromDB().GetAwaiter().GetResult();
+                    Store.Instance = new Store(productsTask);
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException($"Error during static initialization: {ex.Message}");
+                }
             }
         }
+
 
 
 
@@ -157,11 +176,16 @@ namespace storeApi
         public void AddProductToStore(Product product)
         {
             if (product == null) throw new ArgumentNullException(nameof(product), "Product cannot be null.");
+            if (string.IsNullOrEmpty(product.Description)) throw new ArgumentNullException(nameof(product.Description), "Description cannot be null.");
+            if (string.IsNullOrEmpty(product.ImageURL)) throw new ArgumentNullException(nameof(product.ImageURL), "An image is needed.");
+            if (string.IsNullOrEmpty(product.Name)) throw new ArgumentNullException(nameof(product.Name), "The product must have a name.");
+            if (product.Price < 0) throw new ArgumentException("The price cannot be less than 0.");
 
-            var productsList = Instance.Products.ToList();
+            var targetInstance = Instance ?? this;
+            var productsList = targetInstance.Products.ToList();
             productsList.Add(product);
-            Instance.Products = productsList;
-            Instance.RelateProductsToCategories();
+            targetInstance.Products = productsList;
+            targetInstance.RelateProductsToCategories();
         }
 
 

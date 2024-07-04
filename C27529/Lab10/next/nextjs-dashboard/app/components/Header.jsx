@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { HubConnectionBuilder } from '@microsoft/signalr';
+import eventEmitter from './eventEmitter';
 
 export const Header = ({ goToPage }) => {
     const [active, setActive] = useState(false);
@@ -8,7 +9,6 @@ export const Header = ({ goToPage }) => {
     const [newMessages, setNewMessages] = useState(0);
     const [messages, setMessages] = useState([]);
     const [connection, setConnection] = useState(null);
-
     const [store, setStore] = useState(() => {
         if (typeof window !== 'undefined') {
             const storedStore = localStorage.getItem("tienda");
@@ -32,14 +32,13 @@ export const Header = ({ goToPage }) => {
             connection.on("UpdateMessages", (receivedMessages) => {
                 setMessages(receivedMessages);
                 setNewMessages(receivedMessages.length);
-            }
-        );
+            });
 
             try {
                 await connection.start();
                 setConnection(connection);
             } catch (error) {
-              throw new error('Connection failed: ', error);
+                console.error('Connection failed: ', error);
             }
         };
 
@@ -49,6 +48,18 @@ export const Header = ({ goToPage }) => {
             if (connection) {
                 connection.stop();
             }
+        };
+    }, [URL]);
+
+    useEffect(() => {
+        const updateStore = (updatedStore) => {
+            setStore(updatedStore);
+        };
+
+        eventEmitter.on('cartUpdated', updateStore);
+
+        return () => {
+            eventEmitter.off('cartUpdated', updateStore);
         };
     }, []);
 
@@ -68,26 +79,16 @@ export const Header = ({ goToPage }) => {
         };
 
         setStore(updatedStore);
-        if (typeof window !== 'undefined') {
-            localStorage.setItem("tienda", JSON.stringify(updatedStore));
-        }
+        localStorage.setItem("tienda", JSON.stringify(updatedStore));
+        eventEmitter.emit('cartUpdated', updatedStore);
     };
 
     const onCleanCart = () => {
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem("tienda");
-        }
-        setStore({ productos: [], carrito: { subtotal: 0, total: 0 } });
+        localStorage.removeItem("tienda");
+        const updatedStore = { productos: [], carrito: { subtotal: 0, total: 0 } };
+        setStore(updatedStore);
+        eventEmitter.emit('cartUpdated', updatedStore);
     };
-
-    useEffect(() => {
-        if (typeof document !== 'undefined') {
-            const contadorProductos = document.getElementById('contador-productos');
-            if (contadorProductos) {
-                contadorProductos.textContent = store.productos.length;
-            }
-        }
-    }, [store.productos]);
 
     return (
         <header>
@@ -173,7 +174,7 @@ export const Header = ({ goToPage }) => {
                     <div className={`container-campaign-messages ${campaignActive ? '' : 'hidden-campaign'}`} style={{ maxHeight: '300px', overflowY: 'auto' }}>
                         {messages.length > 0 ? (
                             <div className='campaign-messages'>
-                                {messages.map((message, index) => (
+                                {messages.slice().reverse().map((message, index) => (
                                     <div className='message-item' key={index}>
                                         <div dangerouslySetInnerHTML={{ __html: message.content || "Mensaje vacío" }}></div>
                                     </div>

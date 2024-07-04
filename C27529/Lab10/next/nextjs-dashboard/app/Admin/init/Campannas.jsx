@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const Page = () => {
+const Campannas = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState({ content: '' });
     const [connection, setConnection] = useState(null);
@@ -112,4 +112,4 @@ const Page = () => {
     );
 };
 
-export default Page;
+export default Campannas;

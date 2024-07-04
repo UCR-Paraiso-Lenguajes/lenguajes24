@@ -5,6 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Carousel from 'react-bootstrap/Carousel';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import eventEmitter from './eventEmitter';
 
 export const Products = () => {
   const [productList, setProductList] = useState(() => {
@@ -13,9 +14,10 @@ export const Products = () => {
   });
 
   const URL = process.env.NEXT_PUBLIC_API_URL;
-if (!URL) {
+  if (!URL) {
     throw new Error('NEXT_PUBLIC_API_URL is not defined');
-}
+  }
+
   const [listNames, setListNames] = useState(() => {
     const storedListNames = localStorage.getItem('listNames');
     return storedListNames ? JSON.parse(storedListNames) : [];
@@ -110,21 +112,12 @@ if (!URL) {
     }
   };
 
-  const [storeData, setStoreData] = useState(() => {
-    const storedStoreData = localStorage.getItem("tienda");
-    return JSON.parse(storedStoreData) || { carrito: { subtotal: 0, porcentajeImpuesto: 0 }, productos: [] };
-  });
+  const addProduct = (product) => {
+    const storedStore = localStorage.getItem("tienda");
+    const storeData = JSON.parse(storedStore) || { carrito: { subtotal: 0, porcentajeImpuesto: 0 }, productos: [] };
 
-  const [showModal, setShowModal] = useState(false);
-
-  const closeModal = () => {
-    setShowModal(false);
-  };
-
-  const onAddProduct = (product) => {
-    if (!product) throw new Error('Invalid Parameter');
     if (storeData.productos.some(item => item.id === product.id)) {
-      setShowModal(true);
+      // Handle product already in cart
     } else {
       const updatedStore = {
         ...storeData,
@@ -135,12 +128,13 @@ if (!URL) {
         },
         productos: [...storeData.productos, product]
       };
-      setStoreData(updatedStore);
+
       localStorage.setItem("tienda", JSON.stringify(updatedStore));
+      eventEmitter.emit('cartUpdated', updatedStore);
     }
   };
 
-  const Product = ({ product, onAddProduct }) => {
+  const Product = ({ product }) => {
     const { name, description, imageURL, price } = product;
     return (
       <div className="col-sm-3">
@@ -149,12 +143,11 @@ if (!URL) {
           <div className='price' dangerouslySetInnerHTML={{ __html: description }}></div>
           <div className='price'>Precio: ₡{price}</div>
           <img src={imageURL} alt={name} />
-          <button onClick={() => onAddProduct(product)}>Agregar al Carrito</button>
+          <button onClick={() => addProduct(product)}>Agregar al Carrito</button>
         </div>
       </div>
     );
   };
-
 
   return (
     <div className="container-fluid vh-100">
@@ -211,10 +204,9 @@ if (!URL) {
           </div>
         </div>
       </nav>
-      {showModal && <ModalError closeModal={closeModal} />}
       <div className="row flex-grow-1">
         {productList && Array.isArray(productList) && productList.map(product => (
-          <Product key={product.id} product={product} onAddProduct={onAddProduct} />
+          <Product key={product.id} product={product} />
         ))}
       </div>
       <Carousel data-bs-theme="dark" className="flex-grow-1">
@@ -223,6 +215,7 @@ if (!URL) {
             <div className="info-product">
               <h2>{product.name}</h2>
               <img src={product.imageURL} alt={product.name} />
+              <button onClick={() => addProduct(product)}>Agregar al Carrito</button>
             </div>
           </Carousel.Item>
         ))}
@@ -230,26 +223,3 @@ if (!URL) {
     </div>
   );
 }
-
-const ModalError = ({ closeModal }) => {
-  return (
-    <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
-      <div className="modal-dialog" role="document">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Producto ya agregado</h5>
-            <button type="button" onClick={closeModal} className="close" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div className="modal-body">
-            <p>Este producto ya ha sido añadido al carrito.</p>
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={closeModal}>Cerrar</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};

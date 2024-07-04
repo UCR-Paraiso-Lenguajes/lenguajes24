@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using storeApi.Models;
 using storeApi.Database;
+using System.Text.RegularExpressions;
 using storeApi.db;
 
 namespace storeApi.Business
@@ -11,12 +12,12 @@ namespace storeApi.Business
     public sealed class StoreLogic
     {
 
-        
+
         public delegate void ProductAddedHandler(Product product);
 
         ProductAddedHandler OnProductAdded = (product) =>
         {
-            var store =  Store.Instance;// instancia de la tienda para anadir el nuevo producto
+            var store = Store.Instance;// instancia de la tienda para anadir el nuevo producto
             store.AddProductToStore(product);
         };
 
@@ -31,7 +32,8 @@ namespace storeApi.Business
         public async Task<Sale> PurchaseAsync(Cart cart) //UT
         {
             if (cart.ProductIds.Count == 0) throw new ArgumentException("Cart must contain at least one product.");
-            if (cart.Address == "") throw new ArgumentException("Address must be provided.");
+            if (string.IsNullOrWhiteSpace(cart.Address)) throw new ArgumentException("Address must be provided.");
+            if (!IsValidAddress(cart.Address)) throw new ArgumentException("Invalid delivery address.");
 
             var products = Store.Instance.Products;
 
@@ -47,9 +49,15 @@ namespace storeApi.Business
 
             var sale = new Sale(shadowCopyProducts, cart.Address, cart.Total, paymentMethodType);
 
-            await saleDB.SaveAsync(sale); // Usa el método SaveAsync y espera su ejecución
+            await saleDB.SaveAsync(sale);
 
             return sale;
+        }
+
+        private bool IsValidAddress(string address)
+        {
+            var addressPattern = new Regex(@"^[A-Za-z0-9\s,.-]{5,}$");
+            return addressPattern.IsMatch(address);
         }
 
         public static string GenerateNextPurchaseNumber()
@@ -67,7 +75,7 @@ namespace storeApi.Business
             return purchaseNumber;
         }
 
-        public  async Task RaiseProductAddedEventAsync(Product product)
+        public async Task RaiseProductAddedEventAsync(Product product)
         {
             StoreDB db = new StoreDB();
             await db.AddProductAsync(product, OnProductAdded);

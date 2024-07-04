@@ -337,6 +337,7 @@ public sealed class StoreDB
 
 
             string createTableQuery = @"
+
              CREATE TABLE IF NOT EXISTS paymentMethods (
                 paymentId INT PRIMARY KEY,
                 paymentName VARCHAR(30) NOT NULL UNIQUE
@@ -431,6 +432,7 @@ public sealed class StoreDB
                     foreach (Product product in products)
                     {
                         string insertProductQuery = @"
+                        
                                 INSERT INTO products (name, description, price, imageURL, category)
                                 VALUES (@name, @description ,@price, @imageURL, @category);";
 
@@ -463,7 +465,7 @@ public sealed class StoreDB
         {
             await connection.OpenAsync();
 
-            string sql = "use store; select * from products;";
+            string sql = "USE store; select * from products;";
 
             using (var command = new MySqlCommand(sql, connection))
             {
@@ -501,7 +503,7 @@ public sealed class StoreDB
             await connection.OpenAsync();
 
             string insertProductQuery = @"
-                    use store;
+                    USE store;
                     INSERT INTO products (name, description, price, imageURL, category)
                     VALUES (@name, @description, @price, @imageURL, @category);";
 
@@ -521,56 +523,62 @@ public sealed class StoreDB
     }
 
     public static async Task<int> AddMessageAsync(string content)
-{
-    using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
     {
-        await connection.OpenAsync();
-        using (var transaction = await connection.BeginTransactionAsync())
+        if (string.IsNullOrWhiteSpace(content))
         {
-            try
-            {
-                // Llama al método pasando la conexión y transacción
-                var existingId = await CheckIfMessageExists(content, connection, transaction);
-                if (existingId != null)
-                {
-                    transaction.Commit();
-                    return existingId.Value;
-                }
+            throw new ArgumentException("Content cannot be null or empty", nameof(content));
+        }
 
-                string query = "INSERT INTO messages (content) VALUES (@content); SELECT LAST_INSERT_ID();";
-                using (var command = new MySqlCommand(query, connection))
-                {
-                    command.Transaction = transaction;
-                    command.Parameters.AddWithValue("@content", content);
-                    var messageId = Convert.ToInt32(await command.ExecuteScalarAsync());
-                    transaction.Commit();
-                    return messageId;
-                }
-            }
-            catch (Exception)
+        using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
+        {
+            await connection.OpenAsync();
+            using (var transaction = await connection.BeginTransactionAsync())
             {
-                transaction.Rollback();
-                throw;
+                try
+                {
+                    // Llama al método pasando la conexión y transacción
+                    var existingId = await CheckIfMessageExists(content, connection, transaction);
+                    if (existingId != null)
+                    {
+                        transaction.Commit();
+                        return existingId.Value;
+                    }
+
+                    string query = "USE store; INSERT INTO messages (content) VALUES (@content); SELECT LAST_INSERT_ID();";
+                    using (var command = new MySqlCommand(query, connection))
+                    {
+                        command.Transaction = transaction;
+                        command.Parameters.AddWithValue("@content", content);
+                        var messageId = Convert.ToInt32(await command.ExecuteScalarAsync());
+                        transaction.Commit();
+                        return messageId;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new Exception("An error occurred while adding the message.", ex);
+                }
             }
         }
     }
-}
 
-private static async Task<int?> CheckIfMessageExists(string content, MySqlConnection connection, MySqlTransaction transaction)
-{
-    string query = "use store; SELECT id FROM messages WHERE content = @content LIMIT 1;";
-    using (var command = new MySqlCommand(query, connection))
+    private static async Task<int?> CheckIfMessageExists(string content, MySqlConnection connection, MySqlTransaction transaction)
     {
-        command.Transaction = transaction;
-        command.Parameters.AddWithValue("@content", content);
-        var result = await command.ExecuteScalarAsync();
-        if (result != DBNull.Value && result != null)
+        string query = "USE store; SELECT id FROM messages WHERE content = @content LIMIT 1;";
+        using (var command = new MySqlCommand(query, connection))
         {
-            return Convert.ToInt32(result);
+            command.Transaction = transaction;
+            command.Parameters.AddWithValue("@content", content);
+            var result = await command.ExecuteScalarAsync();
+            if (result != DBNull.Value && result != null)
+            {
+                return Convert.ToInt32(result);
+            }
+            return null;
         }
-        return null;
     }
-}
+
 
     public static async Task<List<Dictionary<string, object>>> GetLastThreeMessagesAsync()
     {
@@ -578,7 +586,7 @@ private static async Task<int?> CheckIfMessageExists(string content, MySqlConnec
         using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
         {
             await connection.OpenAsync();
-            string query = "use store; SELECT id, content FROM messages ORDER BY created_at DESC LIMIT 3;";
+            string query = "USE store; SELECT id, content FROM messages ORDER BY created_at DESC LIMIT 3;";
             using (var command = new MySqlCommand(query, connection))
             {
                 using (var reader = await command.ExecuteReaderAsync())
@@ -586,10 +594,10 @@ private static async Task<int?> CheckIfMessageExists(string content, MySqlConnec
                     while (await reader.ReadAsync())
                     {
                         var message = new Dictionary<string, object>
-                            {
-                                { "id", reader.GetInt32("id") },
-                                { "content", reader.GetString("content") }
-                            };
+                    {
+                        { "id", reader.GetInt32("id") },
+                        { "content", reader.GetString("content") }
+                    };
                         messages.Add(message);
                     }
                 }
@@ -599,13 +607,19 @@ private static async Task<int?> CheckIfMessageExists(string content, MySqlConnec
         return messages;
     }
 
+
     public static async Task<List<Dictionary<string, object>>> GetMessagesByContentAsync(string content)
     {
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            throw new ArgumentException("Content cannot be null or empty", nameof(content));
+        }
+
         var messages = new List<Dictionary<string, object>>();
         using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
         {
             await connection.OpenAsync();
-            string query = "use store; SELECT id, content FROM messages WHERE content = @content;";
+            string query = "USE store; SELECT id, content FROM messages WHERE content = @content;";
             using (var command = new MySqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@content", content);
@@ -614,10 +628,10 @@ private static async Task<int?> CheckIfMessageExists(string content, MySqlConnec
                     while (await reader.ReadAsync())
                     {
                         var message = new Dictionary<string, object>
-                            {
-                                { "id", reader.GetInt32("id") },
-                                { "content", reader.GetString("content") }
-                            };
+                    {
+                        { "id", reader.GetInt32("id") },
+                        { "content", reader.GetString("content") }
+                    };
                         messages.Add(message);
                     }
                 }
@@ -625,4 +639,5 @@ private static async Task<int?> CheckIfMessageExists(string content, MySqlConnec
         }
         return messages;
     }
+
 }
