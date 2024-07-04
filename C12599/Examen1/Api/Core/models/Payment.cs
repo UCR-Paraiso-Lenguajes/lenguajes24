@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using storeapi.Database;
-//PROYECTO1
 namespace storeapi.Models
 {
     public sealed class Payment
@@ -14,8 +11,8 @@ namespace storeapi.Models
         private Payment()
         {
             var methods = LoadPaymentMethodsFromDatabase();
-            Cash = methods[PaymentMethods.Type.CASH];
-            Sinpe = methods[PaymentMethods.Type.SINPE];
+            Cash = methods.ContainsKey(PaymentMethods.Type.CASH) ? methods[PaymentMethods.Type.CASH] : null;
+            Sinpe = methods.ContainsKey(PaymentMethods.Type.SINPE) ? methods[PaymentMethods.Type.SINPE] : null;
 
             if (Cash == null || Sinpe == null)
             {
@@ -32,7 +29,7 @@ namespace storeapi.Models
             {
                 int id = int.Parse(methodData[0]);
                 string name = methodData[1];
-                bool isActive = bool.Parse(methodData[2]);
+                bool isActive = methodData[2] == "true"; // Asegurarse de que el valor se convierta a booleano
 
                 var method = PaymentMethods.LoadFromDatabase(id, name, isActive);
                 paymentMethods.Add((PaymentMethods.Type)id, method);
@@ -42,4 +39,3 @@ namespace storeapi.Models
         }
     }
 }
-
