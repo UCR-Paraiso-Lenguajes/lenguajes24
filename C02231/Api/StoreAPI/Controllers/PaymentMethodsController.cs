@@ -46,7 +46,7 @@ namespace StoreAPI.Controllers
         }
 
         [HttpPost("{id}/active")]
-        public async Task<IActionResult> TogglePaymentMethodAsync(int id, [FromBody] TogglePaymentMethodRequest request)
+        public async Task<IActionResult> TogglePaymentMethodAsync(int id)
         {
             var result = await _paymentMethodDB.ActivePaymentMethodAsync(id);
             if (result)

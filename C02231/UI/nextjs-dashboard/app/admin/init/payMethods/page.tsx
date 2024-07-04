@@ -40,7 +40,7 @@ const PaymentMethods = () => {
         }
     };
 
-    const togglePaymentMethod = async (id) => {
+    const activePaymentMethod = async (id) => {
         try {
             const response = await fetch(`${URL}/api/paymentMethods/${id}/active`, {
                 method: 'POST',
@@ -96,9 +96,9 @@ const PaymentMethods = () => {
                                             <td>
                                                 <button
                                                     className={`btn ${method.active ? 'btn-danger' : 'btn-success'}`}
-                                                    onClick={() => togglePaymentMethod(method.id)}
+                                                    onClick={() => activePaymentMethod(method.id)}
                                                 >
-                                                    {method.active ? 'Deactivate' : 'Activate'}
+                                                    'Activate'
                                                 </button>
                                                 <button
                                                     className="btn btn-warning ml-2"
