@@ -1,13 +1,13 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using KEStoreApi.Bussiness;
-using KEStoreApi;
-using static KEStoreApi.Product;
-using Core;
-using Microsoft.VisualBasic;
+using KEStoreApi.Models;
 using KEStoreApi.Data;
+using Core;
+using static KEStoreApi.Product;
+using KEStoreApi;
 
 namespace UnitTests
 {
@@ -18,7 +18,7 @@ namespace UnitTests
         [SetUp]
         public void Setup()
         {
-             var dbTest = "Server=localhost;Database=mysql;Uid=root;Pwd=123456;";
+            var dbTest = "Server=localhost;Database=mysql;Uid=root;Pwd=123456;";
             DatabaseConfiguration.Init(dbTest);
             DatabaseStore.Store_MySql();
             string connectionString = "Server=localhost;Database=store;Uid=root;Pwd=123456;";
@@ -29,34 +29,22 @@ namespace UnitTests
         [Test]
         public void Purchase_WithEmptyCart_ThrowsArgumentException()
         {
-            Cart cart = new Cart
+            var cart = new Cart
             {
                 Product = new List<ProductQuantity>(),
-                address = "123 Main St",
+                Address = new Address
+                {
+                    Street = "123 Main St",
+                    City = "Anytown",
+                    State = "Anystate",
+                    ZipCode = "12345",
+                    Country = "AnyCountry"
+                },
                 PaymentMethod = PaymentMethods.Type.SINPE
             };
-            
-            Assert.ThrowsAsync<ArgumentException>(async () => await _storeLogic.PurchaseAsync(cart));
-        }
-
-        [Test]
-        public void Purchase_WithMissingAddress_ThrowsArgumentException()
-        {
-            Cart cart = new Cart
-            {
-            
-                Product = new List<ProductQuantity>
-                {
-                    new ProductQuantity { Id = 1, Quantity = 2 },
-                    new ProductQuantity { Id = 2, Quantity = 1 }
-                },
-                address = "",
-                PaymentMethod = PaymentMethods.Type.CASH
-            };
 
             Assert.ThrowsAsync<ArgumentException>(async () => await _storeLogic.PurchaseAsync(cart));
         }
-
         [Test]
         public async Task Purchase_HappyPath()
         {
@@ -64,11 +52,18 @@ namespace UnitTests
             {
                 Product = new List<ProductQuantity>
                 {
-                    new ProductQuantity {Id = 1, Quantity = 2 }, 
-                    new ProductQuantity {Id =  2, Quantity = 3 }
+                    new ProductQuantity { Id = 1, Quantity = 2 }, 
+                    new ProductQuantity { Id = 2, Quantity = 3 }
                 },
-                address = "Cartago, Paraíso",
-                PaymentMethod = PaymentMethods.Type.CASH 
+                Address = new Address
+                {
+                    Street = "Cartago",
+                    City = "Paraíso",
+                    State = "State",
+                    ZipCode = "12345",
+                    Country = "Country"
+                },
+                PaymentMethod = PaymentMethods.Type.CASH
             };
 
             var sale = await _storeLogic.PurchaseAsync(cart);
@@ -76,21 +71,28 @@ namespace UnitTests
             Assert.IsInstanceOf<Sale>(sale);
             Assert.That(sale.Products.Count(), Is.EqualTo(2)); 
             Assert.That(sale.Total, Is.EqualTo(1507.42));
-            Assert.That(sale.Address, Is.EqualTo(cart.address));
+            Assert.That(sale.Address, Is.EqualTo(cart.Address));
             Assert.That(sale.PaymentMethod, Is.EqualTo(PaymentMethods.Type.CASH));
-            Assert.IsFalse(String.IsNullOrEmpty(sale.PurchaseNumber));
+            Assert.IsFalse(string.IsNullOrEmpty(sale.PurchaseNumber));
         }
 
         [Test]
         public async Task Purchase_Async_ProductsEmpty_ThrowsArgumentException()
         {
-            var cart = new Cart {
+            var cart = new Cart
+            {
                 Product = new List<ProductQuantity>(),
-                address = "Cartago, Paraiso",
+                Address = new Address
+                {
+                    Street = "Cartago",
+                    City = "Paraiso",
+                    State = "State",
+                    ZipCode = "12345",
+                    Country = "Country"
+                },
                 PaymentMethod = PaymentMethods.Type.SINPE
             };
-            Assert.ThrowsAsync<ArgumentException>(async()=> await _storeLogic.PurchaseAsync(cart));
+            Assert.ThrowsAsync<ArgumentException>(async () => await _storeLogic.PurchaseAsync(cart));
         }
-
     }
 }

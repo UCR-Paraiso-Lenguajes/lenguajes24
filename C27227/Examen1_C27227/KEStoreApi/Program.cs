@@ -27,64 +27,59 @@ builder.Services.AddCors(options =>
                 .AllowCredentials();
     });
 });
-
+builder.Services.AddScoped<SaleLogic>();
 var security = Environment.GetEnvironmentVariable("Security");
 
-if (string.IsNullOrEmpty(security) || security.ToLower() == "false")
+// Swagger configuration
+builder.Services.AddSwaggerGen(setup =>
 {
-    // Swagger configuration when security is false or not set
-    builder.Services.AddSwaggerGen(setup =>
+    var jwtSecurityScheme = new OpenApiSecurityScheme
     {
-        var jwtSecurityScheme = new OpenApiSecurityScheme
-        {
-            BearerFormat = "JWT",
-            Name = "JWT Authentication",
-            In = ParameterLocation.Header,
-            Type = SecuritySchemeType.Http,
-            Scheme = JwtBearerDefaults.AuthenticationScheme,
-            Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+        BearerFormat = "JWT",
+        Name = "JWT Authentication",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
 
-            Reference = new OpenApiReference
-            {
-                Id = JwtBearerDefaults.AuthenticationScheme,
-                Type = ReferenceType.SecurityScheme
-            }
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+
+    setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+    setup.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, Array.Empty<string>() }
+    });
+});
+
+// JWT Authentication configuration
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
 
-        setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
-
-        setup.AddSecurityRequirement(new OpenApiSecurityRequirement
+        options.Events = new JwtBearerEvents
         {
-            { jwtSecurityScheme, Array.Empty<string>() }
-        });
+            OnAuthenticationFailed = context =>
+            {
+                return Task.CompletedTask;
+            }
+        };
     });
-}
-else
-{
-    // JWT Authentication configuration when security is set and not false
-    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = "http://localhost:5072",
-                ValidAudience = "http://localhost:5072",
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
-            };
-
-            options.Events = new JwtBearerEvents
-            {
-                OnAuthenticationFailed = context =>
-                {
-                    return Task.CompletedTask;
-                }
-            };
-        });
-}
 
 var app = builder.Build();
 
@@ -132,11 +127,12 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors();
 
-if (!string.IsNullOrEmpty(security) && security.ToLower() != "false")
-{
-    app.UseAuthentication();
-    app.UseAuthorization();
-}
+app.UseAuthentication();
+app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+
 app.Run();

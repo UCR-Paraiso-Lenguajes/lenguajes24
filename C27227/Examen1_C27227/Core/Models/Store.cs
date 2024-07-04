@@ -1,7 +1,12 @@
+using System;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Core;
 using KEStoreApi.Data;
 using KEStoreApi.Models;
+using KEStoreApi.Bussiness;
 
 namespace KEStoreApi
 {
@@ -11,9 +16,12 @@ namespace KEStoreApi
         public IEnumerable<Product> ProductsList { get; private set; }
         public int TaxPercentage { get; private set; }
         public IEnumerable<Categoria> CategoriasLista { get; private set; }
+        public IEnumerable<PaymentMethods> PaymentMethodsList { get; private set; } 
+        private StoreLogic storeLogic;
+
         public delegate Task ProductActionDelegate(Product product);
 
-        private Store(IEnumerable<Product> products, int taxPercentage, IEnumerable<Categoria> categorias)
+        private Store(IEnumerable<Product> products, int taxPercentage, IEnumerable<Categoria> categorias, IEnumerable<PaymentMethods> paymentMethods)
         {
             if (products == null || !products.Any())
                 throw new ArgumentException("La lista de productos no puede ser nula ni estar vacía.", nameof(products));
@@ -24,18 +32,33 @@ namespace KEStoreApi
             if (categorias == null || !categorias.Any())
                 throw new ArgumentException($"La lista de {nameof(categorias)} no puede ser nula ni estar vacía");
 
+            if (paymentMethods == null || !paymentMethods.Any())
+                throw new ArgumentException($"La lista de {nameof(paymentMethods)} no puede ser nula ni estar vacía");
+
             this.ProductsList = products.Where(p => !p.IsDeleted);
             this.TaxPercentage = taxPercentage;
             this.CategoriasLista = categorias;
+            this.PaymentMethodsList = paymentMethods;
             this._productsInstance = Products.InitializeFromMemory(this.ProductsList);
+            this.storeLogic = new StoreLogic();
         }
 
         public static async Task<Store> InitializeInstanceAsync()
         {
             var categorias = Categorias.Instance.GetCategorias();
-            var productsInstance = await Products.Instance;
             var products = await DatabaseStore.GetProductsFromDBaAsync();
-            return new Store(products, 13, categorias);
+
+            if (products == null || !products.Any())
+            {
+                throw new InvalidOperationException("No se encontraron productos en la base de datos.");
+            }
+
+            var paymentMethods = new List<PaymentMethods>
+            {
+                new PaymentMethods.Cash(),
+                new PaymentMethods.Sinpe()
+            };
+            return new Store(products, 13, categorias, paymentMethods);
         }
 
         public async Task<IEnumerable<Product>> GetProductosCategoryIDAsync(IEnumerable<int> categoryIds)
@@ -111,27 +134,29 @@ namespace KEStoreApi
             _productsInstance = Products.InitializeFromMemory(ProductsList);
         }
 
-        public async Task ValidateAndAddOrderAsync(Order order)
-        {
-            if (!IsValidAddress(order.Address))
-            {
-                throw new ArgumentException("La dirección de entrega no es válida.", nameof(order.Address));
-            }
+public async Task ValidateAndAddOrderAsync(Order order)
+{
+    if (!StoreLogic.IsValidAddress(order.Address))
+    {
+        throw new ArgumentException("La dirección de entrega no es válida.", nameof(order.Address));
+    }
 
-        }
+    var paymentMethod = PaymentMethodsList.FirstOrDefault(m => m.PaymentType == order.PaymentMethod);
+    if (paymentMethod == null || !paymentMethod.IsEnabled)
+    {
+        throw new InvalidOperationException($"El método de pago {order.PaymentMethod} está deshabilitado.");
+    }
 
-        private bool IsValidAddress(Address address)
-        {
-            var zipCodePattern = new Regex(@"^[0-9]{5}(?:-[0-9]{4})?$"); // Simple US ZIP code validation
+}
 
-            return !string.IsNullOrEmpty(address.Street) && address.Street.Trim().Length >= 5 &&
-                   !string.IsNullOrEmpty(address.City) && address.City.Trim().Length >= 2 &&
-                   !string.IsNullOrEmpty(address.State) && address.State.Trim().Length >= 2 &&
-                   !string.IsNullOrEmpty(address.ZipCode) && zipCodePattern.IsMatch(address.ZipCode) &&
-                   !string.IsNullOrEmpty(address.Country) && address.Country.Trim().Length >= 2;
-        }
 
         private static readonly Lazy<Task<Store>> InstanceTask = new Lazy<Task<Store>>(InitializeInstanceAsync);
         public static Task<Store> Instance => InstanceTask.Value;
+
+        public class PaymentMethod
+        {
+            public int PaymentType { get; set; }
+            public bool IsEnabled { get; set; }
+        }
     }
 }

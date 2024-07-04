@@ -32,7 +32,9 @@ const Page = () => {
     return storedTienda ? JSON.parse(storedTienda) : initialState;
   });
 
-  const [warning, setWarning] = useState(false);
+  const [modalShow, setModalShow] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
   const [productList, setProductList] = useState([]);
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -59,7 +61,7 @@ const Page = () => {
       }
     }
   }, [router]);
-  
+
   const handleShowLoginForm = () => {
     setCurrentView('login');
   };
@@ -139,13 +141,15 @@ const Page = () => {
   };
 
   const handleAddToCart = (newProduct) => {
+    if (!Array.isArray(tienda.products)) {
+      tienda.products = [];
+    }
     const isPresent = tienda.products.some(product => product.id === newProduct.id);
 
     if (isPresent) {
-      setWarning(true);
-      setTimeout(() => {
-        setWarning(false);
-      }, 2000);
+      setModalTitle('Producto en el carrito');
+      setModalMessage('El producto ya se encuentra en el carrito');
+      setModalShow(true);
       return;
     }
     const updatedProducts = [...tienda.products, newProduct];
@@ -199,7 +203,7 @@ const Page = () => {
   return (
     <div>
       <Navbar
-        size={tienda.products.length}
+        size={tienda.products ? tienda.products.length : 0}
         onShowLogin={handleShowLoginForm}
         onShowCart={handleShowCart}
         onShowProducts={handleShowProducts}
@@ -210,7 +214,6 @@ const Page = () => {
         fetchProductsBySearch={fetchProductsBySearch}
       />
       {currentView === 'login' && <LoginForm />}
-      {warning && <div className='alert'>El producto ya se encuentra en el carrito</div>}
       {currentView === 'products' && productList && productList.length > 0 ? (
         <div className='container'>
           <div id="carouselExampleIndicators" className="carousel slide" data-bs-ride="carousel">
@@ -221,7 +224,7 @@ const Page = () => {
             </div>
             <div className="carousel-inner">
               {productList.map((product, index) => (
-                <CarouselBanner key={product.id} banner={product} />
+                <CarouselBanner key={product.id} banner={product} handleAddToCart={handleAddToCart} />
               ))}
             </div>
             <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev" onClick={() => setCurrentProductIndex((currentProductIndex + productList.length - 1) % productList.length)}>
@@ -241,9 +244,6 @@ const Page = () => {
           </div>
         )
       )}
-      <div className='AddFromCarousel'>
-        {currentView === 'products' && <button className="btn btn-primary" onClick={handleAddToCart}>Add to cart</button>}
-      </div>
       {currentView === 'products' && (
         <div className="product-list row">
           {Array.isArray(productList) && productList.map((product) => (
@@ -257,6 +257,24 @@ const Page = () => {
           © 2024: Derechos reservados para Kendall Sánchez
         </div>
       </footer>
+      {modalShow && (
+        <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">{modalTitle}</h5>
+                <button type="button" className="btn-close" onClick={() => setModalShow(false)}></button>
+              </div>
+              <div className="modal-body">
+                <p>{modalMessage}</p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-primary" onClick={() => setModalShow(false)}>Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

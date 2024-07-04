@@ -2,8 +2,9 @@ using Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using static KEStoreApi.Store;
 
 namespace KEStoreApi.Controllers
 {
@@ -61,5 +62,42 @@ namespace KEStoreApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("store/paymentMethods")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPaymentMethodsAsync()
+        {
+            var store = await Store.Instance;
+            return Ok(store.PaymentMethodsList.Select(pm => new { pm.PaymentType, pm.IsEnabled }));
+        }
+
+        [HttpPost("store/paymentMethods/disable")]
+        [AllowAnonymous]
+        public async Task<IActionResult> DisablePaymentMethodAsync([FromBody] PaymentMethod request)
+        {
+            if (request == null || request.PaymentType < 0)
+            {
+                return BadRequest("El tipo de método de pago no puede ser nulo.");
+            }
+
+            try
+            {
+                var store = await Store.Instance;
+                var paymentMethod = store.PaymentMethodsList.FirstOrDefault(pm => pm.PaymentType == (PaymentMethods.Type)request.PaymentType);
+                if (paymentMethod == null)
+                {
+                    return NotFound("El método de pago no fue encontrado.");
+                }
+
+                paymentMethod.IsEnabled = request.IsEnabled; // Toggle the status based on the request
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
     }
 }
