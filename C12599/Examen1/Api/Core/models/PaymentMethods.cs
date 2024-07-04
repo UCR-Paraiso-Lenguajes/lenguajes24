@@ -66,3 +66,4 @@ namespace storeapi.Models
         public Cash() : base(Type.CASH) { }
     }
 }
+

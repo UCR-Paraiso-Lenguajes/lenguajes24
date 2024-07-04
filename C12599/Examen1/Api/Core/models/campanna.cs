@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace storeapi.Models
@@ -88,3 +88,4 @@ namespace storeapi.Models
         }
     }
 }
+
