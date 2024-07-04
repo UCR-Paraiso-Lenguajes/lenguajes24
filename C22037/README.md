@@ -20,10 +20,10 @@
 ![Diagrama Websocket](Images/ws.jpeg)
 
 ## Diagrama de clases Proyecto
-![Diagrama Websocket](Images/DiagramaClasesProy.png)
+![Diagrama clases proyecto](Images/DiagramaClasesProy.png)
 
 ## Diagrama de actividad Carrito
-![Diagrama Websocket](Images/DiagramaActividadCart.png)
+![Diagrama actividad carrito](Images/DiagramaActividadCart.png)
 
 ## Diagrama de actividad Payment
-![Diagrama Websocket](Images/DiagramaActividadPayment.png)
+![Diagrama actividad payment](Images/DiagramaActividadPayment.png)
