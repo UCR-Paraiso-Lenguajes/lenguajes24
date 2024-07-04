@@ -69,14 +69,16 @@ namespace storeapi.Controllers
         public decimal Price { get; set; }
 
         public string ImageUrl { get; set; }
-<<<<<<< HEAD
-=======
 
->>>>>>> b5237ee0e84d48e6fe71faca64321ca39fdddaf9
         public string Description { get; set; }
 
         [Required]
         public int CategoryId { get; set; }
+    }
+}
+
+
+
     }
 }
 
