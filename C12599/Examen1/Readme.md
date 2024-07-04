@@ -25,3 +25,13 @@ El diagrama de paquetes muestra la organización modular del sistema, agrupando 
 
 ![Diagrama de Paquetes](Investigacion.JPG)
 
+## Diagrama de Actividad Carousel y PaymentMethods
+
+![Diagrama de Actividad](ProyectoActividad.jpg) 
+
+## Diagrama UML de Proyecto 
+
+![Diagrama UML de Proyecto](ProyectoUML.jpg)
+
+
+
