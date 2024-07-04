@@ -38,11 +38,10 @@ namespace storeapi.Controllers
             }
 
             Category category = _categories.GetCategoryById(request.CategoryId);
-        
 
             Product product = new Product
             {
-                id = request.Id,
+                Id = request.Id,
                 Name = request.Name,
                 Price = request.Price,
                 ImageUrl = request.ImageUrl,
@@ -74,6 +73,10 @@ namespace storeapi.Controllers
 
         [Required]
         public int CategoryId { get; set; }
+    }
+}
+
+
     }
 }
 

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Menu, X, ShoppingCart } from 'react-feather';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navbar, Nav } from 'react-bootstrap';
-
+//PROYECTO12
 interface CustomAccordionItemProps {
   title: string;
   href?: string;

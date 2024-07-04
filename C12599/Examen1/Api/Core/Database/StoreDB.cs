@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MySqlConnector;
 using storeapi.Models;
 using core;
+//PROYECTO
 
 namespace storeapi.Database
 {
@@ -28,7 +29,7 @@ namespace storeapi.Database
                         name VARCHAR(100) not null,
                         price DECIMAL(10, 2) not null,
                         image TEXT not null,
-                        description TEXT not null,
+                        description VARCHAR(255) not null,
                         category INT not null
                     )";
 
@@ -208,5 +209,6 @@ namespace storeapi.Database
         }
     }
 }
+
 
 

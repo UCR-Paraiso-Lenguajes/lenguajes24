@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using storeapi.Models;
 using storeapi.Database;
-
+//PROYECTO12
 namespace storeapi.Controllers
 {
     [Route("api/[controller]")]
@@ -73,4 +73,5 @@ namespace storeapi.Controllers
         public string? State { get; set; }
     }
 }
+
 
