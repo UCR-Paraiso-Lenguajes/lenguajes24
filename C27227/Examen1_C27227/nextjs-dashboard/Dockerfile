@@ -8,6 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install 
 RUN npm install react-select
+
 # Copia los archivos del proyecto al contenedor 
 COPY . . 
 
