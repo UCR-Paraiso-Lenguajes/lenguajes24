@@ -50,11 +50,11 @@ export default function PaymentMethodAdmin(){
                 if (Array.isArray(dataFromStore)) {
                     setListOfPaymentMethods(dataFromStore);                    
                 } else {
-                    callAlertShop("danger","Vacio","VACIO");
+                    callAlertShop("danger","Fallo de Carga","No se pudieron cargar los datos de los métodos de pago");
                 }
                  
             } catch (error) {
-                callAlertShop("danger","Error al obtener datos","Hubo un error al intentar obtener los mensajes de la campana  de notificaciones")
+                callAlertShop("danger","Error al obtener datos","No se pudieron cargar los datos de los métodos de pago")
             }                    
             
         }  

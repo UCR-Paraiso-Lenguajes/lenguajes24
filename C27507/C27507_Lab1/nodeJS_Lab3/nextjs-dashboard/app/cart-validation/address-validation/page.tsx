@@ -8,19 +8,23 @@ import { PaymentMethod, PaymentMethodNumber, PaymentMethods } from '@/app/src/mo
 //Componentes
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import { AlertShop } from '@/app/global-components/generic_overlay';
 import { getAllPaymentMethodsToAdmin, sendCartDataToAPI } from '@/app/src/api/get-post-api';
 
 //Funciones
 import {getCartShopStorage, setCartShopStorage, deleteAllProduct } from '@/app/src/storage/cart-storage';
-import { useRouter } from 'next/router';
+
+
+//Modelos para la API
+type Province = [string, string];
+type Canton = [string, string];
+type District = [string, string];
 
 export default function ModalDirection() {  
 
     //manejar carrito
     const [myCartInStorage, setMyCartInStorage] = useState<CartShopAPI | null>(getCartShopStorage("A"));        
-    //cargamos los datos desde la API (StoreController)    
+    //cargamos los datos de pago desde la API (StoreController)    
     const [listOfPaymentMethods, setListOfPaymentMethods] = useState<PaymentMethod[]>([]);
 
     //Estados  para los alert de Boostrap
@@ -42,6 +46,28 @@ export default function ModalDirection() {
     const [submitAttempted, setSubmitAttempted] = useState(false);
 
 
+    // Estados y manejaodres para provincias, cantones y distritos    
+    const [provinces, setProvinces] = useState<Province[]>([]);
+    const [selectedProvince, setSelectedProvince] = useState<string>('');
+
+    const handleProvinceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedProvince(event.target.value);
+    };
+    const [cantons, setCantons] = useState<Canton[]>([]);
+    const [selectedCanton, setSelectedCanton] = useState<string>('');
+    const handleCantonChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedCanton(event.target.value);
+    };        
+    const [districts, setDistricts] = useState<District[]>([]);
+    const [selectedDistrict, setSelectedDistrict] = useState<string>('');
+    const handleDistrictChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedDistrict(event.target.value);
+    };
+
+
+
+
+
     //Obtener los metodos de pago de Store
     useEffect(() => {
         const loadPaymentMethodsAPI = async ()=>{
@@ -51,7 +77,7 @@ export default function ModalDirection() {
                     let verifiedPaymentMethods = dataFromStore.filter((method: { verify: any; }) => method.verify);
                     setListOfPaymentMethods(verifiedPaymentMethods);
                 } else {
-                    callAlertShop("danger","Vacio","VACIO");
+                    callAlertShop("danger","Éxito al","VACIO");
                 }
                  
             } catch (error) {
@@ -84,7 +110,46 @@ export default function ModalDirection() {
         setAlertInfo(alertInfo);
         setAlertType(alertType)
         setShowAlert(true);
-    }
+    }      
+    
+    //Seleccionar Lugares Completos
+    useEffect(() => {
+        fetch('https://ubicaciones.paginasweb.cr/provincias.json')
+            .then(response => response.json())
+            .then(data => {
+                const provincesArray: Province[] = Object.entries(data) as Province[];
+                setProvinces(provincesArray);
+            });
+    }, []);
+
+    // Cargar cantones cuando se seleccione una provincia
+    useEffect(() => {
+        if (selectedProvince) {
+            fetch(`https://ubicaciones.paginasweb.cr/provincia/${selectedProvince}/cantones.json`)
+                .then(response => response.json())
+                .then(data => {
+                    const cantonsArray: Canton[] = Object.entries(data) as Canton[];
+                    setCantons(cantonsArray);
+                });
+        } else {
+            setCantons([]);
+        }
+    }, [selectedProvince]);
+
+    // Cargar distritos cuando se seleccione un cantón
+    useEffect(() => {
+        if (selectedCanton) {
+            fetch(`https://ubicaciones.paginasweb.cr/provincia/${selectedProvince}/canton/${selectedCanton}/distritos.json`)
+                .then(response => response.json())
+                .then(data => {
+                    const districtsArray: District[] = Object.entries(data) as District[];
+                    setDistricts(districtsArray);
+                });
+        } else {
+            setDistricts([]);
+        }
+    }, [selectedCanton]);
+
     
     const getSelectPayment = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const actualValue = parseInt(event.target.value);        
@@ -105,16 +170,6 @@ export default function ModalDirection() {
         }        
     };
 
-
-    //Para guardar la informacion en el carrito local storage
-    const getTextAreaDirection = (event: React.ChangeEvent<any>) =>{        
-        const actualValue = event.target.value;          
-        setTextAreaDataDirection(actualValue);           
-        if (myCartInStorage) {
-            myCartInStorage.direction = textAreaDataDirection;
-            setCartShopStorage("A", myCartInStorage);            
-        }            
-    }
     const getTextAreaSinpe = (event: React.ChangeEvent<any>) =>{        
         const actualValue = event.target.value;        
         setTextAreaSinpe(actualValue);                  
@@ -133,16 +188,35 @@ export default function ModalDirection() {
         setSubmitAttempted(true);
         const {address,payment,paymentSINPE} = form;
         const newErrors: { [key: string]: string | null } = {};
-        
-        let isAddressValid = !address || address === '';
-        if(isAddressValid){
-            newErrors.address = 'El campo de direccion debe contener informacion';
+                
+
+         // Validación de selección de provincia
+        if (!selectedProvince) {
+            newErrors.selectedProvince = 'Seleccione una provincia';
+        }
+
+        // Validación de selección de cantón
+        if (!selectedCanton) {
+            newErrors.selectedCanton = 'Seleccione un cantón';
+        }
+
+        // Validación de selección de distrito
+        if (!selectedDistrict) {
+            newErrors.selectedDistrict = 'Seleccione un distrito';
         }
                 
         let isSelectPaymentValid = !payment || payment === '';
         if(isSelectPaymentValid){            
             newErrors.payment = 'Seleccione un tipo de pago';                        
         }
+
+        //Agregamos y concatenamos las direcciones:        
+        let completeDirection = `${selectedProvince}, ${selectedCanton}, ${selectedDistrict}`;
+        if (myCartInStorage) {
+            myCartInStorage.direction = completeDirection;
+            setCartShopStorage("A", myCartInStorage);            
+        }
+        
 
         //Verificar si payment es del tipo SINPE, ya que se podria activar el textArea del codigo SINPE
         //estando en otro tipo de pago por algun error  
@@ -160,36 +234,53 @@ export default function ModalDirection() {
             resetModal();//setteamos el modal o mandamos el resumen a la pagina            
             callAlertShop("success","Compra finalizada","El codigo de su compra es: " + purchaseNum);   
         }else{
-            callAlertShop("danger","Campos de formulario incompletos","Por favor, verifique que los campos esten llenos y con la informacion solicitada")
-            
+            callAlertShop("danger","Campos de formulario incompletos","Por favor, verifique que los campos esten llenos y con la informacion solicitada")            
         }
-
-
     }    
 
     return (
         <>
-                                        
             <Form>
                 <fieldset>
-                    <Form.Group className="mb-3" controlId='address'>
-                        <Form.Label style={{ fontWeight: 'bolder' }}>Dirección de entrega:</Form.Label>
-                        <Form.Control 
-                            rows={5} 
-                            as="textarea" 
-                            placeholder="Ingresa tu dirección para la entrega" 
-                            value={textAreaDataDirection} 
-                            onChange={(e) => {setField("address",e.target.value);getTextAreaDirection(e);}} 
-                            isInvalid={submitAttempted && !!errors.address} 
-                        />
-                        {submitAttempted && errors.address && (
-                            <Form.Control.Feedback type='invalid'>{errors.address}</Form.Control.Feedback>
+                    <Form.Label style={{ fontWeight: 'bolder' }}>Dirección de entrega:</Form.Label>
+                    <Form.Group className="mb-3" controlId='province'>
+                        <Form.Label style={{ fontWeight: 'bolder' }}>Provincia:</Form.Label>
+                        <Form.Select value={selectedProvince} onChange={handleProvinceChange}>
+                            <option value="">Seleccione una provincia:</option>
+                            {provinces.map(([id, name]) => (
+                                <option key={id} value={id}>{name}</option>
+                            ))}
+                        </Form.Select>
+                        {submitAttempted && errors.selectedProvince && (
+                            <Form.Control.Feedback type='invalid'>{errors.selectedProvince}</Form.Control.Feedback>
                         )}
-                        <Form.Text className="text-muted">
-                            Tu información es confidencial con nosotros
-                        </Form.Text>
+                    </Form.Group>
 
-                    </Form.Group>    
+                    <Form.Group className="mb-3" controlId='canton'>
+                        <Form.Label style={{ fontWeight: 'bolder' }}>Cantón:</Form.Label>
+                        <Form.Select value={selectedCanton} onChange={handleCantonChange}>
+                            <option value="">Seleccione un cantón:</option>
+                            {cantons.map(([id, name]) => (
+                                <option key={id} value={id}>{name}</option>
+                            ))}
+                        </Form.Select>
+                        {submitAttempted && errors.selectedCanton && (
+                            <Form.Control.Feedback type='invalid'>{errors.selectedCanton}</Form.Control.Feedback>
+                        )}
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId='district'>
+                        <Form.Label style={{ fontWeight: 'bolder' }}>Distrito:</Form.Label>
+                        <Form.Select value={selectedDistrict} onChange={handleDistrictChange}>
+                            <option value="">Seleccione un distrito:</option>
+                            {districts.map(([id, name]) => (
+                                <option key={id} value={id}>{name}</option>
+                            ))}
+                        </Form.Select>
+                        {submitAttempted && errors.selectedDistrict && (
+                            <Form.Control.Feedback type='invalid'>{errors.selectedDistrict}</Form.Control.Feedback>
+                        )}
+                    </Form.Group>
                                                 
                     <Form.Group className="mb-3">
                         <Form.Label htmlFor="disabledSelect" style={{ fontWeight: 'bolder' }}>Forma de pago:</Form.Label>                                        
@@ -198,13 +289,11 @@ export default function ModalDirection() {
                             onChange={(e)=>{setField("payment",e.target.value);getSelectPayment(e);}}
                             isInvalid={submitAttempted && !!errors.payment}
                         >             
-                                <option value="">Seleccione un tipo de pago:</option>                                        
-                                {listOfPaymentMethods.map((method) => (
-                                    <option key={method.payment} value={method.payment}>{PaymentMethodNumber[method.payment]}</option>
-                                ))}
-                                {/* {PaymentMethods.map((method) => (
-                                    <option key={method.payment} value={method.payment}>{PaymentMethodNumber[method.payment]}</option>
-                                ))} */}
+                            <option value="">Seleccione un tipo de pago:</option>                                        
+                            {listOfPaymentMethods.map((method) => (
+                                <option key={method.payment} value={method.payment}>{PaymentMethodNumber[method.payment]}</option>
+                            ))}
+                                
                         </Form.Select>
                         {submitAttempted && errors.payment && (
                             <Form.Control.Feedback type='invalid'>{errors.payment}</Form.Control.Feedback>
