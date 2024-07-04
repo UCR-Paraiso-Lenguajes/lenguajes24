@@ -42,8 +42,9 @@ namespace Store_API.Controllers
 
             try
             {
-                var resultProduct = await dbApi.InsertionProductInDBAsync(insertedProduct);
-                return Ok(resultProduct);
+                ProductLogic productLogic= new ProductLogic();
+                bool insertedProductStatus = await productLogic.insertProductAsync(insertedProduct, Store.Instance.AddNewProductToStore);
+                return Ok(insertedProduct);
             }
             catch (Exception ex)
             {

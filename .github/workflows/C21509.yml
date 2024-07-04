@@ -26,15 +26,15 @@ jobs:
         dotnet-version: 8.0.x
     - name: Restore dependencies
       run: |
-        cd C21509/Docker
+        cd C21509/Lab3_NodeJS/Lab7_API
         dotnet restore
     - name: Build
       run: |
-        cd C21509/Docker
+        cd C21509/Lab3_NodeJS/Lab7_API
         dotnet build --no-restore    
     - name: Test
       run: |
-        cd C21509/C21509/Lab3_NodeJS/Lab7_API
+        cd C21509/Lab3_NodeJS/Lab7_API
         dotnet test --no-build --verbosity normal
         
   publish-api:
@@ -43,10 +43,10 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build & Push Image
       run: |
-        cd C21509/C21509/Lab3_NodeJS/Lab7_API
-        docker image build -t jeancldrn/store_api_leng_2024:latest .
-        echo "${{ secret.DOCKERHUBPASS_C21509 }}" | docker login -u "jeancarlocldrn@gmail.com" --password-stdin
-        docker push jeancldrn/store_api_leng_2024:latest
+        cd C21509/Lab3_NodeJS/Lab7_API
+        docker image build -t jeancldrn/api:latest .
+        echo "${{ secrets.DOCKERHUBPASS_C21509 }}" | docker login -u "jeancarlocldrn@gmail.com" --password-stdin
+        docker push jeancldrn/api:latest
         
   publish-ui:
     runs-on: ubuntu-latest
@@ -54,8 +54,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build & Push Image
       run: |
-        cd C21509/C21509/Lab3_NodeJS/lab6-nextjs-dashboard
-        docker image build -t jeancldrn/store_api_leng_2024:latest .        
-        echo "${{ secret.DOCKERHUBPASS_C21509 }}" | docker login -u "jeancarlocldrn@gmail.com" --password-stdin
-        docker push jeancldrn/store_api_leng_2024:latest
-      
+        cd C21509/Lab3_NodeJS/lab6-nextjs-dashboard
+        docker image build -t jeancldrn/ui:latest .        
+        echo "${{ secrets.DOCKERHUBPASS_C21509 }}" | docker login -u "jeancarlocldrn@gmail.com" --password-stdin
+        docker push jeancldrn/ui:latest
