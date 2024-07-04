@@ -3,10 +3,9 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import '../ui/globals.css';
 const URL = process.env.NEXT_PUBLIC_API;
-//PROYECTO12
 
 interface PaymentMethod {
-  paymentType: number;
+  paymentType: string; // Cambiado a string
   isActive: boolean;
 }
 
@@ -14,11 +13,11 @@ const PaymentMethods: React.FC = () => {
   const [paymentMethods, setPaymentMethods] = useState<{ [key: string]: PaymentMethod }>({});
 
   useEffect(() => {
-    fetch(URL+'/api/Payment/payment-methods') // Update with your actual endpoint
+    fetch(URL + '/api/Payment/payment-methods') // Actualiza con tu endpoint real
       .then(response => response.json())
       .then(data => {
         const methods = Object.keys(data).reduce((acc, key) => {
-          acc[key] = { ...data[key], isActive: true }; // Assuming all methods are active initially
+          acc[key] = { ...data[key] }; // Usar los valores reales de isActive
           return acc;
         }, {} as { [key: string]: PaymentMethod });
         setPaymentMethods(methods);
@@ -35,13 +34,13 @@ const PaymentMethods: React.FC = () => {
     };
     setPaymentMethods(updatedMethods);
 
-    fetch(URL+'/api/Payment/update-status', { // Update with your actual endpoint
+    fetch(URL + '/api/Payment/update-status', { // Actualiza con tu endpoint real
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        method,
+        method: method, // Usar el nombre del método como cadena
         state: updatedMethods[method].isActive ? 'activo' : 'desactivado',
       }),
     });
