@@ -3,12 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using storeApi.Database;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
-
-namespace TodoApi.Models
+namespace storeApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -28,7 +26,6 @@ namespace TodoApi.Models
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        
         public async Task<IActionResult> GetSale([FromBody] WeekDailyDate dateString)
         {
             var authorizationHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
@@ -42,11 +39,9 @@ namespace TodoApi.Models
                 return BadRequest("Invalid date format.");
             }
 
-
             SaleDB saleDB = new SaleDB();
             var weekSalesTask = saleDB.getWeekSalesAsync(dateString.WeekDate);
             var dailySalesTask = saleDB.getDailySales(dateString.DailyDate);
-
 
             await Task.WhenAll(weekSalesTask, dailySalesTask);
 
@@ -56,9 +51,7 @@ namespace TodoApi.Models
                 DailySales = await dailySalesTask
             };
 
-
             return Ok(combinedSales);
         }
-
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,7 +18,7 @@ builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", // Create a named policy
-        builder => builder.WithOrigins("http://localhost:3000","http://localhost:8080","http://localhost:http://localhost:5164") // Replace with the actual client URL
+        builder => builder.WithOrigins("http://localhost:3000", "http://localhost:8080", "http://localhost:http://localhost:5164") // Replace with the actual client URL
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials()); // Allow credentials
@@ -58,8 +59,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "http://localhost:5164",
-            ValidAudience = "http://localhost:5164",
+            ValidIssuer = builder.Configuration["Jwt:Issuer"], // Ensure these match the values in your configuration
+            ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
         };
     });

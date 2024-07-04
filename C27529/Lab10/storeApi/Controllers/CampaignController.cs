@@ -30,9 +30,9 @@ public class CampaignController : Hub
         await UpdateAllClients();
     }
 
-    public async Task DeleteMessage(int id)
+    public async Task DeleteMessage(string messageId)
     {
-        messages.RemoveAll(m => (int)m["id"] == id);
+        messages.RemoveAll(m => (string)m["id"] == messageId);
         await UpdateAllClients();
     }
 
@@ -40,7 +40,6 @@ public class CampaignController : Hub
     {
         await Clients.All.SendAsync("UpdateMessages", messages);
     }
-
 
     public override async Task OnConnectedAsync()
     {

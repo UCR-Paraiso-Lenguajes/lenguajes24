@@ -9,7 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TodoApi
+namespace storeApi.Controllers
 {
 
     public class LoginDataAccount

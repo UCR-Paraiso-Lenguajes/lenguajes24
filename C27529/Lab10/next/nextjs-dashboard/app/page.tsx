@@ -62,7 +62,7 @@ function Home() {
       ) : Actualpage === 2 ? (
         <Address goToPage={goToPage} />
       ) : (
-        <Payment />
+        <Payment goToPage={goToPage}/>
       )}
       
     </div>
