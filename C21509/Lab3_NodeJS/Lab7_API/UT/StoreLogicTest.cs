@@ -2,6 +2,9 @@ using NUnit.Framework;
 using Store_API.Business;
 using Store_API.Models;
 using Store_API.Database;
+using System.Collections.Generic;
+using System;
+using System.Threading.Tasks;
 
 namespace UnitTests
 {
@@ -18,18 +21,24 @@ namespace UnitTests
         [Test]
         public void Purchase_WithEmptyCart_ThrowsArgumentException()
         {
-            List<int> productIds = new List<int>();
+            List<ProductQuantity> productQuantities = new List<ProductQuantity>();
             string address = "123 Main St";
             PaymentMethods.Type paymentMethod = PaymentMethods.Type.SINPE;
-            Cart cart = new Cart(productIds, address, paymentMethod, 0, 0);
+            Cart cart = new Cart(productQuantities, address, paymentMethod, 0, 0);
             Assert.Throws<ArgumentException>(() => storeLogic.PurchaseAsync(cart));
         }
 
         [Test]
         public async Task Purchase_HappyPath()
         {
+            List<ProductQuantity> productQuantities = new List<ProductQuantity>
+            {
+                new ProductQuantity(3, 1, 25),
+                new ProductQuantity(4, 1, 25)
+            };
+
             Cart cart = new Cart(
-             new List<int> { 3, 4 }, 
+             productQuantities,
              "San José, Costa Rica",
              PaymentMethods.Type.CASH, 
              50, 
