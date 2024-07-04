@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using storeapi.Database;
 using storeapi.Models;
 
+//HOLA MUNDO
+
 namespace storeapi.Hubs
 {
     public class CampaignHub : Hub
