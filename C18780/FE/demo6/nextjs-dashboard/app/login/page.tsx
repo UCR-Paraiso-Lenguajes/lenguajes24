@@ -3,8 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { LoginModel, login } from '../api/http.auth';
 import { jwtDecode } from 'jwt-decode';
-import '../styles/login.css';
-
+import '../styles/Login.css';
 export default function Page() {
     const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');

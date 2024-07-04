@@ -1,6 +1,5 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { ShoppingCartIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Cart, Product } from '../utils/data-definitions';
@@ -15,7 +14,7 @@ const ProductCart = ({ product, quantity, onRemove }: { product: Product, quanti
                     <tr>
                         <td width="200">
                             <div>
-                                <Image src={product.imageUrl}
+                                <img src={product.imageUrl}
                                     width={150}
                                     height={150}
                                     className="hidden md:block" alt={product.name} />
@@ -168,7 +167,7 @@ export default function MyCart() {
                             <div className="ibox-content">
                                 <div className='flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12'>
                                     {initialCart.cart.total === 0 ?
-                                        <Image src='/others/cat.jpg' width={300} height={300} className="hidden md:block" alt='cat' /> :
+                                        <img src='/others/cat.jpg' width={300} height={300} className="hidden md:block" alt='cat' /> :
                                         <ProductsCart productCart={initialCart.cart.products} onRemove={handleRemoveToCart} />
                                     }
                                 </div>

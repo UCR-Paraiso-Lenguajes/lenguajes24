@@ -31,10 +31,7 @@ public class AuthController : ControllerBase
         {
             return BadRequest("Invalid client request");
         }
-
-        //if (hostEnvironment.IsDevelopment())
-        //{
-
+        
         var validUser = credentials.Where(c => c.UserName == user.UserName && c.Password == user.Password).FirstOrDefault();
 
         if (validUser is not null)

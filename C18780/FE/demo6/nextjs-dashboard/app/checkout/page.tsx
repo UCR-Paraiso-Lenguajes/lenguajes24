@@ -5,7 +5,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import useFetchCartPurchase from '@/app/api/http.cart';
 import { useFetchSinpePurchase } from '@/app/api/http.sinpe';
-import { Cart, LocationData, Product } from '../utils/data-definitions';
+import { Cart, Product } from '../utils/data-definitions';
 import { deleteCartLocalStorage, findProductsDuplicates, getInitialCartLocalStorage, getPaymentMethodLocalStorage, getProductQuantity, saveInitialCartLocalStorage, savePaymentMethodLocalStorage } from '../utils/utils';
 import Modal from '../components/modal';
 import ModalInput from '../components/modalInput';
@@ -13,7 +13,6 @@ import '../styles/checkout.css';
 import MapComponent from '../components/Map';
 import BtnPay from '../components/Btn/BtnPay';
 import { useFetchLocation } from '../api/http.locationip';
-import { PaymentMethod } from '../utils/data-definitions';
 import { useSignalRGetPaymentMethods } from '../api/http.initialStore';
 
 const ListProducts = ({ product, quantity }: { product: Product, quantity: number }) => {
