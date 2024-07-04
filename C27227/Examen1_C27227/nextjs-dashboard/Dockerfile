@@ -6,13 +6,16 @@ WORKDIR /app
 
 # Copia los archivos del proyecto al contenedor 
 COPY package*.json ./
+RUN npm install 
+RUN npm install react-select
+
 # Copia los archivos del proyecto al contenedor 
 COPY . . 
 
 WORKDIR /app/my-nextjs-app 
 
 # Instala las dependencias del proyecto 
-RUN npm install 
+
 
 COPY . .
 EXPOSE 3000 
