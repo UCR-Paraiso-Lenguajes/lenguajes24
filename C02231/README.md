@@ -1,4 +1,4 @@
-# Web Pages: Book Store
+# Web Page: Book Store
 **Developer:** Paula Chaves Rivera C02231
 
 ---
@@ -157,3 +157,29 @@ This class provides the logic for interacting with the store database.
 - The store displays the messages.
 
 #### End
+
+### Activity Diagram
+
+**Purchasing Flow**
+
+![Paymenth Methods](Images/Paymenth.png)
+
+
+### Activity Diagram
+
+**Purchasing Flow**
+
+![Carusel](Images/Carusel.png)
+
+
+### Diagram
+
+**Purchasing Flow**
+
+![Paymenth Method](Images/PaymentUML.png)
+
+
+### Diagram
+
+**Purchasing Flow**
+![QuantityProducts](Images/Quantity.png)

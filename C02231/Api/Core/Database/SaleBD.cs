@@ -22,8 +22,8 @@ namespace StoreAPI.Database
                     try
                     {
                         string insertQuery = @"
-                            INSERT INTO sales (purchase_date, total, payment_method, purchase_number)
-                            VALUES (@date, @total, @PaymentMethod, @orderNumber);";
+                            INSERT INTO sales (purchase_date, total, payment_method, purchase_number,address)
+                            VALUES (@date, @total, @PaymentMethod, @orderNumber, @address);";
 
                         using (var command = new MySqlCommand(insertQuery, connection, transaction))
                         {
@@ -31,6 +31,7 @@ namespace StoreAPI.Database
                             command.Parameters.AddWithValue("@total", sale.Amount);
                             command.Parameters.AddWithValue("@PaymentMethod", (int)sale.PaymentMethod);
                             command.Parameters.AddWithValue("@orderNumber", sale.NumberOrder);
+                            command.Parameters.AddWithValue("@address", sale.Address);
 
                             await command.ExecuteNonQueryAsync();
                             long saleId = command.LastInsertedId;

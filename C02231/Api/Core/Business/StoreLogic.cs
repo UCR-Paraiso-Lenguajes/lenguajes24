@@ -8,7 +8,13 @@ namespace StoreAPI.Business
 {
     public sealed class StoreLogic
     {
-        private SaleBD saleDB = new SaleBD();
+        private readonly SaleBD saleDB = new SaleBD();
+        private readonly PaymentMethodDB paymentMethodDB;
+
+        public StoreLogic(PaymentMethodDB paymentMethodDB)
+        {
+            this.paymentMethodDB = paymentMethodDB;
+        }
 
         public async Task<Sale> PurchaseAsync(Cart cart)
         {
@@ -17,6 +23,13 @@ namespace StoreAPI.Business
             if (productIdsIsEmpty) throw new ArgumentException($"Variable {nameof(cart)}must contain at least one product.");
             if (addressIsNullOrWhiteSpace) throw new ArgumentException("Address must be provided.");
             if (cart == null || cart.ProductIds == null) throw new ArgumentException("The cart cannot be empty.");
+            if (!IsValidAddress(cart.Address)) throw new ArgumentException("La dirección proporcionada no es válida.");
+            bool isPaymentMethodActive = await paymentMethodDB.IsPaymentMethodActiveAsync(cart.PaymentMethod.Id);
+            if (!isPaymentMethodActive)
+            {
+                throw new ArgumentException("El método de pago seleccionado no está activo.");
+            }
+
 
 
             var storeInstance = await Store.Instance.Value;
@@ -47,7 +60,7 @@ namespace StoreAPI.Business
 
             string purchaseNumber = GenerateNextPurchaseNumber();
 
-            PaymentMethods.Type paymentMethodType = cart.PaymentMethod;
+            PaymentMethods.Type paymentMethodType = cart.PaymentMethod.Id == 1 ? PaymentMethods.Type.CASH : PaymentMethods.Type.SINPE;
 
             var sale = new Sale(shadowCopyProducts, cart.Address, purchaseAmount, paymentMethodType, purchaseNumber);
 
@@ -70,5 +83,30 @@ namespace StoreAPI.Business
 
             return purchaseNumber;
         }
+
+        private bool IsValidAddress(string address)
+        {
+
+            var provinces = new Dictionary<string, List<string>>
+            {
+                { "San José", new List<string> { "Central", "Escazú", "Desamparados", "Puriscal", "Tarrazú", "Aserrí", "Mora", "Goicoechea", "Santa Ana", "Alajuelita", "Vásquez de Coronado", "Acosta", "Tibás", "Moravia", "Montes de Oca", "Turrubares", "Dota", "Curridabat", "Pérez Zeledón", "León Cortés", "San Pedro" } },
+                { "Alajuela", new List<string> { "Central", "San Ramón", "Grecia", "San Mateo", "Atenas", "Naranjo", "Palmares", "Poás", "Orotina", "San Carlos", "Zarcero", "Valverde Vega", "Upala", "Los Chiles", "Guatuso", "Río Cuarto" } },
+                { "Cartago", new List<string> { "Central", "Paraíso", "La Unión", "Jiménez", "Turrialba", "Alvarado", "Oreamuno", "El Guarco" } },
+                { "Heredia", new List<string> { "Central", "Barva", "Santo Domingo", "Santa Bárbara", "San Rafael", "San Isidro", "Belén", "Flores", "San Pablo", "Sarapiquí" } },
+                { "Guanacaste", new List<string> { "Liberia", "Nicoya", "Santa Cruz", "Bagaces", "Carrillo", "Cañas", "Abangares", "Tilarán", "Nandayure", "La Cruz", "Hojancha" } },
+                { "Puntarenas", new List<string> { "Central", "Esparza", "Buenos Aires", "Montes de Oro", "Osa", "Quepos", "Golfito", "Coto Brus", "Parrita", "Corredores", "Garabito" } },
+                { "Limón", new List<string> { "Central", "Pococí", "Siquirres", "Talamanca", "Matina", "Guácimo" } }
+            };
+
+
+            var parts = address.Split(',');
+            if (parts.Length < 2) return false;
+
+            var province = parts[0].Trim();
+            var canton = parts[1].Trim();
+
+            return provinces.ContainsKey(province) && provinces[province].Contains(canton);
+        }
+
     }
 }

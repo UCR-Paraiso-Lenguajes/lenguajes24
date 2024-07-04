@@ -15,8 +15,8 @@ public abstract class PaymentMethods
     }
 
 
-    private static Sinpe paySinpe=new Sinpe();
-    private static Cash payCash=new Cash();
+    private static Sinpe paySinpe = new Sinpe();
+    private static Cash payCash = new Cash();
 
     public static PaymentMethods Find(PaymentMethods.Type type)
     {
@@ -46,3 +46,19 @@ public abstract class PaymentMethods
         }
     }
 }
+
+public class PayMethod
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Active { get; set; }
+
+    public PayMethod(int id, string name)
+    {
+        Id = id;
+        Name = name;
+    }
+    public PayMethod() { }
+
+}
+
