@@ -19,8 +19,9 @@ namespace UT
             decimal price = 1.99m;
             string description = "Fresh apple";
             int category = 1;
+            int quantity = 1;
 
-            var product = new ProductAdd(name, imageUrl, price, description, category);
+            var product = new ProductAdd(name, imageUrl, price, description, category, quantity);
 
             Assert.IsNotNull(product);
             Assert.AreEqual(name, product.name);
@@ -28,6 +29,7 @@ namespace UT
             Assert.AreEqual(price, product.price);
             Assert.AreEqual(description, product.description);
             Assert.AreEqual(category, product.category);
+            Assert.AreEqual(quantity, product.quantity);
         }
 
         [Test]
@@ -38,9 +40,10 @@ namespace UT
             decimal price = 1.99m;
             string description = "Fresh apple";
             int category = 1;
+            int quantity = 1;
 
-            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, price, description, category));
-            Assert.Throws<ArgumentException>(() => new ProductAdd("", imageUrl, price, description, category));
+            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, price, description, category, quantity));
+            Assert.Throws<ArgumentException>(() => new ProductAdd("", imageUrl, price, description, category, quantity));
         }
 
         [Test]
@@ -51,9 +54,10 @@ namespace UT
             decimal price = 1.99m;
             string description = "Fresh apple";
             int category = 1;
+            int quantity = 1;
 
-            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, price, description, category));
-            Assert.Throws<ArgumentException>(() => new ProductAdd(name, "", price, description, category));
+            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, price, description, category, quantity));
+            Assert.Throws<ArgumentException>(() => new ProductAdd(name, "", price, description, category, quantity));
         }
 
         [Test]
@@ -64,8 +68,8 @@ namespace UT
             string description = "Fresh apple";
             int category = 1;
 
-            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, 0, description, category));
-            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, -1.99m, description, category));
+            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, 0, description, category, 1));
+            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, -1.99m, description, category, 1));
         }
 
         [Test]
@@ -77,8 +81,8 @@ namespace UT
             string description = null;
             int category = 1;
 
-            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, price, description, category));
-            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, price, "", category));
+            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, price, description, category, 1));
+            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, price, "", category, 1));
         }
 
         [Test]
@@ -89,8 +93,8 @@ namespace UT
             decimal price = 1.99m;
             string description = "Fresh apple";
 
-            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, price, description, 0));
-            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, price, description, -1));
+            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, price, description, 0, 1));
+            Assert.Throws<ArgumentException>(() => new ProductAdd(name, imageUrl, price, description, -1, 1));
         }
     }
 }

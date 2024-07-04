@@ -9,6 +9,7 @@ interface CartItem {
   description: string;
   price: number;
   imageURL: string;
+  quantity: number;
 }
 
 interface Cart {
@@ -33,7 +34,7 @@ export default function CartPage() {
   useEffect(() => {
     let subTotal = 0;
     Object.values(cartItems).forEach(item => {
-      subTotal += item.price;
+      subTotal += item.price * item.quantity;
     });
     setSubtotal(subTotal);
     const total = subTotal + (subTotal * taxRate);
@@ -52,6 +53,19 @@ export default function CartPage() {
     localStorage.setItem('cart', JSON.stringify({ products: updatedCartItems }));
   };
 
+  const handleQuantityChange = (productId: string, newQuantity: number) => {
+    if (newQuantity < 1) return;
+    const updatedCartItems = {
+      ...cartItems,
+      [productId]: {
+        ...cartItems[productId],
+        quantity: newQuantity
+      }
+    };
+    setCartItems(updatedCartItems);
+    localStorage.setItem('cart', JSON.stringify({ products: updatedCartItems }));
+  };
+
   const CartItems = () => {
     return Object.values(cartItems).map((item) => (
       <div key={item.id} className="cart-item">
@@ -60,6 +74,15 @@ export default function CartPage() {
           <h3>{item.name}</h3>
           <p>{item.description}</p>
           <p>Precio: ${item.price}</p>
+          <label>
+            Cantidad:
+            <input
+              type="number"
+              value={item.quantity}
+              onChange={(e) => handleQuantityChange(item.id, parseInt(e.target.value))}
+              min="1"
+            />
+          </label>
           <button className="Button" onClick={() => handleRemoveFromCart(item.id)}>Remove</button>
         </div>
       </div>
@@ -72,7 +95,7 @@ export default function CartPage() {
     <div>
       <div className="header">
         <Link href="/">
-          <h1>Tienda</h1>
+          <h1>Store</h1>
         </Link>
       </div>
 

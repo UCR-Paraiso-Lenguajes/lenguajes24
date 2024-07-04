@@ -21,9 +21,9 @@ namespace TodoApi.Database
                     try
                     {
                         string insertQuery = @"
-                            use store;
-                            INSERT INTO sales (purchase_date, total, payment_method, purchase_number)
-                            VALUES (@purchase_date, @total, @payment_method, @purchase_number);";
+                        use store;
+                        INSERT INTO sales (purchase_date, total, payment_method, purchase_number)
+                        VALUES (@purchase_date, @total, @payment_method, @purchase_number);";
 
                         using (var insertCommand = new MySqlCommand(insertQuery, connection, transaction))
                         {
@@ -35,9 +35,9 @@ namespace TodoApi.Database
                         }
 
                         string insertQueryLines = @"
-                            use store;
-                            INSERT INTO saleLines (productId, purchaseNumber, price)
-                            VALUES (@product_Id, @purchase_Number, @product_Price);";
+                        use store;
+                        INSERT INTO saleLines (productId, purchaseNumber, price, quantity)
+                        VALUES (@product_Id, @purchase_Number, @product_Price, @product_Quantity);";
 
                         foreach (var product in sale.Products)
                         {
@@ -46,17 +46,17 @@ namespace TodoApi.Database
                                 insertCommandLines.Parameters.AddWithValue("@product_Id", product.Id);
                                 insertCommandLines.Parameters.AddWithValue("@purchase_Number", sale.PurchaseNumber);
                                 insertCommandLines.Parameters.AddWithValue("@product_Price", product.Price);
+                                insertCommandLines.Parameters.AddWithValue("@product_Quantity", product.Quantity);
                                 await insertCommandLines.ExecuteNonQueryAsync();
                             }
                         }
 
-                        // Commit the transaction if all inserts are successful
                         await transaction.CommitAsync();
                     }
                     catch (Exception)
                     {
-                        // Rollback the transaction if an error occurs
                         await transaction.RollbackAsync();
+                        throw;
                     }
                 }
             }

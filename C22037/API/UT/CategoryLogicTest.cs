@@ -26,9 +26,9 @@ namespace UT
 
             var products = new List<Product>
             {
-                new Product("Apple", "image/apple.jpg", 1.99m, "Fresh apple", 1, categories.GetType(1)),
-                new Product("Banana", "image/banana.jpg", 0.99m, "Ripe banana", 2, categories.GetType(1)),
-                new Product("Shampoo", "image/shampoo.jpg", 5.99m, "For shiny hair", 3, categories.GetType(2))
+                new Product("Apple", "image/apple.jpg", 1.99m, "Fresh apple", 1, categories.GetType(1), 1),
+                new Product("Banana", "image/banana.jpg", 0.99m, "Ripe banana", 2, categories.GetType(1), 1),
+                new Product("Shampoo", "image/shampoo.jpg", 5.99m, "For shiny hair", 3, categories.GetType(2), 1)
             };
 
             categoryLogic = new CategoryLogic(initialCategories, products);

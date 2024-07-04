@@ -25,8 +25,8 @@ namespace UT
 
             var products = new List<Product>
             {
-                new Product("Producto 1", "https://example.com/img1.jpg", 10, "Descripción 1", 1, category.GetType(1)),
-                new Product("Producto 2", "https://example.com/img2.jpg", 20, "Descripción 2", 2, category.GetType(2))
+                new Product("Producto 1", "https://example.com/img1.jpg", 10, "Descripción 1", 1, category.GetType(1), 1),
+                new Product("Producto 2", "https://example.com/img2.jpg", 20, "Descripción 2", 2, category.GetType(2), 1)
             };
 
             store = new Store(products, 13, storeDB);
@@ -35,7 +35,7 @@ namespace UT
         [Test]
         public async Task AddProductToList()
         {
-            var productAdd = new ProductAdd("Nuevo Producto", "https://example.com/img3.jpg", 30, "Nueva Descripción", 1);
+            var productAdd = new ProductAdd("Nuevo Producto", "https://example.com/img3.jpg", 30, "Nueva Descripción", 1, 1);
 
             await store.AddProduct(productAdd, 3);
 
@@ -49,7 +49,7 @@ namespace UT
         [Test]
         public async Task InsertProductAsyncAndCallDelegate()
         {
-            var productAdd = new ProductAdd("Test Product", "https://example.com/test.jpg", 99.99M, "Test Description", 1);
+            var productAdd = new ProductAdd("Test Product", "https://example.com/test.jpg", 99.99M, "Test Description", 1, 1);
 
             await storeDB.InsertProductAsync(productAdd);
 

@@ -1,22 +1,17 @@
 "use client"; // Para utilizar el cliente en lugar del servidor
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 import "../../public/styles.css";
 import Link from 'next/link';
-
-const countries = [
-    "Costa Rica",
-    "United States",
-    "Mexico",
-    "Canada",
-];
 
 export default function Address() {
     const [address, setAddress] = useState('');
     const [country, setCountry] = useState('');
+    const [countries, setCountries] = useState([]);
     const [isValid, setIsValid] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
 
-    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAddressChange = (e) => {
         const newAddress = e.target.value;
 
         if (newAddress === undefined) {
@@ -27,13 +22,13 @@ export default function Address() {
         validateAddress(newAddress, country);
     };
 
-    const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleCountryChange = (e) => {
         const newCountry = e.target.value;
         setCountry(newCountry);
         validateAddress(address, newCountry);
     };
 
-    const validateAddress = (address: string, country: string) => {
+    const validateAddress = (address, country) => {
         const regex = /^[a-zA-Z0-9\s,.-]+$/;
         const isValidAddress = regex.test(address) && address.length >= 10 && country !== '';
 
@@ -62,6 +57,17 @@ export default function Address() {
         if (storedCountry) {
             setCountry(storedCountry);
         }
+    }, []);
+
+    useEffect(() => {
+        axios.get('https://restcountries.com/v3.1/all')
+            .then(response => {
+                const countryNames = response.data.map(country => country.name.common).sort();
+                setCountries(countryNames);
+            })
+            .catch(error => {
+                throw new Error('Error fetching countries:', error);
+            });
     }, []);
 
     const isAddressEmpty = address.trim() === '';
