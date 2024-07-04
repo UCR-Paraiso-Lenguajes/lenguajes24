@@ -1,6 +1,7 @@
 ﻿using KEStoreApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.RegularExpressions;
+using KEStoreApi.Bussiness;
 
 namespace KEStoreApi.Controllers
 {
@@ -9,9 +10,10 @@ namespace KEStoreApi.Controllers
     public class AddressController : ControllerBase
     {
         [HttpPost("validate-address")]
+        [AllowAnonymous]
         public IActionResult ValidateAddress([FromBody] Address address)
         {
-            if (Store.Instance.Result.IsValidAddress(address))
+            if (StoreLogic.IsValidAddress(address))
             {
                 return Ok();
             }

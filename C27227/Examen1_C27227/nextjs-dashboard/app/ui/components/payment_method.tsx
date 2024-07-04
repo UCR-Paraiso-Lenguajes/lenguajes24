@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, useEffect, ChangeEvent } from "react";
 import "../Styles/paymentMethods.css";
 import { decodeToken, checkTokenDate } from "../../hooks/jwtHooks";
@@ -7,6 +6,7 @@ import { useRouter } from "next/navigation";
 interface PaymentMethodsProps {
   address: {
     street: string;
+    specificAddress: string;
     city: string;
     state: string;
     zipCode: string;
@@ -132,7 +132,14 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({ address }) => {
     const dataToSend = {
       cart: {
         product: productQuantities,
-        address: `${address.street}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}`,
+        address: {
+          street: address.street,
+          specificAddress: address.specificAddress,
+          city: address.city,
+          state: address.state,
+          zipCode: address.zipCode,
+          country: address.country,
+        },
         paymentMethod: paymentMethodValue,  // Send the correct value
         paymentCode: paymentMethodValue === 1 ? paymentCode : undefined,
       },

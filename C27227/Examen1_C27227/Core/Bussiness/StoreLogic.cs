@@ -5,6 +5,7 @@ using KEStoreApi.Models;
 using KEStoreApi.Data;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace KEStoreApi.Bussiness
 {
@@ -25,9 +26,9 @@ namespace KEStoreApi.Bussiness
             { 
                 throw new ArgumentException($"El {nameof(cart.Product.Count)} debe contener al menos un producto."); 
             }
-            if (string.IsNullOrWhiteSpace(cart.address)) 
+            if (!IsValidAddress(cart.Address)) 
             { 
-                throw new ArgumentException($"Se debe proporcionar una {nameof(cart.address)}"); 
+                throw new ArgumentException($"Se debe proporcionar una dirección válida"); 
             }
 
             var storeInstance = await Store.Instance;
@@ -66,16 +67,26 @@ namespace KEStoreApi.Bussiness
 
             PaymentMethods paymentMethod = PaymentMethods.SetPaymentType((PaymentMethods.Type)cart.PaymentMethod);
 
-            // Verificar si el método de pago está habilitado
             if (!IsPaymentMethodEnabled(paymentMethod, storeInstance))
             {
                 throw new InvalidOperationException($"El método de pago {paymentMethod.PaymentType} está deshabilitado.");
             }
 
             var purchaseNumberSale = GeneratePurchaseNumber();
-            var sale = new Sale(purchaseNumberSale, matchingProducts, cart.address, total, paymentMethod.PaymentType);
+            var sale = new Sale(purchaseNumberSale, matchingProducts, cart.Address, total, paymentMethod.PaymentType);
             await saleDataBase.SaveAsync(sale);
             return sale;
+        }
+
+        public static bool IsValidAddress(Address address)
+        {
+            var zipCodePattern = new Regex(@"^[0-9]{5}(?:-[0-9]{4})?$");
+
+            return !string.IsNullOrEmpty(address.Street) && address.Street.Trim().Length >= 5 &&
+                   !string.IsNullOrEmpty(address.City) && address.City.Trim().Length >= 2 &&
+                   !string.IsNullOrEmpty(address.State) && address.State.Trim().Length >= 2 &&
+                   !string.IsNullOrEmpty(address.ZipCode) && zipCodePattern.IsMatch(address.ZipCode) &&
+                   !string.IsNullOrEmpty(address.Country) && address.Country.Trim().Length >= 2;
         }
 
         private bool IsPaymentMethodEnabled(PaymentMethods paymentMethod, Store storeInstance)

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Core;
 using KEStoreApi.Data;
 using KEStoreApi.Models;
+using KEStoreApi.Bussiness;
 
 namespace KEStoreApi
 {
@@ -15,7 +16,8 @@ namespace KEStoreApi
         public IEnumerable<Product> ProductsList { get; private set; }
         public int TaxPercentage { get; private set; }
         public IEnumerable<Categoria> CategoriasLista { get; private set; }
-        public IEnumerable<PaymentMethods> PaymentMethodsList { get; private set; } // Lista de métodos de pago
+        public IEnumerable<PaymentMethods> PaymentMethodsList { get; private set; } 
+        private StoreLogic storeLogic;
 
         public delegate Task ProductActionDelegate(Product product);
 
@@ -38,12 +40,19 @@ namespace KEStoreApi
             this.CategoriasLista = categorias;
             this.PaymentMethodsList = paymentMethods;
             this._productsInstance = Products.InitializeFromMemory(this.ProductsList);
+            this.storeLogic = new StoreLogic();
         }
 
         public static async Task<Store> InitializeInstanceAsync()
         {
             var categorias = Categorias.Instance.GetCategorias();
             var products = await DatabaseStore.GetProductsFromDBaAsync();
+
+            if (products == null || !products.Any())
+            {
+                throw new InvalidOperationException("No se encontraron productos en la base de datos.");
+            }
+
             var paymentMethods = new List<PaymentMethods>
             {
                 new PaymentMethods.Cash(),
@@ -125,33 +134,21 @@ namespace KEStoreApi
             _productsInstance = Products.InitializeFromMemory(ProductsList);
         }
 
-        public async Task ValidateAndAddOrderAsync(Order order)
-        {
-            if (!IsValidAddress(order.Address))
-            {
-                throw new ArgumentException("La dirección de entrega no es válida.", nameof(order.Address));
-            }
+public async Task ValidateAndAddOrderAsync(Order order)
+{
+    if (!StoreLogic.IsValidAddress(order.Address))
+    {
+        throw new ArgumentException("La dirección de entrega no es válida.", nameof(order.Address));
+    }
 
-            // Aquí puedes agregar validaciones adicionales para los métodos de pago.
-            var paymentMethod = PaymentMethodsList.FirstOrDefault(m => m.PaymentType == order.PaymentMethod);
-            if (paymentMethod == null || !paymentMethod.IsEnabled)
-            {
-                throw new InvalidOperationException($"El método de pago {order.PaymentMethod} está deshabilitado.");
-            }
+    var paymentMethod = PaymentMethodsList.FirstOrDefault(m => m.PaymentType == order.PaymentMethod);
+    if (paymentMethod == null || !paymentMethod.IsEnabled)
+    {
+        throw new InvalidOperationException($"El método de pago {order.PaymentMethod} está deshabilitado.");
+    }
 
-            // Aquí agregar la lógica para procesar el pedido
-        }
+}
 
-        public bool IsValidAddress(Address address)
-        {
-            var zipCodePattern = new Regex(@"^[0-9]{5}(?:-[0-9]{4})?$"); // Simple US ZIP code validation
-
-            return !string.IsNullOrEmpty(address.Street) && address.Street.Trim().Length >= 5 &&
-                   !string.IsNullOrEmpty(address.City) && address.City.Trim().Length >= 2 &&
-                   !string.IsNullOrEmpty(address.State) && address.State.Trim().Length >= 2 &&
-                   !string.IsNullOrEmpty(address.ZipCode) && zipCodePattern.IsMatch(address.ZipCode) &&
-                   !string.IsNullOrEmpty(address.Country) && address.Country.Trim().Length >= 2;
-        }
 
         private static readonly Lazy<Task<Store>> InstanceTask = new Lazy<Task<Store>>(InitializeInstanceAsync);
         public static Task<Store> Instance => InstanceTask.Value;
