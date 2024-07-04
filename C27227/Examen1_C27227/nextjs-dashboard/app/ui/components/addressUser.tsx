@@ -40,7 +40,8 @@ const AddressForm: React.FC = () => {
 
   const fetchCountries = async () => {
     try {
-      const response = await axios.get('http://api.geonames.org/countryInfoJSON', {
+
+      const response = await axios.get(`http://api.geonames.org/countryInfoJSON`, {
         params: {
           username: geonamesUsername
         }
@@ -60,7 +61,8 @@ const AddressForm: React.FC = () => {
 
   const fetchStates = async (countryCode: string) => {
     try {
-      const response = await axios.get('http://api.geonames.org/childrenJSON', {
+
+      const response = await axios.get(`http://api.geonames.org/childrenJSON`, {
         params: {
           geonameId: countryCode,
           username: geonamesUsername,
