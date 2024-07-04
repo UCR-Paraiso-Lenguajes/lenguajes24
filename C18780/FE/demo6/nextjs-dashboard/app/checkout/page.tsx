@@ -140,20 +140,19 @@ const Payment = ({ onSelectPayment }: { onSelectPayment: any }) => {
             <div>
                 <h5 className="font-size-14 mb-3">Payment method :</h5>
                 <div className="row">
-                    {currentPaymentMethods.map((paymentMethod) => (
+                    {currentPaymentMethods.map((paymentMethod, index) => (
                         paymentMethod.isEnabled ?
-                            <>
-                                <div className="col-lg-3 col-sm-6">
-                                    <div data-bs-toggle="collapse">
-                                        <label className="card-radio-label">
-                                            <input type="radio" name="pay-method" id="pay-methodoption1" className="card-radio-input" />
-                                            <span className="card-radio py-3 text-center text-truncate" onClick={() => handlePaymentSelection(paymentMethod.paymentType)}>
-                                                {paymentMethod.name}
-                                            </span>
-                                        </label>
-                                    </div>
+                            <div className="col-lg-3 col-sm-6" key={index}>
+                                <div data-bs-toggle="collapse">
+                                    <label className="card-radio-label">
+                                        <input type="radio" name="pay-method" id={`pay-methodoption${index}`} className="card-radio-input" />
+                                        <span className="card-radio py-3 text-center text-truncate" onClick={() => handlePaymentSelection(paymentMethod.paymentType)}>
+                                            {paymentMethod.name}
+                                        </span>
+                                    </label>
                                 </div>
-                            </> : null
+                            </div>
+                            : null
                     ))}
                 </div>
             </div>
