@@ -45,8 +45,7 @@ const { default: jwt_decode } = require("jwt-decode");
     //POST Sale
     export async function sendCartDataToAPI(data:any): Promise<string | null> {
                 
-        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
-
+        let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';        
         let directionAPI = `${urlByReactEnviroment}/api/Cart`;
         //Especificacion POST
         let postConfig = {
