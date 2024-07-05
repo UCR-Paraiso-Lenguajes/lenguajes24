@@ -15,11 +15,9 @@ namespace storeApi.Tests
         [SetUp]
         public async Task Setup()
         {
-            // Asegúrate de que esta cadena de conexión sea válida para tu entorno de pruebas
-            ConnectionDB.Init("Server=localhost;Database=store;Uid=root;Pwd=123456;");
+            ConnectionDB.Init("Server=localhost;Database=mysql;Uid=root;Pwd=123456;");
             storeDB = new StoreDB();
 
-            // Crear la base de datos y las tablas antes de cada prueba
             await StoreDB.CreateMysql();
         }
 
