@@ -29,7 +29,7 @@ namespace UnitTests
         [Test]
         public async Task GetReportSalesAsync_ReturnsValidReportSales()
         {
-            DateTime date = new DateTime(2024, 4, 7);
+            DateTime date = new DateTime(2024, 6, 16);
 
 
             ReportSales result = await _saleLogic.GetReportSalesAsync(date);
