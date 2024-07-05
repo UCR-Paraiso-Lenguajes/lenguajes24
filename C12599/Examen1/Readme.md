@@ -210,84 +210,11 @@ namespace storeapi.Models
         }
     }
 }
+```
 
-Authentication Controller:
-A controller is created to handle login requests and generate JWT tokens.
-
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using storeapi.Models;
-
-namespace storeapi.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
-    {
-        private readonly IWebHostEnvironment hostEnvironment;
-
-        public AuthController(IWebHostEnvironment hostEnvironment)
-        {
-            this.hostEnvironment = hostEnvironment;
-            UserAccountSeeder.SeedUsers();
-        }
-
-        private bool IsDevelopmentEnvironment => hostEnvironment.EnvironmentName == "Development";
-
-        [HttpPost("login")]
-        [AllowAnonymous]
-        public IActionResult Login([FromBody] LoginModel user)
-        {
-            if (user == null || string.IsNullOrEmpty(user.userName) || string.IsNullOrEmpty(user.userPassword))
-                return BadRequest("Invalid client request");
-
-            if (IsDevelopmentEnvironment)
-            {
-                var existingUser = UserAccount.AllUsersData.FirstOrDefault(u => 
-                    u.UserName == user.userName && u.UserPassword == user.userPassword);
-
-                if (existingUser != null)
-                {
-                    var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, existingUser.UserName)
-                    };
-                    claims.AddRange(existingUser.UserRoles);
-
-                    var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
-                    var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-
-                    var tokenOptions = new JwtSecurityToken(
-                        issuer: "http://localhost:7043",
-                        audience: "http://localhost:7043",
-                        claims: claims,
-                        expires: DateTime.Now.AddDays(30),
-                        signingCredentials: signinCredentials
-                    );
-
-                    var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-
-                    return Ok(new AuthenticatedResponse { Token = tokenString });
-                }
-            }
-
-            return Unauthorized();
-        }
-    }
-
-    public class AuthenticatedResponse
-    {
-        public string Token { get; set; }
-    }
-}
+## Authentication Controller:
+## A controller is created to handle login requests and generate JWT tokens.
+```
 
 using System;
 using System.Collections.Generic;
@@ -364,8 +291,83 @@ namespace storeapi.Controllers
     }
 }
 
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using storeapi.Models;
 
-How Product Caching Was Implemented
+namespace storeapi.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController : ControllerBase
+    {
+        private readonly IWebHostEnvironment hostEnvironment;
+
+        public AuthController(IWebHostEnvironment hostEnvironment)
+        {
+            this.hostEnvironment = hostEnvironment;
+            UserAccountSeeder.SeedUsers();
+        }
+
+        private bool IsDevelopmentEnvironment => hostEnvironment.EnvironmentName == "Development";
+
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public IActionResult Login([FromBody] LoginModel user)
+        {
+            if (user == null || string.IsNullOrEmpty(user.userName) || string.IsNullOrEmpty(user.userPassword))
+                return BadRequest("Invalid client request");
+
+            if (IsDevelopmentEnvironment)
+            {
+                var existingUser = UserAccount.AllUsersData.FirstOrDefault(u => 
+                    u.UserName == user.userName && u.UserPassword == user.userPassword);
+
+                if (existingUser != null)
+                {
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, existingUser.UserName)
+                    };
+                    claims.AddRange(existingUser.UserRoles);
+
+                    var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"));
+                    var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+
+                    var tokenOptions = new JwtSecurityToken(
+                        issuer: "http://localhost:7043",
+                        audience: "http://localhost:7043",
+                        claims: claims,
+                        expires: DateTime.Now.AddDays(30),
+                        signingCredentials: signinCredentials
+                    );
+
+                    var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+
+                    return Ok(new AuthenticatedResponse { Token = tokenString });
+                }
+            }
+
+            return Unauthorized();
+        }
+    }
+
+    public class AuthenticatedResponse
+    {
+        public string Token { get; set; }
+    }
+}
+
+```
+## How Product Caching Was Implemented
 
 Product caching was first implemented by creating an array and saving it in the database. Then, these products are retrieved from the database and stored in memory cache to improve performance. Below is a detailed explanation of how this process was implemented.
 
@@ -373,7 +375,7 @@ Creating and Saving Products in the Database
 
 First, random products are created and inserted into the MySQL database. A delegate is used here to handle the insertion of products into the database.
 
-```csharp
+```
 using System;
 using System.Collections.Generic;
 using MySqlConnector;
@@ -554,9 +556,13 @@ namespace storeapi.Database
         }
     }
 }
+```
 
-Retrieving Products and Storing in Memory Cache
+## Retrieving Products and Storing in Memory Cache
+
 After inserting the products into the database, they are retrieved and stored in memory cache to improve performance.
+
+```
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
@@ -632,9 +638,12 @@ namespace storeapi.Business
         }
     }
 }
+```
 
-Explanation of the Delegate
+## Explanation of the Delegate
 A delegate is a type that represents references to methods with a specific parameter list and return type. In this case, a delegate is used to handle the insertion of products into the database, allowing different implementations of the insertion method to be passed to the business logic.
+
+```
 
 public delegate void InsertProductDelegate(Product product, MySqlConnection connection, MySqlTransaction transaction);
 
@@ -698,9 +707,13 @@ public static void InsertProduct(Product product, MySqlConnection connection, My
     }
 }
 
+```
+
 This implementation of the delegate method performs the actual insertion of a Product into the database using a MySqlCommand.
 
 By using a delegate, the insertion logic can be encapsulated and passed as a parameter, making the code more modular and flexible.
+
+```
 
 
 
