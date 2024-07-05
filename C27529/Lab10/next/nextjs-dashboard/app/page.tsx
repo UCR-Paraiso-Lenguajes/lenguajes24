@@ -16,7 +16,6 @@ export default function Page() {
       direccionEntrega: '',
       metodoDePago: 0
     },
-    necesitaVerificacion: false,
     productos: [],
     idCompra: 0
   };

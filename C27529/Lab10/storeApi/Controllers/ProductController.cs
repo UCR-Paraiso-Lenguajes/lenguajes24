@@ -29,7 +29,7 @@ namespace storeApi.Controllers
                 product.Price <= 0 ||
                 product.Category.Id <= 0)
             {
-                return BadRequest("Uno o más parámetros son nulos o tienen valores no válidos.");
+                return BadRequest("Uno o más parámetros son nulos o tienen valores no válidos.FF");
             }
 
             try

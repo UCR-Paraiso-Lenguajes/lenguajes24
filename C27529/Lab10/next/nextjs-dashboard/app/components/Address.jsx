@@ -14,10 +14,12 @@ export const Address = ({ goToPage }) => {
     return JSON.parse(storedStoreData) || { carrito: { direccionEntrega: '' } };
   });
 
-  const hasStoredData = storeData && storeData.carrito.direccionEntrega;
-
   useEffect(() => {
-    if (hasStoredData) {
+    if (storeData.carrito.direccionEntrega) {
+      const [province, canton, ...rest] = storeData.carrito.direccionEntrega.split(', ');
+      setSelectedProvince(province || '');
+      setSelectedCanton(canton || '');
+      setAdditionalAddress(rest.join(', ') || '');
       setDeliveryAddress(storeData.carrito.direccionEntrega);
     }
   }, [storeData]);
@@ -60,9 +62,9 @@ export const Address = ({ goToPage }) => {
   };
 
   const validateAddress = (address) => {
-    // Simplified validation: address should have at least 10 characters
-    return address.length >= 10;
+    return address.length > 5;
   };
+
 
   const handleProvinceChange = (e) => {
     setSelectedProvince(e.target.value);

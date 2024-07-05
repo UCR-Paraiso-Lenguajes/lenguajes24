@@ -11,6 +11,7 @@ namespace storeApi
 {
     public sealed class Store
     {
+        public IEnumerable<PaymentMethod> PaymentMethods { get; private set; }
         public IEnumerable<Product> Products { get; private set; }
         public Dictionary<int, List<Product>> CategoriesProducts { get; private set; }
         public IEnumerable<Category.ProductCategory> CategoriesNames { get; private set; }
@@ -22,6 +23,8 @@ namespace storeApi
             this.RelateProductsToCategories();
             var category = new Category();
             this.CategoriesNames = category.GetCategoryNames();
+            this.PaymentMethods = new List<PaymentMethod> { new Cash(), new Sinpe() };
+
         }
 
 
@@ -32,10 +35,7 @@ namespace storeApi
             this.RelateProductsToCategories();
             var category = new Category();
             this.CategoriesNames = category.GetCategoryNames();
-            if (!skipStaticInitialization)
-            {
-                // Static initialization logic here, if needed.
-            }
+            if (!skipStaticInitialization) { }
         }
 
 
@@ -58,7 +58,11 @@ namespace storeApi
         }
 
 
-
+        
+        public void DisablePaymentMethod(PaymentMethod.Type paymentType)
+        {
+            PaymentMethods = PaymentMethods.Where(pm => pm.PaymentType != paymentType).ToList();
+        }
 
         private static async Task<IEnumerable<Product>> productsFromDB()
         {

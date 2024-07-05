@@ -85,6 +85,10 @@ body {
     display: block; /* Mostrar solo cuando la ventana emergente está activa */
 }
 
+.message-content img, .message-content video {
+    max-width: 100%;
+    height: auto;
+}
 
 
 .icon-cart {

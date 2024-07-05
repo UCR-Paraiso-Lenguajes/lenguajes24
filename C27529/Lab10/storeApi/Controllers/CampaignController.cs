@@ -14,11 +14,11 @@ public class CampaignController : Hub
 
     private async Task InitializeMessages()
     {
-        var initialMessages = await StoreDB.GetLastThreeMessagesAsync(); 
+        var initialMessages = await StoreDB.GetLastThreeMessagesAsync();
         messages = initialMessages;
     }
 
-    public async Task SendCampaignMessage(string messageId, string messageContent)
+    public async Task SendCampaignMessage(int messageId, string messageContent)
     {
         var message = new Dictionary<string, object>
         {
@@ -30,9 +30,9 @@ public class CampaignController : Hub
         await UpdateAllClients();
     }
 
-    public async Task DeleteMessage(string messageId)
+    public async Task DeleteMessage(int messageId)
     {
-        messages.RemoveAll(m => (string)m["id"] == messageId);
+        messages.RemoveAll(m => (int)m["id"] == messageId);
         await UpdateAllClients();
     }
 

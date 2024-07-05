@@ -20,9 +20,9 @@ const Campannas = () => {
             .withAutomaticReconnect()
             .build();
 
-       newConnection.on("UpdateMessages", (receivedMessages) => {
-        setMessages(receivedMessages);
-       });
+        newConnection.on("UpdateMessages", (receivedMessages) => {
+            setMessages(receivedMessages);
+        });
 
         newConnection.start()
             .then(() => console.log('Connected to the campaign hub'))
@@ -34,6 +34,24 @@ const Campannas = () => {
             newConnection.off("UpdateMessages");
             newConnection.stop();
         };
+    }, [URL]);
+
+    const loadMessages = async () => {
+        try {
+            const response = await fetch(`${URL}/api/messages`);
+            if (response.ok) {
+                const data = await response.json();
+                setMessages(data);
+            } else {
+                throw new Error('Failed to load messages');
+            }
+        } catch (error) {
+            console.error('Error loading messages:', error);
+        }
+    };
+
+    useEffect(() => {
+        loadMessages();
     }, [URL]);
 
     const handleInputChange = (e) => {
@@ -54,14 +72,15 @@ const Campannas = () => {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(newMessage.content)
+                    body: JSON.stringify({ content: newMessage.content })
                 });
 
-                if (response.status === 200) {
+                if (response.ok) {
+                    const addedMessage = await response.json();
                     if (connection) {
-                        await connection.send('SendCampaignMessage', newMessage.id, newMessage.content);
-                        setNewMessage({ content: '' }); 
+                        await connection.invoke('SendCampaignMessage', addedMessage.id, addedMessage.content); // Invocar la recarga de mensajes desde el Hub
                     }
+                    setNewMessage({ content: '' });
                 } else {
                     throw new Error('Failed to add message');
                 }
@@ -76,7 +95,7 @@ const Campannas = () => {
     const handleDeleteMessage = async (id) => {
         if (connection) {
             try {
-                await connection.invoke('DeleteMessage', id);
+                await connection.invoke('DeleteMessage', id); // Invocar la eliminación de mensajes en el Hub
             } catch (error) {
                 console.error('Error deleting message:', error);
             }

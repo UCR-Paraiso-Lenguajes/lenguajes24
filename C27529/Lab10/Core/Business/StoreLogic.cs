@@ -33,7 +33,7 @@ namespace storeApi.Business
         {
             if (cart.ProductIds.Count == 0) throw new ArgumentException("Cart must contain at least one product.");
             if (string.IsNullOrWhiteSpace(cart.Address)) throw new ArgumentException("Address must be provided.");
-            if (!IsValidAddress(cart.Address)) throw new ArgumentException("Invalid delivery address.");
+            if (!IsValidAddress(cart.Address)) throw new ArgumentException("Invalid delivery address.H");
 
             var products = Store.Instance.Products;
 
@@ -56,9 +56,12 @@ namespace storeApi.Business
 
         private bool IsValidAddress(string address)
         {
-            var addressPattern = new Regex(@"^[A-Za-z0-9\s,.-]{5,}$");
-            return addressPattern.IsMatch(address);
+            return address.Length > 5;
         }
+
+
+
+
 
         public static string GenerateNextPurchaseNumber()
         {
