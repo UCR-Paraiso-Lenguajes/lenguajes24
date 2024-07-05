@@ -36,11 +36,8 @@ export const Carousel: React.FC<CarouselProps> = ({products,myCartInStorage,setM
         if (myCartInStorage) {
     
           let indexInCart = verifyProductInCart(productInCarrusel.id,myCartInStorage.allProduct);            
-          addProductInCart(indexInCart,productInCarrusel,myCartInStorage,setMyCartInStorage,setCartShopStorage);      
-          
-        } else {
-          console.log("El carro no existe");
-        }
+          addProductInCart(indexInCart,productInCarrusel,myCartInStorage,setMyCartInStorage,setCartShopStorage);                
+        } 
       };  
 
     return (        

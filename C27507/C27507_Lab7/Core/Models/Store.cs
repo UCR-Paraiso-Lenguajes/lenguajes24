@@ -11,6 +11,7 @@ namespace MyStoreAPI.Models
     public sealed class Store{
         public IEnumerable<Product> Products { get; private set; } 
         public IEnumerable<Category> AllProductCategories {get; private set;}
+        public IEnumerable<PaymentMethod> AllPaymentMethods {get; private set;}
         public int TaxPercentage { get; private set; }
         public bool StoreConnectedWithDB {get; private set;}
         
@@ -27,11 +28,13 @@ namespace MyStoreAPI.Models
                 DB_Product.InsertProductsInDB(temporalList);
             }
             if(DB_PaymentMethod.PaymentMethodsInTableExist() == false ) DB_PaymentMethod.InsertPaymentMethod();
+
             //sobreescribimos la lista para que los productos tengan el ID correcto dado por la tabla
             this.Products = DB_Product.SelectProducts();            
-            this.StoreConnectedWithDB = true;
-            //Ahora la tienda tendra productos para el StoreController (GET)             
-            
+            this.AllPaymentMethods = DB_PaymentMethod.GetAllPaymentMethods();
+            var paymentMethods = DB_PaymentMethod.GetAllPaymentMethods();            
+            this.StoreConnectedWithDB = true;            
+            //Ahora la tienda tendra productos para el StoreController (GET)
         }
         
         public static readonly Store Instance;
@@ -48,6 +51,15 @@ namespace MyStoreAPI.Models
         productList.Add(newProduct);
         Products = productList;
     }
+
+        public void updatePaymentMethodInStore(int paymentMethodId, int newStatus){
+            var paymentMethodsList = AllPaymentMethods.ToList();
+            var paymentMethod = paymentMethodsList.FirstOrDefault(pm => (int)pm.payment == paymentMethodId);
+            if (paymentMethod != null){
+                paymentMethod.verify = newStatus == 1;
+                AllPaymentMethods = paymentMethodsList;
+            }
+        }
 
 
                 

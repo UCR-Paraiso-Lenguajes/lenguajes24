@@ -16,13 +16,14 @@ export default function AdminDashboard({
                 {/* Menú lateral - Columna 1 */}
                 <header id="menu_v" className="menu_v col-sm-2 bg-dark text-light">
                     <div className="menu_v_logo">
-                        <span>Nombre de la Tienda</span>                        
+                        <span>Aurora</span>
                     </div>
                     <nav className='menu_v_nav'>
                         <ul>
                             <Link href="/admin/init/sales_report"><button>Reportes de ventas</button></Link>
                             <Link href="/admin/init/products_info"><button>Productos</button></Link>
                             <Link href="/admin/init/notification"><button>Notificaciones</button></Link>
+                            <Link href="/admin/init/payment-methods"><button>PaymentMethod</button></Link>
                         </ul>
                     </nav>
                 </header>
