@@ -366,6 +366,90 @@ namespace storeapi.Controllers
 }
 
 ```
+## Security Front-end
+
+State Management: Uses useState to manage form data (username, password, errorMessage).
+Input Handling: handleInputChange updates state when input fields change.
+Form Submission:
+Validates inputs to ensure they are not empty.
+Sends a POST request to the authentication endpoint.
+Decodes the JWT token from the response to check for the 'Admin' role.
+If the user has the 'Admin' role, stores the token and redirects to the admin page.
+If not, displays an error message.
+UI: Renders a form with fields for username and password, and displays error messages if any.
+
+
+```csharp
+
+import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.css';
+import jwtDecode from 'jwt-decode';
+
+const Admin = () => {
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+    errorMessage: ''
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { username, password } = formData;
+
+    if (!username.trim() || !password.trim()) {
+      setFormData({ ...formData, errorMessage: 'Please fill in all fields.' });
+      return;
+    }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/Auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userName: username, userPassword: password })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        const decodedToken = jwtDecode(data.token);
+        if (decodedToken.roles.includes('Admin')) {
+          sessionStorage.setItem('authToken', data.token);
+          window.location.href = '/admin/init';
+        } else {
+          setFormData({ ...formData, errorMessage: 'User does not have Admin role.' });
+        }
+      } else {
+        setFormData({ ...formData, errorMessage: data.message || 'Invalid credentials.' });
+      }
+   
+  };
+
+  return (
+    <div>
+      <h1>Login</h1>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="username">Username:</label>
+          <input type="text" id="username" name="username" value={formData.username} onChange={handleInputChange} />
+        </div>
+        <div>
+          <label htmlFor="password">Password:</label>
+          <input type="password" id="password" name="password" value={formData.password} onChange={handleInputChange} />
+        </div>
+        <button type="submit">Login</button>
+      </form>
+      {formData.errorMessage && <p style={{ color: 'red' }}>{formData.errorMessage}</p>}
+    </div>
+  );
+};
+
+export default Admin;
+
+
+```
 # How Product Caching Was Implemented
 
 Product caching was first implemented by creating an array and saving it in the database. Then, these products are retrieved from the database and stored in memory cache to improve performance. Below is a detailed explanation of how this process was implemented.
