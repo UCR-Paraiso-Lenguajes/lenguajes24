@@ -1,3 +1,132 @@
+## Autenticación y Autorización
+
+- **JWT (JSON Web Token)**: Se utiliza para la autenticación. El `AuthController` maneja la generación de tokens JWT después de validar las credenciales del usuario.
+
+## Roles y Permisos
+
+- Atributos de autorización como `[Authorize(Roles = "Admin")]` y `[Authorize(Roles = "Operator")]` se usan en los controladores para restringir el acceso a acciones específicas basadas en roles.
+
+## Seguridad en las API
+
+- Las API están configuradas con políticas CORS (`AddCors`) para permitir solicitudes desde el frontend en `http://localhost:3000`. Esto controla qué dominios externos pueden acceder a las API.
+
+## Manejo de Excepciones
+
+- Se verifica la disponibilidad de servicios necesarios para evitar errores de nulidad (`ArgumentNullException`) y garantizar la integridad del sistema.
+
+## Protección de Datos Sensibles
+
+- Se utiliza `SymmetricSecurityKey` para configurar la clave secreta del JWT y `SigningCredentials` para firmar el token, asegurando que datos sensibles como contraseñas no se transmitan en texto claro.
+
+## Seguridad en la Capa de Aplicación
+
+- Todas las operaciones críticas (creación y eliminación de recursos sensibles como anuncios, categorías, productos, etc.) están protegidas con roles específicos (`Admin`, `Operator`) para limitar el acceso según el principio de privilegio mínimo.
+
+Este enfoque garantiza que el proyecto cumpla con las prácticas de seguridad recomendadas, proporcionando autenticación robusta, autorización basada en roles y protección adecuada de datos sensibles a través de JWT.
+
+### Generación de Reportes de Venta en StoreApi
+
+En el controlador `ReportsController` de la aplicación `StoreApi`, se implementa la funcionalidad para generar reportes de venta. A continuación, se detalla el proceso paso a paso:
+
+1. **EndPoint y Autorización**: El método `GetReportsByDateAsync` está decorado con `[HttpGet("Date"), Authorize(Roles = "Admin")]`, lo que restringe el acceso al endpoint solo a usuarios autenticados con el rol de "Admin".
+
+2. **Ejecución de Consultas**: Dentro del método, se envían dos consultas de manera asincrónica utilizando MediatR:
+   ```csharp
+   var dailySalesTask = mediator.Send(new GetDailySalesQuery() { DateTime = dateTime });
+   var weeklySalesTask = mediator.Send(new GetWeeklySalesByDateQuery() { DateTime = dateTime });
+
+3. Espera de Tareas Asíncronas: Se utiliza Task.WhenAll para esperar ambas tareas de consultas de ventas diarias y semanales de manera concurrente.
+`await Task.WhenAll(dailySalesTask, weeklySalesTask);`
+
+4. Obtención de Resultados: Después de completar las tareas, se obtienen las ventas diarias y semanales desde las tareas completadas.
+`var dailySales = await dailySalesTask;
+var weeklySales = await weeklySalesTask;
+`
+
+5. Creación de Objeto Reports: Finalmente, se crea un objeto Reports que encapsula tanto las ventas diarias como las semanales obtenidas.
+`return new Reports(dailySales, weeklySales);`
+
+Este proceso asegura que se obtengan y presenten los datos de ventas diarias y semanales de manera eficiente y estructurada, adecuada para su uso en la generación de reportes dentro de la aplicación StoreApi.
+
+## Caché de Productos
+
+### Clase ProductsCache
+
+- **Implementación Singleton**: La clase `ProductsCache` implementa el patrón Singleton (`GetInstance()` devuelve una instancia única) para manejar el caché de productos.
+
+### Inicialización
+
+- **Constructor del StoreController**: En el constructor del `StoreController`, se inicializa la instancia de `ProductsCache` utilizando `ProductsCache.GetInstance()`.
+
+### Métodos del Caché
+
+- **exists()**: Verifica si el caché de productos existe.
+- **setProduct(productsList)**: Guarda una lista de productos en el caché.
+- **getProduct(categoryUuid)**: Devuelve una lista de productos para una categoría específica desde el caché.
+- **getAll()**: Devuelve todos los productos almacenados en el caché.
+
+### Uso en el Controlador
+
+- **Método GetStoreAsync**: En este método, se utiliza `productsCache` para acceder y filtrar productos en memoria. Esto evita consultar repetidamente la base de datos si el caché ya está poblado, mejorando así la velocidad de respuesta.
+
+En resumen, el caché de productos se implementa utilizando una clase Singleton (`ProductsCache`) que gestiona el almacenamiento y acceso a los productos en memoria una vez que se recuperan de la base de datos.
+
+# Buscador de productos
+
+## Paso 1: Estructura de Datos y Carga Inicial
+
+### Estructura de Datos en Cache
+
+- **ProductsCache y CategoriesCache**: Almacenan productos y categorías desde la base de datos en la memoria del backend al inicio de la aplicación para mejorar la velocidad de acceso, evitando consultas frecuentes a la base de datos.
+
+## Paso 2: Creación del Árbol Invertido para Búsqueda
+
+### Clase InvertedTreeNode
+
+- Define un nodo del árbol invertido con un diccionario de palabras (`Words`) y un conjunto de productos (`Products`). Cada nodo contiene referencias a otros nodos a través de las palabras encontradas en los productos.
+
+### Clase ProductSearch
+
+#### Constructor
+
+- Recibe una colección de productos y crea un nuevo árbol invertido (`root`) en el cual se almacenarán las palabras clave extraídas de los nombres y descripciones de los productos.
+- Utiliza el método `BuildInvertedTree` para construir el árbol invertido a partir de los productos recibidos.
+
+#### Método `BuildInvertedTree`
+
+- Para cada producto, extrae palabras clave del nombre y la descripción utilizando el método `GetWordsFromText`.
+- Agrega cada palabra clave al árbol invertido utilizando el método `AddWordToInvertedTree`.
+
+#### Métodos Auxiliares (`GetWordsFromText` y `AddWordToInvertedTree`)
+
+- **GetWordsFromText**: Utiliza expresiones regulares para dividir el texto en palabras, ignorando caracteres no alfanuméricos y espacios en blanco vacíos.
+- **AddWordToInvertedTree**: Inserta una palabra en el árbol invertido, navegando a través de los nodos según la existencia o no de la palabra en el nodo actual.
+
+#### Método `Search`
+
+- Recibe una cadena de búsqueda.
+- Divide la cadena en palabras clave utilizando `GetWordsFromText`.
+- Inicia la búsqueda en el árbol invertido (`root`) desde el nodo inicial.
+- Itera sobre cada palabra clave y navega a través del árbol invertido buscando productos asociados a cada palabra clave.
+- Devuelve un conjunto de productos que coinciden con todas las palabras clave de búsqueda.
+
+## Paso 3: Utilización del Buscador en el Controlador
+
+### Controlador `StoreController`
+
+#### Método `GetStoreAsync`
+
+- Recibe parámetros de categorías y una cadena de búsqueda.
+- Utiliza `ProductsCache` para obtener productos almacenados en memoria.
+- Crea una instancia de `ProductSearch` usando los productos obtenidos.
+- Filtra los productos según las categorías especificadas.
+- Utiliza el buscador (`ProductSearch`) para realizar la búsqueda de productos que coincidan con la cadena de búsqueda.
+- Devuelve un objeto `Store` que contiene los productos encontrados y métodos de pago disponibles.
+
+## Resumen
+
+El buscador de productos se implementó utilizando un árbol invertido para indexar palabras clave extraídas de los nombres y descripciones de los productos. Este enfoque permite una búsqueda eficiente y rápida de productos basada en palabras clave ingresadas por el usuario, optimizando el rendimiento mediante el uso de cachés para almacenar datos de productos y categorías en memoria.
+
 # ProductSearch using Inverted Tree
 
 The code provides an implementation of product search using an inverted tree to index keywords in product names and descriptions.
