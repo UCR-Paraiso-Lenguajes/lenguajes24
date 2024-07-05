@@ -29,8 +29,7 @@ export default function InitPage() {
 
                 return true;
             } catch (error) {
-                console.error("Error decoding token:", error);
-                return false;
+                throw new Error("Error decoding token:", error);
             }
         };
 

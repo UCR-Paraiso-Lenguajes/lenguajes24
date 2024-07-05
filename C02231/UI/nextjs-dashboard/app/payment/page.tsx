@@ -24,7 +24,7 @@ export default function PaymentPage() {
     const [cart, setCart] = useState({
         products: [],
         deliveryAddress: '',
-        paymentMethod: { id: 0, name: '', active: 0 },
+        paymentMethod: { id: null, name: '', active: false },
         receipt: '',
         confirmation: '',
         total: '',
@@ -36,8 +36,6 @@ export default function PaymentPage() {
     const [selectedCanton, setSelectedCanton] = useState('');
     const [specificDetails, setSpecificDetails] = useState('');
     const [paymentMethods, setPaymentMethods] = useState([]);
-    const [isFormValid, setIsFormValid] = useState(false);
-
 
     useEffect(() => {
         let cartItemStored = localStorage.getItem('cartItem');
@@ -65,7 +63,7 @@ export default function PaymentPage() {
                 setPaymentMethods(data);
             }
         } catch (error) {
-            throw new Error("Error fetching payment methods:", error);
+            console.error("Error fetching payment methods:", error);
         }
     };
 
@@ -98,14 +96,16 @@ export default function PaymentPage() {
     };
 
     const handlePaymentMethodChange = (e) => {
-        const paymentMethodId = parseInt(e.target.value);
-        const selectedPaymentMethod = paymentMethods.find(method => method.id === paymentMethodId);
-        setCart(prevCart => {
-            const updatedCart = { ...prevCart, paymentMethod: selectedPaymentMethod || { id: 0, name: '', active: 0 } };
-            updateLocalStorage(updatedCart);
-            return updatedCart;
+        const selectedId = parseInt(e.target.value, 10);
+        const selectedMethod = paymentMethods.find(method => method.id === selectedId);
+        setCart(prevCart => ({
+            ...prevCart,
+            paymentMethod: selectedMethod || { id: null, name: '', active: false }
+        }));
+        updateLocalStorage({
+            ...cart,
+            paymentMethod: selectedMethod || { id: null, name: '', active: false }
         });
-        setIsFormValid(selectedPaymentMethod?.name === 'CASH' || selectedPaymentMethod?.name === 'SINPE');
     };
 
     const updateLocalStorage = (updatedCart) => {
@@ -124,19 +124,24 @@ export default function PaymentPage() {
 
     const handleSubmit = async () => {
         const { deliveryAddress, paymentMethod, products, total, receipt } = cart;
-        const isReceiptRequired = paymentMethod.name !== 'CASH' && paymentMethod.id !== 0;
-        const validOrder = deliveryAddress && paymentMethod.id && products.length > 0 && (isReceiptRequired || receipt);
+        const validOrder = deliveryAddress && paymentMethod.id !== null && products.length > 0 && receipt;
+
         if (validOrder) {
             const productIds = products.map(producto => ({
                 productId: String(producto.id),
-                quantity: producto.cant 
+                quantity: producto.cant
             }));
 
             const dataToSend = {
                 productIds: productIds,
                 address: deliveryAddress,
-                paymentMethod: paymentMethod,
-                total: total
+                paymentMethod: {
+                    id: paymentMethod.id,
+                    name: paymentMethod.name,
+                    active: paymentMethod.active
+                },
+                total: total,
+                receipt: receipt
             };
 
             try {
@@ -156,7 +161,7 @@ export default function PaymentPage() {
                     updateLocalStorage({
                         products: [],
                         deliveryAddress: '',
-                        paymentMethod: { id: 0, name: '', active: 0 },
+                        paymentMethod: { id: null, name: '', active: false },
                         isCartEmpty: true,
                         numeroCompra: orderNumber
                     });
@@ -166,13 +171,36 @@ export default function PaymentPage() {
                     throw new Error('Error to send data: ' + JSON.stringify(errorResponseData));
                 }
             } catch (error) {
-                throw new Error(error);
+                console.error(error);
                 setCart(prevCart => ({ ...prevCart, confirmation: 'Error processing your order. Please try again.' }));
             }
         } else {
             setCart(prevCart => ({ ...prevCart, confirmation: 'Please complete all required fields or add items to the cart.' }));
         }
     };
+
+    const renderPaymentMethods = () => {
+        if (paymentMethods.length === 0) {
+            return null;
+        }
+        return paymentMethods.filter(method => method.active === 1).map(method => (
+            <div key={method.id} className="form-check">
+                <input
+                    className="form-check-input"
+                    type="radio"
+                    name="paymentMethod"
+                    id={`paymentMethod${method.id}`}
+                    value={method.id}
+                    checked={cart.paymentMethod?.id === method.id}
+                    onChange={handlePaymentMethodChange}
+                />
+                <label className="form-check-label" htmlFor={`paymentMethod${method.id}`}>
+                    {method.name}
+                </label>
+            </div>
+        ));
+    };
+
 
     return (
         <div>
@@ -183,76 +211,60 @@ export default function PaymentPage() {
                     </div>
 
                     <div className="col-sm-3 d-flex justify-content-end align-items-center">
-                        <Link href="/cart">
-                            <button className="btn btn-dark">Go Cart</button>
-                        </Link>
-                        <Link href="/">
-                            <button className="btn btn-dark">Go Home</button>
+                        <Link href="/api/auth/logout" className="nav-link px-3 text-white">
+                            <button type="button" className="btn btn-success" style={{ height: '2.8rem' }}>Log out</button>
                         </Link>
                     </div>
                 </div>
             </header>
 
-            <div className='container'>
-                <h2>Payment Page</h2>
-                <div className="form-group">
-                    <label htmlFor="province">Province:</label>
-                    <select id="province" className="form-control" value={selectedProvince} onChange={handleProvinceChange}>
-                        <option value="">Select Province</option>
-                        {Object.keys(provinces).map(province => (
-                            <option key={province} value={province}>{province}</option>
-                        ))}
-                    </select>
-                </div>
-
-                {selectedProvince && (
-                    <div className="form-group">
-                        <label htmlFor="canton">Canton:</label>
-                        <select id="canton" className="form-control" value={selectedCanton} onChange={handleCantonChange}>
-                            <option value="">Select Canton</option>
-                            {provinces[selectedProvince].map(canton => (
-                                <option key={canton} value={canton}>{canton}</option>
-                            ))}
-                        </select>
+            <div className="container">
+                <div className="row mt-4">
+                    <div className="col-md-12">
+                        <div className="card">
+                            <div className="card-header">
+                                <h3 className="text-center mb-0">Checkout</h3>
+                            </div>
+                            <div className="card-body">
+                                <div className="form-group">
+                                    <label>Provincia:</label>
+                                    <select className="form-control" value={selectedProvince} onChange={handleProvinceChange}>
+                                        <option value="">Seleccione una provincia</option>
+                                        {Object.keys(provinces).map(province => (
+                                            <option key={province} value={province}>{province}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Cantón:</label>
+                                    <select className="form-control" value={selectedCanton} onChange={handleCantonChange} disabled={!selectedProvince}>
+                                        <option value="">Seleccione un cantón</option>
+                                        {provinces[selectedProvince] && provinces[selectedProvince].map(canton => (
+                                            <option key={canton} value={canton}>{canton}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label>Detalles específicos:</label>
+                                    <input type="text" className="form-control" value={specificDetails} onChange={handleSpecificDetailsChange} />
+                                </div>
+                                {paymentMethods.length > 0 && (
+                                    <div className="form-group">
+                                        <label>Método de Pago:</label>
+                                        {renderPaymentMethods()}
+                                    </div>
+                                )}
+                                <div className="form-group">
+                                    <label>Receipt:</label>
+                                    <input type="text" className="form-control" value={cart.receipt} onChange={handleReceiptChange} />
+                                </div>
+                                <button className="btn btn-secondary" onClick={handleSubmit}>Submit</button>
+                                {cart.confirmation && <div className="alert alert-info mt-3">{cart.confirmation}</div>}
+                            </div>
+                        </div>
                     </div>
-                )}
-
-                <div className="form-group">
-                    <label htmlFor="specificDetails">Specific Details:</label>
-                    <input type="text" id="specificDetails" className="form-control" value={specificDetails} onChange={handleSpecificDetailsChange} />
                 </div>
-
-                <div className="form-group">
-                    <label htmlFor="paymentMethod">Payment Method:</label>
-                    <select id="paymentMethod" className="form-control" value={cart.paymentMethod?.id || ''} onChange={handlePaymentMethodChange}>
-                        <option value="">Select Payment Method</option>
-                        {paymentMethods.filter(method => method.active).map(method => (
-                            <option key={method.id} value={method.id}>{method.name}</option>
-                        ))}
-                    </select>
-                </div>
-
-                {cart.paymentMethod?.name === 'SINPE' && (
-                    <div className="form-group">
-                        <label htmlFor="receipt">Receipt:</label>
-                        <input type="text" id="receipt" className="form-control" value={cart.receipt} onChange={handleReceiptChange} />
-                    </div>
-                )}
-
-                <button className="btn btn-secondary" onClick={handleSubmit} disabled={!isFormValid}>Submit</button>
-
-                {cart.confirmation && (
-                    <div className="alert alert-warning mt-3">
-                        {cart.confirmation}
-                    </div>
-                )}
             </div>
-
-            <footer className='footer'>
-                <div className="text-center p-3">
-                    <h5 className="text-light">Paula's Library</h5>
-                </div>
-            </footer>
         </div>
     );
 }
