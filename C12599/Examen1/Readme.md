@@ -685,11 +685,12 @@ public static void InsertProducts(List<Product> products, InsertProductDelegate 
     }
 }
 
+```
 This way, the product insertion logic is flexible and can be easily modified by passing different implementations of the delegate method.
 
 Implementing the Delegate Method
 Here is an implementation of the delegate method that inserts a product into the database:
-
+``` csharp
 public static void InsertProduct(Product product, MySqlConnection connection, MySqlTransaction transaction)
 {
     string insertProductQuery = @"
