@@ -26,10 +26,7 @@ namespace MyStoreAPI.Controllers
         [HttpGet("payment/select")]        
         public async Task<IActionResult> GetAllPaymentMethodsToAdminAsync(){
 
-            try{
-                // PaymentMethodManagementLogic paymentLogic = new PaymentMethodManagementLogic();
-                // var listOfPaymentMethod = await paymentLogic.GetAllPaymentMethodsFromDBAsync();
-                // return Ok(listOfPaymentMethod);
+            try{                
                 return Ok(Store.Instance.AllPaymentMethods);
             }
             catch (BussinessException ex){                
@@ -42,7 +39,7 @@ namespace MyStoreAPI.Controllers
         }        
 
         [HttpPost("payment/update")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin, Operator")]
         public async Task<IActionResult> UpdatePaymentMethodAsync([FromBody] UpdatePaymentMethodModel model){
             
              try{

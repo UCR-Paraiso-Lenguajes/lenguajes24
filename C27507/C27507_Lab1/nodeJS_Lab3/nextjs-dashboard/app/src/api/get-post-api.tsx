@@ -387,11 +387,24 @@ const { default: jwt_decode } = require("jwt-decode");
         let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV || 'https://localhost:7161';
         let directionAPI = `${urlByReactEnviroment}/api/PaymentMethodManagement/payment/update`;
 
+        //Validamos si el token ha expirado
+        let loginToken = sessionStorage.getItem("loginToken");
+        if (!loginToken) {            
+            window.location.reload();
+            return "Default Error";
+        }
+        let tokenFormat = jwtDecode(loginToken);
+
+        let todayDate = Date.now() / 1000;
+        let tokenLifeTime = tokenFormat.exp;
+        if (tokenLifeTime && tokenLifeTime < todayDate) window.location.reload();
+
         let postConfig = {
             method: "POST",
             headers: {
                 "Accept": "application/json",
-                "Content-Type": "application/json"                    
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${loginToken}`
             },
             body: JSON.stringify({ paymentMethodId, newStatus }),
         }
