@@ -43,12 +43,6 @@ The class diagram represents the static structure of the system, showing the cla
 
 The package diagram shows the modular organization of the system, grouping related classes into packages for better maintainability and scalability of the code.
 
-### Campaigns Investigation Diagram
-
-![Campaigns Investigation Diagram](Investigacion.JPG)
-
-This diagram illustrates the structure and relationships of the investigation campaigns within the system.
-
 ### Activity Diagram for Carousel and PaymentMethods
 
 ![Activity Diagram for Carousel and PaymentMethods](ProyectoActividad.jpg)
