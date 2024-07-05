@@ -214,7 +214,7 @@ namespace storeapi.Models
 
 ## Authentication Controller:
 ## A controller is created to handle login requests and generate JWT tokens.
-```
+```csharp
 
 using System;
 using System.Collections.Generic;
@@ -375,7 +375,7 @@ Creating and Saving Products in the Database
 
 First, random products are created and inserted into the MySQL database. A delegate is used here to handle the insertion of products into the database.
 
-```
+```csharp
 using System;
 using System.Collections.Generic;
 using MySqlConnector;
@@ -562,7 +562,7 @@ namespace storeapi.Database
 
 After inserting the products into the database, they are retrieved and stored in memory cache to improve performance.
 
-```
+```csharp
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
@@ -643,7 +643,7 @@ namespace storeapi.Business
 ## Explanation of the Delegate
 A delegate is a type that represents references to methods with a specific parameter list and return type. In this case, a delegate is used to handle the insertion of products into the database, allowing different implementations of the insertion method to be passed to the business logic.
 
-```
+``` csharp
 
 public delegate void InsertProductDelegate(Product product, MySqlConnection connection, MySqlTransaction transaction);
 
@@ -714,8 +714,3 @@ This implementation of the delegate method performs the actual insertion of a Pr
 By using a delegate, the insertion logic can be encapsulated and passed as a parameter, making the code more modular and flexible.
 
 ```
-
-
-
-
-
