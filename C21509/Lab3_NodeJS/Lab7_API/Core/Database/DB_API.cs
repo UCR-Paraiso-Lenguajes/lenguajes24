@@ -623,15 +623,16 @@ namespace Store_API.Database
                 transaction = await connectionWithDB.BeginTransactionAsync();
 
                 string insertNotification = @"
-                    INSERT INTO Notifications (Name, Message, Creation_Date)
-                    VALUES (@name, @message, @creationDate);
-                ";
+            INSERT INTO Notifications (Name, Message, Creation_Date, Status)
+            VALUES (@name, @message, @creationDate, @status);
+        ";
                 using (MySqlCommand command = new MySqlCommand(insertNotification, connectionWithDB))
                 {
                     command.Transaction = transaction;
                     command.Parameters.AddWithValue("@name", newNotification.notificationName);
                     command.Parameters.AddWithValue("@message", newNotification.notificationMessage);
                     command.Parameters.AddWithValue("@creationDate", newNotification.notificationCreatedDate);
+                    command.Parameters.AddWithValue("@status", newNotification.notificationStatus);
                     await command.ExecuteNonQueryAsync();
 
                     int thisIdNotification = 0;
@@ -650,7 +651,7 @@ namespace Store_API.Database
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                throw new Exception("An insertion error has ocurred", ex);
+                throw new Exception("An insertion error has occurred", ex);
             }
             finally
             {

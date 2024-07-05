@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Carousel } from 'react-bootstrap';
 import '../HTMLPageDemo.css';
 import Link from 'next/link';
+import { NotificationComponent } from '../components/notify_component';
 
 export default function Page() {
   const [availableProducts, setAvailableProducts] = useState<ProductItem[]>([]);
@@ -139,7 +140,6 @@ export default function Page() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-
           <button className="btn btn-primary" onClick={handleSearch}>
             Buscar
           </button>
@@ -164,6 +164,9 @@ export default function Page() {
               </option>
             ))}
           </select>
+        </div>
+        <div className="col-sm-4 d-flex justify-content-end">
+          <NotificationComponent/>
         </div>
       </header>
 

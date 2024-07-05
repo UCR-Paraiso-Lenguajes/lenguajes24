@@ -12,13 +12,19 @@ namespace Core.Business
 
         public NotificationsLogic()
         {
-            db_api = new DB_API(); 
+            db_api = new DB_API();
         }
 
         public async Task<Notifications> InsertNotificationAsync(Notifications insertedNotify)
         {
             if (insertedNotify == null)
                 throw new ArgumentException($"{nameof(insertedNotify)} cannot be null");
+
+            if (string.IsNullOrWhiteSpace(insertedNotify.notificationName))
+                throw new ArgumentException($"{nameof(insertedNotify.notificationName)} cannot be null or empty");
+
+            if (string.IsNullOrWhiteSpace(insertedNotify.notificationMessage))
+                throw new ArgumentException($"{nameof(insertedNotify.notificationMessage)} cannot be null or empty");
 
             if (insertedNotify.notificationCreatedDate == DateTime.MinValue)
                 throw new ArgumentException($"{nameof(insertedNotify.notificationCreatedDate)} not valid date");

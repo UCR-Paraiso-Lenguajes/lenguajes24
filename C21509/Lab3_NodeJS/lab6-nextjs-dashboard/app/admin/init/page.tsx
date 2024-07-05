@@ -27,6 +27,11 @@ const InitPage = () => {
                      Opciones de productos
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link href="/admin/notifications">
+                     Gestionar campañas
+                  </Link>
+                </li>
               </ul>
             </div>
           </nav>

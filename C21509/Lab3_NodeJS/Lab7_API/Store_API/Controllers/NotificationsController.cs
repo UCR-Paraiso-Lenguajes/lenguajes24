@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Core.Business;
 using Core.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Store_API.Controllers
@@ -12,70 +11,73 @@ namespace Store_API.Controllers
     [ApiController]
     public class NotificationsController : ControllerBase
     {
-        private readonly NotificationHub notificationHub;
-        private readonly NotificationsLogic notificationsLogic;
+        private readonly IHubContext<NotificationHub> _notificationHub;
+        private readonly NotificationsLogic _notificationsLogic;
 
-        public NotificationsController(NotificationHub notificationHub)
+        public NotificationsController(IHubContext<NotificationHub> notificationHub, NotificationsLogic notificationsLogic)
         {
-            notificationHub = notificationHub;
-            notificationsLogic = new NotificationsLogic();
+            _notificationHub = notificationHub;
+            _notificationsLogic = notificationsLogic;
         }
 
-        [HttpPost("Notifications/Insert")]
-        [Authorize(Roles = "Admin, Operator")]
+        [HttpPost("Insert")]
         public async Task<IActionResult> CreateNotificationAsync([FromBody] Notifications newNotify)
         {
             try
             {
-                Notifications insertedNotification = await notificationsLogic.InsertNotificationAsync(newNotify);
-                await notificationHub.SendNotificationAsync(insertedNotification);
-                return Ok(true);
+                if (newNotify == null)
+                {
+                    return BadRequest("Notification cannot be null.");
+                }
+
+                Notifications insertedNotification = await _notificationsLogic.InsertNotificationAsync(newNotify);
+                await _notificationHub.Clients.All.SendAsync("Receive", insertedNotification);
+                return Ok(insertedNotification);
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(400, "An error has ocurred while generating the notification." + ex.Message);
+                return BadRequest($"An error has occurred while generating the notification: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error has ocurred while generating the notification." + ex.Message);
+                return StatusCode(500, $"An error has occurred while generating the notification: {ex.Message}");
             }
         }
 
-        [HttpDelete("Notifications/Delete/{idNotification}")]
-        [Authorize(Roles = "Admin, Operator")]
+        [HttpDelete("Delete/{idNotification}")]
         public async Task<IActionResult> DeleteNotificationAsync(int idNotification)
         {
             try
             {
-                await notificationsLogic.DeleteNotificationAsync(idNotification);
-                await notificationHub.NotifyDeletionIdAsync(idNotification);
+                await _notificationsLogic.DeleteNotificationAsync(idNotification);
+                await _notificationHub.Clients.All.SendAsync("Delete", idNotification);
                 return Ok(true);
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(400, "An error has ocurred while deleting the notification." + ex.Message);
+                return BadRequest($"An error has occurred while deleting the notification: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error has ocurred while deleting the notification." + ex.Message);
+                return StatusCode(500, $"An error has occurred while deleting the notification: {ex.Message}");
             }
         }
 
-        [HttpGet("notifications/select")]
+        [HttpGet("Select")]
         public async Task<IActionResult> SelectNotificationAsync()
         {
             try
             {
-                var allNotificacionsForAdmin = await notificationsLogic.SelectAllNotifications();
-                return Ok(allNotificacionsForAdmin);
+                var allNotifications = await _notificationsLogic.SelectAllNotifications();
+                return Ok(allNotifications);
             }
             catch (ArgumentException ex)
             {
-                return StatusCode(400, "An error has ocurred while selecting the notifications." + ex.Message);
+                return BadRequest($"An error has occurred while selecting the notifications: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error has ocurred while selecting the notifications." + ex.Message);
+                return StatusCode(500, $"An error has occurred while selecting the notifications: {ex.Message}");
             }
         }
     }
