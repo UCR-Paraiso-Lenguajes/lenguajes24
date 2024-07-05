@@ -58,23 +58,7 @@ El rol del usuario se extrae del token JWT y se utiliza para controlar el acceso
 
 ## Caché
 ### Caché de productos
-Para mejorar la eficiencia y reducir las solicitudes a la base de datos, se implementa un mecanismo de caché para los productos en la tienda. Los productos y categorías se cargan inicialmente desde la base de datos y se almacenan en el almacenamiento local (`localStorage`) del navegador.
-
-### Implementación de la caché
-En la página principal de la tienda (`Home`), se comprueba si hay datos almacenados en `localStorage`:
-```
-const storeData = JSON.parse(localStorage.getItem('store') || '{}');
-if (storeData.products) {
-    setProductList(storeData.products);
-    setCategories(storeData.categories || []);
-} else {
-    const response = await fetch(URL + `/api/store`);
-    const data = await response.json();
-    setProductList(data.store.products);
-    setCategories(data.categories);
-    localStorage.setItem('store', JSON.stringify(data.store));
-}
-```
+Para mejorar la eficiencia y reducir las solicitudes a la base de datos, se implementa un mecanismo de caché para los productos en la tienda. Los productos y categorías se cargan inicialmente desde la base de datos y se almacenan en listas que tienen los models de estas clases, de igual forma se utiliza el `localStorage`, para manejar ciertas variables.
 
 ## Buscador de productos
 El buscador de productos permite a los usuarios buscar productos por nombre, descripción y precio. Utiliza una búsqueda binaria optimizada para encontrar coincidencias en la lista de productos.
