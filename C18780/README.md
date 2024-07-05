@@ -1,131 +1,145 @@
-## Autenticación y Autorización
 
-- **JWT (JSON Web Token)**: Se utiliza para la autenticación. El `AuthController` maneja la generación de tokens JWT después de validar las credenciales del usuario.
+# Index 
+- [1. Authentication and Authorization](#authentication-and-authorization) 
+- [2. Sales Report Generation in StoreApi](#sales-report-generation-in-storeapi) 
+- [3. Product Caching](#product-caching) 
+- [4. Product Search](#product-search) 
+- [5. ProductSearch using Inverted Tree](#productsearch-using-inverted-tree)
+- [6. User Interaction in the Online Store](#user-interaction-in-the-online-store)
+- [7. UML Payment Methods](#uml-payment-methods)
+- [8. Payment Methods](#payment-methods)
+- [9. System Structure and Data Flow](#system-structure-and-data-flow)
+- [10. Checkout Flow in the Shopping Application](#checkout-flow-in-the-shopping-application)
 
-## Roles y Permisos
+# Authentication and Authorization
 
-- Atributos de autorización como `[Authorize(Roles = "Admin")]` y `[Authorize(Roles = "Operator")]` se usan en los controladores para restringir el acceso a acciones específicas basadas en roles.
+- **JWT (JSON Web Token)**: Used for authentication. The `AuthController` handles JWT token generation after validating user credentials.
 
-## Seguridad en las API
+## Roles and Permissions
 
-- Las API están configuradas con políticas CORS (`AddCors`) para permitir solicitudes desde el frontend en `http://localhost:3000`. Esto controla qué dominios externos pueden acceder a las API.
+- Authorization attributes like `[Authorize(Roles = "Admin")]` and `[Authorize(Roles = "Operator")]` are used in controllers to restrict access to specific actions based on roles.
 
-## Manejo de Excepciones
+## API Security
 
-- Se verifica la disponibilidad de servicios necesarios para evitar errores de nulidad (`ArgumentNullException`) y garantizar la integridad del sistema.
+- APIs are configured with CORS policies (`AddCors`) to allow requests from the frontend at `http://localhost:3000`. This controls which external domains can access the APIs.
 
-## Protección de Datos Sensibles
+## Exception Handling
 
-- Se utiliza `SymmetricSecurityKey` para configurar la clave secreta del JWT y `SigningCredentials` para firmar el token, asegurando que datos sensibles como contraseñas no se transmitan en texto claro.
+- Availability of necessary services is checked to prevent null errors (`ArgumentNullException`) and ensure system integrity.
 
-## Seguridad en la Capa de Aplicación
+## Protection of Sensitive Data
 
-- Todas las operaciones críticas (creación y eliminación de recursos sensibles como anuncios, categorías, productos, etc.) están protegidas con roles específicos (`Admin`, `Operator`) para limitar el acceso según el principio de privilegio mínimo.
+- `SymmetricSecurityKey` is used to configure the JWT secret key, and `SigningCredentials` to sign the token, ensuring sensitive data like passwords is not transmitted in plaintext.
 
-Este enfoque garantiza que el proyecto cumpla con las prácticas de seguridad recomendadas, proporcionando autenticación robusta, autorización basada en roles y protección adecuada de datos sensibles a través de JWT.
+## Application Layer Security
 
-### Generación de Reportes de Venta en StoreApi
+- All critical operations (creation and deletion of sensitive resources like ads, categories, products, etc.) are protected with specific roles (`Admin`, `Operator`) to limit access according to the principle of least privilege.
 
-En el controlador `ReportsController` de la aplicación `StoreApi`, se implementa la funcionalidad para generar reportes de venta. A continuación, se detalla el proceso paso a paso:
+This approach ensures the project adheres to recommended security practices, providing robust authentication, role-based authorization, and adequate protection of sensitive data through JWT.
 
-1. **EndPoint y Autorización**: El método `GetReportsByDateAsync` está decorado con `[HttpGet("Date"), Authorize(Roles = "Admin")]`, lo que restringe el acceso al endpoint solo a usuarios autenticados con el rol de "Admin".
+# Sales Report Generation in StoreApi
 
-2. **Ejecución de Consultas**: Dentro del método, se envían dos consultas de manera asincrónica utilizando MediatR:
+In the `ReportsController` of the `StoreApi` application, the functionality for generating sales reports is implemented as follows:
+
+1. **Endpoint and Authorization**: The `GetReportsByDateAsync` method is decorated with `[HttpGet("Date"), Authorize(Roles = "Admin")]`, restricting access to the endpoint to authenticated users with the "Admin" role.
+
+2. **Query Execution**: Inside the method, two queries are asynchronously sent using MediatR:
    ```csharp
    var dailySalesTask = mediator.Send(new GetDailySalesQuery() { DateTime = dateTime });
    var weeklySalesTask = mediator.Send(new GetWeeklySalesByDateQuery() { DateTime = dateTime });
 
-3. Espera de Tareas Asíncronas: Se utiliza Task.WhenAll para esperar ambas tareas de consultas de ventas diarias y semanales de manera concurrente.
+3. **Awaiting Asynchronous Tasks**: `Task.WhenAll` is used to await both daily and weekly sales queries concurrently.
 `await Task.WhenAll(dailySalesTask, weeklySalesTask);`
 
-4. Obtención de Resultados: Después de completar las tareas, se obtienen las ventas diarias y semanales desde las tareas completadas.
+4. **Fetching Results**: After completing the tasks, daily and weekly sales are retrieved from the completed tasks.
 `var dailySales = await dailySalesTask;
 var weeklySales = await weeklySalesTask;
 `
 
-5. Creación de Objeto Reports: Finalmente, se crea un objeto Reports que encapsula tanto las ventas diarias como las semanales obtenidas.
+5. **Creating Reports Object**: Finally, a `Reports` object is created encapsulating both the retrieved daily and weekly sales.
 `return new Reports(dailySales, weeklySales);`
 
-Este proceso asegura que se obtengan y presenten los datos de ventas diarias y semanales de manera eficiente y estructurada, adecuada para su uso en la generación de reportes dentro de la aplicación StoreApi.
+This process ensures efficient and structured retrieval and presentation of daily and weekly sales data, suitable for use in report generation within the StoreApi application.
 
-## Caché de Productos
 
-### Clase ProductsCache
+# Product Cache
 
-- **Implementación Singleton**: La clase `ProductsCache` implementa el patrón Singleton (`GetInstance()` devuelve una instancia única) para manejar el caché de productos.
+## ProductsCache Class
 
-### Inicialización
+- **Singleton Implementation**: The `ProductsCache` class implements the Singleton pattern (`GetInstance()` returns a single instance) to manage the product cache.
 
-- **Constructor del StoreController**: En el constructor del `StoreController`, se inicializa la instancia de `ProductsCache` utilizando `ProductsCache.GetInstance()`.
+## Initialization
 
-### Métodos del Caché
+- **StoreController Constructor**: In the constructor of the `StoreController`, the `ProductsCache` instance is initialized using `ProductsCache.GetInstance()`.
 
-- **exists()**: Verifica si el caché de productos existe.
-- **setProduct(productsList)**: Guarda una lista de productos en el caché.
-- **getProduct(categoryUuid)**: Devuelve una lista de productos para una categoría específica desde el caché.
-- **getAll()**: Devuelve todos los productos almacenados en el caché.
+## Cache Methods
 
-### Uso en el Controlador
+- **exists()**: Checks if the product cache exists.
+- **setProduct(productsList)**: Stores a list of products in the cache.
+- **getProduct(categoryUuid)**: Retrieves a list of products for a specific category from the cache.
+- **getAll()**: Returns all products stored in the cache.
 
-- **Método GetStoreAsync**: En este método, se utiliza `productsCache` para acceder y filtrar productos en memoria. Esto evita consultar repetidamente la base de datos si el caché ya está poblado, mejorando así la velocidad de respuesta.
+## Usage in Controller
 
-En resumen, el caché de productos se implementa utilizando una clase Singleton (`ProductsCache`) que gestiona el almacenamiento y acceso a los productos en memoria una vez que se recuperan de la base de datos.
+- **GetStoreAsync Method**: In this method, `productsCache` is used to access and filter products in memory. This avoids repeated database queries if the cache is already populated, thus improving response speed.
 
-# Buscador de productos
+In summary, the product cache is implemented using a Singleton class (`ProductsCache`) that manages storage and access to products in memory once retrieved from the database.
 
-## Paso 1: Estructura de Datos y Carga Inicial
+# Product Search
 
-### Estructura de Datos en Cache
+## Step 1: Data Structure and Initial Loading
 
-- **ProductsCache y CategoriesCache**: Almacenan productos y categorías desde la base de datos en la memoria del backend al inicio de la aplicación para mejorar la velocidad de acceso, evitando consultas frecuentes a la base de datos.
+### Data Structure in Cache
 
-## Paso 2: Creación del Árbol Invertido para Búsqueda
+- **ProductsCache and CategoriesCache**: Store products and categories from the database in backend memory at application startup to enhance access speed, avoiding frequent database queries.
 
-### Clase InvertedTreeNode
+## Step 2: Creating the Inverted Tree for Search
 
-- Define un nodo del árbol invertido con un diccionario de palabras (`Words`) y un conjunto de productos (`Products`). Cada nodo contiene referencias a otros nodos a través de las palabras encontradas en los productos.
+### InvertedTreeNode Class
 
-### Clase ProductSearch
+- Defines an inverted tree node with a dictionary of words (`Words`) and a set of products (`Products`). Each node contains references to other nodes through words found in the products.
+
+### ProductSearch Class
 
 #### Constructor
 
-- Recibe una colección de productos y crea un nuevo árbol invertido (`root`) en el cual se almacenarán las palabras clave extraídas de los nombres y descripciones de los productos.
-- Utiliza el método `BuildInvertedTree` para construir el árbol invertido a partir de los productos recibidos.
+- Takes a collection of products and creates a new inverted tree (`root`) where keywords extracted from product names and descriptions will be stored.
+- Uses the `BuildInvertedTree` method to construct the inverted tree from the received products.
 
-#### Método `BuildInvertedTree`
+#### `BuildInvertedTree` Method
 
-- Para cada producto, extrae palabras clave del nombre y la descripción utilizando el método `GetWordsFromText`.
-- Agrega cada palabra clave al árbol invertido utilizando el método `AddWordToInvertedTree`.
+- For each product, extracts keywords from the name and description using the `GetWordsFromText` method.
+- Adds each keyword to the inverted tree using the `AddWordToInvertedTree` method.
 
-#### Métodos Auxiliares (`GetWordsFromText` y `AddWordToInvertedTree`)
+#### Helper Methods (`GetWordsFromText` and `AddWordToInvertedTree`)
 
-- **GetWordsFromText**: Utiliza expresiones regulares para dividir el texto en palabras, ignorando caracteres no alfanuméricos y espacios en blanco vacíos.
-- **AddWordToInvertedTree**: Inserta una palabra en el árbol invertido, navegando a través de los nodos según la existencia o no de la palabra en el nodo actual.
+- **GetWordsFromText**: Uses regular expressions to split text into words, ignoring non-alphanumeric characters and empty whitespace.
+- **AddWordToInvertedTree**: Inserts a word into the inverted tree, navigating through nodes based on whether the word exists in the current node.
 
-#### Método `Search`
+#### `Search` Method
 
-- Recibe una cadena de búsqueda.
-- Divide la cadena en palabras clave utilizando `GetWordsFromText`.
-- Inicia la búsqueda en el árbol invertido (`root`) desde el nodo inicial.
-- Itera sobre cada palabra clave y navega a través del árbol invertido buscando productos asociados a cada palabra clave.
-- Devuelve un conjunto de productos que coinciden con todas las palabras clave de búsqueda.
+- Takes a search string.
+- Splits the string into keywords using `GetWordsFromText`.
+- Begins searching in the inverted tree (`root`) from the initial node.
+- Iterates over each keyword and navigates through the inverted tree to find products associated with each keyword.
+- Returns a set of products that match all search keywords.
 
-## Paso 3: Utilización del Buscador en el Controlador
+## Step 3: Using the Search in the Controller
 
-### Controlador `StoreController`
+### `StoreController` Controller
 
-#### Método `GetStoreAsync`
+#### `GetStoreAsync` Method
 
-- Recibe parámetros de categorías y una cadena de búsqueda.
-- Utiliza `ProductsCache` para obtener productos almacenados en memoria.
-- Crea una instancia de `ProductSearch` usando los productos obtenidos.
-- Filtra los productos según las categorías especificadas.
-- Utiliza el buscador (`ProductSearch`) para realizar la búsqueda de productos que coincidan con la cadena de búsqueda.
-- Devuelve un objeto `Store` que contiene los productos encontrados y métodos de pago disponibles.
+- Receives category parameters and a search string.
+- Uses `ProductsCache` to retrieve products stored in memory.
+- Creates an instance of `ProductSearch` using the retrieved products.
+- Filters products based on specified categories.
+- Uses the searcher (`ProductSearch`) to perform a search for products matching the search string.
+- Returns a `Store` object containing the found products and available payment methods.
 
-## Resumen
+## Summary
 
-El buscador de productos se implementó utilizando un árbol invertido para indexar palabras clave extraídas de los nombres y descripciones de los productos. Este enfoque permite una búsqueda eficiente y rápida de productos basada en palabras clave ingresadas por el usuario, optimizando el rendimiento mediante el uso de cachés para almacenar datos de productos y categorías en memoria.
+The product searcher is implemented using an inverted tree to index keywords extracted from product names and descriptions. This approach allows efficient and quick product searching based on user-entered keywords, optimizing performance by storing product and category data in memory using caches.
 
 # ProductSearch using Inverted Tree
 
@@ -158,9 +172,9 @@ The inverted tree and product search are designed to be efficient in terms of ti
 
 
 ![invertedTreeNode](https://www.planttext.com/api/plantuml/png/ZPHDJiCm48NtESMeAoAW1-W2bHyLiQ12j19hAvw2XMD7umcbjyTsapPsMzf8aPE9lpVFRwHC7GlYjjP5urTLgKOOXj62BU6ZDKnMQwGH20TPBGNUoCgsuWKAghxYzgIIRdunFqYCSac8SoinxWyFHP4rWTkxL6W21jTfwQhPlhcoIEf7s8TMQJdiFc2rjGsiB04AptRr0lnrJlKP-SEIT3EozH9_kHSTpqMDSDrhZP_GLQGQLjQKKJXjkVOQiNoqPuXd0lTIXbPBcnmYa3TzctAd4P04ZIs0BKIx85KLl0ZQ_8Dqge7gF3bmk0q6ZIp2VS7Kkb6vk8IGpW_h8DOXd4RtZPjTUYUIcoaZmOJZ1Me82CtzXzR8WoWoL-_8BPa-5WShxoxYfqUNARmYVU9UG1aVBQ5hjT_HvQeTRYqPovcj0_Ki-vr3h1lUvCBTm2uMsUF5r8F-F_47)
-[PlantUml](Doc/plantuml/InvertedTreeNode.md)
+Plantuml code diagram [here](Doc/plantuml/InvertedTreeNode.md)
 
-## User Interaction in the Online Store
+# User Interaction in the Online Store
 
 The flowchart describes how users, both administrators and clients, interact with the online store. Users enter the site, where administrators can authenticate using a username and password. The backend uses JWT for authentication, generating a token sent to the frontend and stored in a cookie for subsequent sessions. Administrators have privileges to create or delete ads.
 
@@ -169,9 +183,9 @@ On the other hand, clients access the store and can view the three most recent a
 
 ## Diagrama de actividad WebSocket
 ![webSocketActivityDiagram](https://i.imgur.com/gnVba0j.png)
-[PlantUml](Doc/plantuml/WebSocketActivityDiagram.md)
+Plantuml code diagram [here](Doc/plantuml/WebSocketActivityDiagram.md)
 
-# UMLPaymentMethods
+# UML Payment Methods
 
 This repository contains a modularized web application using CQRS (Command Query Responsibility Segregation) to separate write and read operations. Below is the main structure of the project:
 
@@ -205,7 +219,7 @@ Contains `Checkout`, a user interface rendering the payment page.
 
 The modular structure and clear separation of responsibilities enable easy expansion and maintenance of the project, ensuring efficient and scalable development.
 
-# UML Payment Methods
+## Diagram UML Payment Methods
 
 The diagram describes the flow of updating payment method availability in a CQRS and SignalR-based application.
 
@@ -217,11 +231,10 @@ The diagram describes the flow of updating payment method availability in a CQRS
 
 This flow ensures a consistent and secure user experience during the payment process.
 
-## UML Payment Methods
 ![UMLPaymentMethods](https://i.imgur.com/aHBIEV4.png)
-[PlantUml](Doc/plantuml/UMLPaymentMethods.md)
+Plantuml code diagram [here](Doc/plantuml/UMLPaymentMethods.md)
 
-## Activity Diagram: Payment Methods
+# Payment Methods
 
 The following diagram describes the communication flow and actions among various components in an e-commerce system:
 
@@ -240,9 +253,9 @@ This ensures a consistent and real-time updated shopping experience.
 
 ## Diagrama Actividad Payment Methods
 ![DiagramaActividadPaymentMethods](https://i.imgur.com/cNop2zM.png)
-[PlantUml](Doc/plantuml/DiagramaActividadPaymentMethods.md)
+Plantuml code diagram [here](Doc/plantuml/DiagramaActividadPaymentMethods.md)
 
-## System Structure and Data Flow
+# System Structure and Data Flow
 
 This project follows a CQRS (Command Query Responsibility Segregation) architecture, which separates read and write operations to optimize system performance and scalability. Here's how the main components interact:
 
@@ -262,7 +275,7 @@ This design not only separates read and write responsibilities, improving effici
 
 ## Diagrama UML Editar Cantidad de Products
 ![DiagramaUMLEditarCantidaddeProducts](https://i.imgur.com/BNVtmBo.png)
-[PlantUml](Doc/plantuml/DiagramaUMLEditarCantidaddeProducts.md)
+Plantuml code diagram [here](Doc/plantuml/DiagramaUMLEditarCantidaddeProducts.md)
 
 # Checkout Flow in the Shopping Application
 
@@ -316,4 +329,4 @@ The checkout process starts from the home page of the shopping application. Here
 
 ## Diagrama Actividad Agregar Productos Al Cart
 ![DiagramaActividadAgregarProductosAlCart](https://i.imgur.com/2C3quDt.png)
-[PlantUml](Doc/plantuml/DiagramaActividadAgregarProductosAlCart.md)
+Plantuml code diagram [here](Doc/plantuml/DiagramaActividadAgregarProductosAlCart.md)
