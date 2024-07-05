@@ -10,15 +10,19 @@ namespace Tests
     public class CategoriesTest
     {
         [Test]
-        public void TestGetCategoryById()
+        [TestCase(1, "Electrónica")]
+        [TestCase(2, "Hogar y oficina")]
+        [TestCase(3, "Entretenimiento")]
+        [TestCase(4, "Tecnología")]
+        public void TestGetCategoryById(int categoryId, string expectedName)
         {
-            var expectedCategory = new Category(1, "Electrónica");
+            var expectedCategory = new Category(categoryId, expectedName);
             bool categoryFound = false;
 
             Category resultCategory;
             try
             {
-                resultCategory = Categories.GetCategoryById(1);
+                resultCategory = Categories.GetCategoryById(categoryId);
                 categoryFound = true;
             }
             catch (Exception ex)

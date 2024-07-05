@@ -3,9 +3,7 @@ using NUnit.Framework;
 using Microsoft.Extensions.Hosting;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Core.Models.Store_API.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +21,13 @@ namespace UT
         public List<string> UserRoles { get; set; }
     }
 
+    [TestFixture]
     public class UserSecurityTest
     {
         private UserAuthController userAuthController;
         private Mock<IWebHostEnvironment> mockHostEnvironment;
-        private IConfiguration configuration;
+        private Mock<IConfiguration> mockConfiguration;
+        private List<TestUser> testUsers;
 
         [SetUp]
         public void SetUp()
@@ -35,24 +35,21 @@ namespace UT
             mockHostEnvironment = new Mock<IWebHostEnvironment>();
             mockHostEnvironment.Setup(e => e.EnvironmentName).Returns("Development");
 
-            configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.Development.json")
-                .Build();
-
-            userAuthController = new UserAuthController(mockHostEnvironment.Object, configuration);
-
-            var testUsers = configuration.GetSection("TestUsers").Get<List<TestUser>>();
-            foreach (var user in testUsers)
+            testUsers = new List<TestUser>
             {
-                new UserAuth(user.UserName, user.UserPassword, user.UserRoles.Select(role => new Claim(ClaimTypes.Role, role)).ToList());
-            }
+                new TestUser { UserName = "jeancarlo", UserPassword = "123456", UserRoles = new List<string> { "User" } }
+            };
+
+            mockConfiguration = new Mock<IConfiguration>();
+            mockConfiguration.Setup(c => c.GetSection("TestUsers").Get<List<TestUser>>()).Returns(testUsers);
+
+            userAuthController = new UserAuthController(mockHostEnvironment.Object, mockConfiguration.Object);
         }
 
         [Test]
         public async Task ValidUserAndGetToken()
         {
             var userData = new UserAuthController.LoginModel { UserName = "jeancarlo", Password = "123456" };
-
             var response = await userAuthController.LoginAsync(userData) as OkObjectResult;
 
             Assert.NotNull(response);
@@ -67,9 +64,7 @@ namespace UT
         public async Task InvalidPassWord()
         {
             var userData = new UserAuthController.LoginModel { UserName = "jeancarlo", Password = "invalid" };
-
             var response = await userAuthController.LoginAsync(userData);
-            Assert.NotNull(response);
             Assert.IsInstanceOf<UnauthorizedResult>(response);
         }
 
@@ -77,10 +72,24 @@ namespace UT
         public async Task InvalidUserName()
         {
             var userData = new UserAuthController.LoginModel { UserName = "invalid", Password = "123456" };
-
             var response = await userAuthController.LoginAsync(userData);
-            Assert.NotNull(response);
             Assert.IsInstanceOf<UnauthorizedResult>(response);
+        }
+
+        [Test]
+        public async Task EmptyPassword_ThrowsArgumentException()
+        {
+            var userData = new UserAuthController.LoginModel { UserName = "jeancarlo", Password = "" };
+            var ex = Assert.ThrowsAsync<ArgumentException>(async () => await userAuthController.LoginAsync(userData));
+            Assert.That(ex.Message, Is.EqualTo("Password cannot be empty"));
+        }
+
+        [Test]
+        public async Task EmptyUsername_ThrowsArgumentException()
+        {
+            var userData = new UserAuthController.LoginModel { UserName = "", Password = "123456" };
+            var ex = Assert.ThrowsAsync<ArgumentException>(async () => await userAuthController.LoginAsync(userData));
+            Assert.That(ex.Message, Is.EqualTo("Username cannot be empty"));
         }
     }
 }
