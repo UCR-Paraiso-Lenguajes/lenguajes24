@@ -44,146 +44,146 @@ On the other hand, clients access the store and can view the three most recent a
 
 # UMLPaymentMethods
 
-Este repositorio contiene una aplicación web modularizada que utiliza CQRS (Command Query Responsibility Segregation) para separar las operaciones de escritura y lectura. A continuación se detalla la estructura principal del proyecto:
+This repository contains a modularized web application using CQRS (Command Query Responsibility Segregation) to separate write and read operations. Below is the main structure of the project:
 
 ## Core
 
-El espacio de nombres `Core` encapsula la lógica central del dominio. Incluye la clase `PaymentMethods`, que define los métodos de pago disponibles con propiedades como `PaymentType`, `Name`, y `IsEnabled`. Además, ofrece funcionalidades como la búsqueda por tipo de método de pago.
+The `Core` namespace encapsulates the core domain logic. It includes the `PaymentMethods` class, which defines available payment methods with properties such as `PaymentType`, `Name`, and `IsEnabled`. It also provides functionalities like searching by payment method type.
 
 ## StoreApi.Controllers
 
-El espacio de nombres `StoreApi.Controllers` alberga los controladores de la API REST que gestionan las interacciones con el backend. Por ejemplo, `StoreController` maneja las operaciones relacionadas con la tienda, como la gestión de métodos de pago y la actualización de su estado de habilitación.
+The `StoreApi.Controllers` namespace hosts REST API controllers that manage interactions with the backend. For example, `StoreController` handles operations related to the store, such as managing payment methods and updating their enablement status.
 
 ## StoreApi.Hubs
 
-En `StoreApi.Hubs` se encuentra `PaymentMethodsHub`, un hub de SignalR que facilita la comunicación en tiempo real entre el backend y los clientes. Es utilizado para notificar cambios en los métodos de pago a través de la aplicación.
+In `StoreApi.Hubs`, you'll find `PaymentMethodsHub`, a SignalR hub that facilitates real-time communication between the backend and clients. It is used to notify changes in payment methods throughout the application.
 
 ## ReactApp
 
-El espacio de nombres `ReactApp` representa la aplicación front-end desarrollada con React. Contiene varios módulos:
+The `ReactApp` namespace represents the frontend application developed with React. It contains several modules:
 
 ### api
 
-Ofrece funciones personalizadas como `useFetchInitialStore` para obtener el estado inicial de la tienda, incluyendo productos y métodos de pago, y `useFetchUpdatePaymentIsEnabled` para actualizar el estado de habilitación de métodos de pago.
+Provides custom functions like `useFetchInitialStore` to fetch the initial store state, including products and payment methods, and `useFetchUpdatePaymentIsEnabled` to update the enablement status of payment methods.
 
 ### Admin
 
-Incluye `PaymentMethodsPage`, una página administrativa que utiliza `useFetchInitialStore` para gestionar métodos de pago y productos.
+Includes `PaymentMethodsPage`, an administrative page using `useFetchInitialStore` to manage payment methods and products.
 
 ### Abacaxi
 
-Contiene `Checkout`, una interfaz de usuario que renderiza la página de pago.
+Contains `Checkout`, a user interface rendering the payment page.
 
-La estructura modular y la separación clara de responsabilidades permiten una fácil expansión y mantenimiento del proyecto, asegurando un desarrollo eficiente y escalable.
+The modular structure and clear separation of responsibilities enable easy expansion and maintenance of the project, ensuring efficient and scalable development.
 
 # UML Payment Methods
 
-El diagrama describe el flujo de actualización de la disponibilidad de métodos de pago en una aplicación basada en CQRS y eventos con SignalR.
+The diagram describes the flow of updating payment method availability in a CQRS and SignalR-based application.
 
-1. **Administrador**: Inicia sesión y accede a la página de métodos de pago.
-2. **Frontend**: Realiza un cambio en la disponibilidad de un método de pago específico.
-3. **Backend**: Actualiza la disponibilidad en la base de datos.
-4. **SignalR (PaymentMethodsHub)**: Notifica al frontend del checkout sobre el cambio.
-5. **Frontend del Checkout**: Oculta el botón del método de pago deshabilitado y evita que el usuario utilice métodos de pago no disponibles.
+1. **Administrator**: Logs in and accesses the payment methods page.
+2. **Frontend**: Makes a change in the availability of a specific payment method.
+3. **Backend**: Updates the availability in the database.
+4. **SignalR (PaymentMethodsHub)**: Notifies the checkout frontend about the change.
+5. **Checkout Frontend**: Hides the disabled payment method button and prevents the user from using unavailable payment methods.
 
-Este flujo asegura una experiencia coherente y segura para los usuarios durante el proceso de pago.
+This flow ensures a consistent and secure user experience during the payment process.
 
 ## UML Payment Methods
 ![UMLPaymentMethods](https://i.imgur.com/aHBIEV4.png)
 [PlantUml](Doc/plantuml/UMLPaymentMethods.md)
 
-## Diagrama de Actividad: Payment Methods
+## Activity Diagram: Payment Methods
 
-El siguiente diagrama describe el flujo de comunicación y acciones entre varios componentes en un sistema de comercio electrónico:
+The following diagram describes the communication flow and actions among various components in an e-commerce system:
 
-1. **Login:** El administrador se autentica en la aplicación.
-2. **Go to PaymentMethodsPage:** Accede a la página de métodos de pago.
-3. **Frontend:** Desde la interfaz de usuario, el administrador puede cambiar la disponibilidad de un método de pago.
-4. **Backend:** Se realiza la modificación correspondiente en la disponibilidad del método de pago.
-5. **Notify frontend (Checkout):** Utilización de SignalR a través de PaymentMethodsHub para notificar al frontend acerca de los cambios durante el proceso de pago.
+1. **Login:** The administrator authenticates in the application.
+2. **Go to PaymentMethodsPage:** Accesses the payment methods page.
+3. **Frontend:** From the user interface, the administrator can change the availability of a payment method.
+4. **Backend:** Corresponding modification is made to the payment method availability.
+5. **Notify frontend (Checkout):** Uses SignalR via PaymentMethodsHub to notify the frontend about changes during the payment process.
 
-### Resultado
-En la interfaz de usuario:
-- Se ocultan los botones de método de pago deshabilitados.
-- Se impide al usuario utilizar métodos de pago que han sido marcados como no disponibles.
+### Outcome
+In the user interface:
+- Disabled payment method buttons are hidden.
+- Users are prevented from using payment methods that have been marked as unavailable.
 
-Esto asegura una experiencia de compra coherente y actualizada en tiempo real.
+This ensures a consistent and real-time updated shopping experience.
 
 ## Diagrama Actividad Payment Methods
 ![DiagramaActividadPaymentMethods](https://i.imgur.com/cNop2zM.png)
 [PlantUml](Doc/plantuml/DiagramaActividadPaymentMethods.md)
 
-## Estructura del Sistema y Flujo de Datos
+## System Structure and Data Flow
 
-Este proyecto sigue una arquitectura CQRS (Command Query Responsibility Segregation), que separa las operaciones de lectura y escritura para optimizar el rendimiento y la escalabilidad del sistema. A continuación se describe cómo interactúan los principales componentes:
+This project follows a CQRS (Command Query Responsibility Segregation) architecture, which separates read and write operations to optimize system performance and scalability. Here's how the main components interact:
 
-- **Usuario (Actor):** Actúa sobre el sistema a través de la interfaz de usuario. En el diagrama, se muestra interactuando directamente con el frontend para editar la cantidad de un producto en el carrito.
+- **User (Actor):** Acts on the system through the user interface. In the diagram, it shows direct interaction with the frontend to edit the quantity of a product in the cart.
 
-- **Frontend:** Utiliza peticiones HTTP para comunicarse con el backend y ejecutar operaciones como agregar y actualizar elementos en el carrito de compras.
+- **Frontend:** Uses HTTP requests to communicate with the backend and perform operations such as adding and updating items in the shopping cart.
 
-- **CartController:** Este controlador maneja las operaciones relacionadas con el carrito de compras, como agregar y actualizar artículos. Utiliza el patrón Mediator para enviar comandos al sistema.
+- **CartController:** This controller handles operations related to the shopping cart, such as adding and updating items. It uses the Mediator pattern to send commands to the system.
 
-- **IMediator:** Interfaz utilizada para enviar comandos al sistema. En el diagrama, se observa cómo se envían comandos como UpdateSalesCommand y CreateSalesCommand para manejar la lógica de negocios asociada con las ventas y líneas de ventas.
+- **IMediator:** Interface used to send commands to the system. The diagram illustrates commands like UpdateSalesCommand and CreateSalesCommand for handling business logic associated with sales and sales lines.
 
-- **ProductController y ProductRepository:** Se encargan de gestionar los productos, proporcionando detalles y soporte para las operaciones de ventas.
+- **ProductController and ProductRepository:** Manage products, providing details and supporting sales operations.
 
-- **Sales y Commands:** Representan las ventas y los comandos asociados (CreateSalesCommand y UpdateSalesCommand), que actualizan información crucial como la fecha, método de pago, total y dirección asociada con una venta.
+- **Sales and Commands:** Represent sales and associated commands (CreateSalesCommand and UpdateSalesCommand), which update crucial information such as date, payment method, total, and associated address for a sale.
 
-Este diseño no solo separa las responsabilidades de lectura y escritura, mejorando así la eficiencia y la escalabilidad, sino que también facilita la implementación de nuevas características y la gestión de datos de manera más estructurada y mantenible.
+This design not only separates read and write responsibilities, improving efficiency and scalability, but also facilitates the implementation of new features and structured, maintainable data management.
 
 ## Diagrama UML Editar Cantidad de Products
 ![DiagramaUMLEditarCantidaddeProducts](https://i.imgur.com/BNVtmBo.png)
 [PlantUml](Doc/plantuml/DiagramaUMLEditarCantidaddeProducts.md)
 
-# Flujo de Checkout en la Aplicación de Compras
+# Checkout Flow in the Shopping Application
 
-Este repositorio contiene la implementación del flujo de checkout para una aplicación de compras, siguiendo el siguiente diagrama de proceso:
+This repository contains the implementation of the checkout flow for a shopping application, following the process diagram below:
 
-## Descripción del Flujo
+## Flow Description
 
-El proceso de checkout se inicia desde la página de inicio de la aplicación de compras. Aquí se detallan las acciones principales que ocurren durante el flujo de checkout:
+The checkout process starts from the home page of the shopping application. Here are the main actions that occur during the checkout flow:
 
-1. **Inicio de Checkout:**
-   - El cliente inicia el proceso de checkout desde la aplicación.
+1. **Start Checkout:**
+   - The customer initiates the checkout process from the application.
 
-2. **Mostrar Detalles de Productos:**
-   - Si hay productos en el carrito, se muestran los detalles de los productos seleccionados.
+2. **Display Product Details:**
+   - If there are items in the cart, details of the selected products are displayed.
 
-3. **Mostrar Resumen del Pedido:**
-   - Se presenta un resumen detallado de los productos seleccionados y el total del pedido.
+3. **Show Order Summary:**
+   - A detailed summary of the selected products and the total order amount is presented.
 
-4. **Seleccionar Dirección de Facturación:**
-   - El cliente selecciona o ingresa la dirección de facturación para el pedido.
+4. **Select Billing Address:**
+   - The customer selects or enters the billing address for the order.
 
-5. **Mostrar Método de Pago:**
-   - Una vez seleccionada la dirección de facturación, se muestra al cliente la opción de seleccionar el método de pago.
+5. **Display Payment Method:**
+   - Once the billing address is selected, the customer is presented with the option to select the payment method.
 
-6. **Procesar Pago:**
-   - Dependiendo del método de pago seleccionado (efectivo o Sinpe), se procesa el pago correspondiente.
+6. **Process Payment:**
+   - Depending on the selected payment method (cash or Sinpe), the corresponding payment is processed.
 
-7. **Confirmación del Pago:**
-   - Si se selecciona el pago en efectivo, se espera la confirmación del administrador antes de finalizar la compra.
-   - Si se elige Sinpe, se ingresa el número de confirmación y se procede a confirmar el pago.
+7. **Payment Confirmation:**
+   - If cash payment is selected, confirmation from the administrator is awaited before completing the purchase.
+   - If Sinpe is chosen, the confirmation number is entered and the payment is confirmed.
 
-8. **Finalizar Compra:**
-   - Una vez confirmado el pago, se completa el proceso de compra y se finaliza el checkout.
+8. **Complete Purchase:**
+   - Once payment is confirmed, the purchase process is completed and checkout is finalized.
 
-## Componentes Utilizados
+## Components Used
 
 ### Backend:
 
 - **Controllers:**
-  - Implementan la lógica para cada paso del flujo de checkout.
+  - Implement the logic for each step of the checkout flow.
 
 - **MediatR:**
-  - Utilizado para la gestión de comandos y consultas, facilitando la separación de responsabilidades y el mantenimiento del código limpio.
+  - Used for command and query management, facilitating separation of concerns and maintaining clean code.
 
 - **Repositories:**
-  - Acceden a los datos de productos y ventas necesarios para completar el proceso.
+  - Access necessary product and sales data to complete the process.
 
 ### Frontend:
 
-- Interactúa con los controladores a través de peticiones HTTP para actualizar el carrito, procesar el pago y obtener detalles de productos.
+- Interacts with controllers via HTTP requests to update the cart, process payment, and fetch product details.
 
 ## Diagrama Actividad Agregar Productos Al Cart
 ![DiagramaActividadAgregarProductosAlCart](https://i.imgur.com/2C3quDt.png)
