@@ -2,31 +2,31 @@
 **Developer:** Aarón Chacón Céspedes
 ## Diagramas
 ### Diagrama de la página principal
-![Diagrama de la página principal](mnt/data/pagprincipal.jpeg)
+![Diagrama de la página principal](Images/pagprincipal.jpeg)
 
 ### Diagrama de la página de pago
-![Diagrama de la página de pago](mnt/data/pagpago.jpeg)
+![Diagrama de la página de pago](Images/pagpago.jpeg)
 
 ### Diagrama de la página de reportes
-![Diagrama de la página de reportes](mnt/data/pagreportes.jpeg)
+![Diagrama de la página de reportes](Images/pagreportes.jpeg)
 
 ## Diagrama de Paquetes
-![Diagrama de Paquetes](mnt/data/diagrama_paquetes.jpeg)
+![Diagrama de Paquetes](Images/diagrama_paquetes.jpeg)
 
 ## Diagrama de Actividad
-![Diagrama de Actividad](mnt/data/diagrama_actividad.jpeg)
+![Diagrama de Actividad](Images/diagrama_actividad.jpeg)
 
 ## Diagrama del WebSocket
-![Diagrama del WebSocket](mnt/data/ws.jpeg)
+![Diagrama del WebSocket](Images/ws.jpeg)
 
 ## Diagrama de clases del Proyecto
-![Diagrama de clases del Proyecto](mnt/data/DiagramaClasesProy.png)
+![Diagrama de clases del Proyecto](Images/DiagramaClasesProy.png)
 
 ## Diagrama de actividad del Carrito
-![Diagrama de actividad del Carrito](mnt/data/DiagramaActividadCart.png)
+![Diagrama de actividad del Carrito](Images/DiagramaActividadCart.png)
 
 ## Diagrama de actividad del Pago
-![Diagrama de actividad del Pago](mnt/data/DiagramaActividadPayment.png)
+![Diagrama de actividad del Pago](Images/DiagramaActividadPayment.png)
 
 ## Seguridad
 ### Autenticación y Autorización
