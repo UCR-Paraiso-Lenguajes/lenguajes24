@@ -93,6 +93,11 @@ const Sidebar = () => {
                     <span className="nav-link">Payment Methods</span>
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link href="/admin/campaign" passHref>
+                    <span className="nav-link">Campaing Messages</span>
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>

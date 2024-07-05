@@ -1,14 +1,16 @@
-"use client"
 import React, { useState } from 'react';
-import '../Styles/header.css';
 import Link from 'next/link';
+import { useWebSocket } from '../../hooks/WebSocketContext';
+import '../Styles/header.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Navbar = ({ size, onShowLogin, onShowCart, onShowProducts, categories, setSelectedCategory, onSearch, fetchProductsByCategory, fetchProductsBySearch }) => {
+  const { messages } = useWebSocket();
   const [showCategories, setShowCategories] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [warning, setWarning] = useState('');
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const handleClickLogin = () => {
     if (typeof onShowLogin === 'function') {
@@ -107,6 +109,42 @@ const Navbar = ({ size, onShowLogin, onShowCart, onShowProducts, categories, set
           </div>
           <span className="cart_items">{size}</span>
         </div>
+        <div className="messages" onClick={() => setShowNotifications(!showNotifications)}>
+          <div className="icono">
+            <span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="45"
+                height="45"
+                fill="white"
+                className="bi bi-envelope"
+                viewBox="0 0 16 16"
+              >
+                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383l-4.6 2.758L15 11.5V5.383zm-1.134 6.09l-4.768-2.86L8 10.56l-1.098-.647-4.768 2.86a1 1 0 0 0 .134.147h12a1 1 0 0 0 .134-.147zm-12.732-.862l4.6-2.758-4.6-2.758V11.5z"/>
+              </svg>
+            </span>
+          </div>
+          <span className="message_count">{messages.length}</span>
+        </div>
+        {showNotifications && (
+          <div className="notifications_dropdown">
+            <div className="notifications_header">
+              <h4>Notificaciones</h4>
+            </div>
+            <div className="notifications_body">
+              {messages.length > 0 ? (
+                messages.slice(0, 3).map((message, index) => (
+                  <div key={index} className="notification_item">
+                    <div className="notification_title">{message.title}</div>
+                    <div className="notification_content" dangerouslySetInnerHTML={{ __html: message.content }}></div>
+                  </div>
+                ))
+              ) : (
+                <div className="no_notifications">No hay notificaciones</div>
+              )}
+            </div>
+          </div>
+        )}
         <div className="loginUser" onClick={handleClickLogin}>
           <Link href="/admin" className="icono">
             <span>

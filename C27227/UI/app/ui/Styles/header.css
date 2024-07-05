@@ -142,3 +142,47 @@
 .dropdown-check-list.visible .items {
   display: block;
 }
+.notifications_dropdown {
+  position: absolute;
+  right: 0;
+  top: 60px;
+  width: 500px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  z-index: 1000;
+
+}
+
+.notifications_header {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  font-weight: bold;
+  background-color: #f7f7f7;
+}
+
+.notifications_body {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.notification_item {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.notification_title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.notification_content {
+  font-size: 14px;
+}
+
+.no_notifications {
+  padding: 10px;
+  text-align: center;
+  color: #777;
+}

@@ -1,5 +1,6 @@
 import '@/app/ui/global.css';
- 
+import { WebSocketProvider } from '@/app/hooks/WebSocketContext';
+
 export default function RootLayout({
   children,
 }: {
@@ -7,7 +8,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <WebSocketProvider>{children}</WebSocketProvider>
+      </body>
     </html>
   );
 }

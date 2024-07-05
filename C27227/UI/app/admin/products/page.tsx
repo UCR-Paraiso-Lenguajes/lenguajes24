@@ -93,7 +93,7 @@ const Products: React.FC = () => {
       const selectedCategory = categories.find(categoria => categoria.nombre === value);
       setForm({ ...form, categoriaId: selectedCategory ? selectedCategory.id : 0, categoriaNombre: selectedCategory ? selectedCategory.nombre : '' });
     } else {
-      setForm({ ...form, [name]: name === 'price' ? (value === '' ? '' : Number(value)) : value });
+      setForm({ ...form, [name]: name === 'price' ? (value === '' ? '' : parseFloat(value)) : value });
     }
   };
 
@@ -106,8 +106,6 @@ const Products: React.FC = () => {
       setErrors(formErrors);
       return;
     }
-
-    // Verificar si el producto ya existe
     const existingProduct = productList.find(product => product.name.toLowerCase() === form.name.toLowerCase());
     if (existingProduct) {
       setErrors({ name: 'El producto ya existe. No se puede insertar un producto duplicado.' });
@@ -216,12 +214,13 @@ const Products: React.FC = () => {
                       <input
                         type="number"
                         name="price"
+                        step="0.01"
                         value={form.price}
                         onChange={handleInputChange}
                         className={`form-control ${errors.price ? 'is-invalid' : ''}`}
                         placeholder="Precio"
                         required
-                        min="1"
+                        min="0.01"
                         max="99999999"
                       />
                       {errors.price && <div className="invalid-feedback">{errors.price}</div>}
