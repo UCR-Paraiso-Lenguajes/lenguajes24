@@ -12,6 +12,7 @@ namespace Store_API.Controllers
     public class NotificationsController : ControllerBase
     {
         private readonly IHubContext<NotificationHub> _notificationHub;
+
         private readonly NotificationsLogic _notificationsLogic;
 
         public NotificationsController(IHubContext<NotificationHub> notificationHub, NotificationsLogic notificationsLogic)

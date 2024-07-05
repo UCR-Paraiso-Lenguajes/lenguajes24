@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Store_API.Controllers;
+using Core.Business;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,7 @@ builder.Services.AddSwaggerGen(setup =>
 });
 
 // Configuración de CORS
+/*
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
@@ -47,6 +49,18 @@ builder.Services.AddCors(options =>
         builder.AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader();
+    });
+});
+*/
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+    {
+        builder.WithOrigins("http://localhost:3000")
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
     });
 });
 
@@ -68,6 +82,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
     builder.Services.AddSignalR();
     builder.Services.AddSingleton<NotificationHub>();
+
+    builder.Services.AddSingleton<NotificationsLogic>();
 
 // Configuración de appsettings.json y base de datos
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Modal, Form, Table } from 'react-bootstrap';

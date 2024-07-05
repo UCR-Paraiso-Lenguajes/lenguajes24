@@ -22,7 +22,7 @@ export const NotificationComponent: React.FC = () => {
 
   useEffect(() => {
     const connection = new HubConnectionBuilder()
-      .withUrl('/notificationHub')
+      .withUrl('https://localhost:7165/notificationHub')
       .withAutomaticReconnect()
       .build();
 
