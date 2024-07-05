@@ -5,7 +5,7 @@
 
 The project is built using ASP.NET Core and includes several components:
 
-The purpose of this project is to develop an online store using React and Next.js. It allows users the shopping experience of viewing products, adding them to a shopping cart, searching by category, name, and description, and checking out.
+The project involves developing an online store using ASP.NET Core for backend operations, React and Next.js for frontend development, Node.js for server-side logic, MySQL for database management, and C# for programming tasks. It allows users the shopping experience of viewing products, adding them to a shopping cart, searching by category, name, and description, and checking out.
 
 ## Features
 - Product catalog
@@ -22,13 +22,56 @@ The purpose of this project is to develop an online store using React and Next.j
 
 ### Activity Diagram
 
-**Purchasing Flow**
+**Online Bookstore Purchase Process**
+
+This flowchart details the steps a user takes to purchase a book from an online bookstore. The steps are as follows:
+
+1. **Enter Homepage**: The user navigates to the main page of the online bookstore.
+2. **Select Book**: The user selects a book they are interested in purchasing.
+3. **Continue Shopping Decision**: The user decides whether to continue shopping or proceed to the cart.
+   - If the user wants to continue shopping, they return to the book selection step.
+   - If not, they proceed to the cart.
+4. **View Cart**: The user reviews the items in their shopping cart.
+5. **Proceed to Checkout**: The user moves forward to the checkout page.
+6. **Enter Delivery Address**: The user inputs their delivery address.
+7. **Select Payment Method**: The user chooses their preferred payment method.
+   - If the user selects **Sinpe**, they are prompted to enter the receipt number.
+   - If the user selects **Cash**, they proceed directly to the next step.
+8. **Confirm Payment**: The user confirms the payment details.
+   - The system displays the order number.
+9. **Finalize Purchase**: The user completes the purchase process.
+10. **End**: The purchase process is complete.
 
 ![Flujo de Compra](Images/DiagramaCompra.jpeg)
 
-### Diagram Packages
+### Diagram Project Structure
 
-![Paquetes](Images/Paquetes.jpeg)
+![Paquetes](Images/Paquetes.jpeg){width=200px height=150px}
+
+
+This diagram represents the structure of the project, divided into `BackEnd` and `FrontEnd` components:
+
+1. **BackEnd**:
+   - **Core**:
+     - **Business**: Contains the business logic of the application.
+     - **Database**: Manages database connections and queries.
+     - **Model**: Defines the data models used in the application.
+   - **StoreApi**:
+     - **Controller**: Handles incoming API requests and routes them to the appropriate business logic.
+   - **UT (Unit Tests)**:
+     - Contains unit tests to ensure the correctness of the backend components.
+
+2. **FrontEnd**:
+   - Built using `React`.
+   - **HomePage**: The main page displaying products.
+   - **Admin**: Contains pages and components for administrative tasks such as:
+     - `init`
+     - `payMethods`
+     - `products`
+     - `report`
+   - **Cart**: Manages the shopping cart functionality.
+   - **Payment**: Handles payment processing.
+   - **Confirm**: Manages order confirmation.
 
 ---
 
@@ -68,7 +111,7 @@ The main package contains the core business logic of the application.
 
 ## Application Structure Diagram
 
-![Fetch](Images/Fetch.jpeg)
+![Fetch](Images/Fetch.jpeg){width=200px height=150px}
 
 A[HomePage] --> B{Products}
 
@@ -78,11 +121,33 @@ B --> D{Store}
 
 C --> E{Cache}
 
+### Explanation of the Diagrams
+
+#### Diagram 1: Data Fetching and Caching
+
+This diagram illustrates the process of fetching product data for the homepage of an online store:
+
+1. **HomePage**:
+   - Displays a list of products to the user.
+   - Makes a `FETCH` request to retrieve product data.
+
+2. **Fetch Request**:
+   - Sent to an API endpoint (e.g., `http://localhost...` with query parameters).
+
+3. **Cache Store**:
+   - The fetched data is first checked in the cache.
+   - If the data is available in the cache, it is served from there to reduce database load and improve performance.
+
+4. **Database**:
+   - If the data is not in the cache, a query is made to the database.
+   - The database contains tables such as `products`, `saleLines`, and `sales`.
+   - The fetched data is then stored in the cache for future requests.
+
 ---
 
 ## Class Diagram
 
-![Clases](Images/Clases.jpeg)
+![Clases](Images/Clases.jpeg){width=200px height=150px}
 
 ---
 
@@ -121,10 +186,11 @@ This class provides the logic for interacting with the store database.
 
 ---
 
+# Activity Diagram
 
 ## Campaign Activity Diagram
 
-![Campaign](Images/Campaign.png)
+![Campaign](Images/Campaign.png){width=200px height=150px}
 
 ### 1. Admin
 
@@ -162,32 +228,74 @@ This class provides the logic for interacting with the store database.
 
 #### End
 
-### Activity Diagram
+## Payment Method Management and Validation System
 
-**Purchasing Flow**
+This system manages and validates payment methods, allowing administrators to activate or deactivate payment methods and clients to select available payment methods to complete their purchases. Below are the activity diagrams and class diagrams illustrating the functionality and structure of the system.
 
-![Paymenth Methods](Images/Paymenth.png)
+## Activity Diagrams
+
+### Payment Method Management and Validation
+
+![Paymenth Methods](Images/Paymenth.png){width=200px height=150px}
+
+This diagram shows two main activity flows:
+
+1. **Admin:**
+    - Opens the admin module.
+    - Logs in.
+    - Opens the payment method management page.
+    - Activates or deactivates a payment method.
+    - End.
+
+2. **Client:**
+    - Opens the purchase page.
+    - Selects an available payment method.
+    - Completes the purchase.
+    - End.
 
 
-### Activity Diagram
+**Purchase from the Carousel**
 
-**Purchasing Flow**
+This flowchart outlines the process a user follows when making a purchase from a product carousel on the homepage of an online store. The steps are as follows:
 
-![Carusel](Images/Carusel.png)
+1. **User Interaction Start**: The user begins their interaction with the carousel.
+2. **Opens Product Page**: The user clicks on a product in the carousel, which opens the product's detail page.
+3. **Display Products in the Carousel**: The carousel continues to display various products to the user.
+4. **User Proceeds to Checkout**: After selecting a product, the user moves forward to the checkout process.
+5. **User Completes the Purchase**: The user finalizes their purchase by providing necessary payment and shipping information.
+6. **End**: The purchase process is complete.
+
+![Carusel](Images/Carusel.png){width=200px height=150px}
 
 
-### Diagram
+### Class Diagram
 
 **Payment Method**
 
 ![Paymenth Method](Images/PaymenthUML.png)
 
+The Payment Methods Class Diagram is designed to illustrate the structure and interaction of classes responsible for managing payment methods within the system. The main purposes are:
 
-### Diagram
+- **PaymentMethods Class:** Represents individual payment methods available in the system. It includes attributes that define the payment method's identity and status, and a method for executing payments.
+  
+- **PaymentMethodDB Class:** Manages the database operations related to payment methods. It provides asynchronous methods for creating, activating, deactivating, and checking the status of payment methods in the database, ensuring efficient and reliable data management.
+  
+- **PaymentMethodsController Class:** Acts as an intermediary between the user interface and the database. It handles client requests related to payment methods by retrieving available methods, and managing their active/inactive status, thereby enforcing business logic and ensuring proper functionality of the payment methods within the system.
+
+### Products and Sales Class Diagram
 
 **Quantity**
 ![QuantityProducts](Images/QuantityUML.png)
 
+The Products and Sales Class Diagram provides a comprehensive view of the classes involved in product management and sales processing within the system. The primary purposes are:
+
+- **Product Class:** Defines the attributes and behaviors of products available for sale. It includes essential product details such as name, description, price, and category, and provides methods for creating and cloning product instances, ensuring that products are well-defined and manageable within the system.
+  
+- **ProductQuantity Class:** Manages the quantity of each product. It links products to their quantities, facilitating inventory management and ensuring that the system can track and update product availability accurately.
+  
+- **Sale Class:** Represents individual sales transactions. It includes details about the products sold, the total amount, payment method, order number, delivery address, and a unique sale identifier, thus encapsulating all necessary information for processing and tracking sales.
+  
+- **SaleBD Class:** Handles the database operations related to sales. It provides methods for saving sales records, retrieving daily and weekly sales reports, and inserting sale lines into the database. This ensures that sales data is accurately recorded, retrievable for reporting purposes, and integrated with the overall database structure for consistency and reliability.
 ---
 
 # StoreAPI Security Implementation
