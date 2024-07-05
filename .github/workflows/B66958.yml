@@ -26,7 +26,7 @@ jobs:
           dotnet build --no-restore
       - name: Test
         run: |
-          cd B66958/Labs
+          cd B66958/Store
           dotnet test --no-build --verbosity normal
   publish-api:
     runs-on: ubuntu-latest
