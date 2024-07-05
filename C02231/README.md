@@ -42,11 +42,11 @@ This flowchart details the steps a user takes to purchase a book from an online 
 9. **Finalize Purchase**: The user completes the purchase process.
 10. **End**: The purchase process is complete.
 
-![Flujo de Compra](Images/DiagramaCompra.jpeg)
+<img src="Images/DiagramaCompra.jpeg" alt="FlujoCompra" width="300" height="900">
 
 ### Diagram Project Structure
 
-<img src="Images/Paquetes.jpeg" alt="Paquetes" width="200" height="150">
+<img src="Images/Paquetes.jpeg" alt="Paquetes" width="600" height="550">
 
 
 This diagram represents the structure of the project, divided into `BackEnd` and `FrontEnd` components:
@@ -111,7 +111,7 @@ The main package contains the core business logic of the application.
 
 ## Application Structure Diagram
 
-![Fetch](Images/Fetch.jpeg){width=200px height=150px}
+<img src="Images/Fetch.jpeg" alt="Fetch" width="600" height="550">
 
 A[HomePage] --> B{Products}
 
@@ -147,7 +147,7 @@ This diagram illustrates the process of fetching product data for the homepage o
 
 ## Class Diagram
 
-![Clases](Images/Clases.jpeg){width=200px height=150px}
+![Clases](Images/Clases.jpeg)
 
 ---
 
@@ -190,7 +190,7 @@ This class provides the logic for interacting with the store database.
 
 ## Campaign Activity Diagram
 
-![Campaign](Images/Campaign.png){width=200px height=150px}
+<img src="Images/Paquetes.jpeg" alt="Paquetes" width="1000" height="350">
 
 ### 1. Admin
 
@@ -237,6 +237,7 @@ This system manages and validates payment methods, allowing administrators to ac
 ### Payment Method Management and Validation
 
 ![Paymenth Methods](Images/Paymenth.png){width=200px height=150px}
+<img src="Images/Paquetes.jpeg" alt="Paquetes" width="600" height="550">
 
 This diagram shows two main activity flows:
 
@@ -266,6 +267,7 @@ This flowchart outlines the process a user follows when making a purchase from a
 6. **End**: The purchase process is complete.
 
 ![Carusel](Images/Carusel.png){width=200px height=150px}
+<img src="Images/Paquetes.jpeg" alt="Paquetes" width="600" height="550">
 
 
 ### Class Diagram
