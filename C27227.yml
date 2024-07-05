@@ -29,7 +29,6 @@ services:
     container_name: ui
     hostname: ui
     environment:
-      #- API=192.168.1.12:57600
       - NEXT_PUBLIC_API=http://localhost:8080   
     ports:
       - "3000:3000"
@@ -42,8 +41,7 @@ services:
     hostname: api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      #- mysql=192.168.1.10:3306
-      - DB="Server=mysql;Database=store;Uid=root;Pwd=123456;"
+      - DB=Server=mysql;Database=store;Uid=root;Pwd=123456;
     ports:
       - "8080:8080"
     depends_on:
@@ -55,4 +53,3 @@ services:
 networks:
   demo:
     driver: bridge
-
