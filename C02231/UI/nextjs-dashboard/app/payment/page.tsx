@@ -63,7 +63,7 @@ export default function PaymentPage() {
                 setPaymentMethods(data);
             }
         } catch (error) {
-            console.error("Error fetching payment methods:", error);
+            throw new Error("Error fetching payment methods:", error);
         }
     };
 
@@ -171,8 +171,8 @@ export default function PaymentPage() {
                     throw new Error('Error to send data: ' + JSON.stringify(errorResponseData));
                 }
             } catch (error) {
-                console.error(error);
                 setCart(prevCart => ({ ...prevCart, confirmation: 'Error processing your order. Please try again.' }));
+                throw new Error(error);
             }
         } else {
             setCart(prevCart => ({ ...prevCart, confirmation: 'Please complete all required fields or add items to the cart.' }));
