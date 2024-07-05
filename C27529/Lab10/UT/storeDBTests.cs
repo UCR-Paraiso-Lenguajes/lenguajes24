@@ -15,7 +15,7 @@ namespace storeApi.Tests
         [SetUp]
         public async Task Setup()
         {
-            ConnectionDB.Init("Server=localhost;Database=mysql;Uid=root;Pwd=123456;");
+            ConnectionDB.Init("Server=172.20.192.1;Database=mysql;Uid=root;Pwd=123456;");
             storeDB = new StoreDB();
 
             await StoreDB.CreateMysql();
