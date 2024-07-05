@@ -613,5 +613,3 @@ public static void InsertProduct(Product product, MySqlConnection connection, My
 This implementation of the delegate method performs the actual insertion of a Product into the database using a MySqlCommand.
 
 By using a delegate, the insertion logic can be encapsulated and passed as a parameter, making the code more modular and flexible.
-
-```
