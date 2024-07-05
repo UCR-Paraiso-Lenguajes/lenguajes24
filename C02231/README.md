@@ -475,6 +475,17 @@ Binary search is a classic algorithm for finding a sorted list of products. It w
   - Renders two charts using `react-google-charts` (`Table` for daily sales and `PieChart` for weekly sales) to visualize sales data fetched from the API.
   - Includes error handling to redirect unauthorized users back to the login page (`/admin`).
 
+  **Examples of the reports:**
+  - Day Reports:
+![DayReports](Images/DayReports.png)
+ 
+ - Week Reports:
+![WeeksReports](Images/WeeksReports.png)
+ 
+ - Complete Reports:
+![Reports](Images/Reports.png)
+ 
+
 ### Importance of `react-google-charts`
 
 1. **Ease of Use and Customization**:
