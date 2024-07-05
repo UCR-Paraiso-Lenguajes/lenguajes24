@@ -70,7 +70,7 @@ export default function Home() {
           setProductList(searchData.products);
         }
       } catch (error) {
-        throw new Error('Error loading data.', error);
+        throw new Error('Error loading data.');
       }
     };
 

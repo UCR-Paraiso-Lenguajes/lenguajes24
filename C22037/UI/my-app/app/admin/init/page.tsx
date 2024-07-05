@@ -35,6 +35,12 @@ interface Message {
     timestamp: string;
 }
 
+interface PaymentMethod {
+    paymentType: number;
+    paymentName: string;
+    isActive: boolean;
+}
+
 export default function Init() {
     const router = useRouter();
     const [selectedOption, setSelectedOption] = useState('');
@@ -55,6 +61,7 @@ export default function Init() {
     });
     const [messages, setMessages] = useState<Message[]>([]);
     const [newMessage, setNewMessage] = useState('');
+    const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
     const URL = process.env.NEXT_PUBLIC_API_URL;
     const [errors, setErrors] = useState<string[]>([]);
     const [connection, setConnection] = useState(null);
@@ -112,6 +119,7 @@ export default function Init() {
     useEffect(() => {
         fetchData();
         fetchCategories();
+        fetchPaymentMethods();
     }, [selectedDay]);
 
     const fetchData = async () => {
@@ -192,6 +200,35 @@ export default function Init() {
             localStorage.setItem('productList', JSON.stringify(data.products));
         } catch (error) {
             throw new Error("Error loading products.");
+        }
+    };
+
+    const fetchPaymentMethods = async () => {
+        try {
+            const response = await fetch(URL + '/api/PaymentMethods/getPaymentMethods');
+            const data = await response.json();
+            setPaymentMethods(data);
+        } catch (error) {
+            throw new Error('Error fetching payment methods.');
+        }
+    };
+
+    const togglePaymentMethodStatus = async (paymentMethodId, isActive) => {
+        try {
+            const response = await fetch(URL + '/api/PaymentMethods/updateStatus', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ PaymentId: paymentMethodId, IsActive: !isActive })
+            });
+            if (response.ok) {
+                fetchPaymentMethods();
+            } else {
+                throw new Error('Failed to update payment method status.');
+            }
+        } catch (error) {
+            throw new Error('Error updating payment method status.');
         }
     };
 
@@ -411,6 +448,7 @@ export default function Init() {
                         <button className="Button" onClick={() => { setSelectedOption("Products"); setShowDeleteProducts(false); setShowInsertProducts(false); }}>Products</button>
                         <button className="Button" onClick={() => setSelectedOption("Reports")}>Reports</button>
                         <button className="Button" onClick={() => setSelectedOption("Campaigns")}>Campaigns</button>
+                        <button className="Button" onClick={() => setSelectedOption("PaymentMethods")}>Payment Methods</button>
                     </div>
                 </div>
 
@@ -565,6 +603,31 @@ export default function Init() {
                                 />
                                 <button onClick={handleSendMessage}>Send</button>
                             </div>
+                        </div>
+                    )}
+                    {selectedOption === "PaymentMethods" && (
+                        <div>
+                            <h2>Payment Methods</h2>
+                            {paymentMethods.length > 0 ? (
+                                <ul>
+                                    {paymentMethods.length > 0 ? (
+                                        <ul>
+                                            {paymentMethods.map(method => (
+                                                <li key={method.paymentType}>
+                                                    {method.paymentName} - {method.isActive ? 'Active' : 'Inactive'}
+                                                    <button onClick={() => togglePaymentMethodStatus(method.paymentType, method.isActive)}>
+                                                        {method.isActive ? 'Deactivate' : 'Activate'}
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p>No payment methods available.</p>
+                                    )}
+                                </ul>
+                            ) : (
+                                <p>No payment methods available.</p>
+                            )}
                         </div>
                     )}
                 </div>
