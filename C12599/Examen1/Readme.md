@@ -62,70 +62,97 @@ El diagrama muestra los flujos de actividad relacionados con el carrusel de prod
 
 Este diagrama proporciona una vista general de la estructura y componentes del proyecto de tienda en línea.
 
+## Configuración del Proyecto
+
+Para configurar el proyecto, siga los pasos a continuación:
+
+1. **Clonar el repositorio**:
+    ```bash
+    git clone https://github.com/usuario/tienda-en-linea.git
+    cd tienda-en-linea
+    ```
+
+2. **Instalar dependencias**:
+    ```bash
+    dotnet restore
+    ```
+
+3. **Configurar la base de datos**:
+    - Asegúrese de tener una base de datos configurada y actualice la cadena de conexión en `appsettings.json`.
+
+4. **Ejecutar migraciones**:
+    ```bash
+    dotnet ef database update
+    ```
+
+5. **Iniciar la aplicación**:
+    ```bash
+    dotnet run
+    ```
 
 ## Seguridad
 
 La seguridad en este proyecto se implementa utilizando autenticación y autorización basada en JWT (JSON Web Tokens). A continuación se muestra un resumen de los pasos y el código necesario para configurar esta seguridad:
 
 1. **Configuración de JWT en `Program.cs`**:
-   - Se añade el servicio de autenticación y se configura JWT Bearer.
-   - Se define el esquema de seguridad para Swagger.
+    ```csharp
+    using System.Text;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.IdentityModel.Tokens;
+    using Microsoft.OpenApi.Models;
+
+    var builder = WebApplication.CreateBuilder(args);
+
+    // Configuración de servicios de autenticación JWT
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = "http://localhost:7043",
+                ValidAudience = "http://localhost:7043",
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
+            };
+        });
+
+    // Configuración de Swagger para incluir autenticación JWT
+    builder.Services.AddSwaggerGen(setup =>
+    {
+        var jwtSecurityScheme = new OpenApiSecurityScheme
+        {
+            BearerFormat = "JWT",
+            Name = "JWT Authentication",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.Http,
+            Scheme = JwtBearerDefaults.AuthenticationScheme,
+            Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+
+            Reference = new OpenApiReference
+            {
+                Id = JwtBearerDefaults.AuthenticationScheme,
+                Type = ReferenceType.SecurityScheme
+            }
+        };
+
+        setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+        setup.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            { jwtSecurityScheme, Array.Empty<string>() }
+        });
+    });
+    ```
+
+## Autenticación y Autorización
+
+### Modelo de Usuario y Seeder:
+Se crea un modelo de usuario con roles y un seeder para inicializar los usuarios.
 
 ```csharp
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Configuración de servicios de autenticación JWT
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = "http://localhost:7043",
-            ValidAudience = "http://localhost:7043",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TheSecretKeyNeedsToBePrettyLongSoWeNeedToAddSomeCharsHere"))
-        };
-    });
-
-// Configuración de Swagger para incluir autenticación JWT
-builder.Services.AddSwaggerGen(setup =>
-{
-    var jwtSecurityScheme = new OpenApiSecurityScheme
-    {
-        BearerFormat = "JWT",
-        Name = "JWT Authentication",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.Http,
-        Scheme = JwtBearerDefaults.AuthenticationScheme,
-        Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
-
-        Reference = new OpenApiReference
-        {
-            Id = JwtBearerDefaults.AuthenticationScheme,
-            Type = ReferenceType.SecurityScheme
-        }
-    };
-
-    setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
-
-    setup.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        { jwtSecurityScheme, Array.Empty<string>() }
-    });
-});
-
-
-## Modelo de Usuario y Seeder:
-### Se crea un modelo de usuario con roles y un seeder para inicializar los usuarios.
-
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -184,11 +211,8 @@ namespace storeapi.Models
     }
 }
 
-
-## Controlador de Autenticación:
-### Se crea un controlador para manejar las solicitudes de inicio de sesión y generar tokens JWT.
-
-
+Controlador de Autenticación:
+Se crea un controlador para manejar las solicitudes de inicio de sesión y generar tokens JWT.
 
 using System;
 using System.Collections.Generic;
@@ -264,4 +288,6 @@ namespace storeapi.Controllers
         public string Token { get; set; }
     }
 }
+
+
 
