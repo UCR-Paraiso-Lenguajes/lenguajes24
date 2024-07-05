@@ -1,4 +1,4 @@
-"use client"; // Para utilizar el cliente en lugar del servidor
+"use client";
 import { useEffect, useState } from 'react';
 import "../../public/styles.css";
 import Link from 'next/link';
@@ -9,13 +9,14 @@ const PaymentMethodsEnum = {
 };
 
 export default function Payment() {
-  const [selectedMethod, setSelectedMethod] = useState(PaymentMethodsEnum.Cash);
+  const [selectedMethod, setSelectedMethod] = useState(null);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
   const [cartProducts, setCartProducts] = useState<string[]>([]);
   const [address, setAddress] = useState('');
   const [total, setTotal] = useState('');
   const [purchaseNumber, setPurchaseNumber] = useState('');
   const [storedCart, setStoredCart] = useState({ products: {} });
+  const [activePaymentMethods, setActivePaymentMethods] = useState([]);
   const URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
@@ -30,13 +31,21 @@ export default function Payment() {
 
     const storedTotal = localStorage.getItem('total') || '';
     setTotal(storedTotal);
+
+    fetchActivePaymentMethods();
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('selectedMethod', selectedMethod.toString());
-  }, [selectedMethod]);
+  const fetchActivePaymentMethods = async () => {
+    try {
+      const response = await fetch(URL + '/api/PaymentMethods/getPaymentMethods');
+      const data = await response.json();
+      setActivePaymentMethods(data.filter(method => method.isActive));
+    } catch (error) {
+      throw new Error('Error fetching active payment methods.');
+    }
+  };
 
-  const handleMethodSelect = (method: number) => {
+  const handleMethodSelect = (method) => {
     setSelectedMethod(method);
     setPaymentConfirmed(false);
   };
@@ -46,7 +55,6 @@ export default function Payment() {
   };
 
   const handleConfirmation = async () => {
-    const paymentMethodValue = selectedMethod === PaymentMethodsEnum.Sinpe ? PaymentMethodsEnum.Sinpe : PaymentMethodsEnum.Cash;
     try {
       const dataSend = {
         ProductIds: cartProducts.map(id => id),
@@ -77,7 +85,6 @@ export default function Payment() {
       localStorage.removeItem('cart');
       localStorage.removeItem('address');
       localStorage.removeItem('selectedMethod');
-
     } catch (error) {
       throw new Error('Error confirming purchase.');
     }
@@ -93,26 +100,38 @@ export default function Payment() {
 
       <div className="body">
         <h2>Payment Method</h2>
-        <div>
-          <button className="Button" onClick={() => handleMethodSelect(PaymentMethodsEnum.Cash)}>Cash</button>
-          <button className="Button" onClick={() => handleMethodSelect(PaymentMethodsEnum.Sinpe)}>Sinpe</button>
-        </div>
-        {selectedMethod === PaymentMethodsEnum.Cash && (
+        {activePaymentMethods.length > 0 ? (
+          <div>
+            {activePaymentMethods.map(method => (
+              <button
+                key={method.paymentType}
+                className="Button"
+                onClick={() => handleMethodSelect(method.paymentType)}
+              >
+                {method.paymentName}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p>No active payment methods available.</p>
+        )}
+
+        {selectedMethod !== null && (
           <div>
             <p>Purchase number: {purchaseNumber}.</p>
-            <p>Awaiting confirmation from the administrator regarding the payment.</p>
+            {selectedMethod === PaymentMethodsEnum.Cash ? (
+              <p>Awaiting confirmation from the administrator regarding the payment.</p>
+            ) : (
+              <div>
+                <p>Make the payment through Sinpe to the number 8596-1362.</p>
+                <input type="text" placeholder="Enter the receipt code here" />
+                <button className="Button" onClick={handleSinpePaymentConfirmation}>Confirm</button>
+                {paymentConfirmed && <p>Awaiting confirmation from the administrator regarding the payment.</p>}
+              </div>
+            )}
+            <button className="Button" onClick={handleConfirmation}>Confirm Purchase</button>
           </div>
         )}
-        {selectedMethod === PaymentMethodsEnum.Sinpe && (
-          <div>
-            <p>Purchase number: {purchaseNumber}.</p>
-            <p>Make the payment through Sinpe to the number 8596-1362.</p>
-            <input type="text" placeholder="Enter the receipt code here" />
-            <button className="Button" onClick={handleSinpePaymentConfirmation}>Confirm</button>
-            {paymentConfirmed && <p>Awaiting confirmation from the administrator regarding the payment.</p>}
-          </div>
-        )}
-        <button className="Button" onClick={handleConfirmation}>Confirm Purchase</button>
       </div>
 
       <div className="footer">

@@ -52,7 +52,8 @@ namespace TodoApi.Database
 
                     CREATE TABLE IF NOT EXISTS paymentMethods (
                         paymentId INT PRIMARY KEY,
-                        paymentName VARCHAR(30) NOT NULL
+                        paymentName VARCHAR(30) NOT NULL,
+                        isActive BOOLEAN DEFAULT TRUE
                     );
 
                     CREATE TABLE IF NOT EXISTS products (
@@ -91,10 +92,10 @@ namespace TodoApi.Database
                         deleted BOOLEAN NOT NULL DEFAULT FALSE
                     );
 
-                    INSERT INTO paymentMethods (paymentId, paymentName)
+                    INSERT INTO paymentMethods (paymentId, paymentName, isActive)
                     VALUES 
-                        (0, 'Cash'),
-                        (1, 'Sinpe');
+                        (0, 'Cash', TRUE),
+                        (1, 'Sinpe', TRUE);
 
                     INSERT INTO sales (purchase_date, total, payment_method, purchase_number) 
                     VALUES
@@ -312,6 +313,56 @@ namespace TodoApi.Database
                     await command.ExecuteNonQueryAsync();
                 }
             }
+        }
+
+        public async Task UpdatePaymentMethodStatusAsync(int paymentId, bool isActive)
+        {
+            using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
+            {
+                await connection.OpenAsync();
+                var query = @"
+                    USE store;
+                    UPDATE paymentMethods
+                    SET isActive = @isActive
+                    WHERE paymentId = @paymentId;";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@isActive", isActive);
+                    command.Parameters.AddWithValue("@paymentId", paymentId);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        public async Task<IEnumerable<PaymentMethod>> GetPaymentMethodsAsync()
+        {
+            var methods = new List<PaymentMethod>();
+
+            using (var connection = new MySqlConnection(Storage.Instance.ConnectionString))
+            {
+                await connection.OpenAsync();
+                var query = "USE store; SELECT paymentId, paymentName, isActive FROM paymentMethods;";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var paymentType = (PaymentMethod.Type)reader.GetInt32("paymentId");
+                            var paymentName = reader.GetString("paymentName");
+                            var isActive = reader.GetBoolean("isActive");
+
+                            PaymentMethod method = PaymentMethod.SetPaymentType(paymentType);
+                            method.IsActive = isActive;
+                            method.PaymentName = paymentName;
+                            methods.Add(method);
+                        }
+                    }
+                }
+            }
+            return methods;
         }
     }
 }
