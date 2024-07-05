@@ -12,9 +12,8 @@
     - [Activity Diagram for Carousel and PaymentMethods](#activity-diagram-for-carousel-and-paymentmethods)
 4. [Project Setup](#project-setup)
 5. [Security](#security)
-6. [Authentication and Authorization](#authentication-and-authorization)
-7. [Application Components](#application-components)
-8. [Conclusion](#conclusion)
+6. [Cache Products](#How-Product-Caching-Was-Implemented) 
+   
 
 ## Introduction
 
@@ -30,7 +29,7 @@ The system is designed to be modular and scalable, with a microservices architec
 
 ![Activity Diagram](actividad.png)
 
-The activity diagram shows the workflow within the system, from user authentication to making a purchase.
+The activity diagram shows the workflow within the system, from user authentication to making a purchase and the Search Products.
 
 ### Class Diagram
 
@@ -90,7 +89,7 @@ To set up the project, follow the steps below:
     dotnet run
     ```
 
-## Security
+# Security
 
 Security in this project is implemented using JWT (JSON Web Tokens) for authentication and authorization. Below is a summary of the steps and code needed to configure this security:
 
@@ -367,7 +366,7 @@ namespace storeapi.Controllers
 }
 
 ```
-## How Product Caching Was Implemented
+# How Product Caching Was Implemented
 
 Product caching was first implemented by creating an array and saving it in the database. Then, these products are retrieved from the database and stored in memory cache to improve performance. Below is a detailed explanation of how this process was implemented.
 
@@ -380,34 +379,29 @@ using System;
 using System.Collections.Generic;
 using MySqlConnector;
 using storeapi.Models;
-using core;
 
 namespace storeapi.Database
 {
     public sealed class StoreDB
     {
-        // Define the delegate to insert a product
+        // Delegate to insert a product
         public delegate void InsertProductDelegate(Product product, MySqlConnection connection, MySqlTransaction transaction);
 
         public static void CreateMysql()
         {
-            var categories = new Categories();
-            var products = new List<Product>();
-            Random random = new Random();
-
             using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
                 connection.Open();
 
-                // Create the table if it does not exist
+                // Create the products table if it does not exist
                 string createTableQuery = @"
                     CREATE TABLE IF NOT EXISTS products (
                         id INT AUTO_INCREMENT PRIMARY KEY,
-                        name VARCHAR(100) not null,
-                        price DECIMAL(10, 2) not null,
-                        image TEXT not null,
-                        description VARCHAR(255) not null,
-                        category INT not null
+                        name VARCHAR(100) NOT NULL,
+                        price DECIMAL(10, 2) NOT NULL,
+                        image TEXT NOT NULL,
+                        description VARCHAR(255) NOT NULL,
+                        category INT NOT NULL
                     )";
 
                 using (var createTableCommand = new MySqlCommand(createTableQuery, connection))
@@ -420,46 +414,15 @@ namespace storeapi.Database
                 using (var checkProductsCommand = new MySqlCommand(checkProductsQuery, connection))
                 {
                     int productCount = Convert.ToInt32(checkProductsCommand.ExecuteScalar());
-                    if (productCount > 0)
-                    {
-                        return;
-                    }
+                    if (productCount > 0) return;
                 }
 
-                // Generate products
-                string[] randomWords = { "amazing", "awesome", "fantastic", "incredible", "superb", "excellent", "wonderful", "marvelous", "brilliant", "fabulous" };
-                string[] productNames = { "Gizmo", "Widget", "Contraption", "Gadget", "Appliance", "Device", "Tool", "Instrument", "Machine", "Equipment" };
-
-                for (int i = 1; i <= 14; i++)
+                // Sample products to insert
+                var products = new List<Product>
                 {
-                    Category randomCategory = GetRandomCategory(categories);
-                    int randomIndex = random.Next(0, categories.ListCategories.Count);
-
-                    string description = $"Description of Product {i}: ";
-                    for (int j = 0; j < 1; j++)
-                    {
-                        int innerRandomWordIndex = random.Next(0, randomWords.Length);
-                        description += randomWords[innerRandomWordIndex] + " ";
-                    }
-
-                    int randomWordIndex = random.Next(0, randomWords.Length);
-                    int randomNameIndex = random.Next(0, productNames.Length);
-                    string productName = $"{productNames[randomNameIndex]} {randomWords[randomWordIndex]}";
-
-                    products.Add(new Product
-                    {
-                        Name = productName,
-                        ImageUrl = $"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlgv-oyHOyGGAa0U9W524JKA361U4t22Z7oQ&usqp=CAU",
-                        Price = 10.99m * i,
-                        Description = description.Trim(),
-                        Category = randomCategory
-                    });
-                }
-
-                if (products.Count == 0)
-                {
-                    throw new ArgumentException("The product list cannot be empty.", nameof(products));
-                }
+                    new Product { Name = "Gizmo", Price = 19.99m, ImageUrl = "image1.jpg", Description = "A cool gizmo", Category = new Category { Id = 1 } },
+                    new Product { Name = "Widget", Price = 29.99m, ImageUrl = "image2.jpg", Description = "A useful widget", Category = new Category { Id = 2 } }
+                };
 
                 InsertProducts(products, InsertProduct);
             }
@@ -476,15 +439,8 @@ namespace storeapi.Database
                 {
                     try
                     {
-                        string deleteProductsQuery = "DELETE FROM products";
-                        using (var deleteCommand = new MySqlCommand(deleteProductsQuery, connection, transaction))
+                        foreach (var product in products)
                         {
-                            deleteCommand.ExecuteNonQuery();
-                        }
-
-                        foreach (Product product in products)
-                        {
-                            ValidateProductForInsert(product);
                             insertProductDelegate(product, connection, transaction);
                         }
 
@@ -516,46 +472,9 @@ namespace storeapi.Database
                 insertCommand.ExecuteNonQuery();
             }
         }
-
-        private static Category GetRandomCategory(Categories categories)
-        {
-            if (categories == null)
-            {
-                throw new ArgumentNullException(nameof(categories), "The instance of 'categories' cannot be null.");
-            }
-
-            List<Category> categoryList = categories.ListCategories;
-
-            if (categoryList == null || categoryList.Count == 0)
-            {
-                throw new ArgumentException("The category list is empty or null.");
-            }
-
-            Random random = new Random();
-            int index = random.Next(0, categoryList.Count);
-
-            return categoryList[index];
-        }
-
-        private static void ValidateProductForInsert(Product product)
-        {
-            if (product == null)
-            {
-                throw new ArgumentNullException(nameof(product), "The product cannot be null.");
-            }
-
-            if (string.IsNullOrWhiteSpace(product.Name))
-            {
-                throw new ArgumentException("The product name cannot be null or empty.", nameof(product.Name));
-            }
-
-            if (product.Price < 0)
-            {
-                throw new ArgumentException("The product price cannot be negative.", nameof(product.Price));
-            }
-        }
     }
 }
+
 ```
 
 ## Retrieving Products and Storing in Memory Cache
@@ -563,23 +482,12 @@ namespace storeapi.Database
 After inserting the products into the database, they are retrieved and stored in memory cache to improve performance.
 
 ```csharp
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Caching.Memory;
-using storeapi.Database;
-using storeapi.Models;
-using core;
-using MySqlConnector;
-
-namespace storeapi.Business
-{
-    public class InsertProductsLogic
+ public class InsertProductsLogic
     {
         private readonly IMemoryCache _cache;
+        private readonly InsertProductDelegate _insertProductDelegate;
 
         public delegate void InsertProductDelegate(Product product, MySqlConnection connection, MySqlTransaction transaction);
-
-        private readonly InsertProductDelegate _insertProductDelegate;
 
         public InsertProductsLogic(IMemoryCache cache, InsertProductDelegate insertProductDelegate)
         {
@@ -591,9 +499,10 @@ namespace storeapi.Business
         {
             ValidateProduct(product);
 
-            if (!_cache.TryGetValue("Products", out List<Product> products))
+            var products = _cache.GetOrCreate("Products", entry =>
             {
-                products = StoreDB.RetrieveDatabaseInfo().Select(row => new Product
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60);
+                return StoreDB.RetrieveDatabaseInfo().Select(row => new Product
                 {
                     Name = row[1],
                     Price = decimal.Parse(row[2]),
@@ -601,8 +510,7 @@ namespace storeapi.Business
                     ImageUrl = row[4],
                     Category = new Category { Id = int.Parse(row[5]) }
                 }).ToList();
-                _cache.Set("Products", products);
-            }
+            });
 
             using (var connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
             {
@@ -628,16 +536,6 @@ namespace storeapi.Business
             return products;
         }
 
-        private void ValidateProduct(Product product)
-        {
-            if (product == null) throw new ArgumentException("The product cannot be null.");
-            if (string.IsNullOrWhiteSpace(product.Name)) throw new ArgumentException("The product name cannot be empty or null.", nameof(product.Name));
-            if (product.Price <= 0) throw new ArgumentOutOfRangeException(nameof(product.Price), "The product price must be greater than zero.");
-            if (string.IsNullOrWhiteSpace(product.ImageUrl)) throw new ArgumentException("The product image URL cannot be empty or null.", nameof(product.ImageUrl));
-            if (string.IsNullOrWhiteSpace(product.Description)) throw new ArgumentException("The product description cannot be empty or null.", nameof(product.Description));
-        }
-    }
-}
 ```
 
 ## Explanation of the Delegate
