@@ -4,7 +4,7 @@ import { useWebSocket } from '../../hooks/WebSocketContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useRouter } from 'next/navigation';
 import { decodeToken, checkTokenDate } from '../../hooks/jwtHooks';
-
+import Sidebar from "../init/page";
 interface CampaignMessage {
   id: number;
   title: string;
@@ -135,6 +135,8 @@ const CampaignPage: React.FC = () => {
   }, [router]);
 
   return (
+    <div>
+      <Sidebar/>
     <div className="container mt-5">
       <h1>Campaigns</h1>
       <button className="btn btn-primary mb-4" onClick={() => setShowModal(true)}>
@@ -199,6 +201,7 @@ const CampaignPage: React.FC = () => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };
