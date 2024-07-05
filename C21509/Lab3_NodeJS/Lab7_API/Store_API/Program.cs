@@ -77,7 +77,7 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddSingleton(new DB_API(connectionString));
 
     var dbApi = new DB_API();
-    dbApi.ConnectDB();
+   // dbApi.ConnectDB();
 
 }
 else if (builder.Environment.IsProduction())
@@ -86,7 +86,7 @@ else if (builder.Environment.IsProduction())
     builder.Services.AddSingleton(new DB_API(connectionString));
 
     var dbApi = new DB_API();
-    dbApi.ConnectDB();
+    //dbApi.ConnectDB();
 
 }
 
