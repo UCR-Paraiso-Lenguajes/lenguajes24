@@ -2,9 +2,9 @@ name: B66958
 
 on:
   push:
-    branches: [ "B66958_DevOps" ]
+    branches: [ "B66958" ]
   pull_request:
-    branches: [ "B66958_DevOps" ]
+    branches: [ "B66958" ]
 
 jobs:
   test:
@@ -36,20 +36,20 @@ jobs:
     - name: Build & Push Image
       run: |
         cd B66958/Labs
-        echo "${{ secrets.DOCKERHUBPASSB66958  }}" | docker login -u "corey1898@hotmail.com" --password-stdin
+        echo "${{ secrets.DOCKERHUBPASSB66958  }}" | docker login -u "${{ secrets.DOCKERHUBACCOUNTB66958  }}" --password-stdin
         docker image build -t eisenheimdiego/store_api:latest .
         docker image build -t eisenheimdiego/store_api:0.0.1 .
         docker push eisenheimdiego/store_api:latest
         docker push eisenheimdiego/store_api:0.0.1
   publish-ui:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Build & Push Image
-      run: |
-        cd B66958/Labs
-        echo "${{ secrets.DOCKERHUBPASSB66958  }}" | docker login -u "${{ secrets.DOCKERHUBACCOUNTB66958  }}" --password-stdin
-        docker image build -t eisenheimdiego/store_fe:latest .
-        docker image build -t eisenheimdiego/store_fe:0.0.1 .
-        docker push eisenheimdiego/store_fe:latest 
-        docker push eisenheimdiego/store_fe:0.0.1
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v1
+      - name: Build & Push Image
+        run: |
+          cd B66958/Labs
+          echo "${{ secrets.DOCKERHUBPASSB66958  }}" | docker login -u "${{ secrets.DOCKERHUBACCOUNTB66958  }}" --password-stdin
+          docker image build -t eisenheimdiego/store_fe:latest .
+          docker image build -t eisenheimdiego/store_fe:0.0.1 .
+          docker push eisenheimdiego/store_fe:latest 
+          docker push eisenheimdiego/store_fe:0.0.1

@@ -164,7 +164,6 @@ Este proyecto es una tienda web completa donde los usuarios pueden comprar produ
 **Métodos:**
 - **CreateCartAsync(cart: Cart)**: Método asincrónico que crea un carrito.
 
-
 ### Diagrama de la página de reportes
 ![Diagrama de la página de reportes](Images/pagreportes.jpeg)
 
@@ -259,7 +258,6 @@ Este proyecto es una tienda web completa donde los usuarios pueden comprar produ
 
 
 ## Diagrama de actividad de Cart
-
 ![Diagrama de actividad de Cart](Images/DiagramaActividadCart.png)
 
 ## Diagrama de actividad del Pago
@@ -298,6 +296,7 @@ El rol del usuario se extrae del token JWT y se utiliza para controlar el acceso
 
 ### Caché de productos
 Para mejorar la eficiencia y reducir las solicitudes a la base de datos, se implementa un mecanismo de caché para los productos en la tienda. Los productos y categorías se cargan inicialmente desde la base de datos y se almacenan en listas que tienen los models de estas clases, esto para que el acceso a la base de datos no afecte al rendimiento general de la aplicación.
+
 
 ## Buscador de productos
 
