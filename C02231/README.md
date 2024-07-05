@@ -46,7 +46,7 @@ This flowchart details the steps a user takes to purchase a book from an online 
 
 ### Diagram Project Structure
 
-![Paquetes](Images/Paquetes.jpeg){width=200px height=150px}
+<img src="Images/Paquetes.jpeg" alt="Paquetes" width="200" height="150">
 
 
 This diagram represents the structure of the project, divided into `BackEnd` and `FrontEnd` components:
