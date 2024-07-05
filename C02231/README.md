@@ -174,12 +174,12 @@ This class provides the logic for interacting with the store database.
 
 ### Diagram
 
-**Purchasing Flow**
+**Payment Method**
 
-![Paymenth Method](Images/PaymentUML.png)
+![Paymenth Method](Images/PaymenthUML.png)
 
 
 ### Diagram
 
-**Purchasing Flow**
-![QuantityProducts](Images/Quantity.png)
+**Quantity**
+![QuantityProducts](Images/QuantityUML.png)

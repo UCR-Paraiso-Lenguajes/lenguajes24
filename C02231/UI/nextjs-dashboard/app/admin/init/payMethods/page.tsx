@@ -89,14 +89,14 @@ const PaymentMethods = () => {
                                 <tbody>
                                     {paymentMethods.map(method => (
                                         <tr key={method.id}>
-                                            <td>{method.method_name}</td>
+                                            <td>{method.name}</td>
                                             <td>{method.active ? 'Active' : 'Inactive'}</td>
                                             <td>
                                                 <button
                                                     className={`btn ${method.active ? 'btn-danger' : 'btn-success'}`}
                                                     onClick={() => activePaymentMethod(method.id)}
                                                 >
-                                                    'Activate'
+                                                    Activate
                                                 </button>
                                                 <button
                                                     className="btn btn-warning ml-2"
