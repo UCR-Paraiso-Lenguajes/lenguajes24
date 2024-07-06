@@ -7,12 +7,8 @@
 - [Uso](#uso)
 - [Características](#características)
 - [Documentación Técnica](#documentación-técnica)
-- [Contribución](#contribución)
-- [Pruebas](#pruebas)
-- [Despliegue](#despliegue)
 - [Roadmap](#roadmap)
 - [Autores](#autores)
-- [Agradecimientos](#agradecimientos)
 
 
 ## Instalación
@@ -262,12 +258,10 @@ El proyecto tiene varias funcionalidades planificadas para futuras versiones. A 
    - Implementar una sección donde los usuarios puedan ver el historial de sus pedidos.
    - Mostrar detalles de cada pedido, incluyendo productos, cantidades y estado del pedido.
 
-
-
 ## Autores
 
-- Jose Solano Araya [j14solano23@gmail.com](https://www.linkedin.com/in/jose-solano-araya-6b558b234/)
- 
+- Jose Solano Araya [j14solano23@gmail.com](https://www.linkedin.com/in/jose-solano-araya-6b558b234/) )
+- [Video](https://youtu.be/XidnDG3hzTA)
 
 
 
