@@ -7,7 +7,8 @@ import { useRouter } from 'next/navigation';
 
 const Cart_Store: React.FC = () => {
   const storedData = localStorage.getItem('tienda');
-  const dataObject = storedData ? JSON.parse(storedData) : { products: [], cart: { subtotal: 0, subtotalImpuesto: 0, total: 0, impVentas: 13, cartItems: {} } };
+  const initialData = storedData ? JSON.parse(storedData) : { products: [], cart: { subtotal: 0, subtotalImpuesto: 0, total: 0, impVentas: 13, cartItems: {} } };
+  const [dataObject, setDataObject] = useState(initialData);
   const router = useRouter();
 
   useEffect(() => {
@@ -23,12 +24,12 @@ const Cart_Store: React.FC = () => {
     }
   }, [router]);
 
-  const [cartEmpty, setCartEmpty] = useState(!dataObject.products || dataObject.products.length === 0);
+  const [cartEmpty, setCartEmpty] = useState(!initialData.products || initialData.products.length === 0);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [productQuantities, setProductQuantities] = useState(() => {
     const quantities = {};
-    if (dataObject && dataObject.products) {
-      dataObject.products.forEach((product) => {
+    if (initialData && initialData.products) {
+      initialData.products.forEach((product) => {
         quantities[product.id] = product.amount || 1;
       });
     }
@@ -36,8 +37,8 @@ const Cart_Store: React.FC = () => {
   });
 
   useEffect(() => {
-    if (dataObject && dataObject.products) {
-      handlePrice(productQuantities);
+    if (initialData && initialData.products) {
+      handlePrice(productQuantities, initialData);
     }
   }, []);
 
@@ -45,46 +46,48 @@ const Cart_Store: React.FC = () => {
     setShowAddressForm(true);
   };
 
-  const handlePrice = (newQuantities) => {
+  const handlePrice = (newQuantities, data = dataObject) => {
     let totalPriceWithoutTax = 0;
-    if (dataObject && dataObject.products) {
-      dataObject.products.forEach(product => {
+    if (data && data.products) {
+      data.products.forEach(product => {
         totalPriceWithoutTax += (product.price * (newQuantities[product.id] || 0));
       });
     }
 
-    const totalPriceWithTax = totalPriceWithoutTax * (dataObject.cart.impVentas / 100);
+    const totalPriceWithTax = totalPriceWithoutTax * (data.cart.impVentas / 100);
     const totalCompra = totalPriceWithoutTax + totalPriceWithTax;
     const subtotal = totalPriceWithoutTax;
     const subtotalImpuesto = totalPriceWithTax;
 
-    updateStore(subtotal, subtotalImpuesto, totalCompra, newQuantities);
+    updateStore(subtotal, subtotalImpuesto, totalCompra, newQuantities, data);
   };
 
   const handleRemove = (id) => {
     const updatedProducts = dataObject.products.filter((product) => product.id !== id);
-    const updatedCart = { ...dataObject, products: updatedProducts };
-    localStorage.setItem('tienda', JSON.stringify(updatedCart));
+    const updatedDataObject = { ...dataObject, products: updatedProducts };
+    setDataObject(updatedDataObject);
+    localStorage.setItem('tienda', JSON.stringify(updatedDataObject));
     setCartEmpty(updatedProducts.length === 0);
     setProductQuantities((prevQuantities) => {
       const newQuantities = { ...prevQuantities };
       delete newQuantities[id];
-      handlePrice(newQuantities);
+      handlePrice(newQuantities, updatedDataObject);
       return newQuantities;
     });
   };
 
-  const updateStore = (subtotal, subtotalImpuesto, total, newQuantities) => {
+  const updateStore = (subtotal, subtotalImpuesto, total, newQuantities, data = dataObject) => {
     const carritoActualizado = {
-      ...dataObject,
+      ...data,
       cart: {
-        ...dataObject.cart,
+        ...data.cart,
         subtotal: subtotal,
         subtotalImpuesto: subtotalImpuesto,
         total: total,
         cartItems: newQuantities
       },
     };
+    setDataObject(carritoActualizado);
     localStorage.setItem("tienda", JSON.stringify(carritoActualizado));
     setCartEmpty(carritoActualizado.products.length === 0);
   };

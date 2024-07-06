@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Core;
 using KEStoreApi;
 using KEStoreApi.Data;
+using KEStoreApi.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -13,7 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddCors(options =>
@@ -21,16 +21,17 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
     policy =>
     {
-        policy.WithOrigins("http://localhost:5072", "http://localhost:8080", "http://localhost:3000")
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials();
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 builder.Services.AddScoped<SaleLogic>();
+builder.Services.AddScoped<CampaignService>();
+
 var security = Environment.GetEnvironmentVariable("Security");
 
-// Swagger configuration
 builder.Services.AddSwaggerGen(setup =>
 {
     var jwtSecurityScheme = new OpenApiSecurityScheme
@@ -97,15 +98,13 @@ else
 }
 
 DatabaseConfiguration.Init(connection);
-
-// Verificar conexión a MySQL y crear la base de datos si no existe
 try
 {
     DatabaseStore.VerifyAndCreateDatabase(connection);
 }
 catch (Exception ex)
 {
-    throw new Exception("Error al conectar a MySQL o crear la base de datos.", ex);
+    throw new Exception("Error connecting to MySQL or creating the database.", ex);
 }
 
 if (app.Environment.IsDevelopment())
@@ -116,7 +115,7 @@ if (app.Environment.IsDevelopment())
     }
     catch (Exception ex)
     {
-        throw new Exception("Error al inicializar la base de datos.", ex);
+        throw new Exception("Error initializing the database.", ex);
     }
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
@@ -133,6 +132,7 @@ app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
+    endpoints.MapHub<CampaignHub>("/hub/campaignsHub");     
 });
 
 app.Run();

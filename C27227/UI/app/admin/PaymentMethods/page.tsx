@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import "@/app/ui/Styles/adminPaymentMethods.css";
-
+import Sidebar from "../init/page";
 interface PaymentMethod {
   paymentType: number;
   isEnabled: boolean;
@@ -82,6 +82,8 @@ const AdminPaymentMethods: React.FC = () => {
   }
 
   return (
+    <div>
+      <Sidebar/>
     <div className="admin-payment-methods">
       <h2>Administración de Métodos de Pago</h2>
       <table className="payment-methods-table">
@@ -106,6 +108,7 @@ const AdminPaymentMethods: React.FC = () => {
           ))}
         </tbody>
       </table>
+    </div>
     </div>
   );
 };
