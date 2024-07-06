@@ -813,25 +813,7 @@ The Sales Report feature allows administrators to generate and view sales report
     import VerifyToken, { useTokenContext } from '@/app/components/verify_token';
     import { useRouter } from 'next/navigation';
 
-    interface SalesAttribute {
-      saleId: number;
-      purchaseNumber: string;
-      total: number;
-      purchaseDate: string; // Changed to string based on backend response
-      product: string;
-      dailySale: string;
-      saleCounter: number;
-    }
-
     const Graphic = () => {
-      const { isValidToken, isVerifying } = useTokenContext();
-      const router = useRouter();
-      const [selectedDate, setSelectedDate] = useState(new Date());
-      const [dailySales, setDailySales] = useState<SalesAttribute[]>([]);
-      const [weeklySales, setWeeklySales] = useState<[string, string][]>([]);
-      const [loading, setLoading] = useState(false);
-      const [error, setError] = useState('');
-
       const fetchData = async () => {
         if (!isValidToken) {
           return;
@@ -874,14 +856,8 @@ The Sales Report feature allows administrators to generate and view sales report
           weeklySalesData.unshift(['Day', 'Total Sales']);
 
           setWeeklySales(weeklySalesData);
-
-          setError('');
-        } catch (error) {
-          setError('Error fetching sales data');
-        } finally {
-          setLoading(false);
-        }
-      };
+     }
+    };
 
       const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedDate(new Date(e.target.value));
