@@ -60,8 +60,7 @@ This project is a complete web store where users can buy products, select the de
 
 - **Backend:**
   - Language: Node.js
-  - Recommended framework: Express.js
-  - Database: MongoDB
+  - Database: MySQL
 
 ## Diagrams
 ### Main Page Diagram
