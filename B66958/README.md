@@ -35,7 +35,7 @@ Andromeda Store aims to be an E-Commerce for everyone interested in shopping onl
 6. [Cache of Products](#cache-of-products-card_file_box) :card_file_box:
 7. [Product Search](#product-search-mag) :mag:
 8. [Sale Reports](#sale-reports-chart_with_upwards_trend) :chart_with_upwards_trend:
-9. [Application Walkthrough](#application-walkthrough-tv)
+9. [Application Walkthrough](#application-walkthrough-tv) :tv:
 
 ---
 
@@ -924,4 +924,4 @@ These components are integrated into the React web client to provide administrat
 
 # Application Walkthrough :tv:
 
-<iframe width="1349" height="510" src="https://www.youtube.com/embed/MgLPjGejU7s" title="Andromeda Store Walkthrough" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[![Application Walkthrough](http://img.youtube.com/vi/MgLPjGejU7s/0.jpg)](https://youtu.be/MgLPjGejU7s)
