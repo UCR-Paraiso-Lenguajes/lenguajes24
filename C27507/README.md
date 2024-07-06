@@ -40,7 +40,7 @@
 <p>Diagram representing the different structures and relationships among the various project components.</p>
 
 <strong>Basic Functionality (Product Purchase)</strong>
-<img src="/img/diagrama_actividad.jpg">
+<img src="img/diagrama_actividad.jpg">
 <p>Flow diagram of the purchase process from start to confirmation.</p>
 
 
