@@ -29,31 +29,31 @@ The system is designed to be modular and scalable, with a microservices architec
 
 ### Activity Diagram
 
-![Activity Diagram](actividad.png)
+![Activity Diagram](/images/actividad.png)
 
 The activity diagram shows the workflow within the system, from user authentication to making a purchase and the Search Products.
 
 ### Class Diagram
 
-![Class Diagram](clase.png)
+![Class Diagram](/images/clase.png)
 
 The class diagram represents the static structure of the system, showing the classes, attributes, methods, and their relationships.
 
 ### Package Diagram
 
-![Package Diagram](paquetes.png)
+![Package Diagram](/images/paquetes.png)
 
 The package diagram shows the modular organization of the system, grouping related classes into packages for better maintainability and scalability of the code.
 
 ### Activity Diagram for Carousel and PaymentMethods
 
-![Activity Diagram for Carousel and PaymentMethods](ProyectoActividad.jpg)
+![Activity Diagram for Carousel and PaymentMethods](/images/ProyectoActividad.jpg)
 
 The diagram shows the activity flows related to the product carousel and available payment methods.
 
 ### UML Diagram of the Project
 
-![UML Diagram of the Project](ProyectoUML.jpg)
+![UML Diagram of the Project](/images/ProyectoUML.jpg)
 
 This diagram provides an overview of the structure and components of the online store project.
 
