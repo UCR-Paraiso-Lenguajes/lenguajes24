@@ -89,9 +89,6 @@ The backend security is handled using JWT (JSON Web Tokens) for authentication a
     ```csharp
     public class UserAuth
     {
-        public string UserName { get; }
-        public string Password { get; }
-        public IEnumerable<Claim> Roles { get; }
 
         public static readonly List<UserAuth> allUsers = new List<UserAuth>();
 
@@ -193,15 +190,6 @@ The frontend security involves token management and validation to ensure that us
     import { useEffect, useState, createContext, useContext } from 'react';
     import { useRouter } from 'next/navigation';
     import { jwtDecode } from 'jwt-decode';
-
-    const TokenContext = createContext({ isValidToken: false, isVerifying: true });
-
-    export const useTokenContext = () => useContext(TokenContext);
-
-    export default function VerifyToken({ children }: { children: React.ReactNode }) {
-      const [isVerifying, setIsVerifying] = useState(true);
-      const [isValidToken, setIsValidToken] = useState(false);
-      const router = useRouter();
 
       const verifyToken = () => {
         const loginToken = sessionStorage.getItem("loginToken");
@@ -394,9 +382,6 @@ The Product Cache feature enhances performance by caching product data. This red
     ```csharp
     public sealed class Store
     {
-        public List<Product> Products { get; private set; }
-        public int TaxPercentage { get; } = 13;
-
         public static readonly Store Instance;
 
         static Store()
