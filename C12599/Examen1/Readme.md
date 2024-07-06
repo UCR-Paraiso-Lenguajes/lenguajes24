@@ -14,7 +14,7 @@
 5. [Security](#security)
 6. [Cache Products](#How-Product-Caching-Was-Implemented)
 7. [Product Finder](#PRODUCT-FINDER) 
-8. 
+8. [Sales Report](#Sales-Reports)
    
 
 ## Introduction
@@ -1166,7 +1166,7 @@ The `handleSearch` function handles the following:
 5. **State and URL Update**: Updates the component's state with the fetched products and updates the browser's URL to reflect the search parameters.
 
 This function provides a robust and interactive search experience by dynamically updating the product list and URL based on user input.
-### Sales Reports
+# Sales Reports
 
 The following code provides a system for retrieving and managing sales transactions from a MySQL database. It includes database access methods, business logic for sales, and a web API controller.
 
