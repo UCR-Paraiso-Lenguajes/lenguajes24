@@ -59,17 +59,15 @@ export const NotificationComponent: React.FC = () => {
   };
 
   return (
-    <div>
-      <div className="position-fixed top-0 end-0 p-3">
-        <button className="btn btn-secondary position-relative" onClick={toggleModal}>
-          <i className="fas fa-bell"></i>
-          {notifications.length > 0 && (
-            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              {notifications.length}
-            </span>
-          )}
-        </button>
-      </div>
+    <div className="position-fixed top-0 end-0 p-3">
+      <button className="btn btn-secondary position-relative" onClick={toggleModal}>
+        <img src="/img/campana.png" alt="Notification Bell" style={{ width: '24px', height: '24px' }} />
+        {notifications.length > 0 && (
+          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            {notifications.length}
+          </span>
+        )}
+      </button>
 
       {notifyModalOpen && (
         <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>

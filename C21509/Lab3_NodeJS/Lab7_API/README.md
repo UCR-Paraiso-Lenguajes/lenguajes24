@@ -6,3 +6,6 @@
 
 ## Diagrama de Actividad
 <img src="OrderProcessing.jpg">
+
+## Diagrama de Actividad Investigación
+<img src="DiagramaInvestigacion.png">

@@ -2,6 +2,8 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Modal, Form, Table } from 'react-bootstrap';
+import VerifyToken, { useTokenContext } from '@/app/components/verify_token';
+import { useRouter } from 'next/navigation';
 
 interface Notification {
   notificationId: number;
@@ -12,6 +14,8 @@ interface Notification {
 }
 
 const NotificationPage = () => {
+  const { isValidToken, isVerifying } = useTokenContext();
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [show, setShow] = useState(false);
   const [newNotification, setNewNotification] = useState({
@@ -22,24 +26,35 @@ const NotificationPage = () => {
   });
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await fetch('https://localhost:7165/api/Notifications/Select');
-        if (!response.ok) {
-          throw new Error('Failed to fetch notifications');
+    if (isValidToken && !isVerifying) {
+      const fetchNotifications = async () => {
+        try {
+          const response = await fetch('https://localhost:7165/api/Notifications/Select');
+          if (!response.ok) {
+            throw new Error('Failed to fetch notifications');
+          }
+          const data = await response.json();
+          setNotifications(data);
+        } catch (error) {
+          throw new Error('Error fetching notifications');
         }
-        const data = await response.json();
-        console.log('Fetched notifications:', data);
-        setNotifications(data);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
-      }
-    };
+      };
 
-    fetchNotifications();
-  }, []);
+      fetchNotifications();
+    }
+  }, [isValidToken, isVerifying]);
 
-  const handleClose = () => setShow(false);
+  useEffect(() => {
+    if (!isValidToken && !isVerifying) {
+      router.push("/../admin");
+    }
+  }, [isValidToken, isVerifying, router]);
+
+  const handleClose = () => {
+    setShow(false);
+    resetForm();
+  };
+
   const handleShow = () => setShow(true);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -58,21 +73,19 @@ const NotificationPage = () => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(newNotification)
-    }
+    };
 
     try {
       const responsePost = await fetch(directionAPI, postConfig);
       if (!responsePost.ok) {
         const errorMessage = await responsePost.text();
-        console.error('Error inserting notification:', errorMessage);
       } else {
         const insertedWithSuccess = await responsePost.json();
-        console.log('Notification inserted:', insertedWithSuccess);
         setNotifications((prev) => [insertedWithSuccess, ...prev]);
         handleClose();
       }
     } catch (error) {
-      console.error('Failed to POST data:', error);
+      throw new Error('Failed to POST data');
     }
   };
 
@@ -86,35 +99,46 @@ const NotificationPage = () => {
         "Accept": "application/json",
         "Content-Type": "application/json"
       }
-    }
+    };
 
     try {
       const responsePost = await fetch(directionAPI, deleteConfig);
       if (!responsePost.ok) {
         const errorMessage = await responsePost.text();
-        console.error('Error deleting notification:', errorMessage);
       } else {
         const deletedWithSuccess = await responsePost.json();
-        console.log('Notification deleted:', deletedWithSuccess);
         setNotifications((prev) => prev.filter((n) => n.notificationId !== notificationId));
       }
     } catch (error) {
-      console.error('Failed to DELETE data:', error);
+      throw new Error('Failed to DELETE data');
     }
+  };
+
+  const resetForm = () => {
+    setNewNotification({
+      notificationName: '',
+      notificationMessage: '',
+      notificationCreatedDate: new Date().toISOString(),
+      notificationStatus: 1,
+    });
   };
 
   const renderDescription = (description: string) => {
     return { __html: description };
   };
 
+  if (isVerifying || !isValidToken) {
+    return <p></p>;
+  }
+
   return (
     <main className="container">
-      <h1 className="my-4">Gestion de notificaciones</h1>
-      <Button variant="primary" onClick={handleShow}>Crear notificacion</Button>
+      <h1 className="my-4">Gestión de notificaciones</h1>
+      <Button variant="primary" onClick={handleShow}>Crear notificación</Button>
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Crear Notificacion</Modal.Title>
+          <Modal.Title>Crear Notificación</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -163,7 +187,7 @@ const NotificationPage = () => {
               <td>{notification.notificationName}</td>
               <td dangerouslySetInnerHTML={renderDescription(notification.notificationMessage)}></td>
               <td>{new Date(notification.notificationCreatedDate).toLocaleString()}</td>
-              <td>{notification.notificationStatus === 1 ? 'Active' : 'Inactive'}</td>
+              <td>{notification.notificationStatus === 1 ? 'Activo' : 'Inactivo'}</td>
               <td>
                 <Button variant="danger" onClick={() => handleDelete(notification.notificationId)}>Eliminar</Button>
               </td>
@@ -173,6 +197,12 @@ const NotificationPage = () => {
       </Table>
     </main>
   );
-}
+};
 
-export default NotificationPage;
+const WrappedNotificationPage = () => (
+  <VerifyToken>
+    <NotificationPage />
+  </VerifyToken>
+);
+
+export default WrappedNotificationPage;
