@@ -402,6 +402,267 @@ The Product Cache feature enhances performance by caching product data. This red
         };
     ```
 
+ ## Product Searcher
+
+ ## Product Search
+
+The Product Search feature allows users to search for products using various criteria such as name, category, and price range. This functionality ensures that users can easily find the products they are looking for.
+
+### Backend Implementation
+
+1. **Get Categories:**
+    - The `GetCategories` method returns a list of all available product categories.
+
+    ```csharp
+    [HttpGet("Categories")]
+    [AllowAnonymous]
+    public IEnumerable<Category> GetCategories()
+    {
+        return Categories.GetCategories();
+    }
+    ```
+
+2. **Get Products by Category:**
+    - The `GetProductsByCategory` method returns products filtered by category ID.
+
+    ```csharp
+    [HttpGet("Products")]
+    [AllowAnonymous]
+    public IEnumerable<Product> GetProductsByCategory([FromQuery] int categoryId)
+    {
+        if (categoryId < 1)
+            throw new ArgumentException($"The {nameof(categoryId)} cannot be less than 1");
+
+        return Store.Instance.Products.Where(p => p.Categoria.IdCategory == categoryId);
+    }
+    ```
+
+3. **Search Products by Name and Category:**
+    - The `GetProductByNameAndCategoryIdAsync` method searches for a product by name and category ID using a binary search algorithm.
+
+    ```csharp
+        try
+        {
+            if (string.IsNullOrEmpty(productName) || categoryId < 1)
+                throw new ArgumentException("Product name and category ID are required for search.");
+
+            var product = await Store.Instance.GetProductByNameAndCategoryIdAsync(productName, categoryId);
+            return Ok(product);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"An error occurred: {ex.Message}");
+        }
+    }
+
+    public async Task<Product> GetProductByNameAndCategoryIdAsync(string productName, int categoryId)
+    {
+        if (string.IsNullOrWhiteSpace(productName))
+        {
+            throw new ArgumentException("El nombre del producto no puede ser nulo o vacío.", nameof(productName));
+        }
+
+        if (categoryId <= 0)
+        {
+            throw new ArgumentException("El ID de la categoría debe ser un valor positivo.", nameof(categoryId));
+        }
+
+        var products = Store.Instance.Products.OrderBy(p => p.Name).ThenBy(p => p.Categoria.IdCategory).ToList();
+        var result = await Task.Run(() => BinarySearch(products, productName, categoryId));
+
+        if (result == null)
+        {
+            throw new KeyNotFoundException($"Producto con nombre '{productName}' y ID de categoría '{categoryId}' no encontrado.");
+        }
+
+        return result;
+    }
+
+    private Product BinarySearch(List<Product> products, string productName, int categoryId)
+    {
+        int left = 0;
+        int right = products.Count - 1;
+
+        while (left <= right)
+        {
+            int mid = left + (right - left) / 2;
+            var currentProduct = products[mid];
+            int compareResult = CompareProducts(currentProduct, productName, categoryId);
+
+            if (compareResult == 0)
+            {
+                return currentProduct;
+            }
+            else if (compareResult < 0)
+            {
+                left = mid + 1;
+            }
+            else
+            {
+                right = mid - 1;
+            }
+        }
+
+        return null;
+    }
+
+    private int CompareProducts(Product product, string productName, int categoryId)
+    {
+        int nameComparison = string.Compare(product.Name, productName, StringComparison.OrdinalIgnoreCase);
+        if (nameComparison == 0)
+        {
+            return product.Categoria.IdCategory.CompareTo(categoryId);
+        }
+        return nameComparison;
+    }
+    ```
+
+4. **Categories Class:**
+    - The `Categories` class manages the list of categories and provides methods to access them.
+
+    ```csharp
+    public struct Category
+    {
+        public string NameCategory { get; set; }
+        public int IdCategory { get; set; }
+
+        public Category(int idCategory, string nameCategory)
+        {
+            if (idCategory < 1)
+            {
+                throw new ArgumentException($"Invalid category ID: {idCategory}");
+            }
+
+            if (string.IsNullOrWhiteSpace(nameCategory))
+            {
+                throw new ArgumentException($"Category name cannot be null or empty.");
+            }
+
+            IdCategory = idCategory;
+            NameCategory = nameCategory;
+        }
+    }
+
+    public class Categories
+    {
+        private readonly List<Category> categories = new List<Category>
+        {
+            new Category(1, "Electrónica"),
+            new Category(2, "Hogar y oficina"),
+            new Category(3, "Entretenimiento"),
+            new Category(4, "Tecnología"),
+        };
+
+        public static Categories Instance { get; } = new Categories();
+        private Categories() { }
+
+        public static Category GetCategoryById(int categoryId)
+        {
+            var category = Instance.categories.FirstOrDefault(category => category.IdCategory == categoryId);
+            if (category.IdCategory == 0)
+            {
+                throw new InvalidOperationException($"No category found with ID: {categoryId}");
+            }
+            return category;
+        }
+
+        public static IEnumerable<Category> GetCategories()
+        {
+            return Instance.categories.OrderBy(category => category.NameCategory);
+        }
+    }
+    ```
+
+### Frontend Implementation
+
+1. **Fetching Categories:**
+    - The frontend fetches the list of categories from the backend.
+
+    ```typescript
+    const loadCategoryData = async () => {
+        try {
+            const categoryResponse = await fetch('https://localhost:7165/api/Store/Categories');
+            if (!categoryResponse.ok) {
+                throw new Error('Failed to fetch categories');
+            }
+            const categoryJson = await categoryResponse.json();
+            setCategories(categoryJson.map((category: any) => category));
+        } catch (error) {
+            setError('Error al cargar categorías');
+        }
+    };
+
+    loadCategoryData();
+    ```
+
+2. **Fetching Products by Category:**
+    - The frontend fetches products based on the selected category.
+
+    ```typescript
+    const handleCategoryChange = async (category: number) => {
+        setSelectedCategory(category);
+        setLoading(true);
+        setError('');
+
+        try {
+            if (category === 0) {
+                const productResponse = await fetch('https://localhost:7165/api/Store');
+                if (!productResponse.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+                const productJson = await productResponse.json();
+                setAvailableProducts(productJson.products);
+            } else {
+                const response = await fetch(`https://localhost:7165/api/Store/Products?categoryId=${category}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+                const productJson = await response.json();
+                const filteredProducts = productJson.filter((product: any) => product.categoria.idCategory === category);
+                setAvailableProducts(filteredProducts);
+            }
+        } catch (error) {
+            setError('Error al cargar productos');
+        } finally {
+            setLoading(false);
+        }
+    };
+    ```
+
+3. **Searching Products:**
+    - The frontend allows users to search for products by name and optionally by category.
+
+    ```typescript
+    const handleSearch = async () => {
+        try {
+            setLoading(true);
+            setError('');
+
+            let searchUrl = `https://localhost:7165/api/Store/Search?productName=${encodeURIComponent(searchQuery)}`;
+
+            if (selectedCategory !== 0) {
+                searchUrl += `&categoryId=${selectedCategory}`;
+            }
+
+            const response = await fetch(searchUrl);
+            if (!response.ok) {
+                throw new Error('Failed to fetch products');
+            }
+
+            const productJson = await response.json();
+            setAvailableProducts(productJson);
+        } catch (error) {
+            setError('Error al cargar productos');
+        } finally {
+            setLoading(false);
+        }
+    };
+    ```
+
 ## Sales Report
 
 The Sales Report feature allows administrators to generate and view sales reports. These reports can be filtered by date and provide insights into daily and weekly sales. The sales data is visualized using Google Charts.
