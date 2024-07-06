@@ -1,6 +1,6 @@
 ## Proyect: Store_API" - Jean Carlo Calderón Rojas
 
-Store_API is a responsive API solution for an online store that allows to an user making purchases for different products charged by a database.<
+Store_API is a responsive API solution for an online store that allows to an user making purchases for different products charged by a database.
 
 Below you wil find some important details about the aplication<
 
@@ -13,20 +13,28 @@ Store_API is a responsive API solution for an online store that allows users to 
 ## Package Diagram
 <img src="Package.jpg">
 
+The Store_API project is structured to separate concerns effectively. The core business logic and database interactions are encapsulated within the Core package. The Store_API exposes these functionalities via a RESTful API. The lab6-nextjs-dashboard serves as the user interface, interacting with the API to provide a seamless experience for the end-users. The UML package diagram visually represents this modular structure, highlighting the relationships and dependencies between different parts of the system.
+
 ## Order Processing activity diagram
 <img src="OrderProcessing.jpg">
 
+This use case diagram effectively outlines the user journey through an online store application, focusing on the client's interactions with the main page, the cart page, and the purchase page. The client starts by adding and filtering products on the main page, moves to the cart page to review their selections, and finally proceeds to the purchase page to complete their order by entering delivery information and choosing a payment method. The diagram highlights the key functionalities and navigation paths available to the client, ensuring a smooth and user-friendly shopping experience.
+
 ## Notifications Activity Diagram
 <img src="DiagramaInvestigacion.png">
+This activity diagram provides a detailed view of the notification management process for both users and administrators. Users can view and delete notifications, while administrators have the ability to create, view, and delete notifications, as well as manage other notification-related tasks. The diagram ensures that each step in the workflow is clearly outlined, making it easy to understand the actions and decisions involved in managing notifications within the system.
 
 ## Shopping Flow Activity Diagram
 <img src="Diagramadeactividades.png">
+This activity diagram provides a comprehensive view of the user's journey through the online store, from entering the main page to completing a purchase. The process includes selecting products, managing the cart, entering address details, choosing a payment method, and confirming the purchase. The diagram ensures that each step is clearly outlined, making it easy to understand the user's actions and the system's responses throughout the purchasing process.
 
 ## Payment Methods Activity Diagram
 <img src="Diagramametodospago.png">
+This diagram illustrates the admin’s workflow for managing payment methods in the system. The admin can log in, access the payment methods management module, and then enable or disable specific payment methods or all payment methods at once. These changes are then reflected on the checkout page to ensure that users can only use the available payment methods. If all payment methods are disabled, the system will prevent users from completing their purchases, ensuring that there is always a way for users to pay for their orders.
 
 ## Payment Methods and Shopping Flow UML Diagram
 <img src="ClasesMetodoPago.jpg">
+This class diagram provides a detailed view of the components involved in managing payments and sales in the Store_API system. It illustrates how different classes interact to perform tasks such as handling payment methods, managing sales transactions, and interacting with the database. The diagram highlights the relationships between the backend classes and the frontend components, ensuring a cohesive structure that supports the overall functionality of the online store.
 
 ## Security
 
