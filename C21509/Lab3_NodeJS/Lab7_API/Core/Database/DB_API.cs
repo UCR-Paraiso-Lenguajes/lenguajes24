@@ -10,6 +10,7 @@ namespace Store_API.Database
 {
     public class DB_API
     {
+
         private static string connectionString = "server=localhost;user=root;password=123456;database=Store_API";
 
         public DB_API(string connectionStrings)
@@ -29,9 +30,10 @@ namespace Store_API.Database
 
                     string createTablePaymentMethod = @"
                         CREATE TABLE IF NOT EXISTS PaymentMethod (
-                           PaymentMethodId INT PRIMARY KEY,
-                           PaymentMethodName VARCHAR(10) NOT NULL
-                        );";
+                        PaymentMethodId INT PRIMARY KEY,
+                        PaymentMethodName VARCHAR(10) NOT NULL,
+                        IsEnabled BOOLEAN NOT NULL DEFAULT TRUE
+                    );";
 
                     using (MySqlCommand command = new MySqlCommand(createTablePaymentMethod, connection))
                     {
@@ -39,31 +41,33 @@ namespace Store_API.Database
                     }
 
                     string createTableSales = @"
-                        CREATE TABLE IF NOT EXISTS Sales (
-                            IdSale INT AUTO_INCREMENT PRIMARY KEY,                            
-                            PurchaseNumber VARCHAR(50) NOT NULL,                           
-                            Total DECIMAL(10, 2) NOT NULL,
-                            Subtotal DECIMAL(10, 2) NOT NULL,                                                
-                            Address VARCHAR(255) NOT NULL,
-                            PaymentMethodId INT NOT NULL,
-                            DateSale DATETIME NOT NULL,
-                            FOREIGN KEY (PaymentMethodId) REFERENCES PaymentMethod(PaymentMethodId)
-                        );";
+                    CREATE TABLE IF NOT EXISTS Sales (
+                        IdSale INT AUTO_INCREMENT PRIMARY KEY,                            
+                        PurchaseNumber VARCHAR(50) NOT NULL,                           
+                        Total DECIMAL(10, 2) NOT NULL,
+                        Subtotal DECIMAL(10, 2) NOT NULL,                                                
+                        Address TEXT NOT NULL,
+                        PaymentMethodId INT NOT NULL,
+                        DateSale DATETIME NOT NULL,
+                        FOREIGN KEY (PaymentMethodId) REFERENCES PaymentMethod(PaymentMethodId)
+                    );";
 
                     using (MySqlCommand command = new MySqlCommand(createTableSales, connection))
                     {
                         command.ExecuteNonQuery();
                     }
 
+                    FillPaymentMethod(connection);
+
                     string createTableProducts = @"
-                        CREATE TABLE IF NOT EXISTS Products (
-                            IdProduct INT AUTO_INCREMENT PRIMARY KEY,
-                            Name VARCHAR(255) NOT NULL,
-                            ImageURL VARCHAR(255),
-                            Description TEXT,
-                            Price DECIMAL(10, 2) NOT NULL,
-                            Categoria INT NOT NULL
-                        );";
+                    CREATE TABLE IF NOT EXISTS Products (
+                        IdProduct INT AUTO_INCREMENT PRIMARY KEY,
+                        Name VARCHAR(255) NOT NULL,
+                        ImageURL VARCHAR(255),
+                        Description TEXT,
+                        Price DECIMAL(10, 2) NOT NULL,
+                        Categoria INT NOT NULL
+                    );";
 
                     using (MySqlCommand command = new MySqlCommand(createTableProducts, connection))
                     {
@@ -71,20 +75,23 @@ namespace Store_API.Database
                     }
 
                     string createTableSalesLines = @"
-                        CREATE TABLE IF NOT EXISTS SalesLines (
-                            IdSaleLine INT AUTO_INCREMENT PRIMARY KEY,
-                            IdSale INT NOT NULL,
-                            IdProduct INT NOT NULL,
-                            Quantity INT NOT NULL DEFAULT 1,
-                            Price DECIMAL(10, 2) NOT NULL,
-                            FOREIGN KEY (IdSale) REFERENCES Sales(IdSale),
-                            FOREIGN KEY (IdProduct) REFERENCES Products(IdProduct)
-                        );";
+
+                    CREATE TABLE IF NOT EXISTS SalesLines (
+                        IdSaleLine INT AUTO_INCREMENT PRIMARY KEY,
+                        IdSale INT NOT NULL,
+                        IdProduct INT NOT NULL,
+                        Quantity INT NOT NULL DEFAULT 1,
+                        Price DECIMAL(10, 2) NOT NULL,
+                        FOREIGN KEY (IdSale) REFERENCES Sales(IdSale),
+                        FOREIGN KEY (IdProduct) REFERENCES Products(IdProduct)
+                    );";
+
 
                     using (MySqlCommand command = new MySqlCommand(createTableSalesLines, connection))
                     {
                         command.ExecuteNonQuery();
                     }
+
 
                     string createTableNotification = @"
                         CREATE TABLE IF NOT EXISTS Notifications (
@@ -97,6 +104,12 @@ namespace Store_API.Database
                     using (MySqlCommand command = new MySqlCommand(createTableNotification, connection))
                     {
                         command.ExecuteNonQuery();
+
+                    if (!AnyProductsExist(connection))
+                    {
+                        var initialProducts = GetInitialProducts();
+                        InsertProductsStore(initialProducts, connection);
+
                     }
                 }
             }
@@ -106,30 +119,141 @@ namespace Store_API.Database
             }
         }
 
-        public void InsertProductsStore(List<Product> allProducts)
+        private bool AnyProductsExist(MySqlConnection connection)
         {
-            try
+            string checkProductsQuery = "SELECT COUNT(*) FROM Products";
+            using (MySqlCommand command = new MySqlCommand(checkProductsQuery, connection))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                int productCount = Convert.ToInt32(command.ExecuteScalar());
+                return productCount > 0;
+            }
+        }
+
+        private void FillPaymentMethod(MySqlConnection connection)
+        {
+            string checkPaymentMethodsQuery = "SELECT COUNT(*) FROM PaymentMethod";
+            using (MySqlCommand command = new MySqlCommand(checkPaymentMethodsQuery, connection))
+            {
+                int paymentMethodCount = Convert.ToInt32(command.ExecuteScalar());
+                if (paymentMethodCount == 0)
                 {
-                    connection.Open();
-                    foreach (var actualProduct in allProducts)
+                    string insertPaymentMethodsQuery = @"
+                    INSERT INTO PaymentMethod (PaymentMethodId, PaymentMethodName, IsEnabled)
+                    VALUES (0, 'Efectivo', TRUE),
+                           (1, 'Sinpe', TRUE);";
+
+                    using (MySqlCommand insertCommand = new MySqlCommand(insertPaymentMethodsQuery, connection))
                     {
+
                         string insertQuery = @"
                             INSERT INTO Products (Name, ImageURL, Description, Price, Categoria)
                             VALUES (@name, @imageURL, @description, @price, @categoria);
                         ";
+                        insertCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
 
-                        using (MySqlCommand command = new MySqlCommand(insertQuery, connection))
-                        {
-                            command.Parameters.AddWithValue("@name", actualProduct.Name);
-                            command.Parameters.AddWithValue("@imageURL", actualProduct.ImageURL);
-                            command.Parameters.AddWithValue("@description", actualProduct.Description);
-                            command.Parameters.AddWithValue("@price", actualProduct.Price);
-                            command.Parameters.AddWithValue("@categoria", actualProduct.Categoria.IdCategory);
+        private List<Product> GetInitialProducts()
+        {
+            return new List<Product>
+        {
+            new Product
+            {
+                Id = 1,
+                Name = "Iphone",
+                ImageURL = "/img/Iphone.jpg",
+                Description= "Producto nuevo",
+                Price = 200M,
+                Categoria = new Category(1, "Electrónica")
+            },
+            new Product
+            {
+                Id = 2,
+                Name = "Audifono",
+                ImageURL = "/img/audifonos.jpg",
+                Description= "Producto nuevo",
+                Price = 100M,
+                Categoria = new Category(1, "Electrónica")
+            },
+            new Product
+            {
+                Id = 3,
+                Name = "Mouse",
+                ImageURL = "/img/mouse.jpg",
+                Description= "Producto nuevo",
+                Price = 35M,
+                Categoria = new Category(2, "Hogar y oficina")
+            },
+            new Product
+            {
+                Id = 4,
+                Name = "Pantalla",
+                ImageURL = "/img/Pantalla.jpg",
+                Description= "Producto nuevo",
+                Price = 68M,
+                Categoria = new Category(3, "Entretenimiento")
+            },
+            new Product
+            {
+                Id = 5,
+                Name = "Headphone",
+                ImageURL = "/img/Headphone.jpg",
+                Description= "Producto nuevo",
+                Price = 35M,
+                Categoria = new Category(3, "Entretenimiento")
+            },
+            new Product
+            {
+                Id = 6,
+                Name = "Teclado",
+                ImageURL = "/img/teclado.jpg",
+                Description= "Producto nuevo",
+                Price = 95M,
+                Categoria = new Category(1, "Electrónica")
+            },
+            new Product
+            {
+                Id = 7,
+                Name = "Cable USB",
+                ImageURL = "/img/Cable.jpg",
+                Description= "Producto nuevo",
+                Price = 10M,
+                Categoria = new Category(4, "Tecnología")
+            },
+            new Product
+            {
+                Id = 8,
+                Name = "Chromecast",
+                ImageURL = "/img/Chromecast.jpg",
+                Description= "Producto nuevo",
+                Price = 150M,
+                Categoria = new Category(4, "Tecnología")
+            }
+        };
+        }
 
-                            command.ExecuteNonQuery();
-                        }
+        public void InsertProductsStore(List<Product> allProducts, MySqlConnection connection)
+        {
+            try
+            {
+                foreach (var actualProduct in allProducts)
+                {
+                    string insertQuery = @"
+                INSERT INTO Products (Name, ImageURL, Description, Price, Categoria)
+                VALUES (@name, @imageURL, @description, @price, @categoria);
+            ";
+
+                    using (MySqlCommand command = new MySqlCommand(insertQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@name", actualProduct.Name);
+                        command.Parameters.AddWithValue("@imageURL", actualProduct.ImageURL);
+                        command.Parameters.AddWithValue("@description", actualProduct.Description);
+                        command.Parameters.AddWithValue("@price", actualProduct.Price);
+                        command.Parameters.AddWithValue("@categoria", actualProduct.Categoria.IdCategory);
+
+                        command.ExecuteNonQuery();
                     }
                 }
             }
@@ -138,7 +262,6 @@ namespace Store_API.Database
                 throw;
             }
         }
-
         public List<Product> SelectProducts()
         {
             List<Product> productListToStoreInstance = new List<Product>();
@@ -223,6 +346,7 @@ namespace Store_API.Database
         private async Task InsertPaymentMethodsAsync(MySqlConnection connection, MySqlTransaction transaction)
         {
             string insertPaymentMethodQuery = @"
+
                 INSERT INTO PaymentMethod (PaymentMethodId, PaymentMethodName)
                 VALUES (@idPayment, @paymentName)
                 ON DUPLICATE KEY UPDATE PaymentMethodName = VALUES(PaymentMethodName);
@@ -234,18 +358,78 @@ namespace Store_API.Database
                 (1, "Sinpe")
             };
 
+    INSERT INTO PaymentMethod (PaymentMethodId, PaymentMethodName, IsEnabled)
+    VALUES (@idPayment, @paymentName, @isEnabled)
+    ON DUPLICATE KEY UPDATE PaymentMethodName = VALUES(PaymentMethodName), IsEnabled = VALUES(IsEnabled);
+";
+
+            var paymentMethods = new List<(int id, string name, bool isEnabled)>
+    {
+        (0, "Efectivo", true),
+        (1, "Sinpe", true)
+    };
+
             using (MySqlCommand command = new MySqlCommand(insertPaymentMethodQuery, connection, transaction))
             {
                 foreach (var paymentMethod in paymentMethods)
                 {
                     command.Parameters.AddWithValue("@idPayment", paymentMethod.id);
                     command.Parameters.AddWithValue("@paymentName", paymentMethod.name);
+                    command.Parameters.AddWithValue("@isEnabled", paymentMethod.isEnabled);
                     await command.ExecuteNonQueryAsync();
                     command.Parameters.Clear();
                 }
             }
         }
 
+        public async Task UpdatePaymentMethodStatus(int paymentMethodId, bool isEnabled)
+        {
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "UPDATE PaymentMethod SET IsEnabled = @isEnabled WHERE PaymentMethodId = @paymentMethodId";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@isEnabled", isEnabled);
+                    command.Parameters.AddWithValue("@paymentMethodId", paymentMethodId);
+                    await command.ExecuteNonQueryAsync();
+                }
+            }
+        }
+
+        public async Task<IEnumerable<object>> GetPaymentMethodsAsync()
+        {
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "SELECT PaymentMethodId, PaymentMethodName, IsEnabled FROM PaymentMethod";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        var methods = new List<object>();
+                        while (await reader.ReadAsync())
+                        {
+                            int paymentMethodId = reader.GetInt32(reader.GetOrdinal("PaymentMethodId"));
+                            string paymentMethodName = reader.GetString(reader.GetOrdinal("PaymentMethodName"));
+                            bool isEnabled = reader.GetBoolean(reader.GetOrdinal("IsEnabled"));
+
+                            var method = new
+                            {
+                                PaymentMethodId = paymentMethodId,
+                                PaymentMethodName = paymentMethodName,
+                                IsEnabled = isEnabled
+                            };
+
+                            methods.Add(method);
+                        }
+                        return methods;
+                    }
+                }
+            }
+        }
         private async Task InsertSalesLinesAsync(MySqlConnection connection, MySqlTransaction transaction, string purchaseNumber, List<ProductQuantity> products)
         {
             string selectIdSale = "SELECT IdSale FROM Sales WHERE PurchaseNumber = @purchaseNumber";

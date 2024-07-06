@@ -6,7 +6,7 @@ namespace Store_API.Models
         public string Address { get; }
         public decimal Amount { get; }
         public PaymentMethods.Type PaymentMethod { get; }
-        public string PurchaseNumber { get; set; } 
+        public string PurchaseNumber { get; set; }
 
         public Sale(IEnumerable<Product> products, string address, decimal amount, PaymentMethods.Type paymentMethod, string purchaseNumber)
         {
@@ -38,7 +38,7 @@ namespace Store_API.Models
         {
             foreach (char c in address)
             {
-                if (!char.IsLetterOrDigit(c) && !char.IsWhiteSpace(c))
+                if (!char.IsLetterOrDigit(c) && !char.IsWhiteSpace(c) && c != ',' && c != '-')
                 {
                     return false;
                 }

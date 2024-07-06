@@ -24,7 +24,6 @@ namespace UT
             ProductLogic productLogic = new ProductLogic();
             productLogic.referenceProductInserted = TestProductInsertedDelegate;
 
-            
             Product addedProduct = new Product
             {
                 Id = 1,
@@ -34,9 +33,9 @@ namespace UT
                 Price = 200,
                 Categoria = new Category(1, "Electrónica") 
             };
+
             await productLogic.insertionProductAsyncUT(addedProduct, TestProductInsertedDelegate);
 
-            
             Assert.IsTrue(productsInserted.Contains(addedProduct));
         }
 

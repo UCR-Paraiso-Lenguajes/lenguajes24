@@ -56,5 +56,7 @@ namespace Store_API.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+        
     }
 }

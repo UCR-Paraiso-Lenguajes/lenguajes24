@@ -1,4 +1,4 @@
-# Examen 1 Jean Carlo Calderón Rojas- C21509
+# Documentación Jean Carlo Calderón Rojas- C21509
 
 
 ## Diagrama de Paquetes
@@ -9,3 +9,13 @@
 
 ## Diagrama de Actividad Investigación
 <img src="DiagramaInvestigacion.png">
+
+## Diagrama de Actividad Flujo de Compra Proyecto
+<img src="Diagramadeactividades.png">
+
+## Diagrama de Actividad Métodos de Pago Proyecto
+<img src="Diagramametodospago.png">
+
+## Diagrama UML Métodos de pago y Flujo de Compra Proyecto
+<img src="ClasesMetodoPago.jpg">
+

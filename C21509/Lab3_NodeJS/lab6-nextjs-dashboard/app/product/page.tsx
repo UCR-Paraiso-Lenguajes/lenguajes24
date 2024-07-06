@@ -85,10 +85,19 @@ export default function Page() {
   };
 
   const addToCart = (product: ProductItem) => {
-    setCartProducts(prevProducts => {
-      const updatedProducts = [...prevProducts, product];
-      localStorage.setItem('cartProducts', JSON.stringify(updatedProducts));
-      return updatedProducts;
+    setCartProducts((prevProducts) => {
+      const existingProduct = prevProducts.find((p) => p.id === product.id);
+      if (existingProduct) {
+        const updatedProducts = prevProducts.map((p) =>
+          p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
+        );
+        localStorage.setItem('cartProducts', JSON.stringify(updatedProducts));
+        return updatedProducts;
+      } else {
+        const updatedProducts = [...prevProducts, { ...product, quantity: 1 }];
+        localStorage.setItem('cartProducts', JSON.stringify(updatedProducts));
+        return updatedProducts;
+      }
     });
   };
 
@@ -121,7 +130,7 @@ export default function Page() {
     }
   };
 
-  const filteredProducts = availableProducts.filter(product =>
+  const filteredProducts = availableProducts.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -158,7 +167,7 @@ export default function Page() {
             onChange={(e) => handleCategoryChange(Number(e.target.value))}
           >
             <option value="0">Todas las Categorías</option>
-            {categories.map(category => (
+            {categories.map((category) => (
               <option key={category.idCategory} value={category.idCategory}>
                 {category.nameCategory}
               </option>
@@ -178,7 +187,7 @@ export default function Page() {
         <div>
           <h1>Lista de Productos</h1>
           <div className='row' style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {filteredProducts && filteredProducts.map(product =>
+            {filteredProducts && filteredProducts.map((product) =>
               <Product key={product.id} product={product} addToCart={addToCart} />
             )}
           </div>
@@ -187,7 +196,7 @@ export default function Page() {
 
       <div className="products col-sm-6" style={{ margin: '0 auto' }}>
         <Carousel>
-          {availableProducts.map(product => (
+          {availableProducts.map((product) => (
             <Carousel.Item key={product.id}>
               <img
                 className="d-block w-100"

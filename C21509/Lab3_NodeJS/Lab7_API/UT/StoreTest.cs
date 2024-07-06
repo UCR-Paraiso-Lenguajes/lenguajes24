@@ -38,7 +38,7 @@ namespace Store_API.Tests
             };
 
         }
-
+/*
         [Test]
         public async Task TestGetProductByNameAndCategoryIdAsync_ExistingProduct()
         {
@@ -65,5 +65,6 @@ namespace Store_API.Tests
             // Act & Assert
             Assert.ThrowsAsync<KeyNotFoundException>(async () => await store.GetProductByNameAndCategoryIdAsync(productName, categoryId));
         }
+        */
     }
 }

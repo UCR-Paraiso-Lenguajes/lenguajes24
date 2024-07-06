@@ -9,4 +9,3 @@ fi
 echo "NEXT_PUBLIC_NODE_ENV=$NODE_ENV" > .env
 
 echo ".env file updated with NEXT_PUBLIC_NODE_ENV=$NODE_ENV"
-let urlByReactEnviroment = process.env.NEXT_PUBLIC_NODE_ENV;
