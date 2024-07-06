@@ -280,7 +280,7 @@ private String CreateToken(List<Claim> claims)
 }
 ```
 
-Using the default key, the token credentials are generated, including the issuer and audience expected by JWT, and the token's lifetime (5 minutes based on UTC time) to avoid issues related to server time.
+Using the default key, the token credentials are generated, including the issuer and audience expected by **JWT**, and the token's lifetime (5 minutes based on UTC time) to avoid issues related to server time.
 
 ---
 
@@ -333,7 +333,8 @@ async function getData() {
 ```
 
 **Explanation:**
-**Including Token in Request**: Retrieves the token from `sessionStorage` and attaches it to the request headers using the `Bearer` scheme for authorization.
+
+- **Including Token in Request**: Retrieves the token from `sessionStorage` and attaches it to the request headers using the `Bearer` scheme for authorization.
 
 ---
 
@@ -350,8 +351,9 @@ function checkTokenStatus() {
 ```
 
 **Explanation:**
-**Token Expiry Check**: Retrieves the token and its expiry date from `sessionStorage` and checks if the token is still valid using a `checkTokenDate` function.
-**Redirect on Token Expiry**: If the token is expired or missing, redirects the user to the `/Admin` page to log in again.
+
+- **Token Expiry Check**: Retrieves the token and its expiry date from `sessionStorage` and checks if the token is still valid using a `checkTokenDate` function.
+- **Redirect on Token Expiry**: If the token is expired or missing, redirects the user to the `/Admin` page to log in again.
 
 ---
 
@@ -366,8 +368,9 @@ public List<Product> ProductsInStore { get; private set; }
 This list contains the entire catalog of products available for purchase. After the initial query to the database, subsequent client requests access the product catalog directly from the system's cache.
 
 **Explanation:**
-**Static Product Cache**: Holds all available products to reduce database access frequency.
-**Improved Performance**: Ensures that subsequent requests for the product catalog are served directly from the cache, optimizing response times.
+
+- **Static Product Cache**: Holds all available products to reduce database access frequency.
+- **Improved Performance**: Ensures that subsequent requests for the product catalog are served directly from the cache, optimizing response times.
 
 ---
 
@@ -385,8 +388,9 @@ public Store GetStore()
 ```
 
 **Explanation:**
-**GetStore Endpoint**: Responds to HTTP GET requests from clients, returning the static instance of the store which includes the cached product catalog.
-**AllowAnonymous Attribute**: Allows unrestricted access to this endpoint, ensuring that clients can fetch the store and its products without authentication.
+
+- **GetStore Endpoint**: Responds to HTTP GET requests from clients, returning the static instance of the store which includes the cached product catalog.
+- **AllowAnonymous Attribute**: Allows unrestricted access to this endpoint, ensuring that clients can fetch the store and its products without authentication.
 
 ---
 
@@ -430,13 +434,15 @@ static Store()
 ```
 
 **Explanation:**
-**Initialization of Store Instance**: Upon initialization, the store instance fetches necessary data from the repository (`Db`).
-**Data Caching**: Populates properties such as `ProductsInStore`, `TaxPercentage`, `PaymentMethods`, and `CategoriesInStore` with data retrieved from the repository.
-**Static Initialization**: Ensures that subsequent accesses to `Store.Instance` do not re-access the repository, serving data directly from memory.
+
+- **Initialization of Store Instance**: Upon initialization, the store instance fetches necessary data from the repository (`Db`).
+- **Data Caching**: Populates properties such as `ProductsInStore`, `TaxPercentage`, `PaymentMethods`, and `CategoriesInStore` with data retrieved from the repository.
+- **Static Initialization**: Ensures that subsequent accesses to `Store.Instance` do not re-access the repository, serving data directly from memory.
 
 **Benefits:**
-**Improved Performance**: By initializing and caching data during application startup, we minimize database queries during runtime, enhancing response times.
-**Data Consistency**: Ensures that all instances of Store across the application share the same data, promoting consistency in product catalogs, tax rates, payment methods, and categories.
+
+- **Improved Performance**: By initializing and caching data during application startup, we minimize database queries during runtime, enhancing response times.
+- **Data Consistency**: Ensures that all instances of Store across the application share the same data, promoting consistency in product catalogs, tax rates, payment methods, and categories.
 
 ---
 
@@ -445,6 +451,7 @@ static Store()
 To empower users of the store to search products by name, description, or category, we leveraged our product cache. However, ensuring swift response times for user queries necessitated the use of a secondary product cache.
 
 **Explanation:**
+
 Initial System Startup: Upon system initialization, a primary list stores all available products, initially populated from the repository. Even before products are written, our secondary cache is primed for use.
 
 ---
@@ -505,6 +512,7 @@ for (int i = 1; i <= 40; i++)
 ```
 
 **Explanation:**
+
 **Iterative Addition**: Each product from a predefined array (`productsData`) is assigned random category indices and added to the cache using the `AddProduct` method.
 
 ---
@@ -531,6 +539,7 @@ private void AddProduct(Product product)
 ```
 
 **Details:**
+
 **Efficient Categorization**: Utilizes a dictionary (`ProductsByCategory`) to organize products by their respective category IDs, ensuring quick access and retrieval based on category filters.
 
 ---
@@ -556,6 +565,7 @@ Store.Instance.ProductsByCategoryAndQuery(categories, query);
 ```
 
 **Functionality:**
+
 **Flexible Search Methods**: Provides users with versatile search options, enabling filtering by categories, specific queries, or a combination of both for targeted product retrieval.
 
 ---
@@ -588,6 +598,7 @@ public IEnumerable<Product> GetProductsByCategory(List<int> categories)
 ```
 
 **Explanation:**
+
 **Category Filtering**: Iterates through the provided list of category IDs (`categories`) and retrieves products from the cache (`ProductsByCategory`) that belong to those categories.
 
 ---
@@ -690,9 +701,10 @@ private void Search(TreeNode node, string query, List<Product> matchedProducts)
 ```
 
 **Details:**
-**Binary Search Tree (BST)**: Ensures logarithmic time complexity (`O(log n)`) for insertion and search operations based on product names.
 
-**Searching**: Implements recursive search (`Search method`) to traverse the tree and find products matching the specified query (`query`).
+- **Binary Search Tree (BST)**: Ensures logarithmic time complexity (`O(log n)`) for insertion and search operations based on product names.
+
+- **Searching**: Implements recursive search (`Search method`) to traverse the tree and find products matching the specified query (`query`).
 
 ---
 
@@ -729,9 +741,9 @@ public IEnumerable<Product> GetProductsByCategoryAndQuery(List<int> categories, 
 ```
 
 **Explanation:**
-**Combination of Filters**: Utilizes both category IDs (`categories`) and a textual query (`query`) to narrow down and retrieve products that match both criteria efficiently.
 
-**Optimized Search**: Uses the binary search tree (`ProductSearchTree`) to perform quick searches based on the query text, ensuring fast retrieval of matching products.
+- **Combination of Filters**: Utilizes both category IDs (`categories`) and a textual query (`query`) to narrow down and retrieve products that match both criteria efficiently.
+- **Optimized Search**: Uses the binary search tree (`ProductSearchTree`) to perform quick searches based on the query text, ensuring fast retrieval of matching products.
 
 ---
 
@@ -780,15 +792,12 @@ public async Task<IActionResult> GetSalesAsync(DateTime dateToFind)
 ```
 
 **Explanation:**
-**Authorization**: Restricts access to users with the "Admin" role only (`[Authorize(Roles = "Admin")]`).
 
-**Async Operations**: Executes asynchronous tasks to fetch sales data for the specified date and the total sales for the week containing that date.
-
-**Business Logic**: Utilizes a SaleBusiness instance (`saleBusiness`) to handle business logic for fetching sales data.
-
-**Parallel Execution**: Uses `Task.WhenAll` to execute both async tasks concurrently for efficiency.
-
-**Response**: Combines results from both tasks into a single response object containing `SalesOfTheDay` and `SalesOfTheWeek`.
+- **Authorization**: Restricts access to users with the "Admin" role only (`[Authorize(Roles = "Admin")]`).
+- **Async Operations**: Executes asynchronous tasks to fetch sales data for the specified date and the total sales for the week containing that date.
+- **Business Logic**: Utilizes a SaleBusiness instance (`saleBusiness`) to handle business logic for fetching sales data.
+- **Parallel Execution**: Uses `Task.WhenAll` to execute both async tasks concurrently for efficiency.
+- **Response**: Combines results from both tasks into a single response object containing `SalesOfTheDay` and `SalesOfTheWeek`.
 
 ---
 
@@ -807,11 +816,10 @@ public async Task<IEnumerable<KeyValuePair<string, decimal>>> GetTotalSalesAsync
 ```
 
 **Explanation:**
-**Separation of Concerns**: `SaleBusiness` encapsulates business logic for interacting with sales data, abstracting away data access details.
 
-**Async Methods**: Provides async methods (`GetSalesAsync`, `GetTotalSalesAsync`) to fetch specific sales data based on provided date parameters.
-
-**Repository Integration**: Presumes integration with SaleRepository or similar classes to interact with the underlying data storage (e.g., database).
+- **Separation of Concerns**: `SaleBusiness` encapsulates business logic for interacting with sales data, abstracting away data access details.
+- **Async Methods**: Provides async methods (`GetSalesAsync`, `GetTotalSalesAsync`) to fetch specific sales data based on provided date parameters.
+- **Repository Integration**: Presumes integration with SaleRepository or similar classes to interact with the underlying data storage (e.g., database).
 
 ---
 
@@ -904,9 +912,9 @@ import { Chart } from "react-google-charts";
 ---
 
 **Explanation:**
-**Sales Chart**: Displays detailed sales data in a table format using the `Chart` component from Google Charts for React. It includes options for pagination, styling with custom CSS classes (`chart-row`, `chart-header-row`, `chart-cell`), and a loading indicator (`loader`) while data is fetched.
 
-**Weekly Sales Pie Chart**: Shows a pie chart visualization of weekly sales data using the `PieChart` component. It includes a loading indicator (`loader`) and options for chart title (`Weekly Sales`) and slice visibility threshold.
+- **Sales Chart**: Displays detailed sales data in a table format using the `Chart` component from Google Charts for React. It includes options for pagination, styling with custom CSS classes (`chart-row`, `chart-header-row`, `chart-cell`), and a loading indicator (`loader`) while data is fetched.
+- **Weekly Sales Pie Chart**: Shows a pie chart visualization of weekly sales data using the `PieChart` component. It includes a loading indicator (`loader`) and options for chart title (`Weekly Sales`) and slice visibility threshold.
 
 **Usage:**
 These components are integrated into the React web client to provide administrators with visual representations of daily and weekly sales data, enhancing decision-making and monitoring capabilities.
