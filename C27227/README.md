@@ -339,40 +339,40 @@ The following diagrams illustrate the architecture and workflows of the KEStoreA
 ### Package Diagrams
 
 #### Core
-![Core Package Diagram](C27227/Images/DiagramaPaquetesCore.png)
+![Core Package Diagram](/Images/DiagramaPaquetesCore.png)
 
 #### KEStoreApi
-![KEStoreApi Package Diagram](C27227/Images/DiagramaPaquetesKEStoreApi.png)
+![KEStoreApi Package Diagram](/Images/DiagramaPaquetesKEStoreApi.png)
 
 #### UT
-![UT Package Diagram](C27227/Images/DiagramaPaquetesUT.png)
+![UT Package Diagram](/Images/DiagramaPaquetesUT.png)
 
 ### Sequence Diagrams
 
 
 
 #### Add Product
-![Add Product Sequence Diagram](C27227/Images/DiagramaSecuencia.png)
+![Add Product Sequence Diagram](/Images/DiagramaSecuencia.png)
 
 #### Delete Product
-![Delete Product Sequence Diagram](C27227/Images/DiagramaSecuenciaDelete.png)
+![Delete Product Sequence Diagram](/Images/DiagramaSecuenciaDelete.png)
 
 #### View Sales Report
-![View Sales Report Sequence Diagram](C27227/Images/ReportSales.png)
+![View Sales Report Sequence Diagram](/Images/ReportSales.png)
 
 #### Payment Method
-![Payment Method Sequence Diagram](C27227/Images/PaymentMethod.png)
+![Payment Method Sequence Diagram](/Images/PaymentMethod.png)
 
 #### Delete Payment Method
-![Delete Payment Method Sequence Diagram](C27227/Images/PaymentMethodDelete.png)
+![Delete Payment Method Sequence Diagram](/Images/PaymentMethodDelete.png)
 
 ### Activity Diagrams
 
 #### Campaign Management
-![Campaign Management Activity Diagram](C27227/Images/diagramaActividadCampañas.png)
+![Campaign Management Activity Diagram](/Images/diagramaActividadCampañas.png)
 
 #### Purchase Process
-![Purchase Process Activity Diagram](C27227/Images/DiagramaActividadCompra.png)
+![Purchase Process Activity Diagram](/Images/DiagramaActividadCompra.png)
 
 The KEStoreApi uses JWT (JSON Web Tokens) for user authentication and authorization. When a user logs in, a JWT token is generated and sent to the client. This token is included in the headers of subsequent API requests to authenticate the user. The server validates the token using the secret key to ensure the token's integrity and authenticity.
 
