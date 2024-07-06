@@ -204,7 +204,373 @@ The frontend security involves token management and validation to ensure that us
 
     ```
 
+
+## Product Cache
+
+The Product Cache feature enhances performance by caching product data. This reduces the load on the database and improves response times for frequently accessed products. Below is a detailed explanation of how it is implemented.
+
+### Backend Implementation
+
+1. **Initializing Products:**
+    - A method `GetInitialProducts` initializes a list of products.
+
+    ```csharp
+    private List<Product> GetInitialProducts()
+    {
+        return new List<Product>
+        {
+            new Product
+            {
+                Id = 1,
+                Name = "Iphone",
+                ImageURL = "/img/Iphone.jpg",
+                Description= "Producto nuevo",
+                Price = 200M,
+                Categoria = new Category(1, "Electrónica")
+            },
+            new Product
+            {
+                Id = 2,
+                Name = "Audifono",
+                ImageURL = "/img/audifonos.jpg",
+                Description= "Producto nuevo",
+                Price = 100M,
+                Categoria = new Category(1, "Electrónica")
+            },
+            new Product
+            {
+                Id = 3,
+                Name = "Mouse",
+                ImageURL = "/img/mouse.jpg",
+                Description= "Producto nuevo",
+                Price = 35M,
+                Categoria = new Category(2, "Hogar y oficina")
+            },
+            // Other products are similarly initialized
+        };
+    }
+    ```
+
+2. **Inserting Products into the Database:**
+    - The `InsertProductsStore` method inserts a list of products into the database.
+
+    ```csharp
+    public void InsertProductsStore(List<Product> allProducts, MySqlConnection connection)
+    {
+        try
+        {
+            foreach (var actualProduct in allProducts)
+            {
+                string insertQuery = @"
+                    INSERT INTO Products (Name, ImageURL, Description, Price, Categoria)
+                    VALUES (@name, @imageURL, @description, @price, @categoria);
+                ";
+
+                using (MySqlCommand command = new MySqlCommand(insertQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@name", actualProduct.Name);
+                    command.Parameters.AddWithValue("@imageURL", actualProduct.ImageURL);
+                    command.Parameters.AddWithValue("@description", actualProduct.Description);
+                    command.Parameters.AddWithValue("@price", actualProduct.Price);
+                    command.Parameters.AddWithValue("@categoria", actualProduct.Categoria.IdCategory);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+    }
+    ```
+
+3. **Selecting Products from the Database:**
+    - The `SelectProducts` method fetches products from the database and stores them in a list.
+
+    ```csharp
+    public List<Product> SelectProducts()
+    {
+        List<Product> productListToStoreInstance = new List<Product>();
+
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        {
+            connection.Open();
+            string selectProducts = @"
+                SELECT IdProduct, Name, ImageURL, Description, Price, Categoria
+                FROM Products;
+            ";
+
+            using (MySqlCommand command = new MySqlCommand(selectProducts, connection))
+            {
+                using (MySqlDataReader readerTable = command.ExecuteReader())
+                {
+                    while (readerTable.Read())
+                    {
+                        int categoryId = Convert.ToInt32(readerTable["Categoria"]);
+                        Category category = Categories.GetCategoryById(categoryId);
+
+                        productListToStoreInstance.Add(new Product
+                        {
+                            Id = Convert.ToInt32(readerTable["IdProduct"]),
+                            Name = readerTable["Name"].ToString(),
+                            ImageURL = readerTable["ImageURL"].ToString(),
+                            Description = readerTable["Description"].ToString(),
+                            Price = Convert.ToDecimal(readerTable["Price"]),
+                            Categoria = category
+                        });
+                    }
+                }
+            }
+        }
+
+        return productListToStoreInstance;
+    }
+    ```
+
+4. **Singleton Store Class:**
+    - The `Store` class is implemented as a singleton, ensuring that there is only one instance of the store, which contains the product data.
+
+    ```csharp
+    public sealed class Store
+    {
+        public List<Product> Products { get; private set; }
+        public int TaxPercentage { get; } = 13;
+
+        public static readonly Store Instance;
+
+        static Store()
+        {
+            DB_API dbApi = new DB_API();
+            dbApi.ConnectDB();
+
+            List<Product> dbProducts = dbApi.SelectProducts();
+            Instance = new Store(dbProducts);
+        }
+
+        private Store(List<Product> products)
+        {
+            this.Products = products;
+        }
+
+        public void AddNewProductToStore(Product newProduct)
+        {
+            Products.Add(newProduct);
+        }
+    }
+    ```
+
+5. **Store Controller:**
+    - The `StoreController` class exposes endpoints to access the store data, including products and categories.
+
+    ```csharp
+    [Route("api/[controller]")]
+    [ApiController]
+    public class StoreController : ControllerBase
+    {
+        [HttpGet]
+        [AllowAnonymous]
+        public Store GetStore()
+        {
+            return Store.Instance;
+        }
+    ```
+
+### Frontend Implementation
+
+1. **Fetching Products:**
+    - The frontend fetches product and category data from the backend using `fetch` API calls.
+
+    ```typescript
+    useEffect(() => {
+        const loadProductData = async () => {
+            try {
+                const productResponse = await fetch('https://localhost:7165/api/Store');
+                if (!productResponse.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+                const productJson = await productResponse.json();
+                if (!Array.isArray(productJson.products)) {
+                    throw new Error('Invalid product data format');
+                }
+                setAvailableProducts(productJson.products);
+            } catch (error) {
+                setError('Error al cargar productos');
+            } finally {
+                setLoading(false);
+            }
+        };
+    ```
+
 ## Sales Report
 
 The Sales Report feature allows administrators to generate and view sales reports. These reports can be filtered by date and provide insights into daily and weekly sales. The sales data is visualized using Google Charts.
+
+### Backend Implementation
+
+1. **SalesReportController:**
+    - The `SalesReportController` class handles the API endpoint for fetching sales reports based on a given date.
+
+    ```csharp
+    [ApiController]
+    [Route("[controller]")]
+    public class SalesReportController : ControllerBase
+    {
+        public SalesReportController()
+        {
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSalesReportAsync(DateTime date)
+        {
+            try
+            {
+                if (date == DateTime.MinValue || date > DateTime.Now)
+                {
+                    return BadRequest("Invalid date. Date cannot be later than the current date.");
+                }
+
+                var saleReportLogic = new SaleReportLogic();
+                var salesReport = await saleReportLogic.GenerateSalesReportAsync(date);
+
+                return Ok(salesReport);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred while generating the sales report: {ex.Message}");
+            }
+        }
+    }
+    ```
+
+2. **SaleReportLogic:**
+    - The `SaleReportLogic` class contains the business logic for generating sales reports, fetching daily and weekly sales data from the database.
+
+    ```csharp
+    public class SaleReportLogic
+    {
+        public async Task<SalesReport> GenerateSalesReportAsync(DateTime date)
+        {
+            if (date == DateTime.MinValue)
+            {
+                throw new ArgumentException("The date cannot be DateTime.MinValue.", nameof(date));
+            }
+
+            if (date > DateTime.Now)
+            {
+                throw new ArgumentOutOfRangeException(nameof(date), "The date cannot be later than the current date.");
+            }
+
+            var dailySalesTask = dbApi.ObtainDailySalesAsync(date);
+            var weeklySalesTask = dbApi.ObtainWeeklySalesAsync(date);
+
+            await Task.WhenAll(dailySalesTask, weeklySalesTask);
+
+            var dailySales = await dailySalesTask;
+            var weeklySales = await weeklySalesTask;
+
+            var salesReport = new SalesReport
+            {
+                Date = date,
+                DailySales = dailySales,
+                WeeklySales = weeklySales
+            };
+
+            return salesReport;
+        }
+
+    ```
+
+### Frontend Implementation
+
+1. **Sales Report Component:**
+    - The `Graphic` component fetches and displays daily and weekly sales data using Google Charts.
+
+    ```typescript
+    import React, { useState, useEffect } from 'react';
+    import { Chart } from 'react-google-charts';
+    import VerifyToken, { useTokenContext } from '@/app/components/verify_token';
+    import { useRouter } from 'next/navigation';
+
+    interface SalesAttribute {
+      saleId: number;
+      purchaseNumber: string;
+      total: number;
+      purchaseDate: string; // Changed to string based on backend response
+      product: string;
+      dailySale: string;
+      saleCounter: number;
+    }
+
+    const Graphic = () => {
+      const { isValidToken, isVerifying } = useTokenContext();
+      const router = useRouter();
+      const [selectedDate, setSelectedDate] = useState(new Date());
+      const [dailySales, setDailySales] = useState<SalesAttribute[]>([]);
+      const [weeklySales, setWeeklySales] = useState<[string, string][]>([]);
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState('');
+
+      const fetchData = async () => {
+        if (!isValidToken) {
+          return;
+        }
+
+        setLoading(true);
+        try {
+          const formattedDate = selectedDate.toISOString().split('T')[0]; // Formato yyyy-MM-dd
+          const response = await fetch(`https://localhost:7165/api/SalesReport?date=${formattedDate}`);
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch sales data');
+          }
+
+          const data = await response.json();
+
+          if (!data || !data.dailySales || !data.weeklySales) {
+            throw new Error('Sales data is empty or missing');
+          }
+
+          const formattedDailySales: SalesAttribute[] = data.dailySales.map((sale: any) => ({
+            saleId: sale.saleId,
+            purchaseNumber: sale.purchaseNumber,
+            total: sale.total,
+            purchaseDate: new Date(sale.purchaseDate).toLocaleDateString(),
+            product: sale.product,
+            dailySale: sale.dailySale,
+            saleCounter: sale.saleCounter
+          }));
+
+          setDailySales(formattedDailySales);
+
+          const weeklySalesData: [string, string][] = data.weeklySales.reduce((acc: any[], current: any) => {
+            if (current.dailySale && current.total) {
+              acc.push([current.dailySale, current.total.toString()]); // Asegúrate de que total sea string para el Chart
+            }
+            return acc;
+          }, []);
+
+          weeklySalesData.unshift(['Day', 'Total Sales']);
+
+          setWeeklySales(weeklySalesData);
+
+          setError('');
+        } catch (error) {
+          setError('Error fetching sales data');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedDate(new Date(e.target.value));
+      };
+
+      useEffect(() => {
+        if (isValidToken && !isVerifying) {
+          fetchData();
+        }
+      }, [isValidToken, isVerifying, selectedDate]);
+    ```
+
 
