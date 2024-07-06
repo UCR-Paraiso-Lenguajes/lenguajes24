@@ -21,35 +21,47 @@
 
 This online store project was developed during the Programming Languages course. The store allows users to browse products, add them to the cart, make purchases, and view sales statistics. The implementation uses modern technologies and good development practices.
 
-## System Architecture
+## Arquitectura del Sistema
 
-The system is designed to be modular and scalable, with a microservices architecture that includes services for product management, users, authentication and authorization, and sales statistics. Communication between services is done via RESTful APIs.
+El sistema está diseñado para ser modular y escalable, con una arquitectura de microservicios que incluye servicios para la gestión de productos, usuarios, autenticación y autorizaciones, y estadísticas de ventas. La comunicación entre servicios se realiza mediante APIs RESTful.
 
-## UML Diagrams
+## Diagramas UML
 
-### Activity Diagram
+### Diagrama de Actividad
 
-![Activity Diagram](/images/actividad.png)
+![Diagrama de Actividad](/images/actividad.png)
 
-The activity diagram shows the workflow within the system, from user authentication to making a purchase and the Search Products.
+El diagrama de actividad muestra el flujo de trabajo dentro del sistema, desde la autenticación del usuario hasta la realización de una compra.
 
-### Class Diagram
+### Diagrama de Clase
 
-![Class Diagram](/images/clase.png)
+![Diagrama de Clase](/images/clase.png)
 
-The class diagram represents the static structure of the system, showing the classes, attributes, methods, and their relationships.
+El diagrama de clase representa la estructura estática del sistema, mostrando las clases, atributos y métodos, así como sus relaciones.
 
-### Package Diagram
+### Diagrama de Paquetes
 
-![Package Diagram](/images/paquetes.png)
+![Diagrama de Paquetes](/images/paquetes.png)
 
-The package diagram shows the modular organization of the system, grouping related classes into packages for better maintainability and scalability of the code.
+El diagrama de paquetes muestra la organización modular del sistema, agrupando clases relacionadas en paquetes para mejorar la mantenibilidad y escalabilidad del código.
 
-### Activity Diagram for Carousel and PaymentMethods
+### Diagrama de Campaigns Investigación
 
-![Activity Diagram for Carousel and PaymentMethods](/images/ProyectoActividad.jpg)
+![Diagrama de Campaigns Investigación](/images/Investigacion.JPG)
 
-The diagram shows the activity flows related to the product carousel and available payment methods.
+Este diagrama ilustra la estructura y relaciones de las campañas de investigación dentro del sistema.
+
+### Diagrama de Actividad Carousel y PaymentMethods
+
+![Diagrama de Actividad Carousel y PaymentMethods](/images/ProyectoActividad.jpg)
+
+El diagrama muestra los flujos de actividad relacionados con el carrusel de productos y los métodos de pago disponibles.
+
+### Diagrama UML de Proyecto
+
+![Diagrama UML de Proyecto](/images/ProyectoUML.jpg)
+
+Este diagrama proporciona una vista general de la estructura y componentes del proyecto de tienda en línea.
 
 ### UML Diagram of the Project
 
