@@ -28,8 +28,13 @@ const InitPage = () => {
                   </Link>
                 </li>
                 <li className="nav-item">
+
+                  <Link href="/admin/notifications">
+                     Gestionar campañas
+
                   <Link href="/admin/payment_method">
                      Gestión métodos de pago
+
                   </Link>
                 </li>
               </ul>

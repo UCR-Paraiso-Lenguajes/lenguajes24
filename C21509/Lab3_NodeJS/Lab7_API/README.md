@@ -7,6 +7,9 @@
 ## Diagrama de Actividad
 <img src="OrderProcessing.jpg">
 
+## Diagrama de Actividad Investigación
+<img src="DiagramaInvestigacion.png">
+
 ## Diagrama de Actividad Flujo de Compra Proyecto
 <img src="Diagramadeactividades.png">
 
@@ -15,3 +18,4 @@
 
 ## Diagrama UML Métodos de pago y Flujo de Compra Proyecto
 <img src="ClasesMetodoPago.jpg">
+
