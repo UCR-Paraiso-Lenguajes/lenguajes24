@@ -10,13 +10,41 @@ Andromeda Store aims to be an E-Commerce for everyone interested in shopping onl
 
 ---
 
-## Architechture
+# Content
+
+1. [Architechture](#architechture)
+2. [Diagrams](#diagrams)
+   - [Api Diagram](#api-diagram)
+   - [Core Diagram](#core-diagram)
+   - [Database and Expections Diagrams](#database-and-exceptions-diagrams)
+   - [Models Diagrams Part 1](#models-diagrams-part-1)
+   - [Models Diagrams Part 2](#models-diagrams-part-2)
+   - [Tests Diagrams](#tests-diagrams)
+   - [Services Diagram](#services-diagrams)
+   - [Package Diagram](#package-diagram)
+3. [Sequence and Activity Diagrams](#sequence-and-activity-diagrams)
+   - [Sale Case](#sale-case)
+   - [Searching for a product by category/ies and specifying a query](#searching-for-a-product-by-categoryies-and-specifying-a-query)
+   - [WebSocket interactions](#websocket-interactions)
+   - [Payment Methods Activity Diagram](#payment-methods-activity-diagram)
+   - [Carroussel Activity Diagram](#carroussel-activity-diagram)
+4. [UML Diagrams](#uml-diagrams)
+   - [Payment Methods UML Diagram](#payment-methods-uml-diagram)
+   - [Multiple Existences Of Products In Cart UML Diagram](#multiple-existences-of-products-in-cart-uml-diagram)
+5. [Security](#security) :lock:
+6. [Cache of products](#cache-of-products)
+7. [Product's search](#products-search)
+8. [Sale reports](#sale-reports)
+
+---
+
+# Architechture
 
 The project was worked under the 3 tier architechture for the backend, splitting the solution in the following tiers:
 
 - API tier, in charge of handling the requests that the system may receive from the web client. Some of these requests may require an authentification in order to be autorized to be used, but some of them were public endpoints, although the security aspect will be found later in this document.
 
-- Business tier, in charge of validating the data that not only is received, but also returned, so that there is guarantee in the handling of information
+- Core tier, in charge of validating the data that not only is received, but also returned, so that there is guarantee in the handling of information
 
 - Data tier, in charge of the persistence of data, accessing the repository, writing and reading data.
 
@@ -82,25 +110,35 @@ This tier is the one that writes and reads data for the correct functionality of
 
 ---
 
-## Sequence Diagram
+# Sequence and Activity Diagrams
 
-- **Sale Case**
+## **Sale Case**
 
 ![Sequence Diagram](https://www.plantuml.com/plantuml/dpng/bLF1ZXCn3BtFL_W7-84Uq5PLGI21Lgt45Rc9LMNbYMSTJyNoHnmuSUFQ7oFPAQEPKKhfPTGqVi_FyNiFoL2jRxb1PwAmuK3HgEbGBRZGOJJuJD_iO_ewNCrkrbsOdJUYr7WqF60Ys3_pdlH4sZGNsZTlvsIhZ8YfPqFeL7oV9QIcA0adD5eqRcR7J9Mxh-0z6UpekQTau0aUApH5PPC_6L84lc8kTPEoGNnJlhbmrBw2lN2Upn0u94ClfOs9bmGigQPxElZuSywvVIBN6qBMhI_N2AVOGRYIYKQ43zlOjwHuO5eCxQcceg271xkJOtYJZ5jkxawUpB3O7sJ6YojMq9RrwSG4G16Aev0P1wAg9QxxQdrKEau9aS6XQZ2v2V91oRbm_XNBGFcc_7iJrPv_c0pkwF3uZouxGWxV4HZ1ITif_gVZuUy67sNm-cQ2hXjz6q_ddmXoU28JsA1QrUzZ_HVauD45YPGgIPZJxP7fBjElkKL7SJ9vnUBlGbmyppLJ--8PULdwV9BoI8hGHuZdtotfwsgKN3Z8B12xYv69AuNBC8nThoRZ3iAC7iUeH6IQa4z3GkgS8yV2FWyKVT_o7m00)
 
 ---
 
-- **Searching for a product by category/ies and specifying a query**
+## **Searching for a product by category/ies and specifying a query**
 
 ![Search Diagram](https://www.plantuml.com/plantuml/dpng/fP9DZjGm48NtFaLT0B7l1Heq6X1884HBR55DN7GREQwCNHxHHsB1AUPYb3jM55iPK60JnJ_rlLUkTvC4e-JH6no48znwHq78JBhh1ZTX4FX8F-Hz-ZeVDIUl9zUiRpcIiIXuZudW-E2F51yf6bEnBrwri8DMX9Iz84oHRLOBoHGdxX65Ec7JB1MbwWTuImAVwI5J4h04dpOmnQNHZvOKWzUQUczrRJPlobSlBjuFS6Il_Gc2TqdGSf4Hjfp0SzhmtJI-_BRCk-yqP4MgxtXv1jZKpiOZ2SU0yEukv94YtdlgchQqvS9IaiYNzLO1Bjm1XpDXAmyKOAIHeyFbjZxYJXFpesfTF_gT72Lq0G0brbWTOCobGspTbqYYzzY06iQkOC8tvrKZM8Q98mnAEt5y-eMW4tGd9zUZ7EQX_bUCLw8JHWIFBpscbMI2Iokp5VCskF-ABQmkBb_GE_jCEVbAQ4lUbBVh4sRfchoddtyFsC1XLQWASCOJQa9HXlD6uchYT-PlXumY5vMDTAx3-Q66KvlluJeVYbpvyr1Iha6p_AVWLkb--uQ2pQF_3G00)
 
 ---
 
-- **WebSocket interactions**
+## **WebSocket interactions**
 
 ![WebScoket Diagram](https://www.plantuml.com/plantuml/dpng/lPN1ZX9148RlynJr0hu01xCuwm4FgrcIzMYAxf9KdEaUguh9hk_amNZpoelP3QETGM0x7lOmX0xzVtyL_q-uKKEnNTyrw2mAj1rJC9fEIzzpQ8PqWnqF60pkwD7UwQVZjTadom-hsRcDGer7mmqgmVfhjoOPIPfcidZrUWw31Jomii60suC_ZsXqOZXN94HoNIIhG8-y_ndW8stMqNqXAu0yLthItJnHSdc_CGeaiF_L6VUeO48A3li1zpzGY_AmGNv9HcK1EFZfhZE48Px1u2cdx5uWPPnxiYW1BtCydI5byRH_DQ8ibLHdllwtOTn_hwCamBzPJC4ku9PqIE-tTQnvmisXSt1cl5LWnn4yWPBcj2-Lv2AX5KBvc_IbCWcXKPilyJOizIcuAsLwm8vzWZx1GAAiniMWeache2I6HLFRcdQw3tmaU7o-9qNqPrQFbTMuYyQVsQ40WaKV5Rhqk6FW2YDZ-UazLmpQ9apOqOXbwtcrhfJWJHH9ylPwXhVKqVzasAFa7LtiSy_qAF4rGIwTxHBc6qff-ILEVRWuKUlZdSjUEjzxwkD8fSspvKyplg7Wyn_FRm00)
 
+## Payment Methods Activity Diagram
+
+![Payment Methods Activity Diagram](https://www.plantuml.com/plantuml/dpng/fLR1Rjim3BtdA_W3m-u1CjJ8jc83CXGDrkl0I6pAGPOyYYws_KsFE-oqswxviKLk0jLsQwNT8G4ayJtIV4-qpwAYQ5kx6HeD0fzZYyBXiAfipPwZ2jeWimP5sN23Nk4JVTUFySlICNdjdLGDzzRB83IpgBZ1IB3-vjOajoIpsMAnpqO25wsO6umKuKA2ROr6M2ncXqBWrPj-hZbKMw4jGdCV72AW0uCYhA6CiYna3E_-UB04v3Njbc7rxfS66nAcmUrKdaj2npyH7889TIEOMictg3JeMM-LYAg6vt0HegOiom4sTNN_It6feNDuvsztln72vYjfW2MAvk2kvUalXr-XOuk6WwTuFCfYxCz9-9eDGcGWDtnUeAYxExZ13JjMj27doeAYKrWDS9RY0n00vFXSsoLf49-RF0PP6kTB1nt1eNUPXqI2WAN1KnI84rNQIrnZNV-FF75sMoFH3qQQmwgbgF92_e6ro4KQIL7MuOXuPlFpxj2LQtJtBNsS8Ay6B9MhqP1_S8cUAlaz--5rAvQSqUVaIH1Q3txtjoRfcYLaU1CctEN6qI_rKfdgTEUKsSO-yRORmtdCQn1OeSTjciRueqwvLgGtmNP3kVS-UEJ1FdWsZ10ffWbR3B_Yo8hGxEwsxF61wUFHjKzCoNFIohb3WOVw9cRbEZWsh3YcxoisDdG1Ed1OURPb-ACMxHck0CrbJvYi0DyZnntkgPRjDU8fobjrQLw_fNYVS3ZIdlLcJ6njkkiJD0FXfp05uIUWG1us62cjBMg89pfX6VmrIus0H-RkCwHeX0Aou8C2-dGRb6a6AfwHj-cxyXy0)
+
+## Carroussel Activity Diagram
+
+![Carroussel Products Diagram](https://www.plantuml.com/plantuml/dpng/hLNHRjim37ptL_07yWC1ChJ8C61x68e5xUl0Mcn3m9OqYNBMlvyLLORL28Ozz251XF3ko3lAllE2JaBVDTYASV3e0pesZKKdtB95BV2J_ieF__lOCMaf_hctN9oFnb6ZKF0PFS7fJtSYDv1hciC1dfWkh5y1jOA7uDep-dXyS4Q5LZmS3atphWwxBwNe_ee6-ruRU-K1XJwqLfn6ajZV7dwHEAQ1CXoSkSmeuWpZ9vR7zlVmZQGzrulJWF4BTZFwu7HPhwX09FxReRwojns-LR6vjG8IIN94UpYTpQMElN4c1d2lL66u63YYasNZ8shIU76cXnQT2PwwJI4KD68YYIn4CFROalVNCa2bMDZeDIa4gr189Q0NbB0wZAFHB-pwtEKako6Gnwjw4bSfsyL8qfnqZUN2SixtWfOpoR1e92hbebCMNsbR8gVmtBDaWaeOjLr8OWDsh725EJDlygxZ3GUCvz39WbEhdB3uraVH_tOY4_GaPwDM6VAKXg0FsCskPFmdkJAjSbgdZNPyromSYpCSRBgEAoviXbJlQYwUN4lNMwiy_bGtlJd6S72OTQ98aBjP9rDbC_s2NLRAHkHLhQ3gp_8irvRuRG_rEicsftiTUxCATwHLV8V_0m00)
+
 ---
+
+# UML Diagrams
 
 ## Payment Methods UML Diagram
 
@@ -108,21 +146,9 @@ This tier is the one that writes and reads data for the correct functionality of
 
 ---
 
-## Payment Methods Activity Diagram
-
-![Payment Methods Activity Diagram](https://www.plantuml.com/plantuml/dpng/fLR1Rjim3BtdA_W3m-u1CjJ8jc83CXGDrkl0I6pAGPOyYYws_KsFE-oqswxviKLk0jLsQwNT8G4ayJtIV4-qpwAYQ5kx6HeD0fzZYyBXiAfipPwZ2jeWimP5sN23Nk4JVTUFySlICNdjdLGDzzRB83IpgBZ1IB3-vjOajoIpsMAnpqO25wsO6umKuKA2ROr6M2ncXqBWrPj-hZbKMw4jGdCV72AW0uCYhA6CiYna3E_-UB04v3Njbc7rxfS66nAcmUrKdaj2npyH7889TIEOMictg3JeMM-LYAg6vt0HegOiom4sTNN_It6feNDuvsztln72vYjfW2MAvk2kvUalXr-XOuk6WwTuFCfYxCz9-9eDGcGWDtnUeAYxExZ13JjMj27doeAYKrWDS9RY0n00vFXSsoLf49-RF0PP6kTB1nt1eNUPXqI2WAN1KnI84rNQIrnZNV-FF75sMoFH3qQQmwgbgF92_e6ro4KQIL7MuOXuPlFpxj2LQtJtBNsS8Ay6B9MhqP1_S8cUAlaz--5rAvQSqUVaIH1Q3txtjoRfcYLaU1CctEN6qI_rKfdgTEUKsSO-yRORmtdCQn1OeSTjciRueqwvLgGtmNP3kVS-UEJ1FdWsZ10ffWbR3B_Yo8hGxEwsxF61wUFHjKzCoNFIohb3WOVw9cRbEZWsh3YcxoisDdG1Ed1OURPb-ACMxHck0CrbJvYi0DyZnntkgPRjDU8fobjrQLw_fNYVS3ZIdlLcJ6njkkiJD0FXfp05uIUWG1us62cjBMg89pfX6VmrIus0H-RkCwHeX0Aou8C2-dGRb6a6AfwHj-cxyXy0)
-
----
-
-## Multiple Existences Of Products In Cart Diagram
+## Multiple Existences Of Products In Cart UML Diagram
 
 ![Multiple Existences Of Products In Cart Diagram](https://www.plantuml.com/plantuml/dpng/ZLLTJzim57tlhx3wb0gw7p1L4Q4RADAOEc1xD_PTyN2SoX-JAiH_txsD5spJ4lBGf3x7r-SSvpeNpdFhGwTdEowU-1ROlDcqR6FxFo3ydArMjtZdPgkXhjdpZE4rCjUzyRRN6gmZvbMl9TYHHfVGt3csnYLUkGbCrzdQ0lT0dCRjZQW4Fh7FXqaBlDzpzxHg6-5LRsx11UthSVxBRFZDPTtq4lIqebB7D-NyYW0qBuFmDOiFhNGvqtchp9OrKbfm1RRX-mwClm7_s4ltwNw_0vQD7Is5wVnMjkDaydle7i0c7WljYSJImdLGahN54XA4whX6Dqf03YdZsO_0ZLT-Vth1EwvXEgpapuVYoiKrNH-CVo_A3wIu2LOySWT5WjD1ZzUpymY9by7pPL1QLhje2j_5zgi97LZ-e24pVyxuO0uvmq8uSd240z7YETkb1X38_I6UoKzAYKnq1bA7aDQ9bhWCJXbmqqtndrZizvAmBznp9k93dcuQJDa-POD4bwURdVpK-VA_k5OodXBPdEEqBDdg_TnFb20HbSEV6711kmO35cdvArSjnesPs12AS78pY5GstXt_6wDBnSNeZYuQ2-Qkax9dW7l7wA1w7KgFhHmP6gIiTgMCh3mIYtZZ2RXuCnpreSBYux1S3aS9pfWFNmOtFt0YCZOT4MWULmOPsRkRra2sm34umYbD8Fjd9CRiYKJv4eJ14tO1HjBdyXy0)
-
----
-
-## Carroussel Activity Diagram
-
-![Carroussel Products Diagram](https://www.plantuml.com/plantuml/dpng/hLNHRjim37ptL_07yWC1ChJ8C61x68e5xUl0Mcn3m9OqYNBMlvyLLORL28Ozz251XF3ko3lAllE2JaBVDTYASV3e0pesZKKdtB95BV2J_ieF__lOCMaf_hctN9oFnb6ZKF0PFS7fJtSYDv1hciC1dfWkh5y1jOA7uDep-dXyS4Q5LZmS3atphWwxBwNe_ee6-ruRU-K1XJwqLfn6ajZV7dwHEAQ1CXoSkSmeuWpZ9vR7zlVmZQGzrulJWF4BTZFwu7HPhwX09FxReRwojns-LR6vjG8IIN94UpYTpQMElN4c1d2lL66u63YYasNZ8shIU76cXnQT2PwwJI4KD68YYIn4CFROalVNCa2bMDZeDIa4gr189Q0NbB0wZAFHB-pwtEKako6Gnwjw4bSfsyL8qfnqZUN2SixtWfOpoR1e92hbebCMNsbR8gVmtBDaWaeOjLr8OWDsh725EJDlygxZ3GUCvz39WbEhdB3uraVH_tOY4_GaPwDM6VAKXg0FsCskPFmdkJAjSbgdZNPyromSYpCSRBgEAoviXbJlQYwUN4lNMwiy_bGtlJd6S72OTQ98aBjP9rDbC_s2NLRAHkHLhQ3gp_8irvRuRG_rEicsftiTUxCATwHLV8V_0m00)
 
 ---
 
