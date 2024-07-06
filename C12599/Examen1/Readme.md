@@ -1166,3 +1166,530 @@ The `handleSearch` function handles the following:
 5. **State and URL Update**: Updates the component's state with the fetched products and updates the browser's URL to reflect the search parameters.
 
 This function provides a robust and interactive search experience by dynamically updating the product list and URL based on user input.
+### Sales Reports
+
+The following code provides a system for retrieving and managing sales transactions from a MySQL database. It includes database access methods, business logic for sales, and a web API controller.
+
+#### SalesDB Class
+Handles database operations related to sales transactions.
+
+##### Constructor
+Initializes a new instance of the `SalesDB` class.
+
+```csharp
+public sealed class SalesDB
+{
+    public SalesDB()
+    {
+    }
+}
+```
+
+##### GetForWeekAsync Method
+Retrieves sales transactions for a specified week.
+
+```csharp
+public async Task<IEnumerable<string[]>> GetForWeekAsync(DateTime date)
+{
+    if (date == DateTime.MinValue)
+    {
+        throw new ArgumentException("Date cannot be DateTime.MinValue");
+    }
+
+    using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+    {
+        await connection.OpenAsync();
+
+        DateTime startOfWeek = date.AddDays(-(int)date.DayOfWeek);
+        DateTime endOfWeek = startOfWeek.AddDays(6);
+        string formattedStartOfWeek = startOfWeek.ToString("yyyy-MM-dd");
+        string formattedEndOfWeek = endOfWeek.ToString("yyyy-MM-dd");
+
+        string sql = @"
+            SELECT *
+            FROM Compras
+            WHERE date >= @startOfWeek AND date <= @endOfWeek";
+
+        using (var command = new MySqlCommand(sql, connection))
+        {
+            command.Parameters.AddWithValue("@startOfWeek", formattedStartOfWeek);
+            command.Parameters.AddWithValue("@endOfWeek", formattedEndOfWeek);
+
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                var databaseInfo = new List<string[]>();
+
+                while (await reader.ReadAsync())
+                {
+                    int fieldCount = reader.FieldCount;
+                    string[] row = new string[fieldCount];
+
+                    for (int i = 0; i < fieldCount; i++)
+                    {
+                        row[i] = reader.GetValue(i).ToString();
+                    }
+
+                    databaseInfo.Add(row);
+                }
+
+                return databaseInfo;
+            }
+        }
+    }
+}
+```
+
+- **Input Validation**: Checks if the provided date is valid.
+- **Database Connection**: Opens a connection to the MySQL database.
+- **Query Execution**: Retrieves sales records for the week specified by the date.
+- **Result Processing**: Reads the data and returns it as a list of string arrays.
+
+##### GetForDayAsync Method
+Retrieves sales transactions for a specified day.
+
+```csharp
+public async Task<IEnumerable<string[]>> GetForDayAsync(DateTime date)
+{
+    if (date == DateTime.MinValue)
+    {
+        throw new ArgumentException("Date cannot be DateTime.");
+    }
+
+    await using (MySqlConnection connection = new MySqlConnection(DataConnection.Instance.ConnectionString))
+    {
+        await connection.OpenAsync();
+
+        string sql = @"
+            SELECT *
+            FROM Compras
+            WHERE DATE(date) = DATE(@date)";
+
+        using (var command = new MySqlCommand(sql, connection))
+        {
+            command.Parameters.AddWithValue("@date", date.ToString("yyyy-MM-dd"));
+
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                var databaseInfo = new List<string[]>();
+
+                while (await reader.ReadAsync())
+                {
+                    int fieldCount = reader.FieldCount;
+                    string[] row = new string[fieldCount];
+
+                    for (int i = 0; i < fieldCount; i++)
+                    {
+                        row[i] = reader.GetValue(i).ToString();
+                    }
+
+                    databaseInfo.Add(row);
+                }
+
+                return databaseInfo;
+            }
+        }
+    }
+}
+```
+
+- **Input Validation**: Checks if the provided date is valid.
+- **Database Connection**: Opens a connection to the MySQL database.
+- **Query Execution**: Retrieves sales records for the specified day.
+- **Result Processing**: Reads the data and returns it as a list of string arrays.
+
+#### Sale Class
+Represents a sale with its details.
+
+```csharp
+public sealed class Sale
+{
+    public IEnumerable<Product> Products { get; }
+    public string Address { get; }
+    public decimal Amount { get; }
+    public PaymentMethods.Type PaymentMethod { get; set; }
+    public string PurchaseNumber { get; }
+
+    public Sale(IEnumerable<Product> products, string address, decimal amount, PaymentMethods.Type paymentMethod)
+    {
+        if (products == null || !products.Any())
+        {
+            throw new ArgumentException("Products collection must not be null or empty.", nameof(products));
+        }
+
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            throw new ArgumentException("Address must not be null or empty.", nameof(address));
+        }
+
+        if (amount <= 0)
+        {
+            throw new ArgumentException("Amount must be a positive decimal value.", nameof(amount));
+        }
+
+        Products = products;
+        Address = address;
+        Amount = amount;
+        PaymentMethod = paymentMethod;
+        PurchaseNumber = StoreLogic.GenerateNextPurchaseNumber();
+    }
+}
+```
+
+- **Products**: Collection of products in the sale.
+- **Address**: Delivery address for the sale.
+- **Amount**: Total amount of the sale.
+- **PaymentMethod**: Payment method used for the sale.
+- **PurchaseNumber**: Unique purchase number for the sale, generated by `StoreLogic`.
+
+#### SalesController Class
+Provides endpoints for accessing sales transactions.
+
+```csharp
+[Route("api/[controller]")]
+[ApiController]
+public class SalesController : ControllerBase
+{
+    [HttpGet("transactions"), Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetTransactions([FromQuery] string date)
+    {
+        if (string.IsNullOrWhiteSpace(date))
+        {
+            return BadRequest("Date cannot be empty.");
+        }
+
+        if (!DateTime.TryParseExact(date, "yyyy-MM-dd", null, DateTimeStyles.None, out DateTime parsedDate))
+        {
+            return BadRequest("Invalid date format. Date must be in yyyy-MM-dd format.");
+        }
+
+        var salesDB = new SalesDB();
+
+        Task<IEnumerable<string[]>> taskTransactionDay = salesDB.GetForDayAsync(parsedDate);
+        Task<IEnumerable<string[]>> taskTransactionWeek = salesDB.GetForWeekAsync(parsedDate);
+        Console.WriteLine(taskTransactionDay);
+
+        await Task.WhenAll(taskTransactionDay, taskTransactionWeek);
+
+        IEnumerable<TransactionManager.TransactionRecord> transactionsDays =
+            await TransactionManager.LoadTransactionsFromDayAsync(taskTransactionDay.Result);
+        IEnumerable<TransactionManager.TransactionRecord> transactionsWeeks =
+            await TransactionManager.LoadTransactionsFromWeekAsync(taskTransactionWeek.Result);
+
+        var response = new Dictionary<string, IEnumerable<object>>
+        {
+            ["transactionsDays"] = transactionsDays,
+            ["transactionsWeeks"] = transactionsWeeks
+        };
+
+        return Ok(response);
+    }
+}
+```
+
+- **GetTransactions Method**: Handles GET requests to retrieve sales transactions.
+  - **Date Validation**: Ensures the date parameter is valid and in the correct format.
+  - **Database Queries**: Retrieves daily and weekly transactions concurrently.
+  - **Result Processing**: Processes the results and returns them in the response.
+
+### Summary
+
+- **SalesDB Class**: Manages database access for sales transactions with methods to retrieve data for a specific day or week.
+- **Sale Class**: Represents a sale with details like products, address, amount, payment method, and purchase number.
+- **SalesController Class**: Provides API endpoints for accessing sales transactions, validating inputs, and returning the data in a structured format.
+  ### Sales Reports
+
+The following code provides a React component that displays sales data in a pie chart and a table. It includes token verification, data fetching, and data visualization.
+
+#### Import Statements and Initial Setup
+Imports necessary libraries and components, including `React`, `useState`, `useEffect`, `useRouter`, `recharts`, and `DatePicker`.
+
+```javascript
+'use client';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { PieChart, Pie, Legend, Tooltip, Cell } from 'recharts';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import 'bootstrap/dist/css/bootstrap.css';
+import '../ui/globals.css';
+import { jwtDecode } from 'jwt-decode';
+import VerifyComponent from '../components/VerifyToken';
+const URL = process.env.NEXT_PUBLIC_API;
+```
+
+#### Ventas Component
+Defines the main `Ventas` component that manages the state and handles data fetching and rendering.
+
+```javascript
+const Ventas = () => {
+    const [state, setState] = useState({
+        transactionsDays: [],
+        selectedDate: new Date(),
+        pieChartData: [],
+        errorMessage: '',
+    });
+
+    const [isVerified, setIsVerified] = useState(false);
+    const router = useRouter();
+
+    const { transactionsDays, selectedDate, pieChartData, errorMessage } = state;
+```
+
+- **State Management**: Uses `useState` to manage the component's state, including transactions, selected date, pie chart data, and error messages.
+- **Router**: Uses `useRouter` to handle navigation.
+
+#### Token Verification
+Verifies the JWT token to ensure the user is authorized.
+
+```javascript
+    useEffect(() => {
+        const verifyToken = () => {
+            const token = typeof window !== 'undefined' ? sessionStorage.getItem('authToken') : null;
+            if (!token) {
+                router.push('/admin');
+                return;
+            }
+
+            const decodedToken = jwtDecode(token);
+            const exp = decodedToken.exp * 1000;
+            const userRole = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+            if (Date.now() >= exp || userRole !== "Admin") {
+                sessionStorage.removeItem('authToken');
+                router.push('/admin');
+            } else {
+                setIsVerified(true);
+            }
+        };
+
+        verifyToken();
+    }, [router]);
+```
+
+- **Token Retrieval**: Retrieves the token from `sessionStorage`.
+- **Token Decoding**: Decodes the token to check expiration and user role.
+- **Redirection**: Redirects to the admin page if the token is invalid or expired.
+
+#### Data Fetching
+Fetches sales data when the component mounts and when the selected date changes.
+
+```javascript
+    useEffect(() => {
+        if (isVerified) {
+            fetchData();
+        }
+    }, [isVerified, selectedDate]);
+
+    const fetchData = async () => {
+        if (!selectedDate) return;
+
+        const token = sessionStorage.getItem('authToken');
+        const formattedDate = selectedDate.toISOString().split('T')[0];
+        const url = URL + `/api/Sales/transactions?date=${formattedDate}`;
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorMsg = response.status === 403 ? 'No tiene permisos de administrador' : 'Error al obtener los datos.';
+            setState(prevState => ({
+                ...prevState,
+                errorMessage: errorMsg,
+            }));
+            return;
+        }
+
+        const json = await response.json();
+        const pieData = generatePieChartData(json.transactionsWeeks || []);
+
+        setState(prevState => ({
+            ...prevState,
+            transactionsDays: json.transactionsDays || [],
+            pieChartData: pieData,
+            errorMessage: '',
+        }));
+    };
+```
+
+- **Token Handling**: Includes the token in the request headers.
+- **URL Construction**: Constructs the API URL with the selected date.
+- **Error Handling**: Updates the state with an error message if the request fails.
+- **Data Processing**: Updates the state with fetched data.
+
+#### Pie Chart Data Generation
+Generates data for the pie chart based on the fetched transactions.
+
+```javascript
+    const generatePieChartData = (transactions) => {
+        if (!transactions || !Array.isArray(transactions)) {
+            throw new Error('Los datos de transacciones no son válidos.');
+        }
+
+        const countByDayOfWeek = {};
+        transactions.forEach(transaction => {
+            const dayOfWeek = new Date(transaction.transactionDate).getDay();
+            countByDayOfWeek[dayOfWeek] = (countByDayOfWeek[dayOfWeek] || 0) + 1;
+        });
+
+        const totalTransactions = transactions.length;
+
+        return Object.keys(countByDayOfWeek).map(dayOfWeek => {
+            const dayName = getDayName(parseInt(dayOfWeek, 10));
+            const percentage = (countByDayOfWeek[dayOfWeek] / totalTransactions) * 100;
+            return {
+                name: `${dayName} (${percentage.toFixed(2)}%)`,
+                value: countByDayOfWeek[dayOfWeek],
+                color: getRandomColor(),
+            };
+        });
+    };
+```
+
+- **Count Transactions**: Counts the number of transactions per day of the week.
+- **Percentage Calculation**: Calculates the percentage of transactions for each day.
+- **Color Assignment**: Assigns a random color to each segment of the pie chart.
+
+#### Utility Functions
+Helper functions for getting day names and generating random colors.
+
+```javascript
+    const getDayName = (dayOfWeek) => {
+        const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        if (typeof dayOfWeek !== 'number' || dayOfWeek < 0 || dayOfWeek > 6) {
+            throw new Error('El argumento dayOfWeek debe ser un número entre 0 y 6.');
+        }
+        return days[dayOfWeek];
+    };
+
+    const getRandomColor = () => {
+        return `hsl(${Math.random() * 360}, 70%, 50%)`;
+    };
+```
+
+- **getDayName**: Returns the name of the day for a given day of the week.
+- **getRandomColor**: Generates a random color.
+
+#### Date Change Handling
+Handles changes to the selected date.
+
+```javascript
+    const handleDateChange = (date) => {
+        if (!date) {
+            throw new Error('La fecha seleccionada no es válida.');
+        }
+        const adjustedDate = new Date(date);
+        adjustedDate.setDate(adjustedDate.getDate());
+        setState(prevState => ({
+            ...prevState,
+            selectedDate: adjustedDate,
+        }));
+    };
+```
+
+- **Date Validation**: Ensures the selected date is valid.
+- **State Update**: Updates the state with the new selected date.
+
+#### Rendering the Component
+Renders the component, including the pie chart and table of daily transactions.
+
+```javascript
+    const formattedDisplayDate = new Date(selectedDate);
+    formattedDisplayDate.setDate(formattedDisplayDate.getDate());
+
+    if (!isVerified) {
+        return null;
+    }
+
+    return (
+        <VerifyComponent>
+            <div>
+                <h1 className="text-center">Gráfico de Ventas</h1>
+                {errorMessage ? (
+                    <p className="text-center text-danger">{errorMessage}</p>
+                ) : (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div style={{ flex: '1', marginRight: '20px' }}>
+                            <h2>Gráfico semanal</h2>
+                            {pieChartData.length > 0 ? (
+                                <PieChart width={400} height={550}>
+                                    <Pie
+                                        dataKey="value"
+                                        data={pieChartData}
+                                        cx={200}
+                                        cy={150}
+                                        outerRadius={100}
+                                        innerRadius={60}
+                                        label
+                                    >
+                                        {pieChartData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip formatter={(value, name) => [value, name]} />
+                                    <Legend />
+                                </PieChart>
+                            ) : (
+                                <p>No hay datos disponibles para mostrar el gráfico.</p>
+                            )}
+                        </div>
+
+                        <div style={{ flex: '1' }}>
+                            <h2>Tabla diaria</h2>
+                            <div style={{ marginBottom: '20px' }}>
+                                <DatePicker
+                                    selected={formattedDisplayDate}
+                                    onChange={handleDateChange}
+                                    dateFormat="yyyy-MM-dd"
+                                    placeholderText="Selecciona una fecha"
+                                />
+                            </div>
+
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Número de Compra</th>
+                                        <th>Monto Total</th>
+                                        <th>Fecha de Transacción</th>
+                                        <th>Productos</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {transactionsDays.map((transaction, index) => (
+                                        <tr key={index}>
+                                            <td>{transaction.purchaseNumber}</td>
+                                            <td>{transaction.totalAmount}</td>
+                                            <td>{new Date(transaction.transactionDate).toLocaleDateString()}</td>
+                                            <td>
+                                                <ul>
+                                                    {transaction.products.map((product,
+
+ index) => (
+                                                        <li key={index}>{product}</li>
+                                                    ))}
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </VerifyComponent>
+    );
+}
+
+export default Ventas;
+```
+
+- **Token Verification**: Renders nothing if the user is not verified.
+- **Error Message**: Displays an error message if there is one.
+- **Pie Chart**: Displays a pie chart of weekly transactions.
+- **Date Picker**: Allows the user to select a date to view daily transactions.
+- **Transaction Table**: Displays daily transactions in a table format.
