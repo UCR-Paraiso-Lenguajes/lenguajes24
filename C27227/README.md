@@ -337,7 +337,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
 ### Package Diagrams
 
 #### KEStoreApi
-![KEStoreApi Package Diagram](/Images/DiagramaPaquetesApi.png)
+![KEStoreApi Package Diagram](../C27227/Images/DiagramaPaquetesApi.png)
 
 ### Sequence Diagrams
 
@@ -345,24 +345,24 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
 ![Add Product Sequence Diagram](../C27227/Images/DiagramaSecuencia.png)
 
 #### Delete Product
-![Delete Product Sequence Diagram](/Images/DiagramaSecuenciaDelete.png)
+![Delete Product Sequence Diagram](../C27227/Images/DiagramaSecuenciaDelete.png)
 
 #### View Sales Report
-![View Sales Report Sequence Diagram](/Images/ReportSales.png)
+![View Sales Report Sequence Diagram](../C27227/Images/ReportSales.png)
 
 #### Payment Method
-![Payment Method Sequence Diagram](/Images/PaymentMethod.png)
+![Payment Method Sequence Diagram](../C27227/Images/PaymentMethod.png)
 
 #### Delete Payment Method
-![Delete Payment Method Sequence Diagram](/Images/PaymentMethod.Delete.png)
+![Delete Payment Method Sequence Diagram](../C27227/Images/PaymentMethod.Delete.png)
 
 ### Activity Diagrams
 
 #### Campaign Management
-![Campaign Management Activity Diagram](/Images/diagramaActividadCampañas.png)
+![Campaign Management Activity Diagram](../C27227/Images/diagramaActividadCampañas.png)
 
 #### Purchase Process
-![Purchase Process Activity Diagram](/Images/DiagramaActividadCompra.png)
+![Purchase Process Activity Diagram](../C27227/Images/DiagramaActividadCompra.png)
 
 ## Security
 
