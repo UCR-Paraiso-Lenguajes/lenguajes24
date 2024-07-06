@@ -25,7 +25,7 @@
    - [Search Logic](#search-logic)
 6. [Sales Reports](#sales-reports)
    - [Reports Implementation](#reports-implementation)
-7. [Demostration](#project-demostration)
+7. [Demonstration](#project-demonstration)
 
 
 ## Description of the Project
