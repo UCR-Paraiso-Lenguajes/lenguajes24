@@ -15,6 +15,7 @@
 6. [Cache Products](#How-Product-Caching-Was-Implemented)
 7. [Product Finder](#PRODUCT-FINDER) 
 8. [Sales Report](#Sales-Reports)
+9. [Video Demostration](#Video-Demonstration)
    
 
 ## Introduction
@@ -1700,3 +1701,12 @@ export default Ventas;
 - **Pie Chart**: Displays a pie chart of weekly transactions.
 - **Date Picker**: Allows the user to select a date to view daily transactions.
 - **Transaction Table**: Displays daily transactions in a table format.
+
+
+# Video Demonstration
+
+You can see the website in action in the following video:
+
+[![Watch the video on YouTube](https://img.youtube.com/vi/5vV8Pg7Gr8U/0.jpg)](https://www.youtube.com/watch?v=5vV8Pg7Gr8U)
+
+Click the image or [this link](https://www.youtube.com/watch?v=5vV8Pg7Gr8U) to watch the video on YouTube.
