@@ -30,13 +30,13 @@
 <h3>Project Structure</h3>
 
 <strong>Classes</strong>
-<img src="img/diagrama_clases.jpg">
+<img src="img/diagrama_clases.JPG">
 <p>Diagram presenting the class structure and their relationships within the system. The main classes are detailed:</p>
 
 
 <strong>Folder Group
 </strong>
-<img src="img/diagrama_paquetes.jpg">
+<img src="img/diagrama_paquetes.JPG">
 <p>Diagram representing the different structures and relationships among the various project components.</p>
 
 <strong>Basic Functionality (Product Purchase)</strong>
