@@ -613,3 +613,140 @@ public static void InsertProduct(Product product, MySqlConnection connection, My
 This implementation of the delegate method performs the actual insertion of a Product into the database using a MySqlCommand.
 
 By using a delegate, the insertion logic can be encapsulated and passed as a parameter, making the code more modular and flexible.
+
+### Explanation of Code: Local Storage Management and Purchase Process
+
+This code handles the shopping cart functionality using React hooks and local storage, and integrates the cart with an API for processing purchases.
+
+#### Key Functions and Hooks
+
+1. **Loading Cart Data from Local Storage**
+   ```javascript
+   useEffect(() => {
+       const cartData = JSON.parse(localStorage.getItem('cartData') || '{}');
+       if (cartData.productos) {
+         setCarrito(cartData);
+       }
+   }, []);
+   ```
+   - **Purpose**: On component mount, this effect loads the cart data from local storage and sets it to the state (`carrito`).
+   - **Function**: It retrieves the stored cart data and parses it from JSON. If the cart contains products, it updates the state.
+
+2. **Calculating Subtotal and Total**
+   ```javascript
+   useEffect(() => {
+       let hayProductosEnCarrito = carrito.productos && carrito.productos.length > 0;
+       if (hayProductosEnCarrito) {
+         let subtotalCalculado = carrito.productos.reduce((total, item) => total + item.price, 0);
+         let totalCalculado = (subtotalCalculado * 0.13) + subtotalCalculado;
+         setCarrito(prevCarrito => ({
+           ...prevCarrito,
+           subtotal: subtotalCalculado,
+           total: totalCalculado
+         }));
+       }
+   }, [carrito.productos]);
+   ```
+   - **Purpose**: Calculates the subtotal and total whenever the products in the cart change.
+   - **Function**: If there are products in the cart, it calculates the subtotal by summing the prices of all products and then calculates the total including a 13% tax. The state is updated with these values.
+
+3. **Clearing the Cart**
+   ```javascript
+   const handleClearCart = () => {
+       const emptyCart = {
+         productos: [],
+         subtotal: 0,
+         total: 0
+       };
+       localStorage.setItem('cartData', JSON.stringify(emptyCart));
+       setCarrito(emptyCart);
+   };
+   ```
+   - **Purpose**: Clears the cart and updates local storage.
+   - **Function**: Sets the cart to an empty state and stores this empty state in local storage.
+
+4. **Processing a Purchase**
+   ```javascript
+   const dataToSend = {
+       productIds: productIds,
+       address: direccionEntrega,
+       paymentMethod: paymentMethodValue
+   };
+
+   const response = await fetch(URL + '/api/Cart', {
+       method: 'POST',
+       headers: {
+           'Content-Type': 'application/json'
+       },
+       body: JSON.stringify(dataToSend)
+   });
+
+   if (response.ok) {
+       const responseData = await response.json();
+       const { purchaseNumberResponse } = responseData;
+
+       setCart({
+           productos: [],
+           direccionEntrega: '',
+           metodoPago: '',
+           isCartEmpty: true,
+           numeroCompra: purchaseNumberResponse.toString(),
+           sinpeAvailable: false,
+           cashAvailable: false
+       });
+
+       updateLocalStorage({
+           productos: [],
+           direccionEntrega: '',
+           metodoPago: '',
+           isCartEmpty: true,
+           numeroCompra: purchaseNumberResponse.toString(),
+           sinpeAvailable: false,
+           cashAvailable: false
+       });
+   } else {
+       const errorResponseData = await response.json();
+       throw new Error('Error al enviar datos de pago: ' + JSON.stringify(errorResponseData));
+   }
+   ```
+   - **Purpose**: Sends the cart data to the API for processing the purchase and handles the response.
+   - **Function**: Prepares data to send, makes a POST request to the API, and handles the response. If successful, it clears the cart and updates both the state and local storage. If there's an error, it throws an exception.
+
+5. **Adding a Product to the Cart**
+   ```javascript
+   const handleAddToCart = (product) => {
+       if (!product || typeof product !== 'object' || !product.hasOwnProperty('id') || !product.hasOwnProperty('name') || !product.hasOwnProperty('price')) {
+         throw new Error('Invalid product object');
+       }
+
+       const { cart } = state;
+       const { productos, count } = cart;
+       const isProductInCart = productos.some((item) => item.id === product.id);
+
+       if (!isProductInCart) {
+         const updatedCart = {
+           ...cart,
+           productos: [...productos, product],
+           count: count + 1,
+         };
+
+         setState((prevState) => ({
+           ...prevState,
+           cart: updatedCart,
+         }));
+
+         localStorage.setItem('cartData', JSON.stringify(updatedCart));
+       } else {
+         throw new Error('Product is already in the cart');
+       }
+   };
+   ```
+   - **Purpose**: Adds a product to the cart if it is not already present.
+   - **Function**: Validates the product object, checks if the product is already in the cart, and updates the cart state and local storage if the product is new.
+
+### Summary
+
+- **Local Storage Management**: The cart data is saved to and loaded from local storage to persist the cart across sessions.
+- **Subtotal and Total Calculation**: Automatically recalculates the subtotal and total when the cart contents change.
+- **API Integration**: Sends the cart data to the API to process the purchase, and handles the response to update the cart state and local storage.
+- **Product Management**: Ensures products are correctly added to the cart and prevents duplicates.
