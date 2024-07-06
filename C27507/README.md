@@ -26,39 +26,50 @@
 </ul>
 
 
-### Estructura del Proyecto
 
-**Clases**
-![Diagrama de Clases](img/diagrama_clases.jpg)
-Diagrama que presenta la estructura de clases y sus relaciones dentro del sistema. Se detallan las clases principales:
+<h3>Project Structure</h3>
 
-**Grupo de Carpetas**
-![Diagrama de Paquetes](img/diagrama_paquetes.jpg)
-Diagrama que representa las diferentes estructuraciones y relaciones entre los diferentes componentes del proyecto.
+<strong>Classes</strong>
+<img src="img/diagrama_clases.jpg">
+<p>Diagram presenting the class structure and their relationships within the system. The main classes are detailed:</p>
 
-**Funcionalidad Básica (Compra de Productos)**
-![Diagrama de Actividad](img/diagrama_actividad.jpg)
-Diagrama de flujo de compra desde el inicio hasta la confirmación.
 
-### Diagramas de Funcionalidades
-A continuación se ilustran tanto diagramas de actividad como de UML que ejemplifican la estructura de varias de las muchas funcionalidades de la aplicación.
+<strong>Folder Group
+</strong>
+<img src="img/diagrama_paquetes.jpg">
+<p>Diagram representing the different structures and relationships among the various project components.</p>
 
-#### Diagrama de Actividad - Carrusel
-![Diagrama de Actividad - Carrusel](diagrama_activiad_carrusel.png)
-Un diagrama de actividad que representa el proceso de compra desde un carrusel en la página principal. Es similar al proceso original, la única diferencia es que el proceso atraviesa varios componentes nuevos de React antes de llegar a la API.
+<strong>Basic Functionality (Product Purchase)</strong>
+<img src="/img/diagrama_actividad.jpg">
+<p>Flow diagram of the purchase process from start to confirmation.</p>
 
-#### Diagrama de Actividad - Métodos de Pago
-![Diagrama de Actividad - Métodos de Pago](diagrama_actividad_metodos_pago.png)
-Un diagrama de actividad que representa el proceso de compra utilizando un método de pago por parte de los usuarios; así como la gestión de estos métodos de pago por parte de los administradores de la aplicación.
 
-#### Diagrama UML - Carrusel
-![Diagrama UML - Carrusel](uml_carrusel.png)
-Ilustración de las diferentes clases involucradas durante el proceso de compra desde el carrusel.
 
-#### Diagrama UML - Métodos de Pago
-![Diagrama UML - Métodos de Pago](uml_metodos_pago_ventas.png)
-Ilustración de las diferentes clases involucradas durante el proceso de gestión de los métodos de pago de la tienda.
 
+
+<h3>Functionality Diagrams</h3>
+<p>The following illustrates both activity and UML diagrams that exemplify the structure of several of the many functionalities of the application.</p>
+
+
+
+<h5>Activity Diagram - Carousel</h5>
+<img src="img/diagrama_activiad_carrusel.png">
+<p>An activity diagram representing the purchase process from a carousel on the main page. It is similar to the original process, the only difference being that the process goes through several new React components before reaching the API.</p>
+
+<h5>Activity Diagram - Payment Methods</h5>
+<img src="/img/diagrama_actividad_metodos_pago.png">
+<p>An activity diagram representing the purchase process using a payment method by users; as well as how these payment methods are managed by the application administrators.</p>
+
+
+<h5>UML Diagram - Carousel</h5>
+<img src="img/uml_carrusel.png">
+<p>Illustration of the different classes involved during the purchase process from the carousel.</p>
+
+
+<h5>UML Diagram - Payment Methods
+</h5>
+<img src="img/uml_metodos_pago_ventas.png">
+<p>Illustration of the different classes involved during the process of managing the store's payment methods.</p>
 
 
 <p>
