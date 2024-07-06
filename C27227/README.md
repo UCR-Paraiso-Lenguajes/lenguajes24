@@ -1,151 +1,385 @@
-# Web Pages: KEStoreAPi
+# KEStoreApi
 
-**Estudiante:** Kendall Sánchez Chinchilla
-**Carné:** C27227
----
+This project was created by Kendall Sánchez Chinchilla. The KEStoreApi provides a comprehensive API for managing an online store, including user authentication, product management, sales processing, and campaign handling.
 
-## Descripción del Proyecto
+## Business Logic Classes
 
-El propósito de este proyecto es desarrollar una tienda en línea utilizando React y Next.js. La aplicación permite a los usuarios una experiencia de compra donde pueden ver productos, añadirlos al carrito de compras, buscar por categoría, nombre y descripción, y proceder a la compra.
+### AuthLogic.cs
+**Description**: Handles authentication logic, including creating and validating tokens, and verifying user credentials.
 
-## Características
-- Catálogo de productos
-- Carrito de compras
-- Proceso de pago
-- Gestión de inventario
-- Gestión de métodos de pago
+```csharp
+public string CreateToken(List<Claim> claims)
+{
+    var token = new JwtSecurityToken(
+        issuer: _config["Jwt:Issuer"],
+        audience: _config["Jwt:Audience"],
+        claims: claims,
+        expires: DateTime.Now.AddMinutes(30),
+        signingCredentials: creds);
+    return new JwtSecurityTokenHandler().WriteToken(token);
+}
+```
 
----
+### CampaignService.cs
+**Description**: Manages campaign-related operations such as creating, retrieving, and deleting campaigns.
 
-## Diagramas:
+```csharp
+public async Task CreateCampaignAsync(CampaignMessage campaign)
+{
+    using var connection = new MySqlConnection(_connectionString);
+    var query = "INSERT INTO Campaigns (Title, Content) VALUES (@Title, @Content)";
+    await connection.ExecuteAsync(query, campaign);
+}
+```
 
-### Diagrama de Actividad
+### Categorias.cs
+**Description**: Manages category-related operations, including creating, retrieving, and deleting product categories.
 
-### Diagrama de Componentes
+```csharp
+public IEnumerable<Categoria> GetAllCategorias()
+{
+    using var connection = new MySqlConnection(_connectionString);
+    return connection.Query<Categoria>("SELECT * FROM Categorias");
+}
+```
 
-**Business**
+### SaleLogic.cs
+**Description**: Manages sales-related operations, such as creating sales, generating sales reports, and retrieving sales data.
 
-![Business](./Images/Bussiness.jpeg)
+```csharp
+public async Task<ReportSales> GetReportSalesAsync(DateTime date)
+{
+    var sales = await _database.GetSalesByDateAsync(date);
+    var salesByWeek = await _database.GetSalesByWeekAsync(date);
+    return new ReportSales { Date = date, Sales = sales, SalesByWeek = salesByWeek };
+}
+```
 
-**Controllers**
+### StoreLogic.cs
+**Description**: Manages store-related operations, including retrieving product listings, handling inventory, and managing store settings.
 
-![Controllers](./Images/Controllers.jpeg)
+```csharp
+public IEnumerable<Product> GetProductsByCategory(int categoryId)
+{
+    using var connection = new MySqlConnection(_connectionString);
+    return connection.Query<Product>("SELECT * FROM Products WHERE CategoryId = @CategoryId", new { CategoryId = categoryId });
+}
+```
 
-**Data**
+## Data Access Classes
 
-![Data](./Images/Data.jpeg)
+### CampaignsDatabase.cs
+**Description**: Handles database operations related to campaigns.
 
-**Models**
+```csharp
+public async Task<IEnumerable<CampaignMessage>> GetAllCampaignsAsync()
+{
+    using var connection = new MySqlConnection(_connectionString);
+    return await connection.QueryAsync<CampaignMessage>("SELECT * FROM Campaigns");
+}
+```
 
-![Models](./Images/Models.jpeg)
+### DatabaseConfiguration.cs
+**Description**: Manages the configuration and initialization of the database.
 
-**UT**
+```csharp
+public static void Init(string connectionString)
+{
+    _connectionString = connectionString;
+}
+```
 
-![UT](./Images/UT.jpeg)
+### DatabaseSale.cs
+**Description**: Handles database operations related to sales.
 
----
+```csharp
+public async Task<IEnumerable<Sale>> GetSalesByDateAsync(DateTime date)
+{
+    using var connection = new MySqlConnection(_connectionString);
+    return await connection.QueryAsync<Sale>("SELECT * FROM Sales WHERE Date = @Date", new { Date = date });
+}
+```
 
-## Front-end
+### DatabaseStore.cs
+**Description**: Handles database operations related to the store, such as product and inventory management.
 
-El front-end de la aplicación está construido con React y Next.js, y consta de varios componentes organizados en diferentes carpetas.
+```csharp
+public async Task<IEnumerable<Product>> GetAllProductsAsync()
+{
+    using var connection = new MySqlConnection(_connectionString);
+    return await connection.QueryAsync<Product>("SELECT * FROM Products");
+}
+```
 
-#### Estructura de Carpetas
-- `page.tsx`: Este componente principal renderiza la página principal de la aplicación.
-- `app/admin`: Este componente representa la sección de administración de la aplicación y contiene subcomponentes para diferentes tareas administrativas.
-- `app/cart`: Este componente es responsable de mostrar el carrito de compras del usuario.
-- `app/confirm`: Este componente es para confirmar el pedido del usuario.
-- `app/payment`: Este componente es para procesar el pago del pedido del usuario e ingresar los datos de compra.
-- `app/hooks`: Contiene hooks personalizados para manejar lógica específica.
-- `app/ui`: Componentes de la interfaz de usuario.
+## Models
 
-#### Dependencias del Front-end
-- React
-- Next.js
+### Address.cs
+**Description**: Represents an address in the system.
 
----
+```csharp
+public class Address
+{
+    public int Id { get; set; }
+    public string Street { get; set; }
+    public string City { get; set; }
+    public string State { get; set; }
+    public string PostalCode { get; set; }
+    public string Country { get; set; }
+}
+```
 
-## Back-end
+### CampaignMessage.cs
+**Description**: Represents a campaign message.
 
-El back-end está construido con ASP.NET Core y contiene la lógica de negocio central de la aplicación.
+```csharp
+public class CampaignMessage
+{
+    public int Id { get; set; }
+    public string Title { get; set; }
+    public string Content { get; set; }
+}
+```
 
-#### Estructura de Carpetas
-- `Core`: Contiene las clases y funciones principales de la aplicación.
-  - `Business`: Contiene clases y funciones relacionadas con las reglas de negocio de la aplicación.
-    - `AuthLogic.cs`
-    - `Categorias.cs`
-    - `SaleLogic.cs`
-    - `StoreLogic.cs`
-  - `Data`: Contiene clases y funciones para interactuar con la base de datos.
-    - `DatabaseConfiguration.cs`
-    - `DatabaseSale.cs`
-    - `DatabaseStore.cs`
-  - `Models`: Contiene las clases que representan los modelos de datos de la aplicación.
-    - `Address.cs`
-    - `Cart.cs`
-    - `Categoria.cs`
-    - `Order.cs`
-    - `PaymentMethod.cs`
-    - `Product.cs`
-    - `Products.cs`
-    - `Sale.cs`
-    - `SaleDetails.cs`
-    - `SalesbyDay.cs`
-    - `Store.cs`
-    - `Tree.cs`
-    - `UserAuth.cs`
-- `KEStoreApi`: Contiene los controladores API para enviar y recibir datos desde el front-end.
-  - `Controllers`
-    - `AddressController.cs`
-    - `AuthController.cs`
-    - `CartController.cs`
-    - `ProductsController.cs`
-    - `SaleController.cs`
-    - `StoreController.cs`
-- `UT`: Contiene las pruebas unitarias para el código del back-end.
-- `Program.cs`: Configuración inicial y arranque de la aplicación.
+### Cart.cs
+**Description**: Represents a shopping cart.
 
-#### Dependencias del Back-end
-- ASP.NET Core
-- Entity Framework Core
+```csharp
+public class Cart
+{
+    public int Id { get; set; }
+    public int UserId { get; set; }
+    public List<CartItem> Items { get; set; }
+}
+```
 
----
+### PaymentMethod.cs
+**Description**: Represents a payment method.
 
-## Dependencias
+```csharp
+public class PaymentMethod
+{
+    public int Id { get; set; }
+    public string MethodName { get; set; }
+    public string Details { get; set; }
+}
+```
 
-- El front-end depende del back-end para obtener datos y realizar acciones.
-- Los componentes del front-end se comunican con el back-end a través de APIs.
-- El back-end depende de la base de datos para almacenar y recuperar datos.
+### Product.cs
+**Description**: Represents a product.
 
----
+```csharp
+public class Product
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public decimal Price { get; set; }
+    public int CategoryId { get; set; }
+}
+```
 
-## Diagramas
+### Products.cs
+**Description**: Represents a collection of products.
 
-### Búsqueda de Producto por Categoría y Consulta
+```csharp
+public class Products
+{
+    public List<Product> Items { get; set; }
+}
+```
 
-![Búsqueda de Producto](https://www.plantuml.com/plantuml/png/hLDTwjD047_VKmp_9mLxWJn8QQjOK2ce1vZkJkl2PYVEJ0ezZWVm0hxsOdRJT3MDYA1lfVo-Tx9KGx6-JSvZPv4ph2xVzKjF0I4Gx8H3xusXOu4r6XrPBjyGph3ch7qoT0wziS0dxL4Ykmx5eeyTPeEdtUNhCMQyoiHS_ajFW0flkAKT7ccAlGgQSCB0KfmJmiT8EU10-M0iD28IoPIvGgL2sQ2n5dZvXNjKScwC1OkNrRQ1RRQXLnJmOut2xyQoxeuih0Vd1bxbKqG1vHHzj3uKvhvkzYnpknUwx_O2_6sqypReS-SmsIypAf1svECXUWoe3W0U_QuHQfkcZYurgmuluwjaqQW4MFokmDkeqxuAXvXCCCpLA2d1UuRFU0R_Ft8R5vV4-jFzhoDxRhj43zaTvU3S7zrVbtQppMuFvVvfgweo3p0vk0sTE9r88CtrA7lEDyN9uOsNsy0xrY6-KDcmu2OdvvQKG_c0Vm00)
+### Sale.cs
+**Description**: Represents a sale.
 
-### Habilitar y Deshabilitar Métodos de Pago
+```csharp
+public class Sale
+{
+    public int Id { get; set; }
+    public int UserId { get; set; }
+    public DateTime Date { get; set; }
+    public List<SaleItem> Items { get; set; }
+}
+```
 
-![Habilitar y Deshabilitar Métodos de Pago](https://www.plantuml.com/plantuml/png/XLCxRjmm4ErvYYdNLNgxiG4dI6CWW4_mH5AxWr0SOKXjuHkbIEKZxCKof5REPhD1L0Yay3xl3Qd7Kg5rcPBpc2jBfcV6NZ61GgGdN_d80O5cAEWh1aviX4_FiHos3RsSVbG9KXhZ6_RYN1TrzqzXuiobAe8eOT18CT5qUWzBaeQUBfYpCH_S_Oiql58o7cvZ78-qUuqfUi-IeHjaGn3ey94qN2Izetg8cNRbzFFEaJrN2Sk7vhNammh_d8yCmqbYptK9X6GaFRAnrn7TDZxJNpSeV5sG-0rj7j6ATgVqLn4Bcq03IcoV0ggKQwaibKVs852IGZvnp3NQGdBqJRXqPOzfu2wysgqo_JMAVk-BTI9RD3NhVvy21IwpP1vIBEUORBuwugr1bh90sLms0y8Ud6_RIFclV6-WohLNy3BDYbxiJwUOm-ywBgOIQPVbVDPVE3To0krj1dnwpxUlbudmsEwmpExHDktd-0K0)
+### Store.cs
+**Description**: Represents a store.
 
-### Diagrama para Flujo de Compra
+```csharp
+public class Store
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+}
+```
 
-![Diagrama para Flujo de Compra](https://www.plantuml.com/plantuml/png/ZLInRXix4Epv5GjNzY_eYcV1VWvI631W9Fs6N5tMu74FI_AA_8tB5Ado2VgnW7VdeoWfG2e1uipip71vzp6XfZnuOt5CB04U6Nl50S4Hx6tYYHqw654HoCEJpszIZXva61Nd7qz9Z9c5pEvBpAWi472Y7W718up7zvx3hCY1BKjdTiyIawB2gEAoJHA1GXbWKJL7yfqnV83R3xb8dgnb2RWnpWZ_tK7wJW5ku_7NdG40s5qXvx3nkmMqxvNw4oE0YoPNX4qPFVz0BVCe9dIbWWrMZ7Ynw5-JAFQqqBQ40uM8RrJIMma7rW4j7t-7pf2F1BT1LhiF4XA7N2WpDJXf6w7W-61gnuuiEohEBJdInlasVkAOyDHks-pc2Unye_zMuytBDXFy1_Lc3VwLb0ziKS6naft3blGKKgdwh9w3w93zckU4qPaPLwm-Lfdf-ExPNN6vJCPosCor4c3_ydaPsjxByMSI9n5AXTXBXLnBlA8lmSNWStkukfHBbzk4_yF4g135i-MKNQ4kBPPRZAGJEz6k9RskVoyt7a-gFmD-ogXp3vJGUoeHAtPULuHl66bk79F4XbyhQlQrjPYNYYgnNUOBAL8LNPxitxjS5lowsgMInsPTga0bDxSvPd84aVhCkdwVoXCJ8CS95UeJgK_jYKjklpPUB6-DnoIZkQVWojVp3m00)
+## UI Components
 
----
+### Page.tsx
+**Description**: The main page component of the store.
 
-## Funciones Principales del Sistema
+```tsx
+import React from 'react';
+import Header from '../components/Header';
+import ProductList from '../components/ProductList';
 
-- **StoreDB**: Representa la base de datos donde se almacena la información del sistema.
-- **SaleDB**: Representa la base de datos donde se almacenan las compras.
-- **SaleReport**: Esta clase es responsable de generar informes de ventas.
-- **SaleReportLogic**: Esta clase proporciona la lógica para generar informes de ventas.
-- **StoreLogic**: Esta clase proporciona la lógica para interactuar con la base de datos de la tienda.
+const Page: React.FC = () => (
+  <div>
+    <Header />
+    <ProductList />
+  </div>
+);
 
-### Flujo de Datos
+export default Page;
+```
 
-1. El usuario realiza una solicitud a la página principal.
-2. Los controladores reciben la solicitud y la procesan.
-3. Los controladores interactúan con los modelos para recuperar o modificar datos en la base de datos.
-4. Los controladores interactúan con las vistas para generar la respuesta al usuario.
-5. Las vistas envían la respuesta al usuario.
+### jwtHooks.ts
+**Description**: Custom hooks for handling JWT tokens.
+
+```ts
+import { useState, useEffect } from 'react';
+
+export const useJwt = () => {
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('jwtToken');
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
+
+  const saveToken = (userToken: string) => {
+    localStorage.setItem('jwtToken', userToken);
+    setToken(userToken);
+  };
+
+  return {
+    setToken: saveToken,
+    token
+  };
+};
+```
+
+### WebSocketContext.tsx
+**Description**: Context provider for WebSocket connections.
+
+```tsx
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import * as signalR from '@microsoft/signalr';
+
+interface CampaignMessage {
+  id: number;
+  title: string;
+  content: string;
+}
+
+interface WebSocketContextProps {
+  connection: signalR.HubConnection | null;
+  messages: CampaignMessage[];
+}
+
+const WebSocketContext = createContext<WebSocketContextProps | undefined>(undefined);
+
+export const useWebSocket = (): WebSocketContextProps => {
+  const context = useContext(WebSocketContext);
+  if (!context) {
+    throw new Error('useWebSocket must be used within a WebSocketProvider');
+  }
+  return context;
+};
+
+interface WebSocketProviderProps {
+  children: ReactNode;
+}
+
+export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }) => {
+  const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
+  const [messages, setMessages] = useState<CampaignMessage[]>([]);
+
+  useEffect(() => {
+    const connect = new signalR.HubConnectionBuilder()
+      .withUrl('/hub/campaignsHub')
+      .withAutomaticReconnect()
+      .build();
+
+    connect.start()
+      .then(() => {
+        console.log('Connected to SignalR hub');
+
+        connect.on('ReceiveNewCampaign', (content: string, title: string, id: number) => {
+          setMessages(prevMessages => [...prevMessages, { id, title, content }]);
+        });
+
+        connect.on('ReceiveDeletedCampaign', (id: number) => {
+          setMessages(prevMessages => prevMessages.filter(message => message.id !== id));
+        });
+      })
+      .catch(err => console.error('Connection to SignalR hub failed: ', err));
+
+    setConnection(connect);
+
+    return () => {
+      connect.stop();
+    };
+  }, []);
+
+  return (
+    <WebSocketContext.Provider value={{ connection, messages }}>
+      {children}
+    </WebSocketContext.Provider>
+  );
+};
+```
+
+## Diagrams
+
+The following diagrams illustrate the architecture and workflows of the KEStoreApi project. These images are stored in the `C27227/Images` directory.
+
+### Package Diagrams
+
+#### Core
+![Core Package Diagram](C27227/Images/DiagramaPaquetesCore.png)
+
+#### KEStoreApi
+![KEStoreApi Package Diagram](C27227/Images/DiagramaPaquetesKEStoreApi.png)
+
+#### UT
+![UT Package Diagram](C27227/Images/DiagramaPaquetesUT.png)
+
+### Sequence Diagrams
+
+
+
+#### Add Product
+![Add Product Sequence Diagram](C27227/Images/DiagramaSecuencia.png)
+
+#### Delete Product
+![Delete Product Sequence Diagram](C27227/Images/DiagramaSecuenciaDelete.png)
+
+#### View Sales Report
+![View Sales Report Sequence Diagram](C27227/Images/ReportSales.png)
+
+#### Payment Method
+![Payment Method Sequence Diagram](C27227/Images/PaymentMethod.png)
+
+#### Delete Payment Method
+![Delete Payment Method Sequence Diagram](C27227/Images/PaymentMethodDelete.png)
+
+### Activity Diagrams
+
+#### Campaign Management
+![Campaign Management Activity Diagram](C27227/Images/diagramaActividadCampañas.png)
+
+#### Purchase Process
+![Purchase Process Activity Diagram](C27227/Images/DiagramaActividadCompra.png)
+
+The KEStoreApi uses JWT (JSON Web Tokens) for user authentication and authorization. When a user logs in, a JWT token is generated and sent to the client. This token is included in the headers of subsequent API requests to authenticate the user. The server validates the token using the secret key to ensure the token's integrity and authenticity.
+
+Product data is cached to improve performance and reduce database load. The caching mechanism stores product data in memory and serves requests from the cache. When product data is updated, the cache is invalidated, and fresh data is fetched from the database.
+
+The product search feature allows users to search for products based on keywords. The search functionality queries the database for products matching the keywords in their name or description. The search results are then returned to the client for display.
+
+Sales reports are generated by querying the database for sales data within a specified date range. The report includes details such as total sales, sales by product, and sales by category. The server processes the data and formats it into a report, which is then sent to the client for display.
+
+This README provides an overview of the KEStoreApi project, including its business logic, data access classes, models, UI components, and diagrams illustrating the architecture and workflows. For detailed information on each component, please refer to the respective source files and documentation.
