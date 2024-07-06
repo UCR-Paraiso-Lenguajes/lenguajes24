@@ -342,7 +342,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
 ### Sequence Diagrams
 
 #### Add Product
-![Add Product Sequence Diagram](/Images/DiagramaSecuencia.png)
+![Add Product Sequence Diagram](../C27227/Images/DiagramaSecuencia.png)
 
 #### Delete Product
 ![Delete Product Sequence Diagram](/Images/DiagramaSecuenciaDelete.png)
