@@ -1075,29 +1075,36 @@ private Dictionary<string, string> CreateProductDictionary(string[] row)
 - **Caching Mechanism**: Uses a cache to store product data, which is refreshed every 30 minutes.
 - **Product Filtering**: Supports filtering products by category and keyword.
 
-Explanation of handleSearch Function
-The handleSearch function is an asynchronous function that processes a search event to fetch products based on the search query and selected categories. Here’s a step-by-step explanation:
+### Explanation of `handleSearch` Function
 
-Function Definition and Input Validation
-javascript
-Copy code
+The `handleSearch` function is an asynchronous function that processes a search event to fetch products based on the search query and selected categories. Here’s a step-by-step explanation:
+
+#### Function Definition and Input Validation
+
+```javascript
 const handleSearch = async (event) => {
   if (!event || typeof event !== 'object' || !event.hasOwnProperty('target') || typeof event.target !== 'object') {
     throw new Error('Invalid event object');
   }
   event.preventDefault();
-Function Definition: Declares an asynchronous function named handleSearch.
-Input Validation: Checks if the event object is valid. Throws an error if it is not.
-Extracting Query and Categories
-javascript
-Copy code
+```
+
+- **Function Definition**: Declares an asynchronous function named `handleSearch`.
+- **Input Validation**: Checks if the `event` object is valid. Throws an error if it is not.
+
+#### Extracting Query and Categories
+
+```javascript
   const query = event.target.q.value.trim();
   const { selectedCategories } = state;
-Query Extraction: Retrieves the search query from the event's target and trims any whitespace.
-Selected Categories: Destructures selectedCategories from the component's state.
-Constructing the API URL
-javascript
-Copy code
+```
+
+- **Query Extraction**: Retrieves the search query from the event's target and trims any whitespace.
+- **Selected Categories**: Destructures `selectedCategories` from the component's state.
+
+#### Constructing the API URL
+
+```javascript
   let url = URL + '/api/Products';
   const queryParams = [];
   selectedCategories.forEach((categoryID) => {
@@ -1111,25 +1118,31 @@ Copy code
   if (queryParams.length > 0) {
     url += `?${queryParams.join('&')}`;
   }
-Base URL: Initializes the URL for the API endpoint.
-Query Parameters: Creates an array to hold query parameters.
-Category IDs: Adds each selected category ID to the query parameters.
-Search Query: Adds the search query to the query parameters, URL-encoding it if it exists. If the query is empty, sets search to null.
-Final URL: Appends the query parameters to the URL if any exist.
-Fetching Products
-javascript
-Copy code
+```
+
+- **Base URL**: Initializes the URL for the API endpoint.
+- **Query Parameters**: Creates an array to hold query parameters.
+  - **Category IDs**: Adds each selected category ID to the query parameters.
+  - **Search Query**: Adds the search query to the query parameters, URL-encoding it if it exists. If the query is empty, sets `search` to `null`.
+- **Final URL**: Appends the query parameters to the URL if any exist.
+
+#### Fetching Products
+
+```javascript
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error('Failed to fetch products');
   }
   const productList = await response.json();
-Fetching Data: Sends a GET request to the constructed URL.
-Error Handling: Throws an error if the response is not OK.
-Parsing Response: Parses the JSON response to get the product list.
-Updating State and URL
-javascript
-Copy code
+```
+
+- **Fetching Data**: Sends a GET request to the constructed URL.
+- **Error Handling**: Throws an error if the response is not OK.
+- **Parsing Response**: Parses the JSON response to get the product list.
+
+#### Updating State and URL
+
+```javascript
   setState((prevState) => ({
     ...prevState,
     productList,
@@ -1138,5 +1151,18 @@ Copy code
   const searchParams = new URLSearchParams({ categoryIDs: selectedCategories.join(','), search: query || 'null' });
   window.history.pushState(null, '', `${window.location.pathname}?${searchParams.toString()}`);
 };
-Updating State: Updates the component's state with the new product list.
-Updating URL: Updates the browser’s URL to reflect the current search parameters using window.history.pushState without reloading the page.
+```
+
+- **Updating State**: Updates the component's state with the new product list.
+- **Updating URL**: Updates the browser’s URL to reflect the current search parameters using `window.history.pushState` without reloading the page.
+
+### Summary
+
+The `handleSearch` function handles the following:
+1. **Event Validation**: Ensures the search event is valid.
+2. **Query and Categories Extraction**: Extracts the search query and selected categories from the event and state.
+3. **API URL Construction**: Constructs the URL with query parameters for the API request.
+4. **Fetching Products**: Fetches products from the API and handles potential errors.
+5. **State and URL Update**: Updates the component's state with the fetched products and updates the browser's URL to reflect the search parameters.
+
+This function provides a robust and interactive search experience by dynamically updating the product list and URL based on user input.
