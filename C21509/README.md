@@ -1,12 +1,51 @@
-## Proyect: Store_API" - Jean Carlo Calderón Rojas
+## Proyect: Store_API - Jean Carlo Calderón Rojas
 
 Store_API is a responsive API solution for an online store that allows to an user making purchases for different products charged by a database.
 
-Below you wil find some important details about the aplication<
+Below you wil find some important details about the aplication
 
-# Store_API
+## Index
 
-Store_API is a responsive API solution for an online store that allows users to make purchases for different products charged by a database.
+- [Project Structure](#project-structure)
+  - [Package Diagram](#package-diagram)
+  - [Order Processing Activity Diagram](#order-processing-activity-diagram)
+  - [Notifications Activity Diagram](#notifications-activity-diagram)
+  - [Shopping Flow Activity Diagram](#shopping-flow-activity-diagram)
+  - [Payment Methods Activity Diagram](#payment-methods-activity-diagram)
+  - [Payment Methods and Shopping Flow UML Diagram](#payment-methods-and-shopping-flow-uml-diagram)
+- [Security](#security)
+  - [Backend Security](#backend-security)
+    - [User Authentication and Authorization](#user-authentication-and-authorization)
+    - [JWT Token Generation](#jwt-token-generation)
+    - [JWT Authentication Middleware](#jwt-authentication-middleware)
+  - [Frontend Security](#frontend-security)
+    - [Token Verification Component](#token-verification-component)
+    - [Login Page](#login-page)
+- [Product Cache](#product-cache)
+  - [Backend Implementation](#backend-implementation)
+    - [Initializing Products](#initializing-products)
+    - [Inserting Products into the Database](#inserting-products-into-the-database)
+    - [Selecting Products from the Database](#selecting-products-from-the-database)
+    - [Singleton Store Class](#singleton-store-class)
+    - [Store Controller](#store-controller)
+  - [Frontend Implementation](#frontend-implementation)
+    - [Fetching Products](#fetching-products)
+- [Product Searcher](#product-searcher)
+  - [Backend Implementation](#backend-implementation-1)
+    - [Get Categories](#get-categories)
+    - [Get Products by Category](#get-products-by-category)
+    - [Search Products by Name and Category](#search-products-by-name-and-category)
+    - [Categories Class](#categories-class)
+  - [Frontend Implementation](#frontend-implementation-1)
+    - [Fetching Categories](#fetching-categories)
+    - [Fetching Products by Category](#fetching-products-by-category)
+    - [Searching Products](#searching-products)
+- [Sales Report](#sales-report)
+  - [Backend Implementation](#backend-implementation-2)
+    - [SalesReportController](#salesreportcontroller)
+    - [SaleReportLogic](#salereportlogic)
+  - [Frontend Implementation](#frontend-implementation-2)
+    - [Sales Report Component](#sales-report-component)
 
 ## Project Structure
 
