@@ -190,7 +190,7 @@ This class provides the logic for interacting with the store database.
 
 ## Campaign Activity Diagram
 
-<img src="Images/Campaign.png" alt="Campaign" width="350" height="900">
+<img src="Images/Campaign.png" alt="Campaign" width="400" height="900">
 
 ### 1. Admin
 
@@ -236,8 +236,7 @@ This system manages and validates payment methods, allowing administrators to ac
 
 ### Payment Method Management and Validation
 
-![Paymenth Methods](Images/Paymenth.png){width=200px height=150px}
-<img src="Images/Paymenth.png" alt="PaymenthMethods" width="300" height="850">
+<img src="Images/Paymenth.png" alt="PaymenthMethods" width="400" height="850">
 
 This diagram shows two main activity flows:
 
@@ -266,7 +265,7 @@ This flowchart outlines the process a user follows when making a purchase from a
 5. **User Completes the Purchase**: The user finalizes their purchase by providing necessary payment and shipping information.
 6. **End**: The purchase process is complete.
 
-<img src="Images/Carusel.png" alt="Carusel" width="300" height="850">
+<img src="Images/Carusel.png" alt="Carusel" width="350" height="850">
 
 
 ### Class Diagram
