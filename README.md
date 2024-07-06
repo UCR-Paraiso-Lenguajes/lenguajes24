@@ -2,277 +2,279 @@
 
 **Developer:** Aarón Chacón Céspedes
 
-## Tabla de Contenidos
-1. [Descripción](#descripción-del-proyecto)
-    - [Funcionalidades Principales](#funcionalidades-principales)
-2. [Diagramas](#diagramas)
-   - [Diagrama de la página principal](#diagrama-de-la-página-principal)
-   - [Diagrama de la página de pago](#diagrama-de-la-página-de-pago)
-   - [Diagrama de la página de reportes](#diagrama-de-la-página-de-reportes)
-   - [Diagrama de Paquetes](#diagrama-de-paquetes)
-   - [Diagrama de Actividad](#diagrama-de-actividad)
-   - [Diagrama del WebSocket](#diagrama-del-websocket)
-   - [Diagrama de clases del Proyecto](#diagrama-de-clases-del-proyecto)
-   - [Diagrama de actividad del Carrito](#diagrama-de-actividad-del-carrito)
-   - [Diagrama de actividad del Pago](#diagrama-de-actividad-del-pago)
-3. [Seguridad](#seguridad)
-   - [Autenticación y Autorización](#autenticación-y-autorización)
-   - [Configuración del JWT](#configuración-del-jwt)
-   - [Autorización basada en roles](#autorización-basada-en-roles)
-4. [Caché](#caché)
-   - [Caché de productos](#caché-de-productos)
-5. [Buscador de productos](#buscador-de-productos)
-   - [Lógica de búsqueda](#lógica-de-búsqueda)
-6. [Reportes de venta](#reportes-de-venta)
-   - [Implementación de reportes](#implementación-de-reportes)
+## Table of Contents
+1. [Description](#description-of-the-project)
+    - [Main Features](#main-features)
+2. [Diagrams](#diagrams)
+   - [Main Page Diagram](#main-page-diagram)
+   - [Payment Page Diagram](#payment-page-diagram)
+   - [Reports Page Diagram](#reports-page-diagram)
+   - [Package Diagram](#package-diagram)
+   - [Activity Diagram](#activity-diagram)
+   - [WebSocket Diagram](#websocket-diagram)
+   - [Project Class Diagram](#project-class-diagram)
+   - [Cart Activity Diagram](#cart-activity-diagram)
+   - [Payment Activity Diagram](#payment-activity-diagram)
+3. [Security](#security)
+   - [Authentication and Authorization](#authentication-and-authorization)
+   - [JWT Configuration](#jwt-configuration)
+   - [Role-based Authorization](#role-based-authorization)
+4. [Cache](#cache)
+   - [Product Cache](#product-cache)
+5. [Product Search](#product-search)
+   - [Search Logic](#search-logic)
+6. [Sales Reports](#sales-reports)
+   - [Reports Implementation](#reports-implementation)
 
 
-## Descripción del Proyecto
-Este proyecto es una tienda web completa donde los usuarios pueden comprar productos, seleccionar la cantidad deseada, elegir la dirección de envío y método de pago, entre otras funcionalidades. Los administradores tienen la capacidad de enviar mensajes o campañas a los clientes, añadir nuevos productos, habilitar o deshabilitar métodos de pago, y revisar reportes de ventas diarias y semanales.
+## Description of the Project
+This project is a complete web store where users can buy products, select the desired quantity, choose the shipping address and payment method, among other functionalities. Administrators have the ability to send messages or campaigns to clients, add new products, enable or disable payment methods, and review daily and weekly sales reports.
 
-## Funcionalidades Principales
-### Usuarios
-- **Registro e inicio de sesión:** Los clientes pueden registrarse y acceder a su cuenta.
-- **Buscar productos:** Los usuarios pueden buscar y explorar productos.
-- **Carrito de compras:** Añadir productos al carrito, seleccionar la cantidad deseada.
-- **Realizar compras:** Completar la compra seleccionando la dirección de envío y el método de pago.
+## Main Features
+### Users
+- **Registration and Login:** Clients can register and log into their accounts.
+- **Search Products:** Users can search and browse products.
+- **Shopping Cart:** Add products to the cart, select the desired quantity.
+- **Make Purchases:** Complete the purchase by selecting the shipping address and payment method.
 
-### Administradores
-- **Gestión de productos:**
-  - Añadir nuevos productos.
-  - Actualizar información existente de productos.
-  - Eliminar productos.
+### Administrators
+- **Product Management:**
+  - Add new products.
+  - Update existing product information.
+  - Delete products.
 
-- **Gestión de métodos de pago:**
-  - Habilitar o deshabilitar métodos de pago según sea necesario.
+- **Payment Method Management:**
+  - Enable or disable payment methods as needed.
 
-- **Envío de campañas:**
-  - Enviar mensajes o campañas promocionales a los clientes.
+- **Sending Campaigns:**
+  - Send promotional messages or campaigns to clients.
 
-- **Reportes:**
-  - Revisar reportes detallados de ventas diarias.
-  - Revisar reportes detallados de ventas semanales.
+- **Reports:**
+  - Review detailed daily sales reports.
+  - Review detailed weekly sales reports.
 
-## Requisitos
+## Requirements
 - **Frontend:**
   - HTML, CSS, JavaScript
-  - Framework recomendado: React.js
+  - Recommended framework: React.js
 
 - **Backend:**
-  - Lenguaje: Node.js
-  - Framework recomendado: Express.js
-  - Base de datos: MongoDB
+  - Language: Node.js
+  - Recommended framework: Express.js
+  - Database: MongoDB
 
-## Diagramas
-### Diagrama de la página principal
-![Diagrama de la página principal](C22037/Images/pagprincipal.jpeg)
+## Diagrams
+### Main Page Diagram
+![Main Page Diagram](C22037/Images/pagprincipal.jpeg)
 
 ### Store
-**Propiedades:**
-- **Products**: Una colección de productos disponibles en la tienda.
-- **TaxPercentage**: El porcentaje de impuesto aplicado a los productos.
-- **categoryLogic**: Una instancia de `CategoryLogic` que maneja la lógica relacionada con las categorías de productos.
+**Properties:**
+- **Products:** A collection of products available in the store.
+- **TaxPercentage:** The percentage of tax applied to products.
+- **categoryLogic:** An instance of `CategoryLogic` that handles the logic related to product categories.
 
-**Métodos:**
-- **Store(IEnumerable<Product> products, int taxPercentage)**: Constructor que inicializa la tienda con una colección de productos y un porcentaje de impuesto.
-- **InstanceAsync()**: Método asincrónico que devuelve una instancia de `Store`.
-- **GetProductsByCategoryAsync(int id)**: Método asincrónico que devuelve una instancia de `Store` filtrada por categoría.
+**Methods:**
+- **Store(IEnumerable<Product> products, int taxPercentage):** Constructor that initializes the store with a collection of products and a tax percentage.
+- **InstanceAsync():** Asynchronous method that returns an instance of `Store`.
+- **GetProductsByCategoryAsync(int id):** Asynchronous method that returns an instance of `Store` filtered by category.
 
 ### CategoryLogic
-**Propiedades:**
-- **productsByCategoryId**: Diccionario que mapea identificadores de categoría a listas de productos correspondientes.
+**Properties:**
+- **productsByCategoryId:** Dictionary mapping category identifiers to corresponding product lists.
 
-**Métodos:**
-- **CategoryLogic(categories: CategorySt[], products: IEnumerable<Product>)**: Constructor que inicializa la lógica de categoría con las categorías y productos dados.
-- **GetProductsBySearchAsync(search: String, categories: String)**: Método asincrónico que devuelve productos que coinciden con la búsqueda y las categorías proporcionadas.
-- **GetCategoriesByIdAsync(categoryIds: IEnumerable<int>)**: Método asincrónico que devuelve categorías por sus identificadores.
-- **SearchProducts(products: List<Product>, search: String)**: Método que busca productos en una lista según el criterio de búsqueda.
+**Methods:**
+- **CategoryLogic(categories: CategorySt[], products: IEnumerable<Product>):** Constructor that initializes category logic with the given categories and products.
+- **GetProductsBySearchAsync(search: String, categories: String):** Asynchronous method that returns products matching the search and provided categories.
+- **GetCategoriesByIdAsync(categoryIds: IEnumerable<int>):** Asynchronous method that returns categories by their identifiers.
+- **SearchProducts(products: List<Product>, search: String):** Method that searches for products in a list based on the search criteria.
 
 ### Product
-**Propiedades:**
-- **Name**: Nombre del producto.
-- **ImageURL**: URL de la imagen del producto.
-- **Price**: Precio del producto.
-- **Description**: Descripción del producto.
-- **Id**: Identificador del producto.
-- **Category**: Categoría del producto representada por una instancia de `CategorySt`.
+**Properties:**
+- **Name:** Product name.
+- **ImageURL:** Product image URL.
+- **Price:** Product price.
+- **Description:** Product description.
+- **Id:** Product identifier.
+- **Category:** Product category represented by an instance of `CategorySt`.
 
-**Métodos:**
-- **Product(name: String, imageURL: String, price: decimal, description: String, id: int, category: CategorySt)**: Constructor que inicializa el producto con los valores proporcionados.
-- **Clone()**: Método que clona el producto.
+**Methods:**
+- **Product(name: String, imageURL: String, price: decimal, description: String, id: int, category: CategorySt):** Constructor that initializes the product with the provided values.
+- **Clone():** Method that clones the product.
 
 ### Category
-**Propiedades:**
-- **Id**: Identificador de la categoría.
-- **Name**: Nombre de la categoría.
-- **Categories**: Subcategorías representadas por una colección de instancias de `CategorySt`.
+**Properties:**
+- **Id:** Category identifier.
+- **Name:** Category name.
+- **Categories:** Subcategories represented by a collection of `CategorySt` instances.
 
-**Métodos:**
-- **Category(id: int, name: String, categories: CategorySt[])**: Constructor que inicializa la categoría con los valores proporcionados.
-- **GetType(id: int)**: Método que obtiene el tipo de categoría según su identificador.
-- **SortCategories()**: Método que ordena las categorías.
+**Methods:**
+- **Category(id: int, name: String, categories: CategorySt[]):** Constructor that initializes the category with the provided values.
+- **GetType(id: int):** Method that gets the category type based on its identifier.
+- **SortCategories():** Method that sorts categories.
 
 ### StoreDB
-**Métodos:**
-- **CreateMysql()**: Método que crea la base de datos MySQL para la tienda.
-- **GetProductsAsync()**: Método asincrónico que obtiene una colección de productos desde la base de datos.
+**Methods:**
+- **CreateMysql():** Method that creates the MySQL database for the store.
+- **GetProductsAsync():** Asynchronous method that retrieves a collection of products from the database.
 
 ### StoreController
-**Métodos:**
-- **GetStoreAsync()**: Método asincrónico que devuelve la tienda.
-- **GetProductsByCategoryAsync(categories: [FromQuery] string)**: Método asincrónico que devuelve productos filtrados por categorías.
-- **SearchAsync(search: [FromQuery] string, categories: [FromQuery] string)**: Método asincrónico que busca productos según los criterios de búsqueda y categorías proporcionadas.
+**Methods:**
+- **GetStoreAsync():** Asynchronous method that returns the store.
+- **GetProductsByCategoryAsync(categories: [FromQuery] string):** Asynchronous method that returns products filtered by categories.
+- **SearchAsync(search: [FromQuery] string, categories: [FromQuery] string):** Asynchronous method that searches for products based on the provided search criteria and categories.
 
 
-### Diagrama de la página de pago
-![Diagrama de la página de pago](C22037/Images/pagpago.jpeg)
+### Payment Page Diagram
+![Payment Page Diagram](C22037/Images/pagpago.jpeg)
 
 ### SaleDB
-**Métodos:**
-- **SaveAsync(sale: Sale)**: Método asincrónico que guarda una venta en la base de datos.
-- **GetSalesReportAsync(date: DateTime)**: Método asincrónico que obtiene un reporte de ventas para una fecha específica.
-- **GetWeeklySalesAsync(date: DateTime)**: Método asincrónico que obtiene las ventas semanales para una fecha específica.
-- **GetDailySalesAsync(date: DateTime)**: Método asincrónico que obtiene las ventas diarias para una fecha específica.
+**Methods:**
+- **SaveAsync(sale: Sale):** Asynchronous method that saves a sale to the database.
+- **GetSalesReportAsync(date: DateTime):** Asynchronous method that retrieves a sales report for a specific date.
+- **GetWeeklySalesAsync(date: DateTime):** Asynchronous method that retrieves weekly sales for a specific date.
+- **GetDailySalesAsync(date: DateTime):** Asynchronous method that retrieves daily sales for a specific date.
 
 ### PaymentMethod
-**Propiedades:**
-- **Type**: Enumeración que representa el tipo de método de pago.
+**Properties:**
+- **Type:** Enumeration representing the type of payment method.
 
-**Métodos:**
-- **Find(type: Type)**: Método que encuentra un método de pago según su tipo.
+**Methods:**
+- **Find(type: Type):** Method that finds a payment method based on its type.
 
 ### Sale
-**Propiedades:**
-- **Products**: Colección de productos incluidos en la venta.
-- **Address**: Dirección de envío.
-- **Amount**: Monto total de la venta.
-- **PaymentMethod**: Tipo de método de pago utilizado.
-- **PurchaseNumber**: Número de la compra.
+**Properties:**
+- **Products:** Collection of products included in the sale.
+- **Address:** Shipping address.
+- **Amount:** Total amount of the sale.
+- **PaymentMethod:** Type of payment method used.
+- **PurchaseNumber:** Purchase number.
 
 ### StoreLogic
-**Propiedades:**
-- **saleDB**: Instancia de `SaleDB` para interactuar con la base de datos de ventas.
+**Properties:**
+- **saleDB:** Instance of `SaleDB` to interact with the sales database.
 
-**Métodos:**
-- **PurchaseAsync(cart: Cart)**: Método asincrónico que procesa la compra de un carrito.
-- **GenerateNextPurchaseNumber()**: Método que genera el siguiente número de compra.
+**Methods:**
+- **PurchaseAsync(cart: Cart):** Asynchronous method that processes the purchase of a cart.
+- **GenerateNextPurchaseNumber():** Method that generates the next purchase number.
 
 ### CartController
-**Propiedades:**
-- **storeLogic**: Instancia de `StoreLogic` para manejar la lógica de la tienda.
+**Properties:**
+- **storeLogic:** Instance of `StoreLogic` to handle store logic.
 
-**Métodos:**
-- **CreateCartAsync(cart: Cart)**: Método asincrónico que crea un carrito.
+**Methods:**
+- **CreateCartAsync(cart: Cart):** Asynchronous method that creates a cart.
 
-### Diagrama de la página de reportes
-![Diagrama de la página de reportes](C22037/Images/pagreportes.jpeg)
+### Reports Page Diagram
+![Reports Page Diagram](C22037/Images/pagreportes.jpeg)
 
 ### SaleDB
-**Métodos:**
-- **SaveAsync(sale: Sale)**: Método asincrónico que guarda una venta en la base de datos.
-- **GetSalesReportAsync(date: DateTime)**: Método asincrónico que obtiene un reporte de ventas para una fecha específica.
-- **GetWeeklySalesAsync(date: DateTime)**: Método asincrónico que obtiene las ventas semanales para una fecha específica.
-- **GetDailySalesAsync(date: DateTime)**: Método asincrónico que obtiene las ventas diarias para una fecha específica.
+**Methods:**
+- **SaveAsync(sale: Sale):** Asynchronous method that saves a sale to the database.
+- **GetSalesReportAsync(date: DateTime):** Asynchronous method that retrieves a sales report for a specific date.
+- **GetWeeklySalesAsync(date: DateTime):** Asynchronous method that retrieves weekly sales for a specific date.
+- **GetDailySalesAsync(date: DateTime):** Asynchronous method that retrieves daily sales for a specific date.
 
 ### DailyReport
-**Propiedades:**
-- **PurchaseDate**: Fecha de la compra.
-- **PurchaseNumber**: Número de la compra.
-- **Total**: Total de la compra.
+**Properties:**
+- **PurchaseDate:** Purchase date.
+- **PurchaseNumber:** Purchase number.
+- **Total:** Total amount of the purchase.
 
 ### WeeklyReport
-**Propiedades:**
-- **Day**: Día de la semana.
-- **Total**: Total de ventas del día.
+**Properties:**
+- **Day:** Day of the week.
+- **Total:** Total sales for the day.
 
 ### SaleController
-**Métodos:**
-- **GetReportAsync(date: [FromQuery] DateTime)**: Método asincrónico que obtiene un reporte de ventas basado en la fecha proporcionada.
+**Methods:**
+- **GetReportAsync(date: [FromQuery] DateTime):** Asynchronous method that retrieves a sales report based on the provided date.
 
-## Diagrama de Paquetes
-![Diagrama de Paquetes](C22037/Images/diagrama_paquetes.jpeg)
+## Package Diagram
+![Package Diagram](C22037/Images/diagrama_paquetes.jpeg)
 
-## Diagrama del WebSocket
-![Diagrama del WebSocket](C22037/Images/ws.jpeg)
+## WebSocket Diagram
+![WebSocket Diagram](C22037/Images/ws.jpeg)
 
-## Diagrama de clases de Cart
-![Diagrama de clases de Cart](C22037/Images/DiagramaClasesProy.png)
+## Project Class Diagram
+![Project Class Diagram](C22037/Images/DiagramaClasesProy.png)
 
 ### ApiController
-**Métodos:**
-- **CreateCartAsync(Cart cart): Task<IActionResult>**: Método asincrónico que crea un carrito.
-- **GetPaymentMethodsAsync(): Task<List<PaymentMethod>>**: Método asincrónico que obtiene la lista de métodos de pago disponibles.
+**Methods:**
+- **CreateCartAsync(Cart cart): Task<IActionResult>:** Asynchronous method that creates a cart.
+- **GetPaymentMethodsAsync(): Task<List<PaymentMethod>>:** Asynchronous method that retrieves the list of available payment methods.
 
 ### StoreLogic
-**Métodos:**
-- **PurchaseAsync(Cart cart): Task<Purchase>**: Método asincrónico que procesa la compra de un carrito y devuelve una instancia de `Purchase`.
+**Methods:**
+- **PurchaseAsync(Cart cart): Task<Purchase>:** Asynchronous method that processes the purchase of a cart and returns an instance of `Purchase`.
 
 ### Purchase
-**Propiedades:**
-- **PurchaseNumber**: Número de la compra.
-- **Cart**: Instancia de `Cart` que contiene los productos comprados.
-- **PaymentMethod**: Método de pago utilizado para la compra.
-- **Address**: Dirección de envío.
+**Properties:**
+- **PurchaseNumber:** Purchase number.
+- **Cart:** Instance of `Cart` containing the purchased products.
+- **PaymentMethod:** Payment method used for the purchase.
+- **Address:** Shipping address.
 
 ### Cart
-**Propiedades:**
-- **Items**: Diccionario que mapea identificadores de productos a instancias de `CartItem`, representando los productos en el carrito.
-- **Subtotal**: Subtotal del carrito.
-- **Total**: Total del carrito.
+**Properties:**
+- **Items:** Dictionary mapping product identifiers to `CartItem` instances, representing the products in the cart.
+- **Subtotal:** Cart subtotal.
+- **Total:** Cart total.
 
 ### CartItem
-**Propiedades:**
-- **Product**: Instancia de `Product` que representa el producto en el carrito.
-- **Quantity**: Cantidad del producto en el carrito.
+**Properties:**
+- **Product:** Instance of `Product` representing the product in the cart.
+- **Quantity:** Quantity of the product in the cart.
 
 ### Product
-**Propiedades:**
-- **Id**: Identificador del producto.
-- **Name**: Nombre del producto.
-- **Description**: Descripción del producto.
-- **Price**: Precio del producto.
-- **ImageURL**: URL de la imagen del producto.
+**Properties:**
+- **Id:** Product identifier.
+- **Name:** Product name.
+- **Description:** Product description.
+- **Price:**
+
+ Product price.
+- **ImageURL:** Product image URL.
 
 ### PaymentMethod
-**Propiedades:**
-- **Id**: Identificador del método de pago.
-- **Name**: Nombre del método de pago.
-- **IsEnabled**: Indica si el método de pago está habilitado.
+**Properties:**
+- **Id:** Payment method identifier.
+- **Name:** Payment method name.
+- **IsEnabled:** Indicates whether the payment method is enabled.
 
-### Flujo de Trabajo
-1. **ApiController**:
-   - `CreateCartAsync` crea un nuevo carrito y lo devuelve.
-   - `GetPaymentMethodsAsync` obtiene los métodos de pago disponibles.
-2. **StoreLogic**:
-   - `PurchaseAsync` procesa la compra de un carrito, creando una instancia de `Purchase` con los detalles de la compra.
-3. **Purchase**:
-   - Contiene los detalles de la compra, incluyendo el número de compra, el carrito, el método de pago y la dirección de envío.
-4. **Cart**:
-   - Contiene los ítems del carrito (productos y sus cantidades) y los totales (subtotal y total).
-5. **CartItem**:
-   - Representa un producto y su cantidad en el carrito.
-6. **Product**:
-   - Contiene la información del producto, como su identificador, nombre, descripción, precio e imagen.
-7. **PaymentMethod**:
-   - Contiene la información del método de pago, como su identificador, nombre y estado de habilitación.
+### Workflow
+1. **ApiController:**
+   - `CreateCartAsync` creates a new cart and returns it.
+   - `GetPaymentMethodsAsync` retrieves the available payment methods.
+2. **StoreLogic:**
+   - `PurchaseAsync` processes the purchase of a cart, creating an instance of `Purchase` with the purchase details.
+3. **Purchase:**
+   - Contains the purchase details, including the purchase number, cart, payment method, and shipping address.
+4. **Cart:**
+   - Contains the cart items (products and their quantities) and the totals (subtotal and total).
+5. **CartItem:**
+   - Represents a product and its quantity in the cart.
+6. **Product:**
+   - Contains the product information, such as its identifier, name, description, price, and image.
+7. **PaymentMethod:**
+   - Contains the payment method information, such as its identifier, name, and enabled status.
 
 
-## Diagrama de actividad de Cart
-![Diagrama de actividad de Cart](C22037/Images/DiagramaActividadCart.png)
+## Cart Activity Diagram
+![Cart Activity Diagram](C22037/Images/DiagramaActividadCart.png)
 
-## Diagrama de actividad del Pago
-![Diagrama de actividad del Pago](C22037/Images/DiagramaActividadPayment.png)
+## Payment Activity Diagram
+![Payment Activity Diagram](C22037/Images/DiagramaActividadPayment.png)
 
-## Seguridad
+## Security
 
-### Autenticación y Autorización
-La autenticación y autorización se manejan mediante JWT (JSON Web Tokens). El endpoint de autenticación se encuentra en el controlador `AuthController`, el cual genera un token JWT al validar las credenciales del usuario. Este token incluye roles y permisos, permitiendo el control de acceso basado en roles para diferentes partes de la aplicación.
+### Authentication and Authorization
+Authentication and authorization are handled through JWT (JSON Web Tokens). The authentication endpoint is located in the `AuthController`, which generates a JWT token upon validating user credentials. This token includes roles and permissions, allowing for role-based access control to different parts of the application.
 
-El token JWT se valida en cada solicitud a través de middleware configurado en `Program.cs`, asegurando que solo usuarios autenticados puedan acceder a ciertos endpoints. Además, se utiliza el esquema de autorización de `Bearer` con `JwtBearerDefaults.AuthenticationScheme`.
+The JWT token is validated on each request through middleware configured in `Program.cs`, ensuring that only authenticated users can access certain endpoints. Additionally, the `Bearer` authorization scheme is used with `JwtBearerDefaults.AuthenticationScheme`.
 
-### Configuración del JWT
-En el archivo `Program.cs` se configura el esquema de autenticación JWT con las siguientes opciones:
-```
+### JWT Configuration
+In the `Program.cs` file, the JWT authentication scheme is configured with the following options:
+```csharp
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -289,27 +291,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 ```
 
-### Autorización basada en roles
-El rol del usuario se extrae del token JWT y se utiliza para controlar el acceso a ciertas partes de la aplicación. Por ejemplo, solo los usuarios con el rol `Admin` pueden acceder a la interfaz de administración.
+### Role-based Authorization
+The user's role is extracted from the JWT token and used to control access to certain parts of the application. For example, only users with the `Admin` role can access the administration interface.
 
-## Caché
+## Cache
 
-### Caché de productos
-Para mejorar la eficiencia y reducir las solicitudes a la base de datos, se implementa un mecanismo de caché para los productos en la tienda. Los productos y categorías se cargan inicialmente desde la base de datos y se almacenan en listas que tienen los models de estas clases, esto para que el acceso a la base de datos no afecte al rendimiento general de la aplicación.
+### Product Cache
+To improve efficiency and reduce database requests, a caching mechanism is implemented for the products in the store. Products and categories are initially loaded from the database and stored in lists that contain the models of these classes, ensuring that database access does not affect the overall performance of the application.
 
+## Product Search
 
-## Buscador de productos
+The product search allows users to search for products by name, description, and price. It uses an optimized binary search to find matches in the product list.
 
-El buscador de productos permite a los usuarios buscar productos por nombre, descripción y precio. Utiliza una búsqueda binaria optimizada para encontrar coincidencias en la lista de productos.
-
-### Lógica de búsqueda
-En `CategoryLogic.cs`, se implementa la lógica de búsqueda:
-```
+### Search Logic
+In `CategoryLogic.cs`, the search logic is implemented:
+```csharp
 public async Task<IEnumerable<Product>> GetProductsBySearchAsync(string search, string categories)
 {
     List<Product> matchingProducts = new List<Product>();
     List<int> categoryIdsList = categories?.Split(',').Select(int.Parse).ToList();
-    if (categoryIdsList == null || !!categoryIdsList.Any())
+    if (categoryIdsList == null || !categoryIdsList.Any())
     {
         foreach (var id in productsByCategoryId)
         {
@@ -330,13 +331,13 @@ public async Task<IEnumerable<Product>> GetProductsBySearchAsync(string search, 
 }
 ```
 
-## Reportes de venta
+## Sales Reports
 
-La aplicación proporciona reportes de ventas diarias y semanales. Los reportes se obtienen de la base de datos y se presentan en la interfaz de administración.
+The application provides daily and weekly sales reports. Reports are retrieved from the database and presented in the administration interface.
 
-### Implementación de reportes
-En el controlador `SaleController`, se implementa un endpoint para obtener los reportes de ventas:
-```
+### Reports Implementation
+In the `SaleController`, an endpoint is implemented to retrieve sales reports:
+```csharp
 [HttpGet]
 public async Task<IActionResult> GetReportAsync([FromQuery] DateTime date)
 {
@@ -354,8 +355,8 @@ public async Task<IActionResult> GetReportAsync([FromQuery] DateTime date)
 }
 ```
 
-La manera en que se generan los reportes en `SaleDB` es la siguiente:
-```
+The way reports are generated in `SaleDB` is as follows:
+```csharp
 public SalesReport GetSalesReport(DateTime date)
 {
     if (date == DateTime.MinValue)
@@ -372,8 +373,8 @@ public SalesReport GetSalesReport(DateTime date)
 }
 ```
 
-En la función `GetWeeklySalesAsync` se obtienen los reportes semanales de ventas:
-```
+In the `GetWeeklySalesAsync` function, weekly sales reports are retrieved:
+```csharp
 public async Task<List<WeeklyReport>> GetWeeklySalesAsync(DateTime date)
 {
     List<WeeklyReport> weeklySales = new List<WeeklyReport>();
@@ -409,8 +410,8 @@ public async Task<List<WeeklyReport>> GetWeeklySalesAsync(DateTime date)
 }
 ```
 
-En la función `GetDailySalesAsync` se obtienen los reportes diarios de ventas:
-```
+In the `GetDailySalesAsync` function, daily sales reports are retrieved:
+```csharp
 public async Task<List<DailyReport>> GetDailySalesAsync(DateTime date)
 {
     List<DailyReport> dailySales = new List<DailyReport>();
