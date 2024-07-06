@@ -13,7 +13,7 @@
 4. [Project Setup](#project-setup)
 5. [Security](#security)
 6. [Cache Products](#How-Product-Caching-Was-Implemented)
-7. [Product Finder](#PRODUCTFINDER)
+7. [Product Finder](#PRODUCT-FINDER) 
 8. 
    
 
