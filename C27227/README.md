@@ -19,7 +19,6 @@ public string CreateToken(List<Claim> claims)
     return new JwtSecurityTokenHandler().WriteToken(token);
 }
 ```
-
 ### CampaignService.cs
 **Description**: Manages campaign-related operations such as creating, retrieving, and deleting campaigns.
 
@@ -338,40 +337,40 @@ The following diagrams illustrate the architecture and workflows of the KEStoreA
 ### Package Diagrams
 
 #### Core
-![Core Package Diagram](../Images/DiagramaPaquetesCore.png)
+![Core Package Diagram](C27227/Images/DiagramaPaquetesCore.png)
 
 #### KEStoreApi
-![KEStoreApi Package Diagram](../Images/DiagramaPaquetesApi.png)
+![KEStoreApi Package Diagram](C27227/Images/DiagramaPaquetesApi.png)
 
 #### UT
-![UT Package Diagram](../Images/DiagramaPaquetesUT.png)
+![UT Package Diagram](C27227/Images/DiagramaPaquetesUT.png)
 
 ### Sequence
 
  Diagrams
 
 #### Add Product
-![Add Product Sequence Diagram](../Images/DiagramaSecuenciaProduct.png)
+![Add Product Sequence Diagram](C27227/Images/DiagramaSecuenciaProduct.png)
 
 #### Delete Product
-![Delete Product Sequence Diagram](../Images/DiagramaSecuenciaDelete.png)
+![Delete Product Sequence Diagram](C27227/Images/DiagramaSecuenciaDelete.png)
 
 #### View Sales Report
-![View Sales Report Sequence Diagram](../Images/ReportSales.png)
+![View Sales Report Sequence Diagram](C27227/Images/ReportSales.png)
 
 #### Payment Method
-![Payment Method Sequence Diagram](../Images/PaymentMethod.png)
+![Payment Method Sequence Diagram](C27227/Images/PaymentMethod.png)
 
 #### Delete Payment Method
-![Delete Payment Method Sequence Diagram](../Images/PaymentMethodDelete.png)
+![Delete Payment Method Sequence Diagram](C27227/Images/PaymentMethodDelete.png)
 
 ### Activity Diagrams
 
 #### Campaign Management
-![Campaign Management Activity Diagram](../Images/diagramaActividadCampañas.png)
+![Campaign Management Activity Diagram](C27227/Images/diagramaActividadCampañas.png)
 
 #### Purchase Process
-![Purchase Process Activity Diagram](../Images/DiagramaActividadCompra.png)
+![Purchase Process Activity Diagram](C27227/Images/DiagramaActividadCompra.png)
 
 ## Security Management
 
