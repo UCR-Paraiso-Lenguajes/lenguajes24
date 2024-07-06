@@ -105,11 +105,12 @@ namespace Store_API.Database
                     {
                         command.ExecuteNonQuery();
 
-                    if (!AnyProductsExist(connection))
-                    {
-                        var initialProducts = GetInitialProducts();
-                        InsertProductsStore(initialProducts, connection);
+                        if (!AnyProductsExist(connection))
+                        {
+                            var initialProducts = GetInitialProducts();
+                            InsertProductsStore(initialProducts, connection);
 
+                        }
                     }
                 }
             }
@@ -347,21 +348,10 @@ namespace Store_API.Database
         {
             string insertPaymentMethodQuery = @"
 
-                INSERT INTO PaymentMethod (PaymentMethodId, PaymentMethodName)
-                VALUES (@idPayment, @paymentName)
-                ON DUPLICATE KEY UPDATE PaymentMethodName = VALUES(PaymentMethodName);
-            ";
-
-            var paymentMethods = new List<(int id, string name)>
-            {
-                (0, "Efectivo"),
-                (1, "Sinpe")
-            };
-
-    INSERT INTO PaymentMethod (PaymentMethodId, PaymentMethodName, IsEnabled)
-    VALUES (@idPayment, @paymentName, @isEnabled)
+                 INSERT INTO PaymentMethod(PaymentMethodId, PaymentMethodName, IsEnabled)
+    VALUES(@idPayment, @paymentName, @isEnabled)
     ON DUPLICATE KEY UPDATE PaymentMethodName = VALUES(PaymentMethodName), IsEnabled = VALUES(IsEnabled);
-";
+            ";
 
             var paymentMethods = new List<(int id, string name, bool isEnabled)>
     {
