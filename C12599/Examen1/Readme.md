@@ -12,7 +12,9 @@
     - [Activity Diagram for Carousel and PaymentMethods](#activity-diagram-for-carousel-and-paymentmethods)
 4. [Project Setup](#project-setup)
 5. [Security](#security)
-6. [Cache Products](#How-Product-Caching-Was-Implemented) 
+6. [Cache Products](#How-Product-Caching-Was-Implemented)
+7. [Product Finder](#PRODUCTFINDER)
+8. 
    
 
 ## Introduction
@@ -750,3 +752,325 @@ This code handles the shopping cart functionality using React hooks and local st
 - **Subtotal and Total Calculation**: Automatically recalculates the subtotal and total when the cart contents change.
 - **API Integration**: Sends the cart data to the API to process the purchase, and handles the response to update the cart state and local storage.
 - **Product Management**: Ensures products are correctly added to the cart and prevents duplicates.
+
+
+
+# PRODUCT FINDER
+
+### Simplified Code with Explanation
+
+#### Overview
+The `Products` class manages a collection of products using a binary search tree (BST) and caches product data to improve performance. It includes methods for loading products from a database, caching them, and searching them by category and keyword.
+
+#### TreeNode Class
+This class represents a node in the binary search tree.
+
+```csharp
+public class TreeNode
+{
+    public Dictionary<string, string> Product { get; set; }
+    public TreeNode Left { get; set; }
+    public TreeNode Right { get; set; }
+
+    public TreeNode(Dictionary<string, string> product)
+    {
+        Product = product;
+        Left = null;
+        Right = null;
+    }
+}
+```
+
+- **Product**: Holds the product data.
+- **Left** and **Right**: References to the left and right children in the BST.
+
+#### Products Class
+This class manages the binary search tree and caches product data.
+
+##### Properties and Constructor
+
+```csharp
+public sealed class Products
+{
+    private TreeNode root;
+    private static List<Dictionary<string, string>> _cachedProducts;
+    private static readonly object _cacheLock = new object();
+    private DateTime lastCacheRefreshTime = DateTime.MinValue;
+    private readonly TimeSpan cacheRefreshInterval = TimeSpan.FromMinutes(30);
+
+    public Products()
+    {
+        root = null;
+    }
+}
+```
+
+- **root**: The root node of the BST.
+- **_cachedProducts**: A static list to cache products.
+- **_cacheLock**: An object for synchronizing access to the cache.
+- **lastCacheRefreshTime**: Tracks the last time the cache was refreshed.
+- **cacheRefreshInterval**: Interval after which the cache needs to be refreshed.
+
+##### NeedsCacheRefresh Method
+Determines if the cache needs to be refreshed.
+
+```csharp
+private bool NeedsCacheRefresh()
+{
+    return DateTime.Now - lastCacheRefreshTime > cacheRefreshInterval;
+}
+```
+
+##### LoadProductsFromDatabase Method
+Loads products from the database, refreshes the cache if needed, and filters products based on category and search keyword.
+
+```csharp
+public IEnumerable<Dictionary<string, string>> LoadProductsFromDatabase(List<int> categoryIds, string search)
+{
+    if (_cachedProducts == null || _cachedProducts.Count == 0 || NeedsCacheRefresh())
+    {
+        lock (_cacheLock)
+        {
+            if (_cachedProducts == null || _cachedProducts.Count == 0 || NeedsCacheRefresh())
+            {
+                List<string[]> productData = StoreDB.RetrieveDatabaseInfo();
+                root = null;
+                _cachedProducts = new List<Dictionary<string, string>>();
+
+                foreach (string[] row in productData)
+                {
+                    if (row == null || row.Length < 6) continue;
+                    var productDict = CreateProductDictionary(row);
+                    if (ValidateProductDictionary(productDict))
+                    {
+                        Insert(productDict);
+                        _cachedProducts.Add(productDict);
+                    }
+                }
+
+                lastCacheRefreshTime = DateTime.Now;
+            }
+        }
+    }
+
+    IEnumerable<Dictionary<string, string>> result = _cachedProducts;
+    if (!string.IsNullOrWhiteSpace(search) && !search.Equals("null", StringComparison.OrdinalIgnoreCase))
+    {
+        result = SearchProductsByKeyword(root, search);
+    }
+
+    if (categoryIds != null && categoryIds.Count > 0)
+    {
+        List<Dictionary<string, string>> categoryFilteredProducts = new List<Dictionary<string, string>>();
+        SearchByCategories(root, categoryIds, categoryFilteredProducts);
+        result = result.Intersect(categoryFilteredProducts, new DictionaryEqualityComparer());
+    }
+
+    return result;
+}
+```
+
+- **Cache Management**: Checks if the cache needs to be refreshed and reloads products from the database if necessary.
+- **Filtering**: Filters products based on the provided categories and search keyword.
+
+##### Insert Method
+Inserts a product into the BST.
+
+```csharp
+public void Insert(Dictionary<string, string> product)
+{
+    if (root == null)
+    {
+        root = new TreeNode(product);
+    }
+    else
+    {
+        InsertRecursively(root, product);
+    }
+}
+
+private void InsertRecursively(TreeNode node, Dictionary<string, string> product)
+{
+    if (product == null) throw new ArgumentNullException(nameof(product));
+
+    if (!int.TryParse(node.Product["categoryId"], out int currentCategoryId))
+        throw new ArgumentException("Invalid category ID in node.");
+
+    if (!int.TryParse(product["categoryId"], out int newCategoryId))
+        throw new ArgumentException("Invalid category ID in product.");
+
+    if (newCategoryId < currentCategoryId)
+    {
+        if (node.Left == null)
+        {
+            node.Left = new TreeNode(product);
+        }
+        else
+        {
+            InsertRecursively(node.Left, product);
+        }
+    }
+    else
+    {
+        if (node.Right == null)
+        {
+            node.Right = new TreeNode(product);
+        }
+        else
+        {
+            InsertRecursively(node.Right, product);
+        }
+    }
+}
+```
+
+- **Insert**: Inserts the product into the BST at the appropriate position based on the category ID.
+
+##### SearchProductsByKeyword Method
+Searches for products containing a specified keyword.
+
+```csharp
+public IEnumerable<Dictionary<string, string>> SearchProductsByKeyword(TreeNode node, string keyword)
+{
+    if (node == null) throw new ArgumentNullException(nameof(node));
+    if (string.IsNullOrEmpty(keyword)) throw new ArgumentException("Keyword cannot be null or empty.", nameof(keyword));
+
+    List<Dictionary<string, string>> result = new List<Dictionary<string, string>>();
+    SearchByKeyword(node, keyword, result);
+    return result;
+}
+
+private void SearchByKeyword(TreeNode node, string keyword, List<Dictionary<string, string>> result)
+{
+    if (node == null) return;
+
+    SearchByKeyword(node.Left, keyword, result);
+
+    if (ProductContainsKeyword(node.Product, keyword))
+    {
+        result.Add(node.Product);
+    }
+
+    SearchByKeyword(node.Right, keyword, result);
+}
+
+public bool ProductContainsKeyword(Dictionary<string, string> product, string keyword)
+{
+    if (product == null) throw new ArgumentNullException(nameof(product));
+    if (string.IsNullOrEmpty(keyword)) throw new ArgumentException("Keyword cannot be null or empty.", nameof(keyword));
+
+    keyword = keyword.ToLower();
+    return product.Values.Any(v => v != null && v.ToLower().Contains(keyword));
+}
+```
+
+- **SearchProductsByKeyword**: Recursively searches the BST for products containing the specified keyword.
+
+##### SearchByCategories Method
+Filters products by category.
+
+```csharp
+private void SearchByCategories(TreeNode node, List<int> categoryIds, List<Dictionary<string, string>> result)
+{
+    if (result == null) throw new ArgumentNullException(nameof(result));
+    if (node == null) return;
+
+    if (!node.Product.ContainsKey("categoryId"))
+        throw new ArgumentException("Product dictionary does not contain 'categoryId' key.");
+
+    if (!int.TryParse(node.Product["categoryId"], out int currentCategoryId))
+        throw new ArgumentException("Invalid category ID in product dictionary.");
+
+    if (categoryIds.Contains(currentCategoryId))
+    {
+        result.Add(node.Product);
+    }
+
+    SearchByCategories(node.Left, categoryIds, result);
+    SearchByCategories(node.Right, categoryIds, result);
+}
+```
+
+- **SearchByCategories**: Recursively searches the BST for products belonging to the specified categories.
+
+##### ValidateProductDictionary Method
+Validates a product dictionary.
+
+```csharp
+private bool ValidateProductDictionary(Dictionary<string, string> productDict)
+{
+    if (productDict == null || productDict.Count < 6)
+        throw new ArgumentException("Invalid product data dictionary: Insufficient data.");
+
+    if (!int.TryParse(productDict["id"], out int productId) || productId <= 0)
+        throw new ArgumentException("Invalid or missing product ID.");
+
+    if (string.IsNullOrWhiteSpace(productDict["name"]))
+        throw new ArgumentException("Product name is null or empty.");
+
+    if (string.IsNullOrWhiteSpace(productDict["imageUrl"]))
+        throw new ArgumentException("Image URL is null or empty.");
+
+    if (string.IsNullOrWhiteSpace(productDict["description"]))
+        throw new ArgumentException("Product description is null or empty.");
+
+    if (!int.TryParse(productDict["categoryId"], out int categoryId) || categoryId <= 0)
+        throw new ArgumentException("Invalid or missing category ID.");
+
+    return true;
+}
+```
+
+- **ValidateProductDictionary**: Ensures the product dictionary contains valid data.
+
+##### CreateProductDictionary Method
+Creates a product dictionary from a data row.
+
+```csharp
+private Dictionary<string, string> CreateProductDictionary(string[] row)
+{
+    if (row.Length < 6) throw new ArgumentException("Row data is insufficient.");
+
+    if (!int.TryParse(row[0], out int id) || id <= 0)
+        throw new ArgumentException("Invalid or missing product ID.");
+
+    string name = row[1];
+    if (string.IsNullOrWhiteSpace(name))
+        throw new ArgumentException("Product name is null or empty.");
+
+    if (!decimal.TryParse(row[2], out decimal price) || price < 0)
+        throw new ArgumentException("Invalid product price.");
+
+    string imageUrl = row[3];
+    if (string.IsNullOrWhiteSpace(imageUrl))
+        throw new ArgumentException("Image URL is null or empty.");
+
+    string description = row[4];
+    if (string.IsNullOrWhiteSpace(description))
+        throw new ArgumentException("Product description is null or empty.");
+
+    if (!int.TryParse(row[5], out int categoryId) || categoryId <= 0)
+        throw new ArgumentException("Invalid or missing category ID.");
+
+    return new Dictionary<string, string>
+   
+
+ {
+        { "id", id.ToString() },
+        { "name", name },
+        { "price", price.ToString("0.00", CultureInfo.InvariantCulture) },
+        { "imageUrl", imageUrl },
+        { "description", description },
+        { "categoryId", categoryId.ToString() }
+    };
+}
+```
+
+- **CreateProductDictionary**: Converts a data row into a product dictionary with validation.
+
+### Summary
+
+- **TreeNode Class**: Represents a node in the BST.
+- **Products Class**: Manages the BST, caches product data, and includes methods for loading products from the database, inserting products into the BST, searching by keyword and category, validating product data, and creating product dictionaries.
+- **Caching Mechanism**: Uses a cache to store product data, which is refreshed every 30 minutes.
+- **Product Filtering**: Supports filtering products by category and keyword.
