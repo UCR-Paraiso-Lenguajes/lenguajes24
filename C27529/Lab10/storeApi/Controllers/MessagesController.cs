@@ -10,12 +10,14 @@ namespace storeApi.Controllers
     public class MessagesController : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> AddMessage([FromBody] string content)
+        public async Task<IActionResult> AddMessage([FromBody] Dictionary<string, string> request)
         {
-            if (string.IsNullOrEmpty(content))
+            if (request == null || !request.ContainsKey("content") || string.IsNullOrEmpty(request["content"]))
             {
                 return BadRequest("Message content cannot be empty.");
             }
+
+            var content = request["content"];
 
             // Prevent adding duplicate messages by checking if the content already exists
             var existingMessages = await StoreDB.GetMessagesByContentAsync(content);

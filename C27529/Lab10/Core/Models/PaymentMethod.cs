@@ -1,47 +1,42 @@
-namespace storeApi;
-
 public abstract class PaymentMethod
 {
-    public enum Type
-    {CASH = 0,SINPE = 1}
+    public enum Type { CASH = 0, SINPE = 1 }
     public Type PaymentType { get; set; }
+    public bool Enabled { get; set; }
+
+    public PaymentMethod() { }
+
     public PaymentMethod(PaymentMethod.Type paymentType)
     {
         PaymentType = paymentType;
-
     }
-    private static Sinpe sinpe=new Sinpe();
-    private static Cash cash=new Cash();
 
     public static PaymentMethod Find(Type type)
     {
-
         switch (type)
         {
             case Type.CASH:
-                return cash;
+                return new Cash();
             case Type.SINPE:
-                return sinpe;
+                return new Sinpe();
             default:
                 throw new NotImplementedException("Invalid payment method type.");
         }
     }
-     public static PaymentMethod SetPaymentType(Type type)
-    {
-        return Find(type);
-    }
 }
+
 public sealed class Sinpe : PaymentMethod
 {
     public Sinpe() : base(PaymentMethod.Type.SINPE)
     {
-
+        Enabled = true;
     }
 }
+
 public sealed class Cash : PaymentMethod
 {
     public Cash() : base(PaymentMethod.Type.CASH)
     {
-
+        Enabled = true;
     }
 }

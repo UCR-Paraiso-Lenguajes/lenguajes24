@@ -13,6 +13,11 @@ export const Products = () => {
     return storedProductList ? JSON.parse(storedProductList) : [];
   });
 
+  const [paymentMethods, setPaymentMethods] = useState(() => {
+    const storedPaymentMethods = localStorage.getItem('paymentMethods');
+    return storedPaymentMethods ? JSON.parse(storedPaymentMethods) : [];
+  });
+
   const URL = process.env.NEXT_PUBLIC_API_URL;
   if (!URL) {
     throw new Error('NEXT_PUBLIC_API_URL is not defined');
@@ -27,6 +32,23 @@ export const Products = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const fetchPaymentMethods = async () => {
+      try {
+        const response = await fetch(`${URL}/api/PaymentMethods`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch payment methods');
+        }
+        const json = await response.json();
+        localStorage.setItem('paymentMethods', JSON.stringify(json));
+      } catch (error) {
+        console.error('Error loading payment methods:', error);
+      }
+    };
+
+    fetchPaymentMethods();
+  }, [URL]);
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -76,6 +98,7 @@ export const Products = () => {
       if (!json) throw new Error('Failed to fetch data, null response');
       setListNames(json.categoriesNames);
       setProductList(json.products);
+      setPaymentMethods(json.paymentMethods);
     } catch (error) {
       console.error('Error loading data:', error);
     }
@@ -114,25 +137,30 @@ export const Products = () => {
 
   const addProduct = (product) => {
     const storedStore = localStorage.getItem("tienda");
-    const storeData = JSON.parse(storedStore) || { carrito: { subtotal: 0, porcentajeImpuesto: 0 }, productos: [] };
-
+    const storeData = JSON.parse(storedStore) || { carrito: { subtotal: 0, porcentajeImpuesto: 0.13, total: 0 }, productos: [] };
+  
     if (storeData.productos.some(item => item.id === product.id)) {
-      // Handle product already in cart
+      // Manejar producto ya en el carrito (puedes agregar lógica aquí si es necesario)
     } else {
+      // Asegurarse de que el subtotal y total no sean null
+      const updatedSubtotal = (storeData.carrito.subtotal || 0) + product.price;
+      const updatedTotal = updatedSubtotal + (updatedSubtotal * (storeData.carrito.porcentajeImpuesto || 0));
+  
       const updatedStore = {
         ...storeData,
         carrito: {
           ...storeData.carrito,
-          subtotal: storeData.carrito.subtotal + product.price,
-          total: ((storeData.carrito.subtotal + product.price) * storeData.carrito.porcentajeImpuesto) + (storeData.carrito.subtotal + product.price)
+          subtotal: updatedSubtotal,
+          total: updatedTotal
         },
         productos: [...storeData.productos, product]
       };
-
+  
       localStorage.setItem("tienda", JSON.stringify(updatedStore));
       eventEmitter.emit('cartUpdated', updatedStore);
     }
   };
+  
 
   const Product = ({ product }) => {
     const { name, description, imageURL, price } = product;

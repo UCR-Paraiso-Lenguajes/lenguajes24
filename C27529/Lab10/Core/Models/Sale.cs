@@ -11,11 +11,11 @@ public sealed class Sale
     public PaymentMethod.Type PaymentMethod { get; set; }
     public string PurchaseNumber { get; }
 
-
+    public Sale() { }
     public Sale(IEnumerable<Product> products, string address, decimal amount, PaymentMethod.Type paymentMethod)
     {
 
-        
+
         if (products != null && products.Count() > 0 && address != null && address != "" && amount >= 0)
         {
             Products = products;

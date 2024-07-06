@@ -13,10 +13,19 @@ namespace storeApi.Controllers
     public class StoreController : ControllerBase
     {
         [HttpGet]
-        public async Task<Store> GetStoreAsync()
+        public async Task<IActionResult> GetStoreAsync()
         {
-            return await Task.FromResult(Store.Instance);
+            var store = Store.Instance;
+            var result = new
+            {
+                CategoriesNames = store.CategoriesNames,
+                Products = store.Products,
+                PaymentMethods = store.PaymentMethods.Select(pm => new { pm.PaymentType })
+            };
+            return Ok(result);
         }
+
+
         [HttpGet("products")]
         [AllowAnonymous]
 
@@ -44,7 +53,7 @@ namespace storeApi.Controllers
             {
                 var categoryIds = categoriesString.Split(',').Select(int.Parse).ToList();
                 var filteredStore = await store.GetFilteredProductsAsync(categoryIds);
-                var filteredProducts = filteredStore.Products.Where(p => p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) );
+                var filteredProducts = filteredStore.Products.Where(p => p.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
                 return Ok(new { products = filteredProducts });
             }
             else if (categoriesString != null)

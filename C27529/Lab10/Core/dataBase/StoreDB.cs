@@ -338,51 +338,52 @@ public sealed class StoreDB
 
             string createTableQuery = @"
 
-             CREATE TABLE IF NOT EXISTS paymentMethods (
-                paymentId INT PRIMARY KEY,
-                paymentName VARCHAR(30) NOT NULL UNIQUE
-            );
+                 CREATE TABLE IF NOT EXISTS paymentMethods (
+                    paymentId INT PRIMARY KEY,
+                    paymentName VARCHAR(30) NOT NULL UNIQUE,
+                    enabled BOOLEAN NOT NULL DEFAULT TRUE
+                );
 
-            CREATE TABLE IF NOT EXISTS products (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(100) NOT NULL,
-                description  BLOB NOT NULL,
-                price DECIMAL(10, 2) NOT NULL,
-                imageURL VARCHAR(255) NOT NULL,
-                category INT NOT NULL
-            );
+                CREATE TABLE IF NOT EXISTS products (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(100) NOT NULL,
+                    description BLOB NOT NULL,
+                    price DECIMAL(10, 2) NOT NULL,
+                    imageURL VARCHAR(255) NOT NULL,
+                    category INT NOT NULL
+                );
 
-            CREATE TABLE IF NOT EXISTS sales (
-                Id INT AUTO_INCREMENT PRIMARY KEY,
-                purchase_date DATETIME NOT NULL,
-                total DECIMAL(10, 2) NOT NULL,
-                payment_method INT NOT NULL,
-                purchase_number VARCHAR(50) NOT NULL UNIQUE,
-                FOREIGN KEY (payment_method) REFERENCES paymentMethods(paymentId)
-            );
+                CREATE TABLE IF NOT EXISTS sales (
+                    Id INT AUTO_INCREMENT PRIMARY KEY,
+                    purchase_date DATETIME NOT NULL,
+                    total DECIMAL(10, 2) NOT NULL,
+                    payment_method INT NOT NULL,
+                    purchase_number VARCHAR(50) NOT NULL UNIQUE,
+                    FOREIGN KEY (payment_method) REFERENCES paymentMethods(paymentId)
+                );
 
-            CREATE TABLE IF NOT EXISTS saleLines (
-                productId INT,
-                purchaseNumber VARCHAR(50),
-                price DECIMAL(10,2) NOT NULL,
-                PRIMARY KEY (productId, purchaseNumber),
-                FOREIGN KEY (productId) REFERENCES products(id),
-                CONSTRAINT fk_purchaseNumber FOREIGN KEY (purchaseNumber) REFERENCES sales(purchase_number)
-            );
+                CREATE TABLE IF NOT EXISTS saleLines (
+                    productId INT,
+                    purchaseNumber VARCHAR(50),
+                    price DECIMAL(10,2) NOT NULL,
+                    PRIMARY KEY (productId, purchaseNumber),
+                    FOREIGN KEY (productId) REFERENCES products(id),
+                    CONSTRAINT fk_purchaseNumber FOREIGN KEY (purchaseNumber) REFERENCES sales(purchase_number)
+                );
 
-                      CREATE TABLE IF NOT EXISTS messages (
-                        id INT AUTO_INCREMENT PRIMARY KEY,
-                        content TEXT NOT NULL,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    );
+                CREATE TABLE IF NOT EXISTS messages (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    content TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
 
-                     INSERT INTO paymentMethods (paymentId, paymentName)
-                        VALUES 
-                        (0, 'Cash'),
-                        (1, 'Sinpe');
+                INSERT INTO paymentMethods (paymentId, paymentName, enabled)
+                    VALUES 
+                    (0, 'Cash', TRUE),
+                    (1, 'Sinpe', FALSE);
 
                 INSERT INTO sales (purchase_date, total, payment_method, purchase_number)
-                VALUES
+                    VALUES
                     ('2024-06-15 05:20:00', 67.20, 1, 'SA123456789'),
                     ('2024-06-15 14:45:00', 45.80, 0, 'SB987654321'),
                     ('2024-06-15 08:55:00', 35.60, 1, 'SC246813579'),
@@ -639,5 +640,45 @@ public sealed class StoreDB
         }
         return messages;
     }
+
+
+  public static async Task<List<PaymentMethod>> GetPaymentMethodsAsync()
+{
+    var methods = new List<PaymentMethod>();
+    using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
+    {
+        await connection.OpenAsync();
+        string query = "USE store; SELECT paymentId, paymentName, enabled FROM paymentMethods";
+        using (var command = new MySqlCommand(query, connection))
+        {
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    var method = PaymentMethod.Find((PaymentMethod.Type)reader.GetInt32("paymentId"));
+                    method.Enabled = reader.GetBoolean("enabled");
+                    methods.Add(method);
+                }
+            }
+        }
+    }
+    return methods;
+}
+
+public static async Task<bool> UpdatePaymentMethodAsync(int id, bool enabled)
+{
+    using (var connection = new MySqlConnection(ConnectionDB.Instance.ConnectionString))
+    {
+        await connection.OpenAsync();
+        string query = "USE store; UPDATE paymentMethods SET enabled = @enabled WHERE paymentId = @id";
+        using (var command = new MySqlCommand(query, connection))
+        {
+            command.Parameters.AddWithValue("@enabled", enabled);
+            command.Parameters.AddWithValue("@id", id);
+            var result = await command.ExecuteNonQueryAsync();
+            return result > 0;
+        }
+    }
+}
 
 }

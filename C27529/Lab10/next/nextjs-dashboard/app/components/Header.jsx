@@ -176,7 +176,7 @@ export const Header = ({ goToPage }) => {
                             <div className='campaign-messages'>
                                 {messages.slice().reverse().map((message, index) => (
                                     <div className='message-item' key={index}>
-                                        <div dangerouslySetInnerHTML={{ __html: message.content || "Mensaje vacío" }}></div>
+                                        <div className='message-content' dangerouslySetInnerHTML={{ __html: message.content || "Mensaje vacío" }}></div>
                                     </div>
                                 ))}
                             </div>

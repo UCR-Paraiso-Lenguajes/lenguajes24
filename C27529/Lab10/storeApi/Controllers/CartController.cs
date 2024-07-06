@@ -1,11 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using storeApi.Models;
 using storeApi.Business;
-using storeApi.Database;
-using Microsoft.AspNetCore.Authorization;
-
 
 namespace storeApi.Controllers
 {
@@ -13,27 +10,20 @@ namespace storeApi.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-
-
         private StoreLogic storeLogic = new StoreLogic();
-        private SaleDB saleDB = new SaleDB();
+
         [HttpPost]
         [AllowAnonymous]
-
-        public async Task<IActionResult> CreateCart([FromBody] Cart cart) // Debes hacer que el método sea asíncrono
+        public async Task<IActionResult> CreateCart([FromBody] Cart cart)
         {
-
-            if (cart.Address != null && cart.Address != "" && cart.Total >= 0 && cart.ProductIds.Count > 0)
+            if (cart == null || cart.Address == null || cart.Address == "" || cart.Total < 0 || cart.ProductIds == null || cart.ProductIds.Count == 0)
             {
-                var sale = await storeLogic.PurchaseAsync(cart); // Espera a que la tarea se complete
-                var response = new { purchaseNumberResponse = sale.PurchaseNumber };
-                return Ok(response);
+                return BadRequest("Missing Information.");
             }
-            else
-            {
-                throw new ArgumentException("Missing Information.");
-            }
+            
+            var sale = await storeLogic.PurchaseAsync(cart);
+            var response = new { purchaseNumberResponse = sale.PurchaseNumber };
+            return Ok(response);
         }
     }
-
 }

@@ -34,7 +34,7 @@ namespace storeApi.Tests
         public void SaleConstructor_ValidParameters_ShouldCreateSale()
         {
             // Arrange
-            var paymentMethod = PaymentMethod.SetPaymentType(validPaymentMethod);
+            var paymentMethod = PaymentMethod.Find(validPaymentMethod);
 
             // Act
             var sale = new Sale(validProducts, validAddress, validAmount, paymentMethod.PaymentType);
@@ -52,7 +52,7 @@ namespace storeApi.Tests
         public void SaleConstructor_NullProducts_ShouldThrowArgumentException()
         {
             // Arrange
-            var paymentMethod = PaymentMethod.SetPaymentType(validPaymentMethod);
+            var paymentMethod = PaymentMethod.Find(validPaymentMethod);
 
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => new Sale(null, validAddress, validAmount, paymentMethod.PaymentType));
@@ -63,7 +63,7 @@ namespace storeApi.Tests
         public void SaleConstructor_EmptyProducts_ShouldThrowArgumentException()
         {
             // Arrange
-            var paymentMethod = PaymentMethod.SetPaymentType(validPaymentMethod);
+            var paymentMethod = PaymentMethod.Find(validPaymentMethod);
 
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => new Sale(new List<Product>(), validAddress, validAmount, paymentMethod.PaymentType));
@@ -74,7 +74,7 @@ namespace storeApi.Tests
         public void SaleConstructor_NullAddress_ShouldThrowArgumentException()
         {
             // Arrange
-            var paymentMethod = PaymentMethod.SetPaymentType(validPaymentMethod);
+            var paymentMethod = PaymentMethod.Find(validPaymentMethod);
 
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => new Sale(validProducts, null, validAmount, paymentMethod.PaymentType));
@@ -85,7 +85,7 @@ namespace storeApi.Tests
         public void SaleConstructor_EmptyAddress_ShouldThrowArgumentException()
         {
             // Arrange
-            var paymentMethod = PaymentMethod.SetPaymentType(validPaymentMethod);
+            var paymentMethod = PaymentMethod.Find(validPaymentMethod);
 
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => new Sale(validProducts, "", validAmount, paymentMethod.PaymentType));
@@ -96,7 +96,7 @@ namespace storeApi.Tests
         public void SaleConstructor_NegativeAmount_ShouldThrowArgumentException()
         {
             // Arrange
-            var paymentMethod = PaymentMethod.SetPaymentType(validPaymentMethod);
+            var paymentMethod = PaymentMethod.Find(validPaymentMethod);
 
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => new Sale(validProducts, validAddress, -10.0m, paymentMethod.PaymentType));

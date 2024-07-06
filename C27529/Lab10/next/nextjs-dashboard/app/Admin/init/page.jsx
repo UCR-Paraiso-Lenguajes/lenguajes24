@@ -5,13 +5,14 @@ import Reports from './Reports';
 import StoreCrud from './StoreCrud';
 import { jwtDecode } from 'jwt-decode'; 
 import Campannas from './Campannas';
+import PaymentMethods from './PaymentMethods';
 
 function Page() {
   const [selected, setSelected] = useState();
   const [expanded, setExpanded] = useState(true);
 
   const isSelected = (pageNumber) => {
-    if (pageNumber != null && (pageNumber == 0 || pageNumber == 1 || pageNumber == 2)) {
+    if (pageNumber != null && (pageNumber == 0 || pageNumber == 1 || pageNumber == 2 || pageNumber == 3)) {
       setSelected(pageNumber);
     }
   };
@@ -54,6 +55,11 @@ function Page() {
                     Campañas
                   </a>
                 </li>
+                <li className="nav-item">
+                  <a className="nav-link" onClick={() => isSelected(3)}>
+                    Metodos De Pago
+                  </a>
+                </li>
               </ul>
             </div>
           </nav>
@@ -63,6 +69,7 @@ function Page() {
             {selected === 0 && <StoreCrud />}
             {selected === 1 && <Reports />}
             {selected === 2 && <Campannas />}
+            {selected === 3 && <PaymentMethods />}
           </main>
         </div>
       </div>
