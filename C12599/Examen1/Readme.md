@@ -1706,7 +1706,3 @@ export default Ventas;
 # Video Demonstration
 
 You can see the website in action in the following video:
-
-[![Watch the video on YouTube](https://img.youtube.com/vi/5vV8Pg7Gr8U/0.jpg)](https://www.youtube.com/watch?v=5vV8Pg7Gr8U)
-
-Click the image or [this link](https://www.youtube.com/watch?v=5vV8Pg7Gr8U) to watch the video on YouTube.
