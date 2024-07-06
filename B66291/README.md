@@ -136,5 +136,5 @@ The implementation of the sales reports was done through google charts, there is
 | ----------------- | ------------------------------------------------------------------ |
 | Black | ![#000000](https://via.placeholder.com/10/000000?text=+) #000000 |
 | White | ![#f8f8f8](https://via.placeholder.com/10/f8f8f8?text=+) #f8f8f8 |
-| Freen | ![#00d1a0](https://via.placeholder.com/10/00b48a?text=+) #00d1a0 |
+| Green | ![#00d1a0](https://via.placeholder.com/10/00b48a?text=+) #00d1a0 |
 
