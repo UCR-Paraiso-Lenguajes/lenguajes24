@@ -1,8 +1,8 @@
-<h1 style="center">Proyect: Store_API"</h1>
+## Proyect: Store_API"
 
-<p>Store_API is a responsive API solution for an online store that allows to an user making purchases for different products charged by a database.</p> 
+Store_API is a responsive API solution for an online store that allows to an user making purchases for different products charged by a database.<
 
-<p>Below you wil find some important details about the aplication</p> 
+Below you wil find some important details about the aplication<
 
 # Store_API
 
