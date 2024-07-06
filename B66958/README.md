@@ -33,7 +33,7 @@ Andromeda Store aims to be an E-Commerce for everyone interested in shopping onl
    - [Multiple Existence Of Products In Cart UML Diagram](#multiple-existence-of-products-in-cart-uml-diagram-shopping_cart) :shopping_cart:
 5. [Security](#security-lock) :lock:
 6. [Cache of Products](#cache-of-products-card_file_box) :card_file_box:
-7. [Product Search](#products-search-mag) :mag:
+7. [Product Search](#product-search-mag) :mag:
 8. [Sale reports](#sale-reports-chart_with_upwards_trend) :chart_with_upwards_trend:
 
 ---
