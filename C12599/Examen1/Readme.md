@@ -26,28 +26,19 @@ This online store project was developed during the Programming Languages course.
 El sistema está diseñado para ser modular y escalable, con una arquitectura de microservicios que incluye servicios para la gestión de productos, usuarios, autenticación y autorizaciones, y estadísticas de ventas. La comunicación entre servicios se realiza mediante APIs RESTful.
 
 ## Diagramas UML
+## Diagramas UML
 
 ### Diagrama de Actividad
-
-![Diagrama de Actividad](/images/actividad.png)
-
+![Diagrama de Actividad](images/actividad.png)
 El diagrama de actividad muestra el flujo de trabajo dentro del sistema, desde la autenticación del usuario hasta la realización de una compra.
 
 ### Diagrama de Clase
-
-![Diagrama de Clase](/images/clase.png)
-
+![Diagrama de Clase](images/clase.png)
 El diagrama de clase representa la estructura estática del sistema, mostrando las clases, atributos y métodos, así como sus relaciones.
 
 ### Diagrama de Paquetes
-
-![Diagrama de Paquetes](/images/paquetes.png)
-
-El diagrama de paquetes muestra la organización modular del sistema, agrupando clases relacionadas en paquetes para mejorar la mantenibilidad y escalabilidad del código.
-
-### Diagrama de Campaigns Investigación
-
-![Diagrama de Campaigns Investigación](/images/Investigacion.JPG)
+![Diagrama de Paquetes](images/paquetes.png)
+El diagrama de paquetes muestra la organización de los paquetes y la dependencia entre ellos.
 
 Este diagrama ilustra la estructura y relaciones de las campañas de investigación dentro del sistema.
 
