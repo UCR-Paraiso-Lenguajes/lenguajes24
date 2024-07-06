@@ -34,7 +34,8 @@ Andromeda Store aims to be an E-Commerce for everyone interested in shopping onl
 5. [Security](#security-lock) :lock:
 6. [Cache of Products](#cache-of-products-card_file_box) :card_file_box:
 7. [Product Search](#product-search-mag) :mag:
-8. [Sale reports](#sale-reports-chart_with_upwards_trend) :chart_with_upwards_trend:
+8. [Sale Reports](#sale-reports-chart_with_upwards_trend) :chart_with_upwards_trend:
+9. [Application Walkthrough](#application-walkthrough-tv)
 
 ---
 
@@ -918,3 +919,9 @@ import { Chart } from "react-google-charts";
 
 **Usage:**
 These components are integrated into the React web client to provide administrators with visual representations of daily and weekly sales data, enhancing decision-making and monitoring capabilities.
+
+---
+
+# Application Walkthrough :tv:
+
+<iframe width="1349" height="510" src="https://www.youtube.com/embed/MgLPjGejU7s" title="Andromeda Store Walkthrough" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
