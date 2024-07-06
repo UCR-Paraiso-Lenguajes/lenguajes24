@@ -1,4 +1,4 @@
-## Proyect: Store_API"
+## Proyect: Store_API" - Jean Carlo Calderón Rojas
 
 Store_API is a responsive API solution for an online store that allows to an user making purchases for different products charged by a database.<
 
@@ -10,10 +10,23 @@ Store_API is a responsive API solution for an online store that allows users to 
 
 ## Project Structure
 
-- **src/**: Contains all the source code for the API
-- **config/**: Configuration files for the application
-- **tests/**: Unit and integration tests
-- **docs/**: Documentation related files
+## Package Diagram
+<img src="Package.jpg">
+
+## Order Processing activity diagram
+<img src="OrderProcessing.jpg">
+
+## Notifications Activity Diagram
+<img src="DiagramaInvestigacion.png">
+
+## Shopping Flow Activity Diagram
+<img src="Diagramadeactividades.png">
+
+## Payment Methods Activity Diagram
+<img src="Diagramametodospago.png">
+
+## Payment Methods and Shopping Flow UML Diagram
+<img src="ClasesMetodoPago.jpg">
 
 ## Security
 
