@@ -65,7 +65,7 @@ This project is a complete web store where users can buy products, select the de
 
 ## Diagrams
 ### Main Page Diagram
-![Main Page Diagram](C22037/Images/pagprincipal.jpeg)
+![Main Page Diagram](Images/pagprincipal.jpeg)
 
 ### Store
 **Properties:**
@@ -165,7 +165,7 @@ This project is a complete web store where users can buy products, select the de
 - **CreateCartAsync(cart: Cart):** Asynchronous method that creates a cart.
 
 ### Reports Page Diagram
-![Reports Page Diagram](C22037/Images/pagreportes.jpeg)
+![Reports Page Diagram](Images/pagreportes.jpeg)
 
 ### SaleDB
 **Methods:**
@@ -190,13 +190,13 @@ This project is a complete web store where users can buy products, select the de
 - **GetReportAsync(date: [FromQuery] DateTime):** Asynchronous method that retrieves a sales report based on the provided date.
 
 ## Package Diagram
-![Package Diagram](C22037/Images/diagrama_paquetes.jpeg)
+![Package Diagram](Images/diagrama_paquetes.jpeg)
 
 ## WebSocket Diagram
-![WebSocket Diagram](C22037/Images/ws.jpeg)
+![WebSocket Diagram](Images/ws.jpeg)
 
 ## Project Class Diagram
-![Project Class Diagram](C22037/Images/DiagramaClasesProy.png)
+![Project Class Diagram](Images/DiagramaClasesProy.png)
 
 ### ApiController
 **Methods:**
@@ -260,10 +260,10 @@ This project is a complete web store where users can buy products, select the de
 
 
 ## Cart Activity Diagram
-![Cart Activity Diagram](C22037/Images/DiagramaActividadCart.png)
+![Cart Activity Diagram](Images/DiagramaActividadCart.png)
 
 ## Payment Activity Diagram
-![Payment Activity Diagram](C22037/Images/DiagramaActividadPayment.png)
+![Payment Activity Diagram](Images/DiagramaActividadPayment.png)
 
 ## Security
 
