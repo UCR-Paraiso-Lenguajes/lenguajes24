@@ -336,21 +336,15 @@ The following diagrams illustrate the architecture and workflows of the KEStoreA
 
 ### Package Diagrams
 
-#### Core
-![Core Package Diagram](/Images/DiagramaPaquetesCore.png)
-
 #### KEStoreApi
-![KEStoreApi Package Diagram](/Images/DiagramaPaquetesApi.png)
-
-#### UT
-![UT Package Diagram](/Images/DiagramaPaquetesUT.png)
+![KEStoreApi Package Diagram](../Images/DiagramaPaquetesApi.png)
 
 ### Sequence
 
  Diagrams
 
 #### Add Product
-![Add Product Sequence Diagram](/Images/DiagramaSecuenciaProduct.png)
+![Add Product Sequence Diagram](../Images/DiagramaSecuencia.png)
 
 #### Delete Product
 ![Delete Product Sequence Diagram](/Images/DiagramaSecuenciaDelete.png)
