@@ -1074,3 +1074,69 @@ private Dictionary<string, string> CreateProductDictionary(string[] row)
 - **Products Class**: Manages the BST, caches product data, and includes methods for loading products from the database, inserting products into the BST, searching by keyword and category, validating product data, and creating product dictionaries.
 - **Caching Mechanism**: Uses a cache to store product data, which is refreshed every 30 minutes.
 - **Product Filtering**: Supports filtering products by category and keyword.
+
+Explanation of handleSearch Function
+The handleSearch function is an asynchronous function that processes a search event to fetch products based on the search query and selected categories. Here’s a step-by-step explanation:
+
+Function Definition and Input Validation
+javascript
+Copy code
+const handleSearch = async (event) => {
+  if (!event || typeof event !== 'object' || !event.hasOwnProperty('target') || typeof event.target !== 'object') {
+    throw new Error('Invalid event object');
+  }
+  event.preventDefault();
+Function Definition: Declares an asynchronous function named handleSearch.
+Input Validation: Checks if the event object is valid. Throws an error if it is not.
+Extracting Query and Categories
+javascript
+Copy code
+  const query = event.target.q.value.trim();
+  const { selectedCategories } = state;
+Query Extraction: Retrieves the search query from the event's target and trims any whitespace.
+Selected Categories: Destructures selectedCategories from the component's state.
+Constructing the API URL
+javascript
+Copy code
+  let url = URL + '/api/Products';
+  const queryParams = [];
+  selectedCategories.forEach((categoryID) => {
+    queryParams.push(`categoryIDs=${categoryID}`);
+  });
+  if (query) {
+    queryParams.push(`search=${encodeURIComponent(query)}`);
+  } else {
+    queryParams.push('search=null');
+  }
+  if (queryParams.length > 0) {
+    url += `?${queryParams.join('&')}`;
+  }
+Base URL: Initializes the URL for the API endpoint.
+Query Parameters: Creates an array to hold query parameters.
+Category IDs: Adds each selected category ID to the query parameters.
+Search Query: Adds the search query to the query parameters, URL-encoding it if it exists. If the query is empty, sets search to null.
+Final URL: Appends the query parameters to the URL if any exist.
+Fetching Products
+javascript
+Copy code
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('Failed to fetch products');
+  }
+  const productList = await response.json();
+Fetching Data: Sends a GET request to the constructed URL.
+Error Handling: Throws an error if the response is not OK.
+Parsing Response: Parses the JSON response to get the product list.
+Updating State and URL
+javascript
+Copy code
+  setState((prevState) => ({
+    ...prevState,
+    productList,
+  }));
+
+  const searchParams = new URLSearchParams({ categoryIDs: selectedCategories.join(','), search: query || 'null' });
+  window.history.pushState(null, '', `${window.location.pathname}?${searchParams.toString()}`);
+};
+Updating State: Updates the component's state with the new product list.
+Updating URL: Updates the browser’s URL to reflect the current search parameters using window.history.pushState without reloading the page.
